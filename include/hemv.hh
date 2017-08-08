@@ -3,6 +3,7 @@
 
 #include "blas_fortran.hh"
 #include "blas_util.hh"
+#include "symv.hh"
 
 #include <limits>
 
@@ -23,38 +24,7 @@ void hemv(
     float beta,
     float       *y, int64_t incy )
 {
-    printf( "shemv (ssymv) implementation\n" );
-
-    // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( uplo != Uplo::Upper &&
-               uplo != Uplo::Lower );
-    throw_if_( n < 0 );
-    throw_if_( lda < n );
-    throw_if_( incx == 0 );
-    throw_if_( incy == 0 );
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(int64_t)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda            > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
-    }
-
-    blas_int n_    = (blas_int) n;
-    blas_int lda_  = (blas_int) lda;
-    blas_int incx_ = (blas_int) incx;
-    blas_int incy_ = (blas_int) incy;
-
-    if (layout == Layout::RowMajor) {
-        uplo = (uplo == Uplo::Upper ? Uplo::Lower : Uplo::Upper);
-    }
-
-    char uplo_ = uplo2char( uplo );
-    f77_ssymv( &uplo_, &n_,
-               &alpha, A, &lda_, x, &incx_, &beta, y, &incy_ );
+    symv( layout, uplo, n, alpha, A, lda, x, incx, beta, y, incy );
 }
 
 // -----------------------------------------------------------------------------
@@ -69,38 +39,7 @@ void hemv(
     double beta,
     double       *y, int64_t incy )
 {
-    printf( "dhemv (dsymv) implementation\n" );
-
-    // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( uplo != Uplo::Upper &&
-               uplo != Uplo::Lower );
-    throw_if_( n < 0 );
-    throw_if_( lda < n );
-    throw_if_( incx == 0 );
-    throw_if_( incy == 0 );
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(int64_t)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda            > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
-    }
-
-    blas_int n_    = (blas_int) n;
-    blas_int lda_  = (blas_int) lda;
-    blas_int incx_ = (blas_int) incx;
-    blas_int incy_ = (blas_int) incy;
-
-    if (layout == Layout::RowMajor) {
-        uplo = (uplo == Uplo::Upper ? Uplo::Lower : Uplo::Upper);
-    }
-
-    char uplo_ = uplo2char( uplo );
-    f77_dsymv( &uplo_, &n_,
-               &alpha, A, &lda_, x, &incx_, &beta, y, &incy_ );
+    symv( layout, uplo, n, alpha, A, lda, x, incx, beta, y, incy );
 }
 
 // -----------------------------------------------------------------------------
