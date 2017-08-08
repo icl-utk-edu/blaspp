@@ -7,6 +7,7 @@
 // -----------------------------------------------------------------------------
 int main()
 {
+    // Level 1 BLAS
     test_asum();
     test_axpy();
     test_copy();
@@ -19,5 +20,9 @@ int main()
     test_rotmg();
     test_scal();
     test_swap();
+
+    // Level 2 BLAS
+    test_gemv();
+
     return 0;
 }

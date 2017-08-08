@@ -17,4 +17,9 @@ void test_rotmg();
 void test_scal();
 void test_swap();
 
+// -----------------------------------------------------------------------------
+// Level 1 BLAS
+
+void test_gemv();
+
 #endif        //  #ifndef TEST_HH
