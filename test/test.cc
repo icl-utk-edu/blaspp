@@ -24,6 +24,7 @@ int main()
     // Level 2 BLAS
     test_gemv();
     test_symv();
+    test_hemv();
 
     return 0;
 }

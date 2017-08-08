@@ -348,7 +348,7 @@ void gemv(
 ///         Stride between elements of y. incy must not be zero.
 ///         If incy < 0, uses elements of y in reverse order: y(n-1), ..., y(0).
 ///
-/// @ingroup blas1
+/// @ingroup blas2
 
 // =============================================================================
 /// Generic implementation for arbitrary data types.

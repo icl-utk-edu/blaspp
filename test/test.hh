@@ -22,5 +22,6 @@ void test_swap();
 
 void test_gemv();
 void test_symv();
+void test_hemv();
 
 #endif        //  #ifndef TEST_HH
