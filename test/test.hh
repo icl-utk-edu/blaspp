@@ -30,5 +30,6 @@ void test_her();
 void test_syr2();
 void test_her2();
 void test_trmv();
+void test_trsv();
 
 #endif        //  #ifndef TEST_HH
