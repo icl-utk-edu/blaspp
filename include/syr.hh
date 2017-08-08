@@ -233,9 +233,9 @@ void syr(
     if (n == 0 || alpha == zero)
         return;
 
-    // for row major, swap upper <=> lower
+    // for row major, swap lower <=> upper
     if (layout == Layout::RowMajor) {
-        uplo = (uplo == Uplo::Upper ? Uplo::Lower : Uplo::Upper);
+        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
     }
 
     int64_t kx = (incx > 0 ? 0 : (-n + 1)*incx);

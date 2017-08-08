@@ -52,14 +52,13 @@ void gemv(
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
 
-    Op trans2 = trans;
     if (layout == Layout::RowMajor) {
         // A => A^T; A^T => A; A^H => A
         std::swap( m_, n_ );
-        trans2 = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
+        trans = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
     }
 
-    char trans_ = op2char( trans2 );
+    char trans_ = op2char( trans );
     f77_sgemv( &trans_, &m_, &n_,
                &alpha, A, &lda_, x, &incx_, &beta, y, &incy_ );
 }
@@ -105,14 +104,13 @@ void gemv(
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
 
-    Op trans2 = trans;
     if (layout == Layout::RowMajor) {
         // A => A^T; A^T => A; A^H => A
         std::swap( m_, n_ );
-        trans2 = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
+        trans = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
     }
 
-    char trans_ = op2char( trans2 );
+    char trans_ = op2char( trans );
     f77_dgemv( &trans_, &m_, &n_,
                &alpha, A, &lda_, x, &incx_, &beta, y, &incy_ );
 }
@@ -349,9 +347,6 @@ void gemv(
 ///         If incy < 0, uses elements of y in reverse order: y(n-1), ..., y(0).
 ///
 /// @ingroup blas2
-
-// =============================================================================
-/// Generic implementation for arbitrary data types.
 
 template< typename TA, typename TX, typename TY >
 void gemv(

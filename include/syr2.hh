@@ -259,9 +259,6 @@ void syr2(
 ///
 /// @ingroup blas2
 
-// =============================================================================
-/// Generic implementation for arbitrary data types.
-
 template< typename TA, typename TX, typename TY >
 void syr2(
     blas::Layout layout,
@@ -295,9 +292,9 @@ void syr2(
     if (n == 0 || alpha == zero)
         return;
 
-    // for row major, swap upper <=> lower
+    // for row major, swap lower <=> upper
     if (layout == Layout::RowMajor) {
-        uplo = (uplo == Uplo::Upper ? Uplo::Lower : Uplo::Upper);
+        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
     }
 
     int64_t kx = (incx > 0 ? 0 : (-n + 1)*incx);

@@ -257,9 +257,6 @@ void ger(
 ///
 /// @ingroup blas2
 
-// =============================================================================
-/// Generic implementation for arbitrary data types.
-
 template< typename TA, typename TX, typename TY >
 void ger(
     blas::Layout layout,

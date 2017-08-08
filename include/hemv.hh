@@ -82,8 +82,8 @@ void hemv(
     // if x2=x, then it isn't modified
     std::complex<float> *x2 = const_cast< std::complex<float>* >( x );
     if (layout == Layout::RowMajor) {
-        // swap upper <=> lower
-        uplo = (uplo == Uplo::Upper ? Uplo::Lower : Uplo::Upper);
+        // swap lower <=> upper
+        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
 
         // conjugate alpha, beta, x (in x2), and y (in-place)
         alpha = conj( alpha );
@@ -158,7 +158,7 @@ void hemv(
     // if x2=x, then it isn't modified
     std::complex<double> *x2 = const_cast< std::complex<double>* >( x );
     if (layout == Layout::RowMajor) {
-        uplo = (uplo == Uplo::Upper ? Uplo::Lower : Uplo::Upper);
+        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
 
         // conjugate alpha, beta, x (in x2), and y (in-place)
         alpha = conj( alpha );
@@ -239,9 +239,6 @@ void hemv(
 ///
 /// @ingroup blas2
 
-// =============================================================================
-/// Generic implementation for arbitrary data types.
-
 template< typename TA, typename TX, typename TY >
 void hemv(
     blas::Layout layout,
@@ -277,9 +274,9 @@ void hemv(
     if (n == 0 || (alpha == zero && beta == one))
         return;
 
-    // for row major, swap upper <=> lower
+    // for row major, swap lower <=> upper
     if (layout == Layout::RowMajor) {
-        uplo = (uplo == Uplo::Upper ? Uplo::Lower : Uplo::Upper);
+        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
     }
 
     int64_t kx = (incx > 0 ? 0 : (-n + 1)*incx);

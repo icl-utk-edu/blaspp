@@ -49,8 +49,8 @@ void symv(
     blas_int incy_ = (blas_int) incy;
 
     if (layout == Layout::RowMajor) {
-        // swap upper <=> lower
-        uplo = (uplo == Uplo::Upper ? Uplo::Lower : Uplo::Upper);
+        // swap lower <=> upper
+        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
     }
 
     char uplo_ = uplo2char( uplo );
@@ -96,8 +96,8 @@ void symv(
     blas_int incy_ = (blas_int) incy;
 
     if (layout == Layout::RowMajor) {
-        // swap upper <=> lower
-        uplo = (uplo == Uplo::Upper ? Uplo::Lower : Uplo::Upper);
+        // swap lower <=> upper
+        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
     }
 
     char uplo_ = uplo2char( uplo );
@@ -143,8 +143,8 @@ void symv(
     blas_int incy_ = (blas_int) incy;
 
     if (layout == Layout::RowMajor) {
-        // swap upper <=> lower
-        uplo = (uplo == Uplo::Upper ? Uplo::Lower : Uplo::Upper);
+        // swap lower <=> upper
+        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
     }
 
     char uplo_ = uplo2char( uplo );
@@ -190,8 +190,8 @@ void symv(
     blas_int incy_ = (blas_int) incy;
 
     if (layout == Layout::RowMajor) {
-        // swap upper <=> lower
-        uplo = (uplo == Uplo::Upper ? Uplo::Lower : Uplo::Upper);
+        // swap lower <=> upper
+        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
     }
 
     char uplo_ = uplo2char( uplo );
@@ -245,9 +245,6 @@ void symv(
 ///
 /// @ingroup blas2
 
-// =============================================================================
-/// Generic implementation for arbitrary data types.
-
 template< typename TA, typename TX, typename TY >
 void symv(
     blas::Layout layout,
@@ -283,9 +280,9 @@ void symv(
     if (n == 0 || (alpha == zero && beta == one))
         return;
 
-    // for row major, swap upper <=> lower
+    // for row major, swap lower <=> upper
     if (layout == Layout::RowMajor) {
-        uplo = (uplo == Uplo::Upper ? Uplo::Lower : Uplo::Upper);
+        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
     }
 
     int64_t kx = (incx > 0 ? 0 : (-n + 1)*incx);
@@ -364,6 +361,7 @@ void symv(
         // A is stored in lower triangle
         // form y += alpha * A * x
         if (incx == 1 && incy == 1) {
+            // unit stride
             for (int64_t j = 0; j < n; ++j) {
                 scalar_t tmp1 = alpha*x[j];
                 scalar_t tmp2 = zero;
@@ -375,6 +373,7 @@ void symv(
             }
         }
         else {
+            // non-unit stride
             int64_t jx = kx;
             int64_t jy = ky;
             for (int64_t j = 0; j < n; ++j) {

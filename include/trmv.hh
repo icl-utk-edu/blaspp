@@ -144,7 +144,7 @@ void trmv(
         // A => A^T; A^T => A; A^H => A
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
         trans = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
-        
+
         // conjugate x (in-place)
         int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
         for (int64_t i = 0; i < n; ++i) {
@@ -207,7 +207,7 @@ void trmv(
         // A => A^T; A^T => A; A^H => A
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
         trans = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
-        
+
         // conjugate x (in-place)
         int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
         for (int64_t i = 0; i < n; ++i) {
@@ -314,11 +314,11 @@ void trmv(
     if (n == 0)
         return;
 
-    // for row major, swap upper <=> lower and
+    // for row major, swap lower <=> upper and
     // A => A^T; A^T => A; A^H => A & conj
     bool doconj = false;
     if (layout == Layout::RowMajor) {
-        uplo = (uplo == Uplo::Upper ? Uplo::Lower : Uplo::Upper);
+        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
         if (trans == Op::NoTrans) {
             trans = Op::Trans;
         }
