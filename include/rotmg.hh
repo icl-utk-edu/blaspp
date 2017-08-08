@@ -47,16 +47,16 @@ void rotmg(
 ///
 /// @param[in,out] d1
 ///         TODO: describe.
-///         
+///
 /// @param[in,out] d2
 ///         TODO: describe.
-///         
+///
 /// @param[in,out] x1
 ///         TODO: describe.
-///         
+///
 /// @param[in] dy1
 ///         TODO: describe.
-///         
+///
 /// @param[in] param
 ///         Array of length 5 giving parameters of modified plane rotation.
 ///         TODO: describe.

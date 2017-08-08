@@ -126,13 +126,13 @@ asum(
     T const *x, int64_t incx )
 {
     printf( "template asum implementation\n" );
-    
+
     typedef typename traits<T>::norm_t norm_t;
-    
+
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail
-    
+
     norm_t result = 0;
     if (incx == 1) {
         // unit stride

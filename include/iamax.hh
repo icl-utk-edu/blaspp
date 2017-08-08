@@ -127,11 +127,11 @@ int64_t iamax(
     printf( "template iamax implementation\n" );
 
     typedef typename traits<T>::norm_t norm_t;
-    
+
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail
-    
+
     // todo: check NAN
     norm_t result = 0;
     int64_t index = 0;

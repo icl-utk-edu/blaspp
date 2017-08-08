@@ -7,7 +7,7 @@ void test_rotmg_work()
 {
     T d1=1, d2=2, x1=3, y1=4;
     T params[5] = { 0, 0, 0, 0, 0 };
-    
+
     blas::rotmg( &d1, &d2, &x1, y1, params );
 }
 

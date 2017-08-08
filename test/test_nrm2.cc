@@ -9,9 +9,9 @@ void test_nrm2_work()
     int64_t incx = 1;
     T *x = new T[n];
     typename blas::traits<T>::norm_t result;
-    
+
     result = blas::nrm2( n, x, incx );
-    
+
     delete[] x;
 }
 

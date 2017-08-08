@@ -11,10 +11,10 @@ void test_dot_work()
     T *x = new T[n];
     T *y = new T[n];
     T result;
-    
+
     result = blas::dot( n, x, incx, y, incy );
     result = blas::dotu( n, x, incx, y, incy );
-    
+
     delete[] x;
     delete[] y;
 }

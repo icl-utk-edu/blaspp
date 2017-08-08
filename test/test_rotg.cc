@@ -7,7 +7,7 @@ void test_rotg_work()
 {
     T a=1, b=2, s;
     typename blas::traits<T>::norm_t c;
-    
+
     blas::rotg( &a, &b, &c, &s );
 }
 

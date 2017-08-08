@@ -13,9 +13,9 @@ void test_rot_work()
     T alpha = 123;
     typename blas::traits<T>::norm_t c = 1;
     T s = 0;
-    
+
     blas::rot( n, x, incx, y, incy, c, s );
-    
+
     delete[] x;
     delete[] y;
 }

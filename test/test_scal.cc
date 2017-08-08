@@ -9,9 +9,9 @@ void test_scal_work()
     int64_t incx = 1;
     T *x = new T[n];
     T alpha = 123;
-    
+
     blas::scal( n, alpha, x, incx );
-    
+
     delete[] x;
 }
 

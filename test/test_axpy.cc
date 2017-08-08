@@ -11,9 +11,9 @@ void test_axpy_work()
     T *x = new T[n];
     T *y = new T[n];
     T alpha = 123;
-    
+
     blas::axpy( n, alpha, x, incx, y, incy );
-    
+
     delete[] x;
     delete[] y;
 }

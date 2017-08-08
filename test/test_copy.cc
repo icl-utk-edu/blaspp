@@ -10,9 +10,9 @@ void test_copy_work()
     int64_t incy = 1;
     T *x = new T[n];
     T *y = new T[n];
-    
+
     blas::copy( n, x, incx, y, incy );
-    
+
     delete[] x;
     delete[] y;
 }

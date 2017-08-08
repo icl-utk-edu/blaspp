@@ -11,9 +11,9 @@ void test_rotm_work()
     T *x = new T[n];
     T *y = new T[n];
     T param[5] = { 0, 0, 0, 0, 0 };
-    
+
     blas::rotm( n, x, incx, y, incy, param );
-    
+
     delete[] x;
     delete[] y;
 }

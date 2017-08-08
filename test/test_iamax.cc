@@ -9,9 +9,9 @@ void test_iamax_work()
     int64_t incx = 1;
     T *x = new T[n];
     int64_t result;
-    
+
     result = blas::iamax( n, x, incx );
-    
+
     delete[] x;
 }
 

@@ -9,9 +9,9 @@ void test_asum_work()
     int64_t incx = 1;
     T *x = new T[n];
     T result;
-    
+
     result = blas::asum( n, x, incx );
-    
+
     delete[] x;
 }
 

@@ -90,7 +90,7 @@ std::complex<float> dot(
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
-    
+
     #ifdef BLAS_COMPLEX_RETURN_ARGUMENT
         // Intel icc convention
         std::complex<float> value;
@@ -126,7 +126,7 @@ std::complex<double> dot(
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
-    
+
     #ifdef BLAS_COMPLEX_RETURN_ARGUMENT
         // Intel icc convention
         std::complex<float> value;
@@ -185,7 +185,7 @@ std::complex<float> dotu(
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
-    
+
     #ifdef BLAS_COMPLEX_RETURN_ARGUMENT
         // Intel icc convention
         std::complex<float> value;
@@ -221,7 +221,7 @@ std::complex<double> dotu(
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
-    
+
     #ifdef BLAS_COMPLEX_RETURN_ARGUMENT
         // Intel icc convention
         std::complex<float> value;
