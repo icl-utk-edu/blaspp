@@ -23,6 +23,8 @@ int main()
 
     // Level 2 BLAS
     test_gemv();
+    test_ger();
+    test_geru();
     test_symv();
     test_hemv();
 

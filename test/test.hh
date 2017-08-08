@@ -21,6 +21,8 @@ void test_swap();
 // Level 2 BLAS
 
 void test_gemv();
+void test_ger();
+void test_geru();
 void test_symv();
 void test_hemv();
 
