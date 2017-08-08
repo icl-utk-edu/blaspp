@@ -60,7 +60,7 @@ void geru(
     throw_if_( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(int64_t)) {
+    if (sizeof(int64_t) > sizeof(blas_int)) {
         throw_if_( m              > std::numeric_limits<blas_int>::max() );
         throw_if_( n              > std::numeric_limits<blas_int>::max() );
         throw_if_( lda            > std::numeric_limits<blas_int>::max() );
@@ -105,7 +105,7 @@ void geru(
     throw_if_( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(int64_t)) {
+    if (sizeof(int64_t) > sizeof(blas_int)) {
         throw_if_( m              > std::numeric_limits<blas_int>::max() );
         throw_if_( n              > std::numeric_limits<blas_int>::max() );
         throw_if_( lda            > std::numeric_limits<blas_int>::max() );
