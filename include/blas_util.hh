@@ -4,6 +4,8 @@
 #include <exception>
 #include <complex>
 
+#include <assert.h>
+
 namespace blas {
 
 // -----------------------------------------------------------------------------
@@ -12,6 +14,51 @@ enum class Op     : char { NoTrans  = 'N', Trans    = 'T', ConjTrans = 'C' };
 enum class Uplo   : char { Upper    = 'U', Lower    = 'L' };
 enum class Diag   : char { NonUnit  = 'N', Unit     = 'U' };
 enum class Side   : char { Left     = 'L', Right    = 'R' };
+
+// -----------------------------------------------------------------------------
+// Convert enum to LAPACK-style char.
+inline char layout2char( Layout layout ) { return char(layout); }
+inline char     op2char( Op     op     ) { return char(op);     }
+inline char   uplo2char( Uplo   uplo   ) { return char(uplo);   }
+inline char   diag2char( Diag   diag   ) { return char(diag);   }
+inline char   side2char( Side   side   ) { return char(side);   }
+
+// -----------------------------------------------------------------------------
+// Convert LAPACK-style char to enum.
+inline Layout char2layout( char layout )
+{
+    layout = (char) toupper( layout );
+    assert( layout == 'C' || layout == 'R' );
+    return Layout( layout );
+}
+
+inline Op char2op( char op )
+{
+    op = (char) toupper( op );
+    assert( op == 'N' || op == 'T' || op == 'C' );
+    return Op( op );
+}
+
+inline Uplo char2uplo( char uplo )
+{
+    uplo = (char) toupper( uplo );
+    assert( uplo == 'L' || uplo == 'U' );
+    return Uplo( uplo );
+}
+
+inline Diag char2diag( char diag )
+{
+    diag = (char) toupper( diag );
+    assert( diag == 'N' || diag == 'U' );
+    return Diag( diag );
+}
+
+inline Side char2side( char side )
+{
+    side = (char) toupper( side );
+    assert( side == 'L' || side == 'R' );
+    return Side( side );
+}
 
 
 // -----------------------------------------------------------------------------
@@ -26,6 +73,7 @@ private:
 
 
 // -----------------------------------------------------------------------------
+// Extend real, imag, conj to other datatypes.
 inline int    real( int    x ) { return x; }
 inline float  real( float  x ) { return x; }
 inline double real( double x ) { return x; }
