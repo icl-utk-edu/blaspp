@@ -27,6 +27,8 @@ int main()
     test_geru();
     test_symv();
     test_hemv();
+    test_syr();
+    test_her();
 
     return 0;
 }

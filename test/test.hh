@@ -25,5 +25,7 @@ void test_ger();
 void test_geru();
 void test_symv();
 void test_hemv();
+void test_syr();
+void test_her();
 
 #endif        //  #ifndef TEST_HH
