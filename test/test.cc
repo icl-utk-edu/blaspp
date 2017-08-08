@@ -31,6 +31,7 @@ int main()
     test_her();
     test_syr2();
     test_her2();
+    test_trmv();
 
     return 0;
 }
