@@ -168,8 +168,8 @@ void gemv(
 
         // conjugate alpha, beta, x (in x2), and y (in-place)
         if (trans == Op::ConjTrans) {
-            alpha = conj(alpha);
-            beta  = conj(beta);
+            alpha = conj( alpha );
+            beta  = conj( beta );
 
             int64_t lenx = (trans == Op::NoTrans ? m : n);
             x2 = new std::complex<float>[lenx];
@@ -194,7 +194,7 @@ void gemv(
                &alpha, A, &lda_, x2, &incx_, &beta, y, &incy_ );
 
     if (layout == Layout::RowMajor && trans == Op::ConjTrans) {
-        // y = conj(y)
+        // y = conj( y )
         int64_t leny = (trans == Op::NoTrans ? n : m);
         int64_t iy = (incy > 0 ? 0 : (-leny + 1)*incy);
         for (int64_t i = 0; i < leny; ++i) {
@@ -255,8 +255,8 @@ void gemv(
 
         // conjugate alpha, beta, x (in x2), and y (in-place)
         if (trans == Op::ConjTrans) {
-            alpha = conj(alpha);
-            beta  = conj(beta);
+            alpha = conj( alpha );
+            beta  = conj( beta );
 
             int64_t lenx = (trans == Op::NoTrans ? m : n);
             x2 = new std::complex<double>[lenx];
@@ -281,7 +281,7 @@ void gemv(
                &alpha, A, &lda_, x2, &incx_, &beta, y, &incy_ );
 
     if (layout == Layout::RowMajor && trans == Op::ConjTrans) {
-        // y = conj(y)
+        // y = conj( y )
         int64_t leny = (trans == Op::NoTrans ? n : m);
         int64_t iy = (incy > 0 ? 0 : (-leny + 1)*incy);
         for (int64_t i = 0; i < leny; ++i) {
@@ -292,12 +292,14 @@ void gemv(
 }
 
 // =============================================================================
-/// General matrix-vector multiply, y = alpha*op(A)*x + beta*y,
+/// General matrix-vector multiply,
+///     y = alpha*op(A)*x + beta*y,
 /// where op(A) is one of
 ///     op(A) = A    or
 ///     op(A) = A^T  or
 ///     op(A) = A^H,
-/// alpha and beta are scalars, x and y are vectors, and A is an m-by-n matrix.
+/// alpha and beta are scalars, x and y are vectors,
+/// and A is an m-by-n matrix.
 ///
 /// Generic implementation for arbitrary data types.
 ///
@@ -468,7 +470,7 @@ void gemv(
         }
     }
     else if (trans == Op::NoTrans && doconj) {
-        // form y += alpha * conj(A) * x
+        // form y += alpha * conj( A ) * x
         // this occurs for row-major A^H * x
         int64_t jx = kx;
         if (incy == 1) {
@@ -518,7 +520,7 @@ void gemv(
             }
         }
     }
-    else if (trans == Op::ConjTrans) {
+    else {
         // form y += alpha * A^H * x
         int64_t jy = ky;
         if (incx == 1) {
@@ -543,9 +545,6 @@ void gemv(
                 jy += incy;
             }
         }
-    }
-    else {
-        assert( false );
     }
 
     #undef A

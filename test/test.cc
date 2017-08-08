@@ -23,6 +23,7 @@ int main()
 
     // Level 2 BLAS
     test_gemv();
+    test_symv();
 
     return 0;
 }

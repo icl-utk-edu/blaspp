@@ -18,8 +18,9 @@ void test_scal();
 void test_swap();
 
 // -----------------------------------------------------------------------------
-// Level 1 BLAS
+// Level 2 BLAS
 
 void test_gemv();
+void test_symv();
 
 #endif        //  #ifndef TEST_HH
