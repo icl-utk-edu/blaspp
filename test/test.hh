@@ -27,5 +27,7 @@ void test_symv();
 void test_hemv();
 void test_syr();
 void test_her();
+void test_syr2();
+void test_her2();
 
 #endif        //  #ifndef TEST_HH

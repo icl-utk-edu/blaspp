@@ -680,6 +680,7 @@ void f77_zher(
     std::complex<double>       *A, blas_int const *lda );
 
 // -----------------------------------------------------------------------------
+// [cz]syr2 not available in standard BLAS or LAPACK; use [cz]syr2k with k=1.
 #define f77_ssyr2 FORTRAN_NAME( ssyr2, SSYR2 )
 extern "C"
 void f77_ssyr2(
@@ -699,26 +700,6 @@ void f77_dsyr2(
     double const *x, blas_int const *incx,
     double const *y, blas_int const *incy,
     double       *A, blas_int const *lda );
-
-#define f77_csyr2 FORTRAN_NAME( csyr2, CSYR2 )
-extern "C"
-void f77_csyr2(
-    char const *uplo,
-    blas_int const *n,
-    std::complex<float> const *alpha,
-    std::complex<float> const *x, blas_int const *incx,
-    std::complex<float> const *y, blas_int const *incy,
-    std::complex<float>       *A, blas_int const *lda );
-
-#define f77_zsyr2 FORTRAN_NAME( zsyr2, ZSYR2 )
-extern "C"
-void f77_zsyr2(
-    char const *uplo,
-    blas_int const *n,
-    std::complex<double> const *alpha,
-    std::complex<double> const *x, blas_int const *incx,
-    std::complex<double> const *y, blas_int const *incy,
-    std::complex<double>       *A, blas_int const *lda );
 
 // -----------------------------------------------------------------------------
 #define f77_cher2 FORTRAN_NAME( cher2, CHER2 )

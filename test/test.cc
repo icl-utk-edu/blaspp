@@ -29,6 +29,8 @@ int main()
     test_hemv();
     test_syr();
     test_her();
+    test_syr2();
+    test_her2();
 
     return 0;
 }
