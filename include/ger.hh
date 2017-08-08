@@ -295,7 +295,8 @@ void ger(
         return;
 
     if (layout == Layout::ColMajor) {
-        if (incx == 1 && incy == 1) {  // unit stride
+        if (incx == 1 && incy == 1) {
+            // unit stride
             for (int64_t j = 0; j < n; ++j) {
                 // note: NOT skipping if y[j] is zero, for consistent NAN handling
                 scalar_t tmp = alpha * conj( y[j] );
@@ -304,7 +305,8 @@ void ger(
                 }
             }
         }
-        else if (incx == 1) {  // x unit stride, y non-unit stride
+        else if (incx == 1) {
+            // x unit stride, y non-unit stride
             int64_t jy = (incy > 0 ? 0 : (-n + 1)*incy);
             for (int64_t j = 0; j < n; ++j) {
                 scalar_t tmp = alpha * conj( y[jy] );
@@ -314,7 +316,8 @@ void ger(
                 jy += incy;
             }
         }
-        else {  // x and y non-unit stride
+        else {
+            // x and y non-unit stride
             int64_t kx = (incx > 0 ? 0 : (-m + 1)*incx);
             int64_t jy = (incy > 0 ? 0 : (-n + 1)*incy);
             for (int64_t j = 0; j < n; ++j) {
@@ -328,8 +331,10 @@ void ger(
             }
         }
     }
-    else {  // RowMajor
-        if (incx == 1 && incy == 1) {  // unit stride
+    else {
+        // RowMajor
+        if (incx == 1 && incy == 1) {
+            // unit stride
             for (int64_t i = 0; i < m; ++i) {
                 // note: NOT skipping if x[i] is zero, for consistent NAN handling
                 scalar_t tmp = alpha * x[i];
@@ -338,7 +343,8 @@ void ger(
                 }
             }
         }
-        else if (incy == 1) {  // x non-unit stride, y unit stride
+        else if (incy == 1) {
+            // x non-unit stride, y unit stride
             int64_t ix = (incx > 0 ? 0 : (-m + 1)*incx);
             for (int64_t i = 0; i < m; ++i) {
                 scalar_t tmp = alpha * x[ix];
@@ -348,7 +354,8 @@ void ger(
                 ix += incx;
             }
         }
-        else {  // x and y non-unit stride
+        else {
+            // x and y non-unit stride
             int64_t ky = (incy > 0 ? 0 : (-n + 1)*incy);
             int64_t ix = (incx > 0 ? 0 : (-m + 1)*incx);
             for (int64_t i = 0; i < m; ++i) {

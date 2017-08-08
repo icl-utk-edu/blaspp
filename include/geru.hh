@@ -214,7 +214,8 @@ void geru(
         return;
     }
 
-    if (incx == 1 && incy == 1) {  // unit stride
+    if (incx == 1 && incy == 1) {
+        // unit stride
         for (int64_t j = 0; j < n; ++j) {
             // note: NOT skipping if y[j] is zero, for consistent NAN handling
             scalar_t tmp = alpha * y[j];
@@ -223,7 +224,8 @@ void geru(
             }
         }
     }
-    else if (incx == 1) {  // x unit stride, y non-unit stride
+    else if (incx == 1) {
+        // x unit stride, y non-unit stride
         int64_t jy = (incy > 0 ? 0 : (-n + 1)*incy);
         for (int64_t j = 0; j < n; ++j) {
             scalar_t tmp = alpha * y[jy];
@@ -233,7 +235,8 @@ void geru(
             jy += incy;
         }
     }
-    else {  // x and y non-unit stride
+    else {
+        // x and y non-unit stride
         int64_t kx = (incx > 0 ? 0 : (-m + 1)*incx);
         int64_t jy = (incy > 0 ? 0 : (-n + 1)*incy);
         for (int64_t j = 0; j < n; ++j) {
