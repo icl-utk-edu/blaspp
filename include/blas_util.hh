@@ -24,6 +24,54 @@ inline char   diag2char( Diag   diag   ) { return char(diag);   }
 inline char   side2char( Side   side   ) { return char(side);   }
 
 // -----------------------------------------------------------------------------
+// Convert enum to LAPACK-style string.
+inline const char* layout2str( Layout layout )
+{
+    switch (layout) {
+        case Layout::ColMajor: return "col";
+        case Layout::RowMajor: return "row";
+    }
+    return "";
+}
+
+inline const char* op2str( Op op )
+{
+    switch (op) {
+        case Op::NoTrans:   return "notrans";
+        case Op::Trans:     return "trans";
+        case Op::ConjTrans: return "conj";
+    }
+    return "";
+}
+
+inline const char* uplo2str( Uplo uplo )
+{
+    switch (uplo) {
+        case Uplo::Lower: return "lower";
+        case Uplo::Upper: return "upper";
+    }
+    return "";
+}
+
+inline const char* diag2str( Diag diag )
+{
+    switch (diag) {
+        case Diag::NonUnit: return "nonunit";
+        case Diag::Unit:    return "unit";
+    }
+    return "";
+}
+
+inline const char* side2str( Side side )
+{
+    switch (side) {
+        case Side::Left:  return "left";
+        case Side::Right: return "right";
+    }
+    return "";
+}
+
+// -----------------------------------------------------------------------------
 // Convert LAPACK-style char to enum.
 inline Layout char2layout( char layout )
 {
