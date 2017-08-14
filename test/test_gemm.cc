@@ -30,7 +30,7 @@ void test_gemm_work( Params& params, bool run )
     int64_t lda = Am;
     int64_t ldb = Bm;
     int64_t ldc = m;
-    
+
     T *A = new T[lda*An];
     T *B = new T[ldb*Bn];
     T *C = new T[ldc*n];

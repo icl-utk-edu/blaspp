@@ -3,7 +3,7 @@
 
 // -----------------------------------------------------------------------------
 template< typename T >
-void test_copy_work()
+void test_copy_work( Params& params, bool run )
 {
     int64_t n = 100;
     int64_t incx = 1;
@@ -18,12 +18,27 @@ void test_copy_work()
 }
 
 // -----------------------------------------------------------------------------
-void test_copy()
+void test_copy( Params& params, bool run )
 {
-    printf( "\n%s\n", __func__ );
-    test_copy_work< int >();
-    test_copy_work< float >();
-    test_copy_work< double >();
-    test_copy_work< std::complex<float> >();
-    test_copy_work< std::complex<double> >();
+    switch (params.datatype.value()) {
+        case libtest::DataType::Integer:
+            test_copy_work< int >( params, run );
+            break;
+
+        case libtest::DataType::Single:
+            test_copy_work< float >( params, run );
+            break;
+
+        case libtest::DataType::Double:
+            test_copy_work< double >( params, run );
+            break;
+
+        case libtest::DataType::SingleComplex:
+            test_copy_work< std::complex<float> >( params, run );
+            break;
+
+        case libtest::DataType::DoubleComplex:
+            test_copy_work< std::complex<double> >( params, run );
+            break;
+    }
 }

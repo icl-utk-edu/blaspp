@@ -3,7 +3,7 @@
 
 // -----------------------------------------------------------------------------
 template< typename T >
-void test_trsv_work()
+void test_trsv_work( Params& params, bool run )
 {
     int64_t n = 100;
     int64_t lda = n;
@@ -20,12 +20,28 @@ void test_trsv_work()
 }
 
 // -----------------------------------------------------------------------------
-void test_trsv()
+void test_trsv( Params& params, bool run )
 {
-    printf( "\n%s\n", __func__ );
-    test_trsv_work< int >();
-    test_trsv_work< float >();
-    test_trsv_work< double >();
-    test_trsv_work< std::complex<float> >();
-    test_trsv_work< std::complex<double> >();
+    switch (params.datatype.value()) {
+        case libtest::DataType::Integer:
+            //test_trsv_work< int >( params, run );
+            throw std::exception();
+            break;
+
+        case libtest::DataType::Single:
+            test_trsv_work< float >( params, run );
+            break;
+
+        case libtest::DataType::Double:
+            test_trsv_work< double >( params, run );
+            break;
+
+        case libtest::DataType::SingleComplex:
+            test_trsv_work< std::complex<float> >( params, run );
+            break;
+
+        case libtest::DataType::DoubleComplex:
+            test_trsv_work< std::complex<double> >( params, run );
+            break;
+    }
 }

@@ -1,25 +1,32 @@
-CXX = g++
-CXXFLAGS = -I../include -I/opt/intel/mkl/include -MMD
-CXXFLAGS += -DFORTRAN_LOWER
-CXXFLAGS += -DMKL_Complex8="std::complex<float>" \
-            -DMKL_Complex16="std::complex<double>"
-LIBS     = -framework Accelerate
-CXXFLAGS += -Wconversion
+pwd = $(shell pwd)
+
+CXX      = g++
+LDFLAGS  = -fPIC -fopenmp
+CXXFLAGS = -fPIC -fopenmp -MMD -Wall -pedantic -std=c++11
+CPPFLAGS = -I../../libtest -I../include -I/opt/intel/mkl/include
+           -DFORTRAN_LOWER \
+           -DMKL_Complex8="std::complex<float>" \
+           -DMKL_Complex16="std::complex<double>"
+LIBS     = -L../../libtest -Wl,-rpath,${pwd}/../../libtest -ltest \
+           -framework Accelerate
+
+CXXFLAGS += -Wno-unused-local-typedefs -Wno-unused-but-set-variable
+#CXXFLAGS += -Wconversion
 
 src := $(wildcard *.cc)
-obj := $(addsuffix .o, $(basename $(src)))
-dep := $(addsuffix .d, $(basename $(src)))
+obj := $(addsuffix .o, $(basename ${src}))
+dep := $(addsuffix .d, $(basename ${src}))
 
-test: $(obj)
-	$(CXX) $(LDFLAGS) -o $@ $^ $(LIBS)
+test: ${obj}
+	${CXX} ${LDFLAGS} -o $@ $^ ${LIBS}
 
 %.o: %.cc
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
+	${CXX} ${CXXFLAGS} ${CPPFLAGS} -c -o $@ $<
 
 %.i: %.cc
-	$(CXX) $(CXXFLAGS) -E -o $@ $<
+	${CXX} ${CXXFLAGS} ${CPPFLAGS} -E -o $@ $<
 
 clean:
 	-rm -f *.o *.d test
 
--include $(dep)
+-include ${dep}

@@ -3,7 +3,7 @@
 
 // -----------------------------------------------------------------------------
 template< typename T >
-void test_syr_work()
+void test_syr_work( Params& params, bool run )
 {
     int64_t n = 100;
     int64_t lda = n;
@@ -20,12 +20,27 @@ void test_syr_work()
 }
 
 // -----------------------------------------------------------------------------
-void test_syr()
+void test_syr( Params& params, bool run )
 {
-    printf( "\n%s\n", __func__ );
-    test_syr_work< int >();
-    test_syr_work< float >();
-    test_syr_work< double >();
-    test_syr_work< std::complex<float> >();
-    test_syr_work< std::complex<double> >();
+    switch (params.datatype.value()) {
+        case libtest::DataType::Integer:
+            test_syr_work< int >( params, run );
+            break;
+
+        case libtest::DataType::Single:
+            test_syr_work< float >( params, run );
+            break;
+
+        case libtest::DataType::Double:
+            test_syr_work< double >( params, run );
+            break;
+
+        case libtest::DataType::SingleComplex:
+            test_syr_work< std::complex<float> >( params, run );
+            break;
+
+        case libtest::DataType::DoubleComplex:
+            test_syr_work< std::complex<double> >( params, run );
+            break;
+    }
 }

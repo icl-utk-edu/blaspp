@@ -3,7 +3,7 @@
 
 // -----------------------------------------------------------------------------
 template< typename T >
-void test_her2_work()
+void test_her2_work( Params& params, bool run )
 {
     int64_t n = 100;
     int64_t lda = n;
@@ -23,12 +23,27 @@ void test_her2_work()
 }
 
 // -----------------------------------------------------------------------------
-void test_her2()
+void test_her2( Params& params, bool run )
 {
-    printf( "\n%s\n", __func__ );
-    test_her2_work< int >();
-    test_her2_work< float >();
-    test_her2_work< double >();
-    test_her2_work< std::complex<float> >();
-    test_her2_work< std::complex<double> >();
+    switch (params.datatype.value()) {
+        case libtest::DataType::Integer:
+            test_her2_work< int >( params, run );
+            break;
+
+        case libtest::DataType::Single:
+            test_her2_work< float >( params, run );
+            break;
+
+        case libtest::DataType::Double:
+            test_her2_work< double >( params, run );
+            break;
+
+        case libtest::DataType::SingleComplex:
+            test_her2_work< std::complex<float> >( params, run );
+            break;
+
+        case libtest::DataType::DoubleComplex:
+            test_her2_work< std::complex<double> >( params, run );
+            break;
+    }
 }

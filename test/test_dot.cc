@@ -3,7 +3,7 @@
 
 // -----------------------------------------------------------------------------
 template< typename T >
-void test_dot_work()
+void test_dot_work( Params& params, bool run )
 {
     int64_t n = 100;
     int64_t incx = 1;
@@ -20,12 +20,27 @@ void test_dot_work()
 }
 
 // -----------------------------------------------------------------------------
-void test_dot()
+void test_dot( Params& params, bool run )
 {
-    printf( "\n%s\n", __func__ );
-    test_dot_work< int >();
-    test_dot_work< float >();
-    test_dot_work< double >();
-    test_dot_work< std::complex<float> >();
-    test_dot_work< std::complex<double> >();
+    switch (params.datatype.value()) {
+        case libtest::DataType::Integer:
+            test_dot_work< int >( params, run );
+            break;
+
+        case libtest::DataType::Single:
+            test_dot_work< float >( params, run );
+            break;
+
+        case libtest::DataType::Double:
+            test_dot_work< double >( params, run );
+            break;
+
+        case libtest::DataType::SingleComplex:
+            test_dot_work< std::complex<float> >( params, run );
+            break;
+
+        case libtest::DataType::DoubleComplex:
+            test_dot_work< std::complex<double> >( params, run );
+            break;
+    }
 }

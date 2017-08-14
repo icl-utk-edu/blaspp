@@ -3,7 +3,7 @@
 
 // -----------------------------------------------------------------------------
 template< typename T >
-void test_ger_work()
+void test_ger_work( Params& params, bool run )
 {
     int64_t m = 200;
     int64_t lda = m;
@@ -24,12 +24,27 @@ void test_ger_work()
 }
 
 // -----------------------------------------------------------------------------
-void test_ger()
+void test_ger( Params& params, bool run )
 {
-    printf( "\n%s\n", __func__ );
-    test_ger_work< int >();
-    test_ger_work< float >();
-    test_ger_work< double >();
-    test_ger_work< std::complex<float> >();
-    test_ger_work< std::complex<double> >();
+    switch (params.datatype.value()) {
+        case libtest::DataType::Integer:
+            test_ger_work< int >( params, run );
+            break;
+
+        case libtest::DataType::Single:
+            test_ger_work< float >( params, run );
+            break;
+
+        case libtest::DataType::Double:
+            test_ger_work< double >( params, run );
+            break;
+
+        case libtest::DataType::SingleComplex:
+            test_ger_work< std::complex<float> >( params, run );
+            break;
+
+        case libtest::DataType::DoubleComplex:
+            test_ger_work< std::complex<double> >( params, run );
+            break;
+    }
 }

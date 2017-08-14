@@ -3,7 +3,7 @@
 
 // -----------------------------------------------------------------------------
 template< typename T >
-void test_hemv_work()
+void test_hemv_work( Params& params, bool run )
 {
     int64_t n = 100;
     int64_t lda = n;
@@ -24,12 +24,27 @@ void test_hemv_work()
 }
 
 // -----------------------------------------------------------------------------
-void test_hemv()
+void test_hemv( Params& params, bool run )
 {
-    printf( "\n%s\n", __func__ );
-    test_hemv_work< int >();
-    test_hemv_work< float >();
-    test_hemv_work< double >();
-    test_hemv_work< std::complex<float> >();
-    test_hemv_work< std::complex<double> >();
+    switch (params.datatype.value()) {
+        case libtest::DataType::Integer:
+            test_hemv_work< int >( params, run );
+            break;
+
+        case libtest::DataType::Single:
+            test_hemv_work< float >( params, run );
+            break;
+
+        case libtest::DataType::Double:
+            test_hemv_work< double >( params, run );
+            break;
+
+        case libtest::DataType::SingleComplex:
+            test_hemv_work< std::complex<float> >( params, run );
+            break;
+
+        case libtest::DataType::DoubleComplex:
+            test_hemv_work< std::complex<double> >( params, run );
+            break;
+    }
 }

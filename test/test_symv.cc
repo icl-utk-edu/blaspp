@@ -3,7 +3,7 @@
 
 // -----------------------------------------------------------------------------
 template< typename T >
-void test_symv_work()
+void test_symv_work( Params& params, bool run )
 {
     int64_t n = 100;
     int64_t lda = n;
@@ -24,12 +24,27 @@ void test_symv_work()
 }
 
 // -----------------------------------------------------------------------------
-void test_symv()
+void test_symv( Params& params, bool run )
 {
-    printf( "\n%s\n", __func__ );
-    test_symv_work< int >();
-    test_symv_work< float >();
-    test_symv_work< double >();
-    test_symv_work< std::complex<float> >();
-    test_symv_work< std::complex<double> >();
+    switch (params.datatype.value()) {
+        case libtest::DataType::Integer:
+            test_symv_work< int >( params, run );
+            break;
+
+        case libtest::DataType::Single:
+            test_symv_work< float >( params, run );
+            break;
+
+        case libtest::DataType::Double:
+            test_symv_work< double >( params, run );
+            break;
+
+        case libtest::DataType::SingleComplex:
+            test_symv_work< std::complex<float> >( params, run );
+            break;
+
+        case libtest::DataType::DoubleComplex:
+            test_symv_work< std::complex<double> >( params, run );
+            break;
+    }
 }

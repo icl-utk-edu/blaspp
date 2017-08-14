@@ -3,7 +3,7 @@
 
 // -----------------------------------------------------------------------------
 template< typename T >
-void test_rotm_work()
+void test_rotm_work( Params& params, bool run )
 {
     int64_t n = 100;
     int64_t incx = 1;
@@ -19,12 +19,30 @@ void test_rotm_work()
 }
 
 // -----------------------------------------------------------------------------
-void test_rotm()
+void test_rotm( Params& params, bool run )
 {
-    printf( "\n%s\n", __func__ );
-    //test_rotm_work< int >();  // todo: generic implementation
-    test_rotm_work< float >();
-    test_rotm_work< double >();
-    //test_rotm_work< std::complex<float> >();  // not available for complex
-    //test_rotm_work< std::complex<double> >();
+    switch (params.datatype.value()) {
+        case libtest::DataType::Integer:
+            //test_rotm_work< int >( params, run );  // todo: generic implementation
+            throw std::exception();
+            break;
+
+        case libtest::DataType::Single:
+            test_rotm_work< float >( params, run );
+            break;
+
+        case libtest::DataType::Double:
+            test_rotm_work< double >( params, run );
+            break;
+
+        case libtest::DataType::SingleComplex:
+            //test_rotm_work< std::complex<float> >( params, run );  // not available for complex
+            throw std::exception();
+            break;
+
+        case libtest::DataType::DoubleComplex:
+            //test_rotm_work< std::complex<double> >( params, run );
+            throw std::exception();
+            break;
+    }
 }
