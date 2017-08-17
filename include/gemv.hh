@@ -23,8 +23,6 @@ void gemv(
     float beta,
     float       *y, int64_t incy )
 {
-    printf( "sgemv implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -33,7 +31,10 @@ void gemv(
                trans != Op::ConjTrans );
     throw_if_( m < 0 );
     throw_if_( n < 0 );
-    throw_if_( lda < m );
+    if (layout == Layout::ColMajor)
+        throw_if_( lda < m );
+    else
+        throw_if_( lda < n );
     throw_if_( incx == 0 );
     throw_if_( incy == 0 );
 
@@ -75,8 +76,6 @@ void gemv(
     double beta,
     double       *y, int64_t incy )
 {
-    printf( "dgemv implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -85,7 +84,10 @@ void gemv(
                trans != Op::ConjTrans );
     throw_if_( m < 0 );
     throw_if_( n < 0 );
-    throw_if_( lda < m );
+    if (layout == Layout::ColMajor)
+        throw_if_( lda < m );
+    else
+        throw_if_( lda < n );
     throw_if_( incx == 0 );
     throw_if_( incy == 0 );
 
@@ -127,8 +129,6 @@ void gemv(
     std::complex<float> beta,
     std::complex<float>       *y, int64_t incy )
 {
-    printf( "cgemv implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -137,7 +137,10 @@ void gemv(
                trans != Op::ConjTrans );
     throw_if_( m < 0 );
     throw_if_( n < 0 );
-    throw_if_( lda < m );
+    if (layout == Layout::ColMajor)
+        throw_if_( lda < m );
+    else
+        throw_if_( lda < n );
     throw_if_( incx == 0 );
     throw_if_( incy == 0 );
 
@@ -160,31 +163,28 @@ void gemv(
     std::complex<float> *x2 = const_cast< std::complex<float>* >( x );
     Op trans2 = trans;
     if (layout == Layout::RowMajor) {
-        // A => A^T; A^T => A; A^H => A + conj
-        std::swap( m_, n_ );
-        trans2 = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
-
         // conjugate alpha, beta, x (in x2), and y (in-place)
         if (trans == Op::ConjTrans) {
             alpha = conj( alpha );
             beta  = conj( beta );
 
-            int64_t lenx = (trans == Op::NoTrans ? m : n);
-            x2 = new std::complex<float>[lenx];
-            int64_t ix = (incx > 0 ? 0 : (-lenx + 1)*incx);
-            for (int64_t i = 0; i < lenx; ++i) {
+            x2 = new std::complex<float>[m];
+            int64_t ix = (incx > 0 ? 0 : (-m + 1)*incx);
+            for (int64_t i = 0; i < m; ++i) {
                 x2[i] = conj( x[ix] );
                 ix += incx;
             }
             incx_ = 1;
 
-            int64_t leny = (trans == Op::NoTrans ? n : m);
-            int64_t iy = (incy > 0 ? 0 : (-leny + 1)*incy);
-            for (int64_t i = 0; i < leny; ++i) {
+            int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
+            for (int64_t i = 0; i < n; ++i) {
                 y[iy] = conj( y[iy] );
                 iy += incy;
             }
         }
+        // A => A^T; A^T => A; A^H => A + conj
+        std::swap( m_, n_ );
+        trans2 = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
     }
 
     char trans_ = op2char( trans2 );
@@ -193,12 +193,12 @@ void gemv(
 
     if (layout == Layout::RowMajor && trans == Op::ConjTrans) {
         // y = conj( y )
-        int64_t leny = (trans == Op::NoTrans ? n : m);
-        int64_t iy = (incy > 0 ? 0 : (-leny + 1)*incy);
-        for (int64_t i = 0; i < leny; ++i) {
+        int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
+        for (int64_t i = 0; i < n; ++i) {
             y[iy] = conj( y[iy] );
             iy += incy;
         }
+        delete[] x2;
     }
 }
 
@@ -214,8 +214,6 @@ void gemv(
     std::complex<double> beta,
     std::complex<double>       *y, int64_t incy )
 {
-    printf( "zgemv implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -224,7 +222,10 @@ void gemv(
                trans != Op::ConjTrans );
     throw_if_( m < 0 );
     throw_if_( n < 0 );
-    throw_if_( lda < m );
+    if (layout == Layout::ColMajor)
+        throw_if_( lda < m );
+    else
+        throw_if_( lda < n );
     throw_if_( incx == 0 );
     throw_if_( incy == 0 );
 
@@ -247,31 +248,28 @@ void gemv(
     std::complex<double> *x2 = const_cast< std::complex<double>* >( x );
     Op trans2 = trans;
     if (layout == Layout::RowMajor) {
-        // A => A^T; A^T => A; A^H => A + conj
-        std::swap( m_, n_ );
-        trans2 = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
-
         // conjugate alpha, beta, x (in x2), and y (in-place)
         if (trans == Op::ConjTrans) {
             alpha = conj( alpha );
             beta  = conj( beta );
 
-            int64_t lenx = (trans == Op::NoTrans ? m : n);
-            x2 = new std::complex<double>[lenx];
-            int64_t ix = (incx > 0 ? 0 : (-lenx + 1)*incx);
-            for (int64_t i = 0; i < lenx; ++i) {
+            x2 = new std::complex<double>[m];
+            int64_t ix = (incx > 0 ? 0 : (-m + 1)*incx);
+            for (int64_t i = 0; i < m; ++i) {
                 x2[i] = conj( x[ix] );
                 ix += incx;
             }
             incx_ = 1;
 
-            int64_t leny = (trans == Op::NoTrans ? n : m);
-            int64_t iy = (incy > 0 ? 0 : (-leny + 1)*incy);
-            for (int64_t i = 0; i < leny; ++i) {
+            int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
+            for (int64_t i = 0; i < n; ++i) {
                 y[iy] = conj( y[iy] );
                 iy += incy;
             }
         }
+        // A => A^T; A^T => A; A^H => A + conj
+        std::swap( m_, n_ );
+        trans2 = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
     }
 
     char trans_ = op2char( trans2 );
@@ -280,12 +278,12 @@ void gemv(
 
     if (layout == Layout::RowMajor && trans == Op::ConjTrans) {
         // y = conj( y )
-        int64_t leny = (trans == Op::NoTrans ? n : m);
-        int64_t iy = (incy > 0 ? 0 : (-leny + 1)*incy);
-        for (int64_t i = 0; i < leny; ++i) {
+        int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
+        for (int64_t i = 0; i < n; ++i) {
             y[iy] = conj( y[iy] );
             iy += incy;
         }
+        delete[] x2;
     }
 }
 
@@ -320,10 +318,14 @@ void gemv(
 ///         Scalar alpha. If alpha is zero, A and x are not accessed.
 ///
 /// @param[in] A
-///         The m-by-n matrix A, stored in an lda-by-n array.
+///         The m-by-n matrix A.
+///         ColMajor: stored in an lda-by-n array.
+///         RowMajor: stored in an m-by-lda array.
 ///
 /// @param[in] lda
-///         Leading dimension of A, i.e., column stride. lda >= max(1,m).
+///         Leading dimension of A.
+///         ColMajor: lda >= max(1,m).
+///         RowMajor: lda >= max(1,n).
 ///
 /// @param[in] x
 ///         If trans = Op::NoTrans,
@@ -359,8 +361,6 @@ void gemv(
     typename blas::traits3<TA, TX, TY>::scalar_t beta,
     TY *y, int64_t incy )
 {
-    printf( "template gemv implementation\n" );
-
     typedef typename blas::traits3<TA, TX, TY>::scalar_t scalar_t;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]
@@ -377,7 +377,10 @@ void gemv(
                trans != Op::ConjTrans );
     throw_if_( m < 0 );
     throw_if_( n < 0 );
-    throw_if_( lda < m );
+    if (layout == Layout::ColMajor)
+        throw_if_( lda < m );
+    else
+        throw_if_( lda < n );
     throw_if_( incx == 0 );
     throw_if_( incy == 0 );
 
@@ -400,8 +403,8 @@ void gemv(
         }
     }
 
-    int64_t leny = (trans == Op::NoTrans ? m : n);
     int64_t lenx = (trans == Op::NoTrans ? n : m);
+    int64_t leny = (trans == Op::NoTrans ? m : n);
     int64_t kx = (incx > 0 ? 0 : (-lenx + 1)*incx);
     int64_t ky = (incy > 0 ? 0 : (-leny + 1)*incy);
 

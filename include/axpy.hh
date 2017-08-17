@@ -22,8 +22,6 @@ void axpy(
     float const *x, int64_t incx,
     float       *y, int64_t incy )
 {
-    printf( "saxpy implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
@@ -50,8 +48,6 @@ void axpy(
     double const *x, int64_t incx,
     double       *y, int64_t incy )
 {
-    printf( "daxpy implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
@@ -78,8 +74,6 @@ void axpy(
     std::complex<float> const *x, int64_t incx,
     std::complex<float>       *y, int64_t incy )
 {
-    printf( "caxpy implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
@@ -106,8 +100,6 @@ void axpy(
     std::complex<double> const *x, int64_t incx,
     std::complex<double>       *y, int64_t incy )
 {
-    printf( "zaxpy implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
@@ -160,8 +152,6 @@ void axpy(
     TX const *x, int64_t incx,
     TY       *y, int64_t incy )
 {
-    printf( "template axpy implementation\n" );
-
     typedef typename blas::traits2<TX,TY>::scalar_t scalar_t;
 
     // check arguments

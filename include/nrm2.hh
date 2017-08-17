@@ -17,8 +17,6 @@ float nrm2(
     int64_t n,
     float const *x, int64_t incx )
 {
-    printf( "snrm2 implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail
@@ -40,8 +38,6 @@ double nrm2(
     int64_t n,
     double const *x, int64_t incx )
 {
-    printf( "dnrm2 implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail
@@ -63,8 +59,6 @@ float nrm2(
     int64_t n,
     std::complex<float> const *x, int64_t incx )
 {
-    printf( "cnrm2 implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail
@@ -86,8 +80,6 @@ double nrm2(
     int64_t n,
     std::complex<double> const *x, int64_t incx )
 {
-    printf( "znrm2 implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail
@@ -126,8 +118,6 @@ nrm2(
     int64_t n,
     T const * x, int64_t incx )
 {
-    printf( "template nrm2 implementation\n" );
-
     typedef typename traits<T>::norm_t norm_t;
 
     // check arguments

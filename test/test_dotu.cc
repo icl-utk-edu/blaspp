@@ -4,12 +4,13 @@
 #include "cblas.hh"
 #include "lapack.hh"
 #include "flops.hh"
+#include "check_gemm.hh"
 
-#include "swap.hh"
+#include "dot.hh"
 
 // -----------------------------------------------------------------------------
 template< typename TX, typename TY >
-void test_swap_work( Params& params, bool run )
+void test_dotu_work( Params& params, bool run )
 {
     using namespace blas;
     typedef typename traits2< TX, TY >::scalar_t scalar_t;
@@ -35,99 +36,96 @@ void test_swap_work( Params& params, bool run )
 
     size_t size_x = (n - 1) * abs(incx) + 1;
     size_t size_y = (n - 1) * abs(incy) + 1;
-    TX* x    = new TX[ size_x ];
-    TX* xref = new TX[ size_x ];
-    TY* y    = new TY[ size_y ];
-    TY* yref = new TY[ size_y ];
+    TX* x = new TX[ size_x ];
+    TY* y = new TY[ size_y ];
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
     lapack_larnv( idist, iseed, size_x, x );
     lapack_larnv( idist, iseed, size_y, y );
-    cblas_copy( n, x, incx, xref, incx );
-    cblas_copy( n, y, incy, yref, incy );
+
+    // norms for error check
+    norm_t Xnorm = cblas_nrm2( n, x, abs(incx) );
+    norm_t Ynorm = cblas_nrm2( n, y, abs(incy) );
 
     if (verbose >= 1) {
-        printf( "x n=%5lld, inc=%5lld, size=%5lld\n"
-                "y n=%5lld, inc=%5lld, size=%5lld\n",
-                (lld) n, (lld) incx, (lld) size_x,
-                (lld) n, (lld) incy, (lld) size_y );
+        printf( "x n=%5lld, inc=%5lld, size=%5lld, norm %.2e\n"
+                "y n=%5lld, inc=%5lld, size=%5lld, norm %.2e\n",
+                (lld) n, (lld) incx, (lld) size_x, Xnorm,
+                (lld) n, (lld) incy, (lld) size_y, Ynorm );
     }
     if (verbose >= 2) {
-        printf( "x    = " ); //print_vector( n, x, abs(incx) );
-        printf( "y    = " ); //print_vector( n, y, abs(incy) );
+        printf( "x = " ); //print_vector( n, x, abs(incx) );
+        printf( "y = " ); //print_vector( n, y, abs(incy) );
     }
 
     // run test
     libtest::flush_cache( params.cache.value() );
     double time = omp_get_wtime();
-    blas::swap( n, x, incx, y, incy );
+    scalar_t result = blas::dotu( n, x, incx, y, incy );
     time = omp_get_wtime() - time;
 
-    double gflop = gflop_swap( n, x );
+    double gflop = gflop_dot( n, x );
     params.time.value()   = time * 1000;  // msec
     params.gflops.value() = gflop / time;
 
-    if (verbose >= 2) {
-        printf( "x2   = " ); //print_vector( n, x, abs(incx) );
-        printf( "y2   = " ); //print_vector( n, y, abs(incy) );
+    if (verbose >= 1) {
+        printf( "dotu = %.4f + %.4fi\n", real(result), imag(result) );
     }
 
-    if (params.check.value() == 'y') {
+    if (params.ref.value() == 'y' || params.check.value() == 'y') {
         // run reference
         libtest::flush_cache( params.cache.value() );
         time = omp_get_wtime();
-        cblas_swap( n, xref, incx, yref, incy );
+        scalar_t ref = cblas_dotu( n, x, incx, y, incy );
         time = omp_get_wtime() - time;
-        if (verbose >= 2) {
-            printf( "xref = " ); //print_vector( n, xref, abs(incx) );
-            printf( "yref = " ); //print_vector( n, yref, abs(incy) );
-        }
 
         params.ref_time.value()   = time * 1000;  // msec
         params.ref_gflops.value() = gflop / time;
 
-        // error = ||xref - x|| + ||yref - y||
-        cblas_axpy( n, -1.0, x, incx, xref, incx );
-        cblas_axpy( n, -1.0, y, incy, yref, incy );
-        norm_t error = cblas_nrm2( n, xref, abs(incx) )
-                     + cblas_nrm2( n, yref, abs(incy) );
-        params.error.value() = error;
+        if (verbose >= 1) {
+            printf( "ref = %.4f + %.4fi\n", real(ref), imag(ref) );
+        }
 
-        // swap must be exact!
-        params.okay.value() = (error == 0);
+        // check error compared to reference
+        // treat result as 1 x 1 matrix; k = n is reduction dimension
+        // alpha=1, beta=0, Cnorm=0
+        norm_t error;
+        int64_t okay;
+        check_gemm( 1, 1, n, scalar_t(1), scalar_t(0), Xnorm, Ynorm, norm_t(0),
+                    &ref, 1, &result, 1, &error, &okay );
+        params.error.value() = error;
+        params.okay.value() = okay;
     }
 
     delete[] x;
     delete[] y;
-    delete[] xref;
-    delete[] yref;
 }
 
 // -----------------------------------------------------------------------------
-void test_swap( Params& params, bool run )
+void test_dotu( Params& params, bool run )
 {
     switch (params.datatype.value()) {
         case libtest::DataType::Integer:
-            //test_swap_work< int64_t >( params, run );
+            //test_dotu_work< int64_t >( params, run );
             throw std::exception();
             break;
 
         case libtest::DataType::Single:
-            test_swap_work< float, float >( params, run );
+            test_dotu_work< float, float >( params, run );
             break;
 
         case libtest::DataType::Double:
-            test_swap_work< double, double >( params, run );
+            test_dotu_work< double, double >( params, run );
             break;
 
         case libtest::DataType::SingleComplex:
-            test_swap_work< std::complex<float>, std::complex<float> >
+            test_dotu_work< std::complex<float>, std::complex<float> >
                 ( params, run );
             break;
 
         case libtest::DataType::DoubleComplex:
-            test_swap_work< std::complex<double>, std::complex<double> >
+            test_dotu_work< std::complex<double>, std::complex<double> >
                 ( params, run );
             break;
     }

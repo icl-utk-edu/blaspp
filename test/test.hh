@@ -2,7 +2,7 @@
 #define TEST_HH
 
 #include "libtest.hh"
-#include "blas.hh"
+#include "blas_util.hh"
 
 // -----------------------------------------------------------------------------
 class Params: public libtest::ParamsBase
@@ -97,5 +97,12 @@ void test_syr2k ( Params& params, bool run );
 void test_syrk  ( Params& params, bool run );
 void test_trmm  ( Params& params, bool run );
 void test_trsm  ( Params& params, bool run );
+
+// -----------------------------------------------------------------------------
+template< typename T >
+inline T roundup( T x, T y )
+{
+    return T( (x + y - 1) / y ) * y;
+}
 
 #endif  //  #ifndef TEST_HH

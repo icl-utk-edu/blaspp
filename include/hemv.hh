@@ -54,8 +54,6 @@ void hemv(
     std::complex<float> beta,
     std::complex<float>       *y, int64_t incy )
 {
-    printf( "chemv implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -130,8 +128,6 @@ void hemv(
     std::complex<double> beta,
     std::complex<double>       *y, int64_t incy )
 {
-    printf( "zhemv implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -250,8 +246,6 @@ void hemv(
     typename blas::traits3<TA, TX, TY>::scalar_t beta,
     TY *y, int64_t incy )
 {
-    printf( "template hemv implementation\n" );
-
     typedef typename blas::traits3<TA, TX, TY>::scalar_t scalar_t;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]

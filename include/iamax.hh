@@ -17,8 +17,6 @@ int64_t iamax(
     int64_t n,
     float const *x, int64_t incx )
 {
-    printf( "isamax implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail
@@ -31,7 +29,7 @@ int64_t iamax(
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
-    return f77_isamax( &n_, x, &incx_ );
+    return f77_isamax( &n_, x, &incx_ ) - 1;
 }
 
 // -----------------------------------------------------------------------------
@@ -40,8 +38,6 @@ int64_t iamax(
     int64_t n,
     double const *x, int64_t incx )
 {
-    printf( "idamax implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail
@@ -54,7 +50,7 @@ int64_t iamax(
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
-    return f77_idamax( &n_, x, &incx_ );
+    return f77_idamax( &n_, x, &incx_ ) - 1;
 }
 
 // -----------------------------------------------------------------------------
@@ -63,8 +59,6 @@ int64_t iamax(
     int64_t n,
     std::complex<float> const *x, int64_t incx )
 {
-    printf( "icamax implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail
@@ -77,7 +71,7 @@ int64_t iamax(
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
-    return f77_icamax( &n_, x, &incx_ );
+    return f77_icamax( &n_, x, &incx_ ) - 1;
 }
 
 // -----------------------------------------------------------------------------
@@ -86,8 +80,6 @@ int64_t iamax(
     int64_t n,
     std::complex<double> const *x, int64_t incx )
 {
-    printf( "izamax implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail
@@ -100,11 +92,12 @@ int64_t iamax(
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
-    return f77_izamax( &n_, x, &incx_ );
+    return f77_izamax( &n_, x, &incx_ ) - 1;
 }
 
 // =============================================================================
-/// @return Index of infinity-norm of vector, argmax_i |Re(x_i)| + |Im(x_i)|.
+/// @return Index of infinity-norm of vector, argmax_i |Re(x_i)| + |Im(x_i)|,
+///         for i = 0, ..., n-1. Returns -1 if n = 0.
 ///
 /// Generic implementation for arbitrary data types.
 ///
@@ -124,8 +117,6 @@ int64_t iamax(
     int64_t n,
     T const *x, int64_t incx )
 {
-    printf( "template iamax implementation\n" );
-
     typedef typename traits<T>::norm_t norm_t;
 
     // check arguments
@@ -133,8 +124,8 @@ int64_t iamax(
     throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail
 
     // todo: check NAN
-    norm_t result = 0;
-    int64_t index = 0;
+    norm_t result = -1;
+    int64_t index = -1;
     if (incx == 1) {
         // unit stride
         for (int64_t i = 0; i < n; ++i) {

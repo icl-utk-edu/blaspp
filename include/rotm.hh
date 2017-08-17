@@ -21,8 +21,6 @@ void rotm(
     float *y, int64_t incy,
     float const param[5] )
 {
-    printf( "srotm implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
@@ -49,8 +47,6 @@ void rotm(
     double *y, int64_t incy,
     double const param[5] )
 {
-    printf( "drotm implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
@@ -105,8 +101,6 @@ void rotm(
     TY *y, int64_t incy,
     typename blas::traits2<TX,TY>::scalar_t const param[5] )
 {
-    printf( "template rotm implementation\n" );
-
     typedef typename blas::traits2<TX,TY>::scalar_t scalar_t;
 
     // check arguments

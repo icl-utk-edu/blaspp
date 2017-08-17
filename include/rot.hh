@@ -21,8 +21,6 @@ void rot(
     float c,
     float s )
 {
-    printf( "srot implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
@@ -50,8 +48,6 @@ void rot(
     double c,
     double s )
 {
-    printf( "drot implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
@@ -71,6 +67,63 @@ void rot(
 }
 
 // -----------------------------------------------------------------------------
+// real cosine, real sine
+inline
+void rot(
+    int64_t n,
+    std::complex<float> *x, int64_t incx,
+    std::complex<float> *y, int64_t incy,
+    float c,
+    float s )
+{
+    // check arguments
+    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
+    throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
+    throw_if_( incy == 0 );
+
+    // check for overflow in native BLAS integer type, if smaller than int64_t
+    if (sizeof(int64_t) > sizeof(blas_int)) {
+        throw_if_( n              > std::numeric_limits<blas_int>::max() );
+        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+    }
+
+    blas_int n_    = (blas_int) n;
+    blas_int incx_ = (blas_int) incx;
+    blas_int incy_ = (blas_int) incy;
+    f77_csrot( &n_, x, &incx_, y, &incy_, &c, &s );
+}
+
+// -----------------------------------------------------------------------------
+// real cosine, real sine
+inline
+void rot(
+    int64_t n,
+    std::complex<double> *x, int64_t incx,
+    std::complex<double> *y, int64_t incy,
+    double c,
+    double s )
+{
+    // check arguments
+    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
+    throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
+    throw_if_( incy == 0 );
+
+    // check for overflow in native BLAS integer type, if smaller than int64_t
+    if (sizeof(int64_t) > sizeof(blas_int)) {
+        throw_if_( n              > std::numeric_limits<blas_int>::max() );
+        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+    }
+
+    blas_int n_    = (blas_int) n;
+    blas_int incx_ = (blas_int) incx;
+    blas_int incy_ = (blas_int) incy;
+    f77_zdrot( &n_, x, &incx_, y, &incy_, &c, &s );
+}
+
+// -----------------------------------------------------------------------------
+// real cosine, complex sine
 inline
 void rot(
     int64_t n,
@@ -79,8 +132,6 @@ void rot(
     float c,
     std::complex<float> s )
 {
-    printf( "crot implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
@@ -100,6 +151,7 @@ void rot(
 }
 
 // -----------------------------------------------------------------------------
+// real cosine, complex sine
 inline
 void rot(
     int64_t n,
@@ -108,8 +160,6 @@ void rot(
     double c,
     std::complex<double> s )
 {
-    printf( "zrot implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
@@ -167,8 +217,6 @@ void rot(
     typename blas::traits2<TX,TY>::norm_t   c,
     typename blas::traits2<TX,TY>::scalar_t s )
 {
-    printf( "template rot implementation\n" );
-
     typedef typename blas::traits2<TX,TY>::scalar_t scalar_t;
 
     // check arguments

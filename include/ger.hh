@@ -21,16 +21,17 @@ void ger(
     float const *y, int64_t incy,
     float       *A, int64_t lda )
 {
-    printf( "sger implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
     throw_if_( m < 0 );
     throw_if_( n < 0 );
-    throw_if_( lda < m );
     throw_if_( incx == 0 );
     throw_if_( incy == 0 );
+    if (layout == Layout::ColMajor)
+        throw_if_( lda < m );
+    else
+        throw_if_( lda < n );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
@@ -66,16 +67,17 @@ void ger(
     double const *y, int64_t incy,
     double       *A, int64_t lda )
 {
-    printf( "dger implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
     throw_if_( m < 0 );
     throw_if_( n < 0 );
-    throw_if_( lda < m );
     throw_if_( incx == 0 );
     throw_if_( incy == 0 );
+    if (layout == Layout::ColMajor)
+        throw_if_( lda < m );
+    else
+        throw_if_( lda < n );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
@@ -111,16 +113,17 @@ void ger(
     std::complex<float> const *y, int64_t incy,
     std::complex<float>       *A, int64_t lda )
 {
-    printf( "cgerc implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
     throw_if_( m < 0 );
     throw_if_( n < 0 );
-    throw_if_( lda < m );
     throw_if_( incx == 0 );
     throw_if_( incy == 0 );
+    if (layout == Layout::ColMajor)
+        throw_if_( lda < m );
+    else
+        throw_if_( lda < n );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
@@ -145,9 +148,10 @@ void ger(
             y2[i] = conj( y[iy] );
             iy += incy;
         }
+        incy_ = 1;
 
-        // swap m <=> n, x <=> y
-        f77_cgerc( &n_, &m_,
+        // swap m <=> n, x <=> y, call geru
+        f77_cgeru( &n_, &m_,
                    &alpha, y2, &incy_, x, &incx_, A, &lda_ );
 
         delete[] y2;
@@ -168,16 +172,17 @@ void ger(
     std::complex<double> const *y, int64_t incy,
     std::complex<double>       *A, int64_t lda )
 {
-    printf( "zgerc implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
     throw_if_( m < 0 );
     throw_if_( n < 0 );
-    throw_if_( lda < m );
     throw_if_( incx == 0 );
     throw_if_( incy == 0 );
+    if (layout == Layout::ColMajor)
+        throw_if_( lda < m );
+    else
+        throw_if_( lda < n );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
@@ -202,9 +207,10 @@ void ger(
             y2[i] = conj( y[iy] );
             iy += incy;
         }
+        incy_ = 1;
 
-        // swap m <=> n, x <=> y
-        f77_zgerc( &n_, &m_,
+        // swap m <=> n, x <=> y, call geru
+        f77_zgeru( &n_, &m_,
                    &alpha, y2, &incy_, x, &incx_, A, &lda_ );
 
         delete[] y2;
@@ -249,11 +255,15 @@ void ger(
 ///         Stride between elements of y. incy must not be zero.
 ///         If incy < 0, uses elements of y in reverse order: y(n-1), ..., y(0).
 ///
-/// @param[in,out] A
-///         The m-by-n matrix A, stored in an lda-by-n array.
+/// @param[in] A
+///         The m-by-n matrix A.
+///         ColMajor: stored in an lda-by-n array.
+///         RowMajor: stored in an m-by-lda array.
 ///
 /// @param[in] lda
-///         Leading dimension of A, i.e., column stride. lda >= max(1,m).
+///         Leading dimension of A.
+///         ColMajor: lda >= max(1,m).
+///         RowMajor: lda >= max(1,n).
 ///
 /// @ingroup blas2
 
@@ -266,8 +276,6 @@ void ger(
     TY const *y, int64_t incy,
     TA *A, int64_t lda )
 {
-    printf( "template ger implementation\n" );
-
     typedef typename blas::traits3<TA, TX, TY>::scalar_t scalar_t;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]

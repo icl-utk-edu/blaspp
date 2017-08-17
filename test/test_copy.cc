@@ -1,20 +1,103 @@
-#include "copy.hh"
+#include <omp.h>
+
 #include "test.hh"
+#include "cblas.hh"
+#include "lapack.hh"
+#include "flops.hh"
+#include "check_gemm.hh"
+
+#include "copy.hh"
 
 // -----------------------------------------------------------------------------
-template< typename T >
+template< typename TX, typename TY >
 void test_copy_work( Params& params, bool run )
 {
-    int64_t n = 100;
-    int64_t incx = 1;
-    int64_t incy = 1;
-    T *x = new T[n];
-    T *y = new T[n];
+    using namespace blas;
+    typedef typename traits2< TX, TY >::scalar_t scalar_t;
+    typedef typename traits< scalar_t >::norm_t norm_t;
+    typedef long long lld;
 
+    // get & mark input values
+    int64_t n       = params.dim.n();
+    int64_t incx    = params.incx.value();
+    int64_t incy    = params.incy.value();
+    int64_t verbose = params.verbose.value();
+
+    // mark non-standard output values
+    params.ref_time.value();
+    params.ref_gflops.value();
+
+    // adjust header names
+    params.time.name( "SLATE\ntime (ms)" );
+    params.ref_time.name( "CBLAS\ntime (ms)" );
+
+    if ( ! run)
+        return;
+
+    // setup
+    size_t size_x = (n - 1) * abs(incx) + 1;
+    size_t size_y = (n - 1) * abs(incy) + 1;
+    TX* x    = new TX[ size_x ];
+    TY* y    = new TY[ size_y ];
+    TY* yref = new TY[ size_y ];
+
+    int64_t idist = 1;
+    int iseed[4] = { 0, 0, 0, 1 };
+    lapack_larnv( idist, iseed, size_x, x );
+    lapack_larnv( idist, iseed, size_y, y );
+    lapack_larnv( idist, iseed, size_y, yref );
+
+    if (verbose >= 1) {
+        printf( "x n=%5lld, inc=%5lld, size=%5lld\n"
+                "y n=%5lld, inc=%5lld, size=%5lld\n",
+                (lld) n, (lld) incx, (lld) size_x,
+                (lld) n, (lld) incy, (lld) size_y );
+    }
+    if (verbose >= 2) {
+        printf( "x    = " ); //print_vector( n, x, abs(incx) );
+        printf( "y    = " ); //print_vector( n, y, abs(incy) );
+    }
+
+    // run test
+    libtest::flush_cache( params.cache.value() );
+    double time = omp_get_wtime();
     blas::copy( n, x, incx, y, incy );
+    time = omp_get_wtime() - time;
+
+    double gflop = gflop_copy( n, x );
+    params.time.value()   = time * 1000;  // msec
+    params.gflops.value() = gflop / time;
+
+    if (verbose >= 2) {
+        printf( "y2   = " ); //print_vector( n, y, abs(incy) );
+    }
+
+    if (params.check.value() == 'y') {
+        // run reference
+        libtest::flush_cache( params.cache.value() );
+        time = omp_get_wtime();
+        cblas_copy( n, x, incx, yref, incy );
+        time = omp_get_wtime() - time;
+
+        params.ref_time.value()   = time * 1000;  // msec
+        params.ref_gflops.value() = gflop / time;
+
+        if (verbose >= 2) {
+            printf( "yref = " ); //print_vector( n, yref, abs(incy) );
+        }
+
+        // error = ||yref - y||
+        cblas_axpy( n, -1.0, y, incy, yref, incy );
+        norm_t error = cblas_nrm2( n, yref, abs(incy) );
+        params.error.value() = error;
+
+        // copy must be exact!
+        params.okay.value() = (error == 0);
+    }
 
     delete[] x;
     delete[] y;
+    delete[] yref;
 }
 
 // -----------------------------------------------------------------------------
@@ -22,23 +105,26 @@ void test_copy( Params& params, bool run )
 {
     switch (params.datatype.value()) {
         case libtest::DataType::Integer:
-            test_copy_work< int >( params, run );
+            //test_copy_work< int64_t >( params, run );
+            throw std::exception();
             break;
 
         case libtest::DataType::Single:
-            test_copy_work< float >( params, run );
+            test_copy_work< float, float >( params, run );
             break;
 
         case libtest::DataType::Double:
-            test_copy_work< double >( params, run );
+            test_copy_work< double, double >( params, run );
             break;
 
         case libtest::DataType::SingleComplex:
-            test_copy_work< std::complex<float> >( params, run );
+            test_copy_work< std::complex<float>, std::complex<float> >
+                ( params, run );
             break;
 
         case libtest::DataType::DoubleComplex:
-            test_copy_work< std::complex<double> >( params, run );
+            test_copy_work< std::complex<double>, std::complex<double> >
+                ( params, run );
             break;
     }
 }

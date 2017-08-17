@@ -20,7 +20,6 @@ void rotg(
     float *c,
     float *s )
 {
-    printf( "srotg implementation\n" );
     f77_srotg( a, b, c, s );
 }
 
@@ -32,7 +31,6 @@ void rotg(
     double *c,
     double *s )
 {
-    printf( "drotg implementation\n" );
     f77_drotg( a, b, c, s );
 }
 
@@ -44,7 +42,6 @@ void rotg(
     float *c,
     std::complex<float> *s )
 {
-    printf( "crotg implementation\n" );
     f77_crotg( a, b, c, s );
 }
 
@@ -56,7 +53,6 @@ void rotg(
     double *c,
     std::complex<double> *s )
 {
-    printf( "zrotg implementation\n" );
     f77_zrotg( a, b, c, s );
 }
 
@@ -87,8 +83,6 @@ void rotg(
     typename blas::traits2<TX,TY>::norm_t   c,
     typename blas::traits2<TX,TY>::scalar_t s )
 {
-    printf( "template rotg implementation\n" );
-
     assert( false );
 }
 

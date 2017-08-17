@@ -18,8 +18,6 @@ void scal(
     float alpha,
     float *x, int64_t incx )
 {
-    printf( "sscal implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail
@@ -42,8 +40,6 @@ void scal(
     double alpha,
     double *x, int64_t incx )
 {
-    printf( "dscal implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail
@@ -66,8 +62,6 @@ void scal(
     std::complex<float> alpha,
     std::complex<float> *x, int64_t incx )
 {
-    printf( "cscal implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail
@@ -90,8 +84,6 @@ void scal(
     std::complex<double> alpha,
     std::complex<double> *x, int64_t incx )
 {
-    printf( "zscal implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
@@ -132,8 +124,6 @@ void scal(
     T alpha,
     T* x, int64_t incx )
 {
-    printf( "template scal implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail

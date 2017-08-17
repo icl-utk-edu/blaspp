@@ -23,8 +23,6 @@ void symv(
     float beta,
     float       *y, int64_t incy )
 {
-    printf( "ssymv implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -70,8 +68,6 @@ void symv(
     double beta,
     double       *y, int64_t incy )
 {
-    printf( "dsymv implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -117,8 +113,6 @@ void symv(
     std::complex<float> beta,
     std::complex<float>       *y, int64_t incy )
 {
-    printf( "csymv implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -164,8 +158,6 @@ void symv(
     std::complex<double> beta,
     std::complex<double>       *y, int64_t incy )
 {
-    printf( "zsymv implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -256,8 +248,6 @@ void symv(
     typename blas::traits3<TA, TX, TY>::scalar_t beta,
     TY *y, int64_t incy )
 {
-    printf( "template symv implementation\n" );
-
     typedef typename blas::traits3<TA, TX, TY>::scalar_t scalar_t;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]

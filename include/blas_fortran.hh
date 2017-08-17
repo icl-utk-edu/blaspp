@@ -361,6 +361,24 @@ void f77_drot(
     double const *c,
     double const *s );
 
+#define f77_csrot FORTRAN_NAME( csrot, CSROT )
+extern "C"
+void f77_csrot(
+    blas_int const *n,
+    std::complex<float> *x, blas_int const *incx,
+    std::complex<float> *y, blas_int const *incy,
+    float const *c,
+    float const *s );
+
+#define f77_zdrot FORTRAN_NAME( zdrot, ZDROT )
+extern "C"
+void f77_zdrot(
+    blas_int const *n,
+    std::complex<double> *x, blas_int const *incx,
+    std::complex<double> *y, blas_int const *incy,
+    double const *c,
+    double const *s );
+
 #define f77_crot FORTRAN_NAME( crot, CROT )
 extern "C"
 void f77_crot(

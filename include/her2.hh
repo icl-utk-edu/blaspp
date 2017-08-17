@@ -51,8 +51,6 @@ void her2(
     std::complex<float> const *y, int64_t incy,
     std::complex<float>       *A, int64_t lda )
 {
-    printf( "cher2 implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -94,8 +92,6 @@ void her2(
     std::complex<double> const *y, int64_t incy,
     std::complex<double>       *A, int64_t lda )
 {
-    printf( "zher2 implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -178,8 +174,6 @@ void her2(
     TY const *y, int64_t incy,
     TA *A, int64_t lda )
 {
-    printf( "template her2 implementation\n" );
-
     typedef typename blas::traits3<TA, TX, TY>::scalar_t scalar_t;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]

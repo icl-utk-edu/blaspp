@@ -22,7 +22,6 @@ void rotmg(
     float  y1,
     float  param[5] )
 {
-    printf( "srotmg implementation\n" );
     f77_srotmg( d1, d2, x1, &y1, param );
 }
 
@@ -35,7 +34,6 @@ void rotmg(
     double  y1,
     double  param[5] )
 {
-    printf( "drotmg implementation\n" );
     f77_drotmg( d1, d2, x1, &y1, param );
 }
 
@@ -71,8 +69,6 @@ void rotmg(
     T  y1,
     T  param[5] )
 {
-    printf( "template rotmg implementation\n" );
-
     assert( false );
 }
 

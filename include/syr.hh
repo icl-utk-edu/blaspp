@@ -21,8 +21,6 @@ void syr(
     float const *x, int64_t incx,
     float       *A, int64_t lda )
 {
-    printf( "ssyr implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -60,8 +58,6 @@ void syr(
     double const *x, int64_t incx,
     double       *A, int64_t lda )
 {
-    printf( "dsyr implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -99,8 +95,6 @@ void syr(
     std::complex<float> const *x, int64_t incx,
     std::complex<float>       *A, int64_t lda )
 {
-    printf( "csyr implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -138,8 +132,6 @@ void syr(
     std::complex<double> const *x, int64_t incx,
     std::complex<double>       *A, int64_t lda )
 {
-    printf( "zsyr implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );

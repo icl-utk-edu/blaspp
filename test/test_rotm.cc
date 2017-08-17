@@ -1,21 +1,125 @@
-#include "rotm.hh"
+#include <omp.h>
+
 #include "test.hh"
+#include "cblas.hh"
+#include "lapack.hh"
+#include "flops.hh"
+#include "check_gemm.hh"
+
+#include "copy.hh"
+#include "rotm.hh"
 
 // -----------------------------------------------------------------------------
-template< typename T >
+template< typename TX >
 void test_rotm_work( Params& params, bool run )
 {
-    int64_t n = 100;
-    int64_t incx = 1;
-    int64_t incy = 1;
-    T *x = new T[n];
-    T *y = new T[n];
-    T param[5] = { 0, 0, 0, 0, 0 };
+    using namespace blas;
+    typedef typename traits< TX >::norm_t norm_t;
+    typedef long long lld;
 
-    blas::rotm( n, x, incx, y, incy, param );
+    // get & mark input values
+    int64_t n       = params.dim.n();
+    int64_t incx    = params.incx.value();
+    int64_t incy    = params.incy.value();
+    int64_t verbose = params.verbose.value();
+
+    // mark non-standard output values
+    params.ref_time.value();
+    params.ref_gflops.value();
+
+    // adjust header names
+    params.time.name( "SLATE\ntime (ms)" );
+    params.ref_time.name( "CBLAS\ntime (ms)" );
+
+    if ( ! run)
+        return;
+
+    size_t size_x = (n - 1) * abs(incx) + 1;
+    size_t size_y = (n - 1) * abs(incy) + 1;
+    TX* x    = new TX[ size_x ];
+    TX* xref = new TX[ size_x ];
+    TX* y    = new TX[ size_y ];
+    TX* yref = new TX[ size_y ];
+    TX p[5];
+
+    int64_t idist = 1;
+    int iseed[4] = { 0, 0, 0, 1 };
+    lapack_larnv( idist, iseed, size_x, x );
+    lapack_larnv( idist, iseed, size_y, y );
+    cblas_copy( n, x, incx, xref, incx );
+    cblas_copy( n, y, incy, yref, incy );
+
+    // norms for error check
+    norm_t Xnorm = cblas_nrm2( n, x, abs(incx) );
+    norm_t Ynorm = cblas_nrm2( n, y, abs(incy) );
+    norm_t Anorm = sqrt( Xnorm*Xnorm + Ynorm*Ynorm ); // || [x y] ||_F
+
+    if (verbose >= 1) {
+        printf( "x n=%5lld, inc=%5lld, size=%5lld\n"
+                "y n=%5lld, inc=%5lld, size=%5lld\n",
+                (lld) n, (lld) incx, (lld) size_x,
+                (lld) n, (lld) incy, (lld) size_y );
+    }
+    if (verbose >= 2) {
+        printf( "x    = " ); //print_vector( n, x, abs(incx) );
+        printf( "y    = " ); //print_vector( n, y, abs(incy) );
+    }
+
+    // run test
+    libtest::flush_cache( params.cache.value() );
+    double time = omp_get_wtime();
+    blas::rotm( n, x, incx, y, incy, p );
+    time = omp_get_wtime() - time;
+
+    double gflop = gflop_dot( n, x );
+    params.time.value()   = time * 1000;  // msec
+    params.gflops.value() = gflop / time;
+
+    if (verbose >= 1) {
+        printf( "x2   = " ); //print_vector( n, x, abs(incx) );
+        printf( "y2   = " ); //print_vector( n, y, abs(incy) );
+    }
+
+    if (params.ref.value() == 'y' || params.check.value() == 'y') {
+        // run reference
+        libtest::flush_cache( params.cache.value() );
+        time = omp_get_wtime();
+        //cblas_rotm( n, xref, incx, yref, incy, p );  // todo
+        time = omp_get_wtime() - time;
+
+        params.ref_time.value()   = time * 1000;  // msec
+        params.ref_gflops.value() = gflop / time;
+
+        if (verbose >= 1) {
+            printf( "xref = " ); //print_vector( n, x, abs(incx) );
+            printf( "yref = " ); //print_vector( n, y, abs(incy) );
+        }
+
+        // check error compared to reference
+        // C = [x y] * R for n x 2 matrix C and 2 x 2 rotation R
+        // alpha=1, beta=0, C0norm=0
+        TX* C    = new TX[ 2*n ];
+        TX* Cref = new TX[ 2*n ];
+        blas::copy( n, x,    incx, &C[0],    1 );
+        blas::copy( n, y,    incy, &C[n],    1 );
+        blas::copy( n, xref, incx, &Cref[0], 1 );
+        blas::copy( n, yref, incy, &Cref[n], 1 );
+        norm_t Rnorm = sqrt(2);  // ||R||_F
+        norm_t error;
+        int64_t okay;
+        check_gemm( n, 2, 2, TX(1), TX(0), Anorm, Rnorm, norm_t(0),
+                    Cref, n, C, n, &error, &okay );
+        params.error.value() = error;
+        params.okay.value() = okay;
+
+        delete[] C;
+        delete[] Cref;
+    }
 
     delete[] x;
     delete[] y;
+    delete[] xref;
+    delete[] yref;
 }
 
 // -----------------------------------------------------------------------------
@@ -23,7 +127,7 @@ void test_rotm( Params& params, bool run )
 {
     switch (params.datatype.value()) {
         case libtest::DataType::Integer:
-            //test_rotm_work< int >( params, run );  // todo: generic implementation
+            //test_rotm_work< int64_t >( params, run );  // todo: generic implementation
             throw std::exception();
             break;
 

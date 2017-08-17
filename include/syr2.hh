@@ -22,8 +22,6 @@ void syr2(
     float const *y, int64_t incy,
     float       *A, int64_t lda )
 {
-    printf( "ssyr2 implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -65,8 +63,6 @@ void syr2(
     double const *y, int64_t incy,
     double       *A, int64_t lda )
 {
-    printf( "dsyr2 implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -108,8 +104,6 @@ void syr2(
     std::complex<float> const *y, int64_t incy,
     std::complex<float>       *A, int64_t lda )
 {
-    printf( "csyr2 (csyr2k) implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -134,9 +128,14 @@ void syr2(
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
     }
 
+    // if x2=x and y2=y, then they aren't modified
+    std::complex<float> *x2 = const_cast< std::complex<float>* >( x );
+    std::complex<float> *y2 = const_cast< std::complex<float>* >( y );
+
     // no [cz]syr2 in BLAS or LAPACK, so use [cz]syr2k with k=1 and beta=1.
-    // if inc == 1, consider x and y as n-by-1 matrices in n-by-1 arrays,
-    // otherwise, consider x and y as 1-by-n matrices in inc-by-n arrays
+    // if   inc == 1, consider x and y as n-by-1 matrices in n-by-1 arrays,
+    // elif inc >= 1, consider x and y as 1-by-n matrices in inc-by-n arrays,
+    // else, copy x and y and use case inc == 1 above.
     blas_int k_ = 1;
     char trans_;
     blas_int ldx_, ldy_;
@@ -145,16 +144,36 @@ void syr2(
         ldx_ = n_;
         ldy_ = n_;
     }
-    else {
+    else if (incx >= 1 && incy >= 1) {
         trans_ = 'T';
         ldx_ = (blas_int) incx;
         ldy_ = (blas_int) incy;
+    }
+    else {
+        x2 = new std::complex<float>[n];
+        y2 = new std::complex<float>[n];
+        int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
+        int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
+        for (int64_t i = 0; i < n; ++i) {
+            x2[i] = x[ix];
+            y2[i] = y[iy];
+            ix += incx;
+            iy += incy;
+        }
+        trans_ = 'N';
+        ldx_ = n_;
+        ldy_ = n_;
     }
     std::complex<float> beta = 1;
 
     char uplo_ = uplo2char( uplo );
     f77_csyr2k( &uplo_, &trans_, &n_, &k_,
-                &alpha, x, &ldx_, y, &ldy_, &beta, A, &lda_ );
+                &alpha, x2, &ldx_, y2, &ldy_, &beta, A, &lda_ );
+
+    if (x2 != x) {
+        delete[] x2;
+        delete[] y2;
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -168,8 +187,6 @@ void syr2(
     std::complex<double> const *y, int64_t incy,
     std::complex<double>       *A, int64_t lda )
 {
-    printf( "zsyr2 (zsyr2k) implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -194,9 +211,14 @@ void syr2(
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
     }
 
+    // if x2=x and y2=y, then they aren't modified
+    std::complex<double> *x2 = const_cast< std::complex<double>* >( x );
+    std::complex<double> *y2 = const_cast< std::complex<double>* >( y );
+
     // no [cz]syr2 in BLAS or LAPACK, so use [cz]syr2k with k=1 and beta=1.
-    // if inc == 1, consider x and y as n-by-1 matrices in n-by-1 arrays,
-    // otherwise, consider x and y as 1-by-n matrices in inc-by-n arrays
+    // if   inc == 1, consider x and y as n-by-1 matrices in n-by-1 arrays,
+    // elif inc >= 1, consider x and y as 1-by-n matrices in inc-by-n arrays,
+    // else, copy x and y and use case inc == 1 above.
     blas_int k_ = 1;
     char trans_;
     blas_int ldx_, ldy_;
@@ -205,16 +227,36 @@ void syr2(
         ldx_ = n_;
         ldy_ = n_;
     }
-    else {
+    else if (incx >= 1 && incy >= 1) {
         trans_ = 'T';
         ldx_ = (blas_int) incx;
         ldy_ = (blas_int) incy;
+    }
+    else {
+        x2 = new std::complex<double>[n];
+        y2 = new std::complex<double>[n];
+        int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
+        int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
+        for (int64_t i = 0; i < n; ++i) {
+            x2[i] = x[ix];
+            y2[i] = y[iy];
+            ix += incx;
+            iy += incy;
+        }
+        trans_ = 'N';
+        ldx_ = n_;
+        ldy_ = n_;
     }
     std::complex<double> beta = 1;
 
     char uplo_ = uplo2char( uplo );
     f77_zsyr2k( &uplo_, &trans_, &n_, &k_,
-                &alpha, x, &ldx_, y, &ldy_, &beta, A, &lda_ );
+                &alpha, x2, &ldx_, y2, &ldy_, &beta, A, &lda_ );
+
+    if (x2 != x) {
+        delete[] x2;
+        delete[] y2;
+    }
 }
 
 // =============================================================================
@@ -269,8 +311,6 @@ void syr2(
     TY const *y, int64_t incy,
     TA *A, int64_t lda )
 {
-    printf( "template syr2 implementation\n" );
-
     typedef typename blas::traits3<TA, TX, TY>::scalar_t scalar_t;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]

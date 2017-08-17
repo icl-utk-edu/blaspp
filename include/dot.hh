@@ -19,8 +19,6 @@ float dot(
     float const *x, int64_t incx,
     float const *y, int64_t incy )
 {
-    printf( "sdot implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
@@ -46,8 +44,6 @@ double dot(
     double const *x, int64_t incx,
     double const *y, int64_t incy )
 {
-    printf( "ddot implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
@@ -73,8 +69,6 @@ std::complex<float> dot(
     std::complex<float> const *x, int64_t incx,
     std::complex<float> const *y, int64_t incy )
 {
-    printf( "cdot implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
@@ -109,8 +103,6 @@ std::complex<double> dot(
     std::complex<double> const *x, int64_t incx,
     std::complex<double> const *y, int64_t incy )
 {
-    printf( "zdot implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
@@ -129,7 +121,7 @@ std::complex<double> dot(
 
     #ifdef BLAS_COMPLEX_RETURN_ARGUMENT
         // Intel icc convention
-        std::complex<float> value;
+        std::complex<double> value;
         f77_zdotc( &value, &n_, x, &incx_, y, &incy_ );
         return value;
     #else
@@ -168,8 +160,6 @@ std::complex<float> dotu(
     std::complex<float> const *x, int64_t incx,
     std::complex<float> const *y, int64_t incy )
 {
-    printf( "cdotu implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
@@ -204,8 +194,6 @@ std::complex<double> dotu(
     std::complex<double> const *x, int64_t incx,
     std::complex<double> const *y, int64_t incy )
 {
-    printf( "zdotu implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
@@ -224,7 +212,7 @@ std::complex<double> dotu(
 
     #ifdef BLAS_COMPLEX_RETURN_ARGUMENT
         // Intel icc convention
-        std::complex<float> value;
+        std::complex<double> value;
         f77_zdotu( &value, &n_, x, &incx_, y, &incy_ );
         return value;
     #else
@@ -264,8 +252,6 @@ typename traits2<TX,TY>::scalar_t dot(
     TX const *x, int64_t incx,
     TY const *y, int64_t incy )
 {
-    printf( "template dot implementation\n" );
-
     typedef typename traits2<TX,TY>::scalar_t scalar_t;
 
     // check arguments
@@ -324,8 +310,6 @@ typename traits2<TX,TY>::scalar_t dotu(
     TX const *x, int64_t incx,
     TY const *y, int64_t incy )
 {
-    printf( "template dotu implementation\n" );
-
     typedef typename traits2<TX,TY>::scalar_t scalar_t;
 
     // check arguments

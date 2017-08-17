@@ -16,7 +16,7 @@ void test_rotmg( Params& params, bool run )
 {
     switch (params.datatype.value()) {
         case libtest::DataType::Integer:
-            //test_rotmg_work< int >( params, run );  // todo: generic implementation
+            //test_rotmg_work< int64_t >( params, run );  // todo: generic implementation
             throw std::exception();
             break;
 

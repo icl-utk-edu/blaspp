@@ -40,7 +40,7 @@ std::vector< libtest::routines_t > routines = {
     { "axpy",   test_axpy,   Section::blas1   },
     { "copy",   test_copy,   Section::blas1   },
     { "dot",    test_dot,    Section::blas1   },
-    //{ "dotu",   test_dotu,   Section::blas1   },
+    { "dotu",   test_dotu,   Section::blas1   },
     { "iamax",  test_iamax,  Section::blas1   },
     { "nrm2",   test_nrm2,   Section::blas1   },
     { "scal",   test_scal,   Section::blas1   },
@@ -195,30 +195,38 @@ int main( int argc, char** argv )
     printf( "\n" );
 
     // run tests
-    int repeat = params.repeat.value();
     int status = 0;
-    libtest::DataType last = params.datatype.value();
-    params.header();
-    do {
-        if (params.datatype.value() != last) {
-            last = params.datatype.value();
-            printf( "\n" );
-        }
-        for (int iter = 0; iter < repeat; ++iter) {
-            test_routine( params, true );
-            params.print();
-            status += ! params.okay.value();
-        }
-        if (repeat > 1) {
-            printf( "\n" );
-        }
-    } while( params.next() );
+    try {
+        int repeat = params.repeat.value();
+        libtest::DataType last = params.datatype.value();
+        params.header();
+        do {
+            if (params.datatype.value() != last) {
+                last = params.datatype.value();
+                printf( "\n" );
+            }
+            for (int iter = 0; iter < repeat; ++iter) {
+                test_routine( params, true );
+                params.print();
+                status += ! params.okay.value();
+            }
+            if (repeat > 1) {
+                printf( "\n" );
+            }
+        } while( params.next() );
+    }
+    catch( blas::Error& e ) {
+        status = 1;
+        params.okay.value() = false;
+        printf( "BLAS error: %s\n", e.what() );
+        params.print();
+    }
 
     if (status) {
-        fprintf( stderr, "Some tests FAILED.\n" );
+        printf( "Some tests FAILED.\n" );
     }
     else {
-        fprintf( stderr, "All tests passed.\n" );
+        printf( "All tests passed.\n" );
     }
     return status;
 }

@@ -22,8 +22,6 @@ void trmv(
     float const *A, int64_t lda,
     float       *x, int64_t incx )
 {
-    printf( "strmv implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -69,8 +67,6 @@ void trmv(
     double const *A, int64_t lda,
     double       *x, int64_t incx )
 {
-    printf( "dtrmv implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -116,8 +112,6 @@ void trmv(
     std::complex<float> const *A, int64_t lda,
     std::complex<float>       *x, int64_t incx )
 {
-    printf( "ctrmv implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -139,26 +133,29 @@ void trmv(
     blas_int lda_  = (blas_int) lda;
     blas_int incx_ = (blas_int) incx;
 
+    blas::Op trans2 = trans;
     if (layout == Layout::RowMajor) {
         // swap lower <=> upper
         // A => A^T; A^T => A; A^H => A
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
-        trans = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
+        trans2 = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
 
-        // conjugate x (in-place)
-        int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
-        for (int64_t i = 0; i < n; ++i) {
-            x[ix] = conj( x[ix] );
-            ix += incx;
+        if (trans == Op::ConjTrans) {
+            // conjugate x (in-place)
+            int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
+            for (int64_t i = 0; i < n; ++i) {
+                x[ix] = conj( x[ix] );
+                ix += incx;
+            }
         }
     }
 
     char uplo_  = uplo2char( uplo );
-    char trans_ = op2char( trans );
+    char trans_ = op2char( trans2 );
     char diag_  = diag2char( diag );
     f77_ctrmv( &uplo_, &trans_, &diag_, &n_, A, &lda_, x, &incx_ );
 
-    if (layout == Layout::RowMajor) {
+    if (layout == Layout::RowMajor && trans == Op::ConjTrans) {
         // conjugate x (in-place)
         int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
         for (int64_t i = 0; i < n; ++i) {
@@ -179,8 +176,6 @@ void trmv(
     std::complex<double> const *A, int64_t lda,
     std::complex<double>       *x, int64_t incx )
 {
-    printf( "ztrmv implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -202,26 +197,29 @@ void trmv(
     blas_int lda_  = (blas_int) lda;
     blas_int incx_ = (blas_int) incx;
 
+    blas::Op trans2 = trans;
     if (layout == Layout::RowMajor) {
         // swap lower <=> upper
         // A => A^T; A^T => A; A^H => A
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
-        trans = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
+        trans2 = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
 
-        // conjugate x (in-place)
-        int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
-        for (int64_t i = 0; i < n; ++i) {
-            x[ix] = conj( x[ix] );
-            ix += incx;
+        if (trans == Op::ConjTrans) {
+            // conjugate x (in-place)
+            int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
+            for (int64_t i = 0; i < n; ++i) {
+                x[ix] = conj( x[ix] );
+                ix += incx;
+            }
         }
     }
 
     char uplo_  = uplo2char( uplo );
-    char trans_ = op2char( trans );
+    char trans_ = op2char( trans2 );
     char diag_  = diag2char( diag );
     f77_ztrmv( &uplo_, &trans_, &diag_, &n_, A, &lda_, x, &incx_ );
 
-    if (layout == Layout::RowMajor) {
+    if (layout == Layout::RowMajor && trans == Op::ConjTrans) {
         // conjugate x (in-place)
         int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
         for (int64_t i = 0; i < n; ++i) {
@@ -286,8 +284,6 @@ void trmv(
     TA const *A, int64_t lda,
     TX       *x, int64_t incx )
 {
-    printf( "template trmv implementation\n" );
-
     typedef typename blas::traits2<TA, TX>::scalar_t scalar_t;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]

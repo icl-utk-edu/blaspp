@@ -18,8 +18,6 @@ void copy(
     float const *x, int64_t incx,
     float       *y, int64_t incy )
 {
-    printf( "scopy implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
@@ -45,8 +43,6 @@ void copy(
     double const *x, int64_t incx,
     double       *y, int64_t incy )
 {
-    printf( "dcopy implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
@@ -72,8 +68,6 @@ void copy(
     std::complex<float> const *x, int64_t incx,
     std::complex<float>       *y, int64_t incy )
 {
-    printf( "ccopy implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
@@ -99,8 +93,6 @@ void copy(
     std::complex<double> const *x, int64_t incx,
     std::complex<double>       *y, int64_t incy )
 {
-    printf( "zcopy implementation\n" );
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
@@ -149,8 +141,6 @@ void copy(
     TX const *x, int64_t incx,
     TY       *y, int64_t incy )
 {
-    printf( "template copy implementation\n" );
-
     typedef typename blas::traits2<TX,TY>::scalar_t scalar_t;
 
     // check arguments

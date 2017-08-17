@@ -24,8 +24,6 @@ void gemm(
     float beta,
     float       *C, int64_t ldc )
 {
-    printf( "sgemm implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -39,17 +37,32 @@ void gemm(
     throw_if_( n < 0 );
     throw_if_( k < 0 );
 
-    if (transA == Op::NoTrans)
-        throw_if_( lda < m );
-    else
-        throw_if_( lda < k );
+    if (layout == Layout::ColMajor) {
+        if (transA == Op::NoTrans)
+            throw_if_( lda < m );
+        else
+            throw_if_( lda < k );
 
-    if (transB == Op::NoTrans)
-        throw_if_( ldb < k );
-    else
-        throw_if_( ldb < n );
+        if (transB == Op::NoTrans)
+            throw_if_( ldb < k );
+        else
+            throw_if_( ldb < n );
 
-    throw_if_( ldc < m );
+        throw_if_( ldc < m );
+    }
+    else {
+        if (transA != Op::NoTrans)
+            throw_if_( lda < m );
+        else
+            throw_if_( lda < k );
+
+        if (transB != Op::NoTrans)
+            throw_if_( ldb < k );
+        else
+            throw_if_( ldb < n );
+
+        throw_if_( ldc < n );
+    }
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
@@ -94,8 +107,6 @@ void gemm(
     double beta,
     double       *C, int64_t ldc )
 {
-    printf( "dgemm implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -109,17 +120,32 @@ void gemm(
     throw_if_( n < 0 );
     throw_if_( k < 0 );
 
-    if (transA == Op::NoTrans)
-        throw_if_( lda < m );
-    else
-        throw_if_( lda < k );
+    if (layout == Layout::ColMajor) {
+        if (transA == Op::NoTrans)
+            throw_if_( lda < m );
+        else
+            throw_if_( lda < k );
 
-    if (transB == Op::NoTrans)
-        throw_if_( ldb < k );
-    else
-        throw_if_( ldb < n );
+        if (transB == Op::NoTrans)
+            throw_if_( ldb < k );
+        else
+            throw_if_( ldb < n );
 
-    throw_if_( ldc < m );
+        throw_if_( ldc < m );
+    }
+    else {
+        if (transA != Op::NoTrans)
+            throw_if_( lda < m );
+        else
+            throw_if_( lda < k );
+
+        if (transB != Op::NoTrans)
+            throw_if_( ldb < k );
+        else
+            throw_if_( ldb < n );
+
+        throw_if_( ldc < n );
+    }
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
@@ -164,8 +190,6 @@ void gemm(
     std::complex<float> beta,
     std::complex<float>       *C, int64_t ldc )
 {
-    printf( "cgemm implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -179,17 +203,32 @@ void gemm(
     throw_if_( n < 0 );
     throw_if_( k < 0 );
 
-    if (transA == Op::NoTrans)
-        throw_if_( lda < m );
-    else
-        throw_if_( lda < k );
+    if (layout == Layout::ColMajor) {
+        if (transA == Op::NoTrans)
+            throw_if_( lda < m );
+        else
+            throw_if_( lda < k );
 
-    if (transB == Op::NoTrans)
-        throw_if_( ldb < k );
-    else
-        throw_if_( ldb < n );
+        if (transB == Op::NoTrans)
+            throw_if_( ldb < k );
+        else
+            throw_if_( ldb < n );
 
-    throw_if_( ldc < m );
+        throw_if_( ldc < m );
+    }
+    else {
+        if (transA != Op::NoTrans)
+            throw_if_( lda < m );
+        else
+            throw_if_( lda < k );
+
+        if (transB != Op::NoTrans)
+            throw_if_( ldb < k );
+        else
+            throw_if_( ldb < n );
+
+        throw_if_( ldc < n );
+    }
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
@@ -234,8 +273,6 @@ void gemm(
     std::complex<double> beta,
     std::complex<double>       *C, int64_t ldc )
 {
-    printf( "zgemm implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -249,17 +286,32 @@ void gemm(
     throw_if_( n < 0 );
     throw_if_( k < 0 );
 
-    if (transA == Op::NoTrans)
-        throw_if_( lda < m );
-    else
-        throw_if_( lda < k );
+    if (layout == Layout::ColMajor) {
+        if (transA == Op::NoTrans)
+            throw_if_( lda < m );
+        else
+            throw_if_( lda < k );
 
-    if (transB == Op::NoTrans)
-        throw_if_( ldb < k );
-    else
-        throw_if_( ldb < n );
+        if (transB == Op::NoTrans)
+            throw_if_( ldb < k );
+        else
+            throw_if_( ldb < n );
 
-    throw_if_( ldc < m );
+        throw_if_( ldc < m );
+    }
+    else {
+        if (transA != Op::NoTrans)
+            throw_if_( lda < m );
+        else
+            throw_if_( lda < k );
+
+        if (transB != Op::NoTrans)
+            throw_if_( ldb < k );
+        else
+            throw_if_( ldb < n );
+
+        throw_if_( ldc < n );
+    }
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
@@ -331,31 +383,38 @@ void gemm(
 ///         Scalar alpha. If alpha is zero, A and B are not accessed.
 ///
 /// @param[in] A
-///         NoTrans:     The m-by-k matrix A, stored in an lda-by-k array.
-///         [Conj]Trans: The k-by-m matrix A, stored in an lda-by-m array.
+///         NoTrans:     The m-by-k matrix A.
+///         [Conj]Trans: The k-by-m matrix A.
+///         ColMajor: stored in an lda-by-k or lda-by-m array.
+///         RowMajor: stored in an m-by-lda or k-by-lda array.
 ///
 /// @param[in] lda
-///         Leading dimension of A, i.e., column stride.
-///         NoTrans:     lda >= max(1,m).
-///         [Conj]Trans: lda >= max(1,k).
+///         Leading dimension of A.
+///         NoTrans/ColMajor or [Conj]Trans/RowMajor: lda >= max(1,m).
+///         [Conj]Trans/ColMajor or NoTrans/RowMajor: lda >= max(1,k).
 ///
 /// @param[in] B
-///         NoTrans:     The k-by-n matrix B, stored in an ldb-by-n array.
-///         [Conj]Trans: The n-by-k matrix B, stored in an ldb-by-k array.
+///         NoTrans:     The k-by-n matrix B.
+///         [Conj]Trans: The n-by-k matrix B.
+///         ColMajor: stored in an lda-by-n or lda-by-k array.
+///         RowMajor: stored in an k-by-lda or n-by-lda array.
 ///
 /// @param[in] lda
 ///         Leading dimension of A, i.e., column stride.
-///         NoTrans:     lda >= max(1,k).
-///         [Conj]Trans: lda >= max(1,n).
+///         NoTrans/ColMajor or [Conj]Trans/RowMajor: lda >= max(1,n).
+///         [Conj]Trans/ColMajor or NoTrans/RowMajor: lda >= max(1,k).
 ///
 /// @param[in] beta
 ///         Scalar beta. When beta is zero, C need not be set on input.
 ///
 /// @param[in] C
 ///         The m-by-n matrix C, stored in an lda-by-n array.
+///         ColMajor: lda >= max(1,n).
+///         RowMajor: lda >= max(1,m).
 ///
 /// @param[in] ldc
-///         Leading dimension of C, i.e., column stride. ldc >= max(1,m).
+///         Leading dimension of C.
+///         ldc >= max(1,m).
 ///
 /// @ingroup blas2
 
@@ -371,8 +430,6 @@ void gemm(
     typename traits3<TA, TB, TC>::scalar_t beta,
     TC       *C, int64_t ldc )
 {
-    printf( "template gemm implementation\n" );
-
     typedef typename blas::traits3<TA, TB, TC>::scalar_t scalar_t;
 }
 

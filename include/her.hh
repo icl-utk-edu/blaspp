@@ -48,8 +48,6 @@ void her(
     std::complex<float> const *x, int64_t incx,
     std::complex<float>       *A, int64_t lda )
 {
-    printf( "cher implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -85,7 +83,7 @@ void her(
     }
 
     char uplo_ = uplo2char( uplo );
-    f77_cher( &uplo_, &n_, &alpha, x, &incx_, A, &lda_ );
+    f77_cher( &uplo_, &n_, &alpha, x2, &incx_, A, &lda_ );
 
     if (layout == Layout::RowMajor) {
         delete[] x2;
@@ -102,8 +100,6 @@ void her(
     std::complex<double> const *x, int64_t incx,
     std::complex<double>       *A, int64_t lda )
 {
-    printf( "zher implementation\n" );
-
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
@@ -139,7 +135,7 @@ void her(
     }
 
     char uplo_ = uplo2char( uplo );
-    f77_zher( &uplo_, &n_, &alpha, x, &incx_, A, &lda_ );
+    f77_zher( &uplo_, &n_, &alpha, x2, &incx_, A, &lda_ );
 
     if (layout == Layout::RowMajor) {
         delete[] x2;
@@ -190,8 +186,6 @@ void her(
     TX const *x, int64_t incx,
     TA       *A, int64_t lda )
 {
-    printf( "template her implementation\n" );
-
     typedef typename blas::traits2<TA, TX>::scalar_t scalar_t;
     typedef typename blas::traits2<TA, TX>::norm_t norm_t;
 
