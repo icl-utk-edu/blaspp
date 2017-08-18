@@ -6,6 +6,7 @@
 #include <complex>
 
 #include "blas_util.hh"
+#include "blas_fortran.hh"
 
 
 // =============================================================================
@@ -648,8 +649,6 @@ cblas_symv(
     cblas_dsymv( layout, uplo, n,
                  alpha, A, lda, x, incx, beta, y, incy );
 }
-
-#define FORTRAN_NAME( lower, UPPER )  lower
 
 #define lapack_csymv FORTRAN_NAME( csymv, CSYMV )
 #define lapack_zsymv FORTRAN_NAME( zsymv, ZSYMV )
@@ -1322,27 +1321,98 @@ cblas_symm(
 
 
 // -----------------------------------------------------------------------------
-#define lapack_csyr2k FORTRAN_NAME( csyr2k, CSYR2K )
-#define lapack_zsyr2k FORTRAN_NAME( zsyr2k, ZSYR2K )
+inline void
+cblas_syrk(
+    CBLAS_LAYOUT layout, CBLAS_UPLO uplo, CBLAS_TRANSPOSE trans, int n, int k,
+    float alpha,
+    float const *A, int lda,
+    float beta,
+    float*       C, int ldc )
+{
+    cblas_ssyrk( layout, uplo, trans, n, k, alpha, A, lda, beta, C, ldc );
+}
 
-extern "C"
-void   lapack_csyr2k( const char *uplo, const char *trans,
-                      const int *n, const int *k,
-                      const std::complex<float> *alpha,
-                      const std::complex<float> *A, const int *lda,
-                      const std::complex<float> *B, const int *ldb,
-                      const std::complex<float> *beta,
-                            std::complex<float> *C, const int *ldc );
+inline void
+cblas_syrk(
+    CBLAS_LAYOUT layout, CBLAS_UPLO uplo, CBLAS_TRANSPOSE trans, int n, int k,
+    double alpha,
+    double const *A, int lda,
+    double beta,
+    double*       C, int ldc )
+{
+    cblas_dsyrk( layout, uplo, trans, n, k, alpha, A, lda, beta, C, ldc );
+}
 
-extern "C"
-void   lapack_zsyr2k( const char *uplo, const char *trans,
-                      const int *n, const int *k,
-                      const std::complex<double> *alpha,
-                      const std::complex<double> *A, const int *lda,
-                      const std::complex<double> *B, const int *ldb,
-                      const std::complex<double> *beta,
-                            std::complex<double> *C, const int *ldc );
+inline void
+cblas_syrk(
+    CBLAS_LAYOUT layout, CBLAS_UPLO uplo, CBLAS_TRANSPOSE trans, int n, int k,
+    std::complex<float> alpha,
+    std::complex<float> const *A, int lda,
+    std::complex<float> beta,
+    std::complex<float>*       C, int ldc )
+{
+    cblas_csyrk( layout, uplo, trans, n, k, &alpha, A, lda, &beta, C, ldc );
+}
 
+inline void
+cblas_syrk(
+    CBLAS_LAYOUT layout, CBLAS_UPLO uplo, CBLAS_TRANSPOSE trans, int n, int k,
+    std::complex<double> alpha,
+    std::complex<double> const *A, int lda,
+    std::complex<double> beta,
+    std::complex<double>* C, int ldc )
+{
+    cblas_zsyrk( layout, uplo, trans, n, k, &alpha, A, lda, &beta, C, ldc );
+}
+
+
+// -----------------------------------------------------------------------------
+inline void
+cblas_herk(
+    CBLAS_LAYOUT layout, CBLAS_UPLO uplo, CBLAS_TRANSPOSE trans, int n, int k,
+    float alpha,
+    float const *A, int lda,
+    float beta,
+    float*       C, int ldc )
+{
+    cblas_ssyrk( layout, uplo, trans, n, k, alpha, A, lda, beta, C, ldc );
+}
+
+inline void
+cblas_herk(
+    CBLAS_LAYOUT layout, CBLAS_UPLO uplo, CBLAS_TRANSPOSE trans, int n, int k,
+    double alpha,
+    double const *A, int lda,
+    double beta,
+    double*       C, int ldc )
+{
+    cblas_dsyrk( layout, uplo, trans, n, k, alpha, A, lda, beta, C, ldc );
+}
+
+inline void
+cblas_herk(
+    CBLAS_LAYOUT layout, CBLAS_UPLO uplo, CBLAS_TRANSPOSE trans, int n, int k,
+    float alpha,  // note: real
+    std::complex<float> const *A, int lda,
+    float beta,   // note: real
+    std::complex<float>*       C, int ldc )
+{
+    cblas_cherk( layout, uplo, trans, n, k, alpha, A, lda, beta, C, ldc );
+}
+
+inline void
+cblas_herk(
+    CBLAS_LAYOUT layout, CBLAS_UPLO uplo, CBLAS_TRANSPOSE trans, int n, int k,
+    double alpha,  // note: real
+    std::complex<double> const *A, int lda,
+    double beta,   // note: real
+    std::complex<double>* C, int ldc )
+{
+    cblas_zherk( layout, uplo, trans, n, k, alpha, A, lda, beta, C, ldc );
+}
+
+
+// -----------------------------------------------------------------------------
 inline void
 cblas_syr2k(
     CBLAS_LAYOUT layout, CBLAS_UPLO uplo, CBLAS_TRANSPOSE trans, int n, int k,
@@ -1376,13 +1446,7 @@ cblas_syr2k(
     std::complex<float> beta,
     std::complex<float>*       C, int ldc )
 {
-    if (layout == CblasRowMajor) {
-        // swap upper <=> lower
-        uplo = (uplo == CblasLower ? CblasUpper : CblasLower);
-    }
-    char uplo_  = lapack_uplo_const( uplo  );
-    char trans_ = lapack_trans_const( trans );
-    lapack_csyr2k( &uplo_, &trans_, &n, &k, &alpha, A, &lda, B, &ldb, &beta, C, &ldc );
+    cblas_csyr2k( layout, uplo, trans, n, k, &alpha, A, lda, B, ldb, &beta, C, ldc );
 }
 
 inline void
@@ -1394,13 +1458,7 @@ cblas_syr2k(
     std::complex<double> beta,
     std::complex<double>* C, int ldc )
 {
-    if (layout == CblasRowMajor) {
-        // swap upper <=> lower
-        uplo = (uplo == CblasLower ? CblasUpper : CblasLower);
-    }
-    char uplo_  = lapack_uplo_const( uplo  );
-    char trans_ = lapack_trans_const( trans );
-    lapack_zsyr2k( &uplo_, &trans_, &n, &k, &alpha, A, &lda, B, &ldb, &beta, C, &ldc );
+    cblas_zsyr2k( layout, uplo, trans, n, k, &alpha, A, lda, B, ldb, &beta, C, ldc );
 }
 
 
@@ -1450,7 +1508,7 @@ cblas_her2k(
     double beta,  // note: real
     std::complex<double>* C, int ldc )
 {
-    cblas_cher2k( layout, uplo, trans, n, k, &alpha, A, lda, B, ldb, beta, C, ldc );
+    cblas_zher2k( layout, uplo, trans, n, k, &alpha, A, lda, B, ldb, beta, C, ldc );
 }
 
 

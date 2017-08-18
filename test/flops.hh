@@ -447,4 +447,84 @@ inline double gbyte_symm( blas::Side side, double m, double n, T* x )
     return gbyte_hemm( side, m, n, x );
 }
 
+
+// -----------------------------------------------------------------------------
+inline double fmuls_herk( double n, double k )
+    { return 0.5*k*n*(n+1); }
+
+inline double fadds_herk( double n, double k )
+    { return 0.5*k*n*(n+1); }
+
+template< typename T >
+inline double gflop_herk( double n, double k, T* x )
+{
+    return (fmuls_herk(n, k) + fadds_herk(n, k)) / 1e9;
+}
+
+template< typename T >
+inline double gflop_herk( double n, double k, std::complex<T>* x )
+{
+    return (6*fmuls_herk(n, k) + 2*fadds_herk(n, k)) / 1e9;
+}
+
+template< typename T >
+inline double gbyte_herk( double n, double k, T* x )
+{
+    // read A, C; write C
+    double sizeC = 0.5*n*(n+1);
+    return (n*k + 2*sizeC) * sizeof(T);
+}
+
+template< typename T >
+inline double gflop_syrk( double n, double k, T* x )
+{
+    return gflop_herk( n, k, x );
+}
+
+template< typename T >
+inline double gbyte_syrk( double n, double k, T* x )
+{
+    return gbyte_herk( n, k, x );
+}
+
+
+// -----------------------------------------------------------------------------
+inline double fmuls_her2k( double n, double k )
+    { return k*n*n; }
+
+inline double fadds_her2k( double n, double k )
+    { return k*n*n; }
+
+template< typename T >
+inline double gflop_her2k( double n, double k, T* x )
+{
+    return (fmuls_her2k(n, k) + fadds_her2k(n, k)) / 1e9;
+}
+
+template< typename T >
+inline double gflop_her2k( double n, double k, std::complex<T>* x )
+{
+    return (6*fmuls_her2k(n, k) + 2*fadds_her2k(n, k)) / 1e9;
+}
+
+template< typename T >
+inline double gbyte_her2k( double n, double k, T* x )
+{
+    // read A, B, C; write C
+    double sizeC = 0.5*n*(n+1);
+    return (2*n*k + 2*sizeC) * sizeof(T);
+}
+
+template< typename T >
+inline double gflop_syr2k( double n, double k, T* x )
+{
+    return gflop_her2k( n, k, x );
+}
+
+template< typename T >
+inline double gbyte_syr2k( double n, double k, T* x )
+{
+    return gbyte_herk( n, k, x );
+}
+
 #endif        //  #ifndef FLOPS_HH

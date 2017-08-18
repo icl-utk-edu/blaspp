@@ -18,6 +18,8 @@ setenv layout   "--layout c,r"
 setenv side     "--side l,r"
 setenv uplo     "--uplo l,u"
 setenv trans    "--trans n,t,c"
+setenv trans_nt "--trans n,t"
+setenv trans_nc "--trans n,c"
 setenv transA   "--transA n,t,c"
 setenv transB   "--transB n,t,c"
 setenv diag     "--diag n,u"
@@ -46,20 +48,29 @@ echo "-------------------- Level 1 BLAS"
 
 echo "-------------------- Level 2 BLAS"
 ./test gemv  ${opts} ${type} ${layout} ${align} ${trans} ${mn} ${incx} ${incy} > gemv.txt
-./test ger   ${opts} ${type} ${layout} ${align} ${mn} ${incx} ${incy}          > ger.txt
-./test geru  ${opts} ${type} ${layout} ${align} ${mn} ${incx} ${incy}          > geru.txt
-./test hemv  ${opts} ${type} ${layout} ${align} ${uplo} ${n} ${incx} ${incy}   > hemv.txt
-./test her   ${opts} ${type} ${layout} ${align} ${uplo} ${n} ${incx}           > her.txt
-./test her2  ${opts} ${type} ${layout} ${align} ${uplo} ${n} ${incx} ${incy}   > her2.txt
-./test symv  ${opts} ${type} ${layout} ${align} ${uplo} ${n} ${incx} ${incy}   > symv.txt
-./test syr   ${opts} ${type} ${layout} ${align} ${uplo} ${n} ${incx}           > syr.txt
-./test syr2  ${opts} ${type} ${layout} ${align} ${uplo} ${n} ${incx} ${incy}   > syr2.txt
+./test ger   ${opts} ${type} ${layout} ${align}          ${mn} ${incx} ${incy} > ger.txt
+./test geru  ${opts} ${type} ${layout} ${align}          ${mn} ${incx} ${incy} > geru.txt
+./test hemv  ${opts} ${type} ${layout} ${align} ${uplo}  ${n}  ${incx} ${incy} > hemv.txt
+./test her   ${opts} ${type} ${layout} ${align} ${uplo}  ${n}  ${incx}         > her.txt
+./test her2  ${opts} ${type} ${layout} ${align} ${uplo}  ${n}  ${incx} ${incy} > her2.txt
+./test symv  ${opts} ${type} ${layout} ${align} ${uplo}  ${n}  ${incx} ${incy} > symv.txt
+./test syr   ${opts} ${type} ${layout} ${align} ${uplo}  ${n}  ${incx}         > syr.txt
+./test syr2  ${opts} ${type} ${layout} ${align} ${uplo}  ${n}  ${incx} ${incy} > syr2.txt
 ./test trmv  ${opts} ${type} ${layout} ${align} ${uplo} ${trans} ${diag} ${n} ${incx} > trmv.txt
 ./test trsv  ${opts} ${type} ${layout} ${align} ${uplo} ${trans} ${diag} ${n} ${incx} > trsv.txt
 
 echo "-------------------- Level 3 BLAS"
 ./test gemm  ${opts} ${type} ${layout} ${align} ${transA} ${transB} ${mnk} > gemm.txt
-./test hemm  ${opts} ${type} ${layout} ${align} ${side} ${uplo} ${mn}      > hemm.txt
-./test symm  ${opts} ${type} ${layout} ${align} ${side} ${uplo} ${mn}      > symm.txt
+./test hemm  ${opts} ${type} ${layout} ${align} ${side}   ${uplo}   ${mn}  > hemm.txt
+./test symm  ${opts} ${type} ${layout} ${align} ${side}   ${uplo}   ${mn}  > symm.txt
+
+./test herk  ${opts} --type s,d ${layout} ${align} ${uplo} ${trans}    ${mn} > herk_sd.txt
+./test herk  ${opts} --type c,z ${layout} ${align} ${uplo} ${trans_nc} ${mn} > herk_cz.txt
+./test syrk  ${opts} --type s,d ${layout} ${align} ${uplo} ${trans}    ${mn} > syrk_sd.txt
+./test syrk  ${opts} --type c,z ${layout} ${align} ${uplo} ${trans_nt} ${mn} > syrk_cz.txt
+./test her2k ${opts} --type s,d ${layout} ${align} ${uplo} ${trans}    ${mn} > her2k_sd.txt
+./test her2k ${opts} --type c,z ${layout} ${align} ${uplo} ${trans_nc} ${mn} > her2k_cz.txt
+./test syr2k ${opts} --type s,d ${layout} ${align} ${uplo} ${trans}    ${mn} > syr2k_sd.txt
+./test syr2k ${opts} --type c,z ${layout} ${align} ${uplo} ${trans_nt} ${mn} > syr2k_cz.txt
 
 unset echo
