@@ -37,32 +37,20 @@ void gemm(
     throw_if_( n < 0 );
     throw_if_( k < 0 );
 
-    if (layout == Layout::ColMajor) {
-        if (transA == Op::NoTrans)
-            throw_if_( lda < m );
-        else
-            throw_if_( lda < k );
+    if ((transA == Op::NoTrans) ^ (layout == Layout::RowMajor))
+        throw_if_( lda < m );
+    else
+        throw_if_( lda < k );
 
-        if (transB == Op::NoTrans)
-            throw_if_( ldb < k );
-        else
-            throw_if_( ldb < n );
+    if ((transB == Op::NoTrans) ^ (layout == Layout::RowMajor))
+        throw_if_( ldb < k );
+    else
+        throw_if_( ldb < n );
 
+    if (layout == Layout::ColMajor)
         throw_if_( ldc < m );
-    }
-    else {
-        if (transA != Op::NoTrans)
-            throw_if_( lda < m );
-        else
-            throw_if_( lda < k );
-
-        if (transB != Op::NoTrans)
-            throw_if_( ldb < k );
-        else
-            throw_if_( ldb < n );
-
+    else
         throw_if_( ldc < n );
-    }
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
