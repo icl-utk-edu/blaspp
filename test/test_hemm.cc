@@ -37,16 +37,16 @@ void test_hemm_work( Params& params, bool run )
 
     // setup
     int64_t An = (side == Side::Left ? m : n);
-    int64_t Bm = m;
-    int64_t Bn = n;
+    int64_t Cm = m;
+    int64_t Cn = n;
     if (layout == Layout::RowMajor)
-        std::swap( Bm, Bn );
+        std::swap( Cm, Cn );
     int64_t lda = roundup( An, align );
-    int64_t ldb = roundup( Bm, align );
-    int64_t ldc = roundup( Bm, align );
+    int64_t ldb = roundup( Cm, align );
+    int64_t ldc = roundup( Cm, align );
     size_t size_A = size_t(lda)*An;
-    size_t size_B = size_t(ldb)*Bn;
-    size_t size_C = size_t(ldc)*Bn;
+    size_t size_B = size_t(ldb)*Cn;
+    size_t size_C = size_t(ldc)*Cn;
     TA* A    = new TA[ size_A ];
     TB* B    = new TB[ size_B ];
     TC* C    = new TC[ size_C ];
@@ -57,13 +57,13 @@ void test_hemm_work( Params& params, bool run )
     lapack_larnv( idist, iseed, size_A, A );
     lapack_larnv( idist, iseed, size_B, B );
     lapack_larnv( idist, iseed, size_C, C );
-    lapack_lacpy( "g", Bm, Bn, C, ldc, Cref, ldc );
+    lapack_lacpy( "g", Cm, Cn, C, ldc, Cref, ldc );
 
     // norms for error check
     norm_t work[1];
     norm_t Anorm = lapack_lansy( "f", uplo2str(uplo), An, A, lda, work );
-    norm_t Bnorm = lapack_lange( "f", Bm, Bn, B, ldb, work );
-    norm_t Cnorm = lapack_lange( "f", Bm, Bn, C, ldc, work );
+    norm_t Bnorm = lapack_lange( "f", Cm, Cn, B, ldb, work );
+    norm_t Cnorm = lapack_lange( "f", Cm, Cn, C, ldc, work );
 
     if (verbose >= 1) {
         printf( "side %c, uplo %c\n"
@@ -77,7 +77,7 @@ void test_hemm_work( Params& params, bool run )
     }
     if (verbose >= 2) {
         printf( "A = "    ); //print_matrix( Am, An, A, lda );
-        printf( "B = "    ); //print_matrix( Bm, Bn, B, ldb );
+        printf( "B = "    ); //print_matrix( Cm, Cn, B, ldb );
         printf( "C = "    ); //print_matrix( Cm, Cn, C, ldc );
     }
 
@@ -116,7 +116,7 @@ void test_hemm_work( Params& params, bool run )
         // check error compared to reference
         norm_t error;
         int64_t okay;
-        check_gemm( Bm, Bn, An, alpha, beta, Anorm, Bnorm, Cnorm,
+        check_gemm( Cm, Cn, An, alpha, beta, Anorm, Bnorm, Cnorm,
                     Cref, ldc, C, ldc, &error, &okay );
         params.error.value() = error;
         params.okay.value() = okay;
