@@ -407,4 +407,44 @@ inline double gbyte_gemm( double m, double n, double k, T* x )
     return (m*k + k*n + 2*m*n) * sizeof(T);
 }
 
+
+// -----------------------------------------------------------------------------
+inline double fmuls_hemm( blas::Side side, double m, double n )
+    { return (side == blas::Side::Left ? m*m*n : m*n*n); }
+
+inline double fadds_hemm( blas::Side side, double m, double n )
+    { return (side == blas::Side::Left ? m*m*n : m*n*n); }
+
+template< typename T >
+inline double gflop_hemm( blas::Side side, double m, double n, T* x )
+{
+    return (fmuls_hemm(side, m, n) + fadds_hemm(side, m, n)) / 1e9;
+}
+
+template< typename T >
+inline double gflop_hemm( blas::Side side, double m, double n, std::complex<T>* x )
+{
+    return (6*fmuls_hemm(side, m, n) + 2*fadds_hemm(side, m, n)) / 1e9;
+}
+
+template< typename T >
+inline double gbyte_hemm( blas::Side side, double m, double n, T* x )
+{
+    // read A, B, C; write C
+    double sizeA = (side == blas::Side::Left ? 0.5*m*(m+1) : 0.5*n*(n+1));
+    return (sizeA + 3*m*n) * sizeof(T);
+}
+
+template< typename T >
+inline double gflop_symm( blas::Side side, double m, double n, T* x )
+{
+    return gflop_hemm( side, m, n, x );
+}
+
+template< typename T >
+inline double gbyte_symm( blas::Side side, double m, double n, T* x )
+{
+    return gbyte_hemm( side, m, n, x );
+}
+
 #endif        //  #ifndef FLOPS_HH

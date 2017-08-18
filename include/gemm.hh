@@ -399,10 +399,10 @@ void gemm(
 ///         ColMajor: stored in an lda-by-n or lda-by-k array.
 ///         RowMajor: stored in an k-by-lda or n-by-lda array.
 ///
-/// @param[in] lda
-///         Leading dimension of A, i.e., column stride.
-///         NoTrans/ColMajor or [Conj]Trans/RowMajor: lda >= max(1,n).
-///         [Conj]Trans/ColMajor or NoTrans/RowMajor: lda >= max(1,k).
+/// @param[in] ldb
+///         Leading dimension of B, i.e., column stride.
+///         NoTrans/ColMajor or [Conj]Trans/RowMajor: ldb >= max(1,n).
+///         [Conj]Trans/ColMajor or NoTrans/RowMajor: ldb >= max(1,k).
 ///
 /// @param[in] beta
 ///         Scalar beta. When beta is zero, C need not be set on input.
@@ -416,7 +416,7 @@ void gemm(
 ///         Leading dimension of C.
 ///         ldc >= max(1,m).
 ///
-/// @ingroup blas2
+/// @ingroup blas3
 
 template< typename TA, typename TB, typename TC >
 void gemm(

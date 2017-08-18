@@ -69,12 +69,12 @@ std::vector< libtest::routines_t > routines = {
     { "gemm",   test_gemm,   Section::blas3   },
     { "",       nullptr,     Section::newline },
 
-    { "hemm",   nullptr,     Section::blas3   },
+    { "hemm",   test_hemm,   Section::blas3   },
     { "herk",   nullptr,     Section::blas3   },
     { "her2k",  nullptr,     Section::blas3   },
     { "",       nullptr,     Section::newline },
 
-    { "symm",   nullptr,     Section::blas3   },
+    { "symm",   test_symm,   Section::blas3   },
     { "syrk",   nullptr,     Section::blas3   },
     { "syr2k",  nullptr,     Section::blas3   },
     { "",       nullptr,     Section::newline },

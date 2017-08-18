@@ -1198,6 +1198,128 @@ cblas_gemm(
                  &beta,  C, ldc );
 }
 
+// -----------------------------------------------------------------------------
+inline void
+cblas_hemm(
+    CBLAS_LAYOUT layout, CBLAS_SIDE side, CBLAS_UPLO uplo,
+    int m, int n,
+    float  alpha,
+    float const *A, int lda,
+    float const *B, int ldb,
+    float  beta,
+    float* C, int ldc )
+{
+    cblas_ssymm( layout, side, uplo, m, n,
+                 alpha, A, lda, B, ldb,
+                 beta,  C, ldc );
+}
+
+inline void
+cblas_hemm(
+    CBLAS_LAYOUT layout, CBLAS_SIDE side, CBLAS_UPLO uplo,
+    int m, int n,
+    double  alpha,
+    double const *A, int lda,
+    double const *B, int ldb,
+    double  beta,
+    double* C, int ldc )
+{
+    cblas_dsymm( layout, side, uplo, m, n,
+                 alpha, A, lda, B, ldb,
+                 beta,  C, ldc );
+}
+
+inline void
+cblas_hemm(
+    CBLAS_LAYOUT layout, CBLAS_SIDE side, CBLAS_UPLO uplo,
+    int m, int n,
+    std::complex<float>  alpha,
+    std::complex<float> const *A, int lda,
+    std::complex<float> const *B, int ldb,
+    std::complex<float>  beta,
+    std::complex<float>* C, int ldc )
+{
+    cblas_chemm( layout, side, uplo, m, n,
+                 &alpha, A, lda, B, ldb,
+                 &beta,  C, ldc );
+}
+
+inline void
+cblas_hemm(
+    CBLAS_LAYOUT layout, CBLAS_SIDE side, CBLAS_UPLO uplo,
+    int m, int n,
+    std::complex<double>  alpha,
+    std::complex<double> const *A, int lda,
+    std::complex<double> const *B, int ldb,
+    std::complex<double>  beta,
+    std::complex<double>* C, int ldc )
+{
+    cblas_zhemm( layout, side, uplo, m, n,
+                 &alpha, A, lda, B, ldb,
+                 &beta,  C, ldc );
+}
+
+// -----------------------------------------------------------------------------
+inline void
+cblas_symm(
+    CBLAS_LAYOUT layout, CBLAS_SIDE side, CBLAS_UPLO uplo,
+    int m, int n,
+    float  alpha,
+    float const *A, int lda,
+    float const *B, int ldb,
+    float  beta,
+    float* C, int ldc )
+{
+    cblas_ssymm( layout, side, uplo, m, n,
+                 alpha, A, lda, B, ldb,
+                 beta,  C, ldc );
+}
+
+inline void
+cblas_symm(
+    CBLAS_LAYOUT layout, CBLAS_SIDE side, CBLAS_UPLO uplo,
+    int m, int n,
+    double  alpha,
+    double const *A, int lda,
+    double const *B, int ldb,
+    double  beta,
+    double* C, int ldc )
+{
+    cblas_dsymm( layout, side, uplo, m, n,
+                 alpha, A, lda, B, ldb,
+                 beta,  C, ldc );
+}
+
+inline void
+cblas_symm(
+    CBLAS_LAYOUT layout, CBLAS_SIDE side, CBLAS_UPLO uplo,
+    int m, int n,
+    std::complex<float>  alpha,
+    std::complex<float> const *A, int lda,
+    std::complex<float> const *B, int ldb,
+    std::complex<float>  beta,
+    std::complex<float>* C, int ldc )
+{
+    cblas_csymm( layout, side, uplo, m, n,
+                 &alpha, A, lda, B, ldb,
+                 &beta,  C, ldc );
+}
+
+inline void
+cblas_symm(
+    CBLAS_LAYOUT layout, CBLAS_SIDE side, CBLAS_UPLO uplo,
+    int m, int n,
+    std::complex<double>  alpha,
+    std::complex<double> const *A, int lda,
+    std::complex<double> const *B, int ldb,
+    std::complex<double>  beta,
+    std::complex<double>* C, int ldc )
+{
+    cblas_zsymm( layout, side, uplo, m, n,
+                 &alpha, A, lda, B, ldb,
+                 &beta,  C, ldc );
+}
+
 
 // -----------------------------------------------------------------------------
 #define lapack_csyr2k FORTRAN_NAME( csyr2k, CSYR2K )
