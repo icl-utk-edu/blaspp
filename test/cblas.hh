@@ -438,6 +438,72 @@ cblas_nrm2(
 
 // -----------------------------------------------------------------------------
 inline void
+cblas_rot(
+    int n,
+    float *x, int incx,
+    float *y, int incy,
+    float c, float s )
+{
+    cblas_srot( n, x, incx, y, incy, c, s );
+}
+
+inline void
+cblas_rot(
+    int n,
+    double *x, int incx,
+    double *y, int incy,
+    double c, double s )
+{
+    cblas_drot( n, x, incx, y, incy, c, s );
+}
+
+inline void
+cblas_rot(
+    int n,
+    std::complex<float> *x, int incx,
+    std::complex<float> *y, int incy,
+    float c, std::complex<float> s )
+{
+    throw std::exception();
+    //cblas_crot( n, x, incx, y, incy, c, s );
+}
+
+inline void
+cblas_rot(
+    int n,
+    std::complex<double> *x, int incx,
+    std::complex<double> *y, int incy,
+    double c, std::complex<double> s )
+{
+    throw std::exception();
+    //cblas_zrot( n, x, incx, y, incy, c, s );
+}
+
+
+// -----------------------------------------------------------------------------
+inline void
+cblas_rotm(
+    int n,
+    float *x, int incx,
+    float *y, int incy,
+    float  p[5] )
+{
+    cblas_srotm( n, x, incx, y, incy, p );
+}
+
+inline void
+cblas_rotm(
+    int n,
+    double *x, int incx,
+    double *y, int incy,
+    double  p[5] )
+{
+    cblas_drotm( n, x, incx, y, incy, p );
+}
+
+
+// -----------------------------------------------------------------------------
+inline void
 cblas_scal(
     int n, float alpha,
     float* x, int incx )
@@ -1322,52 +1388,6 @@ cblas_symm(
 
 // -----------------------------------------------------------------------------
 inline void
-cblas_syrk(
-    CBLAS_LAYOUT layout, CBLAS_UPLO uplo, CBLAS_TRANSPOSE trans, int n, int k,
-    float alpha,
-    float const *A, int lda,
-    float beta,
-    float*       C, int ldc )
-{
-    cblas_ssyrk( layout, uplo, trans, n, k, alpha, A, lda, beta, C, ldc );
-}
-
-inline void
-cblas_syrk(
-    CBLAS_LAYOUT layout, CBLAS_UPLO uplo, CBLAS_TRANSPOSE trans, int n, int k,
-    double alpha,
-    double const *A, int lda,
-    double beta,
-    double*       C, int ldc )
-{
-    cblas_dsyrk( layout, uplo, trans, n, k, alpha, A, lda, beta, C, ldc );
-}
-
-inline void
-cblas_syrk(
-    CBLAS_LAYOUT layout, CBLAS_UPLO uplo, CBLAS_TRANSPOSE trans, int n, int k,
-    std::complex<float> alpha,
-    std::complex<float> const *A, int lda,
-    std::complex<float> beta,
-    std::complex<float>*       C, int ldc )
-{
-    cblas_csyrk( layout, uplo, trans, n, k, &alpha, A, lda, &beta, C, ldc );
-}
-
-inline void
-cblas_syrk(
-    CBLAS_LAYOUT layout, CBLAS_UPLO uplo, CBLAS_TRANSPOSE trans, int n, int k,
-    std::complex<double> alpha,
-    std::complex<double> const *A, int lda,
-    std::complex<double> beta,
-    std::complex<double>* C, int ldc )
-{
-    cblas_zsyrk( layout, uplo, trans, n, k, &alpha, A, lda, &beta, C, ldc );
-}
-
-
-// -----------------------------------------------------------------------------
-inline void
 cblas_herk(
     CBLAS_LAYOUT layout, CBLAS_UPLO uplo, CBLAS_TRANSPOSE trans, int n, int k,
     float alpha,
@@ -1414,51 +1434,47 @@ cblas_herk(
 
 // -----------------------------------------------------------------------------
 inline void
-cblas_syr2k(
+cblas_syrk(
     CBLAS_LAYOUT layout, CBLAS_UPLO uplo, CBLAS_TRANSPOSE trans, int n, int k,
     float alpha,
     float const *A, int lda,
-    float const *B, int ldb,
     float beta,
     float*       C, int ldc )
 {
-    cblas_ssyr2k( layout, uplo, trans, n, k, alpha, A, lda, B, ldb, beta, C, ldc );
+    cblas_ssyrk( layout, uplo, trans, n, k, alpha, A, lda, beta, C, ldc );
 }
 
 inline void
-cblas_syr2k(
+cblas_syrk(
     CBLAS_LAYOUT layout, CBLAS_UPLO uplo, CBLAS_TRANSPOSE trans, int n, int k,
     double alpha,
     double const *A, int lda,
-    double const *B, int ldb,
     double beta,
     double*       C, int ldc )
 {
-    cblas_dsyr2k( layout, uplo, trans, n, k, alpha, A, lda, B, ldb, beta, C, ldc );
+    cblas_dsyrk( layout, uplo, trans, n, k, alpha, A, lda, beta, C, ldc );
 }
 
 inline void
-cblas_syr2k(
+cblas_syrk(
     CBLAS_LAYOUT layout, CBLAS_UPLO uplo, CBLAS_TRANSPOSE trans, int n, int k,
     std::complex<float> alpha,
     std::complex<float> const *A, int lda,
-    std::complex<float> const *B, int ldb,
     std::complex<float> beta,
     std::complex<float>*       C, int ldc )
 {
-    cblas_csyr2k( layout, uplo, trans, n, k, &alpha, A, lda, B, ldb, &beta, C, ldc );
+    cblas_csyrk( layout, uplo, trans, n, k, &alpha, A, lda, &beta, C, ldc );
 }
 
 inline void
-cblas_syr2k(
+cblas_syrk(
     CBLAS_LAYOUT layout, CBLAS_UPLO uplo, CBLAS_TRANSPOSE trans, int n, int k,
     std::complex<double> alpha,
     std::complex<double> const *A, int lda,
-    std::complex<double> const *B, int ldb,
     std::complex<double> beta,
     std::complex<double>* C, int ldc )
 {
-    cblas_zsyr2k( layout, uplo, trans, n, k, &alpha, A, lda, B, ldb, &beta, C, ldc );
+    cblas_zsyrk( layout, uplo, trans, n, k, &alpha, A, lda, &beta, C, ldc );
 }
 
 
@@ -1514,45 +1530,51 @@ cblas_her2k(
 
 // -----------------------------------------------------------------------------
 inline void
-cblas_rot(
-    int n,
-    float *x, int incx,
-    float *y, int incy,
-    float c, float s )
+cblas_syr2k(
+    CBLAS_LAYOUT layout, CBLAS_UPLO uplo, CBLAS_TRANSPOSE trans, int n, int k,
+    float alpha,
+    float const *A, int lda,
+    float const *B, int ldb,
+    float beta,
+    float*       C, int ldc )
 {
-    cblas_srot( n, x, incx, y, incy, c, s );
+    cblas_ssyr2k( layout, uplo, trans, n, k, alpha, A, lda, B, ldb, beta, C, ldc );
 }
 
 inline void
-cblas_rot(
-    int n,
-    double *x, int incx,
-    double *y, int incy,
-    double c, double s )
+cblas_syr2k(
+    CBLAS_LAYOUT layout, CBLAS_UPLO uplo, CBLAS_TRANSPOSE trans, int n, int k,
+    double alpha,
+    double const *A, int lda,
+    double const *B, int ldb,
+    double beta,
+    double*       C, int ldc )
 {
-    cblas_drot( n, x, incx, y, incy, c, s );
+    cblas_dsyr2k( layout, uplo, trans, n, k, alpha, A, lda, B, ldb, beta, C, ldc );
 }
 
 inline void
-cblas_rot(
-    int n,
-    std::complex<float> *x, int incx,
-    std::complex<float> *y, int incy,
-    float c, std::complex<float> s )
+cblas_syr2k(
+    CBLAS_LAYOUT layout, CBLAS_UPLO uplo, CBLAS_TRANSPOSE trans, int n, int k,
+    std::complex<float> alpha,
+    std::complex<float> const *A, int lda,
+    std::complex<float> const *B, int ldb,
+    std::complex<float> beta,
+    std::complex<float>*       C, int ldc )
 {
-    throw std::exception();
-    //cblas_crot( n, x, incx, y, incy, c, s );
+    cblas_csyr2k( layout, uplo, trans, n, k, &alpha, A, lda, B, ldb, &beta, C, ldc );
 }
 
 inline void
-cblas_rot(
-    int n,
-    std::complex<double> *x, int incx,
-    std::complex<double> *y, int incy,
-    double c, std::complex<double> s )
+cblas_syr2k(
+    CBLAS_LAYOUT layout, CBLAS_UPLO uplo, CBLAS_TRANSPOSE trans, int n, int k,
+    std::complex<double> alpha,
+    std::complex<double> const *A, int lda,
+    std::complex<double> const *B, int ldb,
+    std::complex<double> beta,
+    std::complex<double>* C, int ldc )
 {
-    throw std::exception();
-    //cblas_zrot( n, x, incx, y, incy, c, s );
+    cblas_zsyr2k( layout, uplo, trans, n, k, &alpha, A, lda, B, ldb, &beta, C, ldc );
 }
 
 #endif        //  #ifndef CBLAS_HH
