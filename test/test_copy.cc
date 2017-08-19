@@ -4,6 +4,7 @@
 #include "cblas.hh"
 #include "lapack.hh"
 #include "flops.hh"
+#include "print_matrix.hh"
 #include "check_gemm.hh"
 
 #include "copy.hh"
@@ -29,7 +30,7 @@ void test_copy_work( Params& params, bool run )
 
     // adjust header names
     params.time.name( "SLATE\ntime (ms)" );
-    params.ref_time.name( "CBLAS\ntime (ms)" );
+    params.ref_time.name( "Ref.\ntime (ms)" );
 
     if ( ! run)
         return;
@@ -54,8 +55,8 @@ void test_copy_work( Params& params, bool run )
                 (lld) n, (lld) incy, (lld) size_y );
     }
     if (verbose >= 2) {
-        printf( "x    = " ); //print_vector( n, x, abs(incx) );
-        printf( "y    = " ); //print_vector( n, y, abs(incy) );
+        printf( "x    = " ); print_vector( n, x, incx );
+        printf( "y    = " ); print_vector( n, y, incy );
     }
 
     // run test
@@ -69,7 +70,7 @@ void test_copy_work( Params& params, bool run )
     params.gflops.value() = gflop / time;
 
     if (verbose >= 2) {
-        printf( "y2   = " ); //print_vector( n, y, abs(incy) );
+        printf( "y2   = " ); print_vector( n, y, incy );
     }
 
     if (params.check.value() == 'y') {
@@ -83,7 +84,7 @@ void test_copy_work( Params& params, bool run )
         params.ref_gflops.value() = gflop / time;
 
         if (verbose >= 2) {
-            printf( "yref = " ); //print_vector( n, yref, abs(incy) );
+            printf( "yref = " ); print_vector( n, yref, incy );
         }
 
         // error = ||yref - y||

@@ -4,6 +4,7 @@
 #include "cblas.hh"
 #include "lapack.hh"
 #include "flops.hh"
+#include "print_matrix.hh"
 #include "check_gemm.hh"
 
 #include "gemv.hh"
@@ -72,9 +73,12 @@ void test_gemv_work( Params& params, bool run )
                 (lld) Ym, (lld) incy,          (lld) size_y, Ynorm );
     }
     if (verbose >= 2) {
-        printf( "A = "    ); //print_matrix( m, n, A, lda );
-        printf( "x    = " ); //print_vector( Xm, x, abs(incx) );
-        printf( "y    = " ); //print_vector( Ym, y, abs(incy) );
+        printf( "alpha = %.4e + %.4ei; beta = %.4e + %.4ei;\n",
+                real(alpha), imag(alpha),
+                real(beta),  imag(beta) );
+        printf( "A = "    ); print_matrix( m, n, A, lda );
+        printf( "x    = " ); print_vector( Xm, x, incx );
+        printf( "y    = " ); print_vector( Ym, y, incy );
     }
 
     // run test
@@ -88,7 +92,7 @@ void test_gemv_work( Params& params, bool run )
     params.gflops.value() = gflop / time;
 
     if (verbose >= 2) {
-        printf( "y2   = " ); //print_vector( n, y, abs(incy) );
+        printf( "y2   = " ); print_vector( n, y, incy );
     }
 
     if (params.ref.value() == 'y' || params.check.value() == 'y') {
@@ -103,7 +107,7 @@ void test_gemv_work( Params& params, bool run )
         params.ref_gflops.value() = gflop / time;
 
         if (verbose >= 2) {
-            printf( "yref = " ); //print_vector( Ym, yref, abs(incy) );
+            printf( "yref = " ); print_vector( Ym, yref, incy );
         }
 
         // check error compared to reference

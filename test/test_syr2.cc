@@ -4,6 +4,7 @@
 #include "cblas.hh"
 #include "lapack.hh"
 #include "flops.hh"
+#include "print_matrix.hh"
 #include "check_gemm.hh"
 
 #include "syr2.hh"
@@ -69,11 +70,11 @@ void test_syr2_work( Params& params, bool run )
                 (lld) n, (lld) incy, (lld) size_y, Ynorm );
     }
     if (verbose >= 2) {
-        printf( "A = " ); //print_matrix( n, n, A, lda );
-        printf( "Aref = " ); //print_matrix( n, n, Aref, lda );
-        printf( "x = " ); //print_vector( n, x, abs(incx) );
-        printf( "y = " ); //print_vector( n, y, abs(incy) );
-        printf( "alpha = %.4f + %.4fi;\n", real(alpha), imag(alpha) );
+        printf( "alpha = %.4e + %.4ei;\n",
+                real(alpha), imag(alpha) );
+        printf( "A = " ); print_matrix( n, n, A, lda );
+        printf( "x = " ); print_vector( n, x, incx );
+        printf( "y = " ); print_vector( n, y, incy );
     }
 
     // run test
@@ -87,7 +88,7 @@ void test_syr2_work( Params& params, bool run )
     params.gflops.value() = gflop / time;
 
     if (verbose >= 2) {
-        printf( "A2 = " ); //print_matrix( n, n, A, lda );
+        printf( "A2 = " ); print_matrix( n, n, A, lda );
     }
 
     if (params.check.value() == 'y') {
@@ -98,8 +99,8 @@ void test_syr2_work( Params& params, bool run )
         cblas_copy( n, x, incx, XX, 1 );
         cblas_copy( n, y, incy, YY, 1 );
         if (verbose >= 2) {
-            printf( "XX = " ); //print_matrix( n, 1, XX, lda );
-            printf( "YY = " ); //print_matrix( n, 1, YY, lda );
+            printf( "XX = " ); print_matrix( n, 1, XX, lda );
+            printf( "YY = " ); print_matrix( n, 1, YY, lda );
         }
 
         // run reference
@@ -119,7 +120,7 @@ void test_syr2_work( Params& params, bool run )
         params.ref_gflops.value() = gflop / time;
 
         if (verbose >= 2) {
-            printf( "Aref = " ); //print_matrix( n, n, Aref, lda );
+            printf( "Aref = " ); print_matrix( n, n, Aref, lda );
         }
 
         // check error compared to reference

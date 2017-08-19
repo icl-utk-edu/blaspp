@@ -4,6 +4,7 @@
 #include "cblas.hh"
 #include "lapack.hh"
 #include "flops.hh"
+#include "print_matrix.hh"
 #include "check_gemm.hh"
 
 #include "hemv.hh"
@@ -67,9 +68,12 @@ void test_hemv_work( Params& params, bool run )
                 (lld) n, (lld) incy, (lld) size_y, Ynorm );
     }
     if (verbose >= 2) {
-        printf( "A = "    ); //print_matrix( n, n, A, lda );
-        printf( "x    = " ); //print_vector( n, x, abs(incx) );
-        printf( "y    = " ); //print_vector( n, y, abs(incy) );
+        printf( "alpha = %.4e + %.4ei; beta = %.4e + %.4ei;\n",
+                real(alpha), imag(alpha),
+                real(beta),  imag(beta) );
+        printf( "A = "    ); print_matrix( n, n, A, lda );
+        printf( "x    = " ); print_vector( n, x, incx );
+        printf( "y    = " ); print_vector( n, y, incy );
     }
 
     // run test
@@ -83,7 +87,7 @@ void test_hemv_work( Params& params, bool run )
     params.gflops.value() = gflop / time;
 
     if (verbose >= 2) {
-        printf( "y2   = " ); //print_vector( n, y, abs(incy) );
+        printf( "y2   = " ); print_vector( n, y, incy );
     }
 
     if (params.check.value() == 'y') {
@@ -98,7 +102,7 @@ void test_hemv_work( Params& params, bool run )
         params.ref_gflops.value() = gflop / time;
 
         if (verbose >= 2) {
-            printf( "yref = " ); //print_vector( n, yref, abs(incy) );
+            printf( "yref = " ); print_vector( n, yref, incy );
         }
 
         // check error compared to reference

@@ -4,6 +4,7 @@
 #include "cblas.hh"
 #include "lapack.hh"
 #include "flops.hh"
+#include "print_matrix.hh"
 
 #include "swap.hh"
 
@@ -28,11 +29,12 @@ void test_swap_work( Params& params, bool run )
 
     // adjust header names
     params.time.name( "SLATE\ntime (ms)" );
-    params.ref_time.name( "CBLAS\ntime (ms)" );
+    params.ref_time.name( "Ref.\ntime (ms)" );
 
     if ( ! run)
         return;
 
+    // setup
     size_t size_x = (n - 1) * abs(incx) + 1;
     size_t size_y = (n - 1) * abs(incy) + 1;
     TX* x    = new TX[ size_x ];
@@ -54,8 +56,8 @@ void test_swap_work( Params& params, bool run )
                 (lld) n, (lld) incy, (lld) size_y );
     }
     if (verbose >= 2) {
-        printf( "x    = " ); //print_vector( n, x, abs(incx) );
-        printf( "y    = " ); //print_vector( n, y, abs(incy) );
+        printf( "x    = " ); print_vector( n, x, incx );
+        printf( "y    = " ); print_vector( n, y, incy );
     }
 
     // run test
@@ -69,8 +71,8 @@ void test_swap_work( Params& params, bool run )
     params.gflops.value() = gflop / time;
 
     if (verbose >= 2) {
-        printf( "x2   = " ); //print_vector( n, x, abs(incx) );
-        printf( "y2   = " ); //print_vector( n, y, abs(incy) );
+        printf( "x2   = " ); print_vector( n, x, incx );
+        printf( "y2   = " ); print_vector( n, y, incy );
     }
 
     if (params.check.value() == 'y') {
@@ -80,8 +82,8 @@ void test_swap_work( Params& params, bool run )
         cblas_swap( n, xref, incx, yref, incy );
         time = omp_get_wtime() - time;
         if (verbose >= 2) {
-            printf( "xref = " ); //print_vector( n, xref, abs(incx) );
-            printf( "yref = " ); //print_vector( n, yref, abs(incy) );
+            printf( "xref = " ); print_vector( n, xref, incx );
+            printf( "yref = " ); print_vector( n, yref, incy );
         }
 
         params.ref_time.value()   = time * 1000;  // msec

@@ -4,6 +4,7 @@
 #include "cblas.hh"
 #include "lapack.hh"
 #include "flops.hh"
+#include "print_matrix.hh"
 #include "check_gemm.hh"
 
 #include "trsv.hh"
@@ -85,8 +86,8 @@ void test_trsv_work( Params& params, bool run )
                 (lld) n, (lld) incx, (lld) size_x, Xnorm );
     }
     if (verbose >= 2) {
-        printf( "A = "    ); //print_matrix( n, n, A, lda );
-        printf( "x    = " ); //print_vector( n, x, abs(incx) );
+        printf( "A = "    ); print_matrix( n, n, A, lda );
+        printf( "x    = " ); print_vector( n, x, incx );
     }
 
     // run test
@@ -100,7 +101,7 @@ void test_trsv_work( Params& params, bool run )
     params.gflops.value() = gflop / time;
 
     if (verbose >= 2) {
-        printf( "x2   = " ); //print_vector( n, x, abs(incx) );
+        printf( "x2   = " ); print_vector( n, x, incx );
     }
 
     if (params.check.value() == 'y') {
@@ -118,7 +119,7 @@ void test_trsv_work( Params& params, bool run )
         params.ref_gflops.value() = gflop / time;
 
         if (verbose >= 2) {
-            printf( "xref = " ); //print_vector( n, xref, abs(incx) );
+            printf( "xref = " ); print_vector( n, xref, incx );
         }
 
         // check error compared to reference

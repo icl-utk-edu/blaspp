@@ -4,6 +4,7 @@
 #include "cblas.hh"
 #include "lapack.hh"
 #include "flops.hh"
+#include "print_matrix.hh"
 #include "check_gemm.hh"
 
 #include "syrk.hh"
@@ -60,16 +61,19 @@ void test_syrk_work( Params& params, bool run )
     norm_t Cnorm = lapack_lansy( "f", uplo2str(uplo), n, C, ldc, work );
 
     if (verbose >= 1) {
-        printf( "uplo %c, trans %c\n"
+        printf( "layout %c, uplo %c, trans %c\n"
                 "A An=%5lld, An=%5lld, lda=%5lld, size=%5lld, norm %.2e\n"
                 "C  n=%5lld,  n=%5lld, ldc=%5lld, size=%5lld, norm %.2e\n",
-                uplo2char(uplo), op2char(trans),
+                layout2char(layout), uplo2char(uplo), op2char(trans),
                 (lld) Am, (lld) An, (lld) lda, (lld) size_A, Anorm,
                 (lld)  n, (lld)  n, (lld) ldc, (lld) size_C, Cnorm );
     }
     if (verbose >= 2) {
-        printf( "A = "    ); //print_matrix( Am, An, A, lda );
-        printf( "C = "    ); //print_matrix( Cm, Cn, C, ldc );
+        printf( "alpha = %.4e + %.4ei; beta = %.4e + %.4ei;\n",
+                real(alpha), imag(alpha),
+                real(beta),  imag(beta) );
+        printf( "A = "    ); print_matrix( Am, An, A, lda );
+        printf( "C = "    ); print_matrix(  n,  n, C, ldc );
     }
 
     // run test
@@ -84,7 +88,7 @@ void test_syrk_work( Params& params, bool run )
     params.gflops.value() = gflop / time;
 
     if (verbose >= 2) {
-        printf( "C2 = " ); //print_matrix( Cm, Cn, C, ldc );
+        printf( "C2 = " ); print_matrix( n, n, C, ldc );
     }
 
     if (params.ref.value() == 'y' || params.check.value() == 'y') {
@@ -101,7 +105,7 @@ void test_syrk_work( Params& params, bool run )
         params.ref_gflops.value() = gflop / time;
 
         if (verbose >= 2) {
-            printf( "Cref = " ); //print_matrix( Cm, Cn, Cref, ldc );
+            printf( "Cref = " ); print_matrix( n, n, Cref, ldc );
         }
 
         // check error compared to reference

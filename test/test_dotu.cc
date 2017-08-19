@@ -4,6 +4,7 @@
 #include "cblas.hh"
 #include "lapack.hh"
 #include "flops.hh"
+#include "print_matrix.hh"
 #include "check_gemm.hh"
 
 #include "dot.hh"
@@ -29,11 +30,12 @@ void test_dotu_work( Params& params, bool run )
 
     // adjust header names
     params.time.name( "SLATE\ntime (ms)" );
-    params.ref_time.name( "CBLAS\ntime (ms)" );
+    params.ref_time.name( "Ref.\ntime (ms)" );
 
     if ( ! run)
         return;
 
+    // setup
     size_t size_x = (n - 1) * abs(incx) + 1;
     size_t size_y = (n - 1) * abs(incy) + 1;
     TX* x = new TX[ size_x ];
@@ -55,8 +57,8 @@ void test_dotu_work( Params& params, bool run )
                 (lld) n, (lld) incy, (lld) size_y, Ynorm );
     }
     if (verbose >= 2) {
-        printf( "x = " ); //print_vector( n, x, abs(incx) );
-        printf( "y = " ); //print_vector( n, y, abs(incy) );
+        printf( "x = " ); print_vector( n, x, incx );
+        printf( "y = " ); print_vector( n, y, incy );
     }
 
     // run test
@@ -70,7 +72,7 @@ void test_dotu_work( Params& params, bool run )
     params.gflops.value() = gflop / time;
 
     if (verbose >= 1) {
-        printf( "dotu = %.4f + %.4fi\n", real(result), imag(result) );
+        printf( "dotu = %.4e + %.4ei\n", real(result), imag(result) );
     }
 
     if (params.ref.value() == 'y' || params.check.value() == 'y') {
@@ -84,7 +86,7 @@ void test_dotu_work( Params& params, bool run )
         params.ref_gflops.value() = gflop / time;
 
         if (verbose >= 1) {
-            printf( "ref = %.4f + %.4fi\n", real(ref), imag(ref) );
+            printf( "ref = %.4e + %.4ei\n", real(ref), imag(ref) );
         }
 
         // check error compared to reference

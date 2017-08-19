@@ -4,6 +4,7 @@
 #include "cblas.hh"
 #include "lapack.hh"
 #include "flops.hh"
+#include "print_matrix.hh"
 
 #include "scal.hh"
 
@@ -27,11 +28,12 @@ void test_scal_work( Params& params, bool run )
 
     // adjust header names
     params.time.name( "SLATE\ntime (ms)" );
-    params.ref_time.name( "CBLAS\ntime (ms)" );
+    params.ref_time.name( "Ref.\ntime (ms)" );
 
     if ( ! run)
         return;
 
+    // setup
     size_t size_x = (n - 1) * abs(incx) + 1;
     T* x    = new T[ size_x ];
     T* xref = new T[ size_x ];
@@ -46,7 +48,9 @@ void test_scal_work( Params& params, bool run )
                 (lld) n, (lld) incx, (lld) size_x );
     }
     if (verbose >= 2) {
-        printf( "x    = " ); //print_vector( n, x, abs(incx) );
+        printf( "alpha = %.4e + %.4ei;\n",
+                real(alpha), imag(alpha) );
+        printf( "x    = " ); print_vector( n, x, incx );
     }
 
     // run test
@@ -60,7 +64,7 @@ void test_scal_work( Params& params, bool run )
     params.gflops.value() = gflop / time;
 
     if (verbose >= 2) {
-        printf( "x2   = " ); //print_vector( n, x, abs(incx) );
+        printf( "x2   = " ); print_vector( n, x, incx );
     }
 
     if (params.check.value() == 'y') {
@@ -74,7 +78,7 @@ void test_scal_work( Params& params, bool run )
         params.ref_gflops.value() = gflop / time;
 
         if (verbose >= 2) {
-            printf( "xref = " ); //print_vector( n, xref, abs(incx) );
+            printf( "xref = " ); print_vector( n, xref, incx );
         }
 
         // error = ||xref - x|| / ||x|| ... todo

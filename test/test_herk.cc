@@ -4,6 +4,7 @@
 #include "cblas.hh"
 #include "lapack.hh"
 #include "flops.hh"
+#include "print_matrix.hh"
 #include "check_gemm.hh"
 
 #include "herk.hh"
@@ -68,8 +69,9 @@ void test_herk_work( Params& params, bool run )
                 (lld)  n, (lld)  n, (lld) ldc, (lld) size_C, Cnorm );
     }
     if (verbose >= 2) {
-        printf( "A = "    ); //print_matrix( Am, An, A, lda );
-        printf( "C = "    ); //print_matrix( Cm, Cn, C, ldc );
+        printf( "alpha = %.4e; beta = %.4e;  %% real\n", alpha, beta );
+        printf( "A = "    ); print_matrix( Am, An, A, lda );
+        printf( "C = "    ); print_matrix(  n,  n, C, ldc );
     }
 
     // run test
@@ -84,7 +86,7 @@ void test_herk_work( Params& params, bool run )
     params.gflops.value() = gflop / time;
 
     if (verbose >= 2) {
-        printf( "C2 = " ); //print_matrix( Cm, Cn, C, ldc );
+        printf( "C2 = " ); print_matrix( n, n, C, ldc );
     }
 
     if (params.ref.value() == 'y' || params.check.value() == 'y') {
@@ -101,7 +103,7 @@ void test_herk_work( Params& params, bool run )
         params.ref_gflops.value() = gflop / time;
 
         if (verbose >= 2) {
-            printf( "Cref = " ); //print_matrix( Cm, Cn, Cref, ldc );
+            printf( "Cref = " ); print_matrix( n, n, Cref, ldc );
         }
 
         // check error compared to reference

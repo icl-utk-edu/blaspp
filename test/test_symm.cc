@@ -4,6 +4,7 @@
 #include "cblas.hh"
 #include "lapack.hh"
 #include "flops.hh"
+#include "print_matrix.hh"
 #include "check_gemm.hh"
 
 #include "symm.hh"
@@ -76,9 +77,12 @@ void test_symm_work( Params& params, bool run )
                 (lld)  m, (lld)  n, (lld) ldc, (lld) size_C, Cnorm );
     }
     if (verbose >= 2) {
-        printf( "A = "    ); //print_matrix( Am, An, A, lda );
-        printf( "B = "    ); //print_matrix( Cm, Cn, B, ldb );
-        printf( "C = "    ); //print_matrix( Cm, Cn, C, ldc );
+        printf( "alpha = %.4e + %.4ei; beta = %.4e + %.4ei;\n",
+                real(alpha), imag(alpha),
+                real(beta),  imag(beta) );
+        printf( "A = "    ); print_matrix( An, An, A, lda );
+        printf( "B = "    ); print_matrix( Cm, Cn, B, ldb );
+        printf( "C = "    ); print_matrix( Cm, Cn, C, ldc );
     }
 
     // run test
@@ -93,7 +97,7 @@ void test_symm_work( Params& params, bool run )
     params.gflops.value() = gflop / time;
 
     if (verbose >= 2) {
-        printf( "C2 = " ); //print_matrix( Cm, Cn, C, ldc );
+        printf( "C2 = " ); print_matrix( Cm, Cn, C, ldc );
     }
 
     if (params.ref.value() == 'y' || params.check.value() == 'y') {
@@ -110,7 +114,7 @@ void test_symm_work( Params& params, bool run )
         params.ref_gflops.value() = gflop / time;
 
         if (verbose >= 2) {
-            printf( "Cref = " ); //print_matrix( Cm, Cn, Cref, ldc );
+            printf( "Cref = " ); print_matrix( Cm, Cn, Cref, ldc );
         }
 
         // check error compared to reference

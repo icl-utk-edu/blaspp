@@ -4,6 +4,7 @@
 #include "cblas.hh"
 #include "lapack.hh"
 #include "flops.hh"
+#include "print_matrix.hh"
 #include "check_gemm.hh"
 
 #include "syr.hh"
@@ -59,8 +60,10 @@ void test_syr_work( Params& params, bool run )
                 (lld) n, (lld) incx, (lld) size_x, Xnorm );
     }
     if (verbose >= 2) {
-        printf( "A = " ); //print_matrix( n, n, A, lda );
-        printf( "x = " ); //print_vector( n, x, abs(incx) );
+        printf( "alpha = %.4e + %.4ei;\n",
+                real(alpha), imag(alpha) );
+        printf( "A = " ); print_matrix( n, n, A, lda );
+        printf( "x = " ); print_vector( n, x, incx );
     }
 
     // run test
@@ -74,7 +77,7 @@ void test_syr_work( Params& params, bool run )
     params.gflops.value() = gflop / time;
 
     if (verbose >= 2) {
-        printf( "A2 = " ); //print_matrix( n, n, A, lda );
+        printf( "A2 = " ); print_matrix( n, n, A, lda );
     }
 
     if (params.check.value() == 'y') {
@@ -89,7 +92,7 @@ void test_syr_work( Params& params, bool run )
         params.ref_gflops.value() = gflop / time;
 
         if (verbose >= 2) {
-            printf( "Aref = " ); //print_matrix( n, n, Aref, lda );
+            printf( "Aref = " ); print_matrix( n, n, Aref, lda );
         }
 
         // check error compared to reference

@@ -4,6 +4,7 @@
 #include "cblas.hh"
 #include "lapack.hh"
 #include "flops.hh"
+#include "print_matrix.hh"
 
 #include "iamax.hh"
 
@@ -26,7 +27,7 @@ void test_iamax_work( Params& params, bool run )
 
     // adjust header names
     params.time.name( "SLATE\ntime (ms)" );
-    params.ref_time.name( "CBLAS\ntime (ms)" );
+    params.ref_time.name( "Ref.\ntime (ms)" );
 
     if ( ! run)
         return;
@@ -44,7 +45,7 @@ void test_iamax_work( Params& params, bool run )
                 (lld) n, (lld) incx, (lld) size_x );
     }
     if (verbose >= 2) {
-        printf( "x = " ); //print_vector( n, x, abs(incx) );
+        printf( "x = " ); print_vector( n, x, incx );
     }
 
     // run test

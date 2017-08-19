@@ -4,6 +4,7 @@
 #include "cblas.hh"
 #include "lapack.hh"
 #include "flops.hh"
+#include "print_matrix.hh"
 
 #include "nrm2.hh"
 
@@ -26,11 +27,12 @@ void test_nrm2_work( Params& params, bool run )
 
     // adjust header names
     params.time.name( "SLATE\ntime (ms)" );
-    params.ref_time.name( "CBLAS\ntime (ms)" );
+    params.ref_time.name( "Ref.\ntime (ms)" );
 
     if ( ! run)
         return;
 
+    // setup
     size_t size_x = (n - 1) * abs(incx) + 1;
     T* x = new T[ size_x ];
 
@@ -43,7 +45,7 @@ void test_nrm2_work( Params& params, bool run )
                 (lld) n, (lld) incx, (lld) size_x );
     }
     if (verbose >= 2) {
-        printf( "x = " ); //print_vector( n, x, abs(incx) );
+        printf( "x = " ); print_vector( n, x, incx );
     }
 
     // run test

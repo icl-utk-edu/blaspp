@@ -4,6 +4,7 @@
 #include "cblas.hh"
 #include "lapack.hh"
 #include "flops.hh"
+#include "print_matrix.hh"
 #include "check_gemm.hh"
 
 #include "her.hh"
@@ -20,7 +21,7 @@ void test_her_work( Params& params, bool run )
     // get & mark input values
     blas::Layout layout = params.layout.value();
     blas::Uplo uplo = params.uplo.value();
-    norm_t alpha    = params.alpha.value();  // note: zher takes double, not complex<double>
+    norm_t alpha    = params.alpha.value();  // note: real
     int64_t n       = params.dim.n();
     int64_t incx    = params.incx.value();
     int64_t align   = params.align.value();
@@ -59,8 +60,9 @@ void test_her_work( Params& params, bool run )
                 (lld) n, (lld) incx, (lld) size_x, Xnorm );
     }
     if (verbose >= 2) {
-        printf( "A = " ); //print_matrix( n, n, A, lda );
-        printf( "x = " ); //print_vector( n, x, abs(incx) );
+        printf( "alpha = %.4e;\n", alpha );
+        printf( "A = " ); print_matrix( n, n, A, lda );
+        printf( "x = " ); print_vector( n, x, incx );
     }
 
     // run test
@@ -74,7 +76,7 @@ void test_her_work( Params& params, bool run )
     params.gflops.value() = gflop / time;
 
     if (verbose >= 2) {
-        printf( "A2 = " ); //print_matrix( n, n, A, lda );
+        printf( "A2 = " ); print_matrix( n, n, A, lda );
     }
 
     if (params.check.value() == 'y') {
@@ -89,7 +91,7 @@ void test_her_work( Params& params, bool run )
         params.ref_gflops.value() = gflop / time;
 
         if (verbose >= 2) {
-            printf( "Aref = " ); //print_matrix( n, n, Aref, lda );
+            printf( "Aref = " ); print_matrix( n, n, Aref, lda );
         }
 
         // check error compared to reference
