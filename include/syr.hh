@@ -161,7 +161,7 @@ void syr(
 
 // =============================================================================
 /// Symmetric matrix rank-1 update,
-///     A = alpha*x*x^H + A,
+///     A = alpha*x*x^T + A,
 /// where alpha is a scalar, x is a vector,
 /// and A is an n-by-n symmetric matrix.
 ///
