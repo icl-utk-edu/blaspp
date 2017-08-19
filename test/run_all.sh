@@ -3,6 +3,8 @@
 setenv opts     ""
 
 setenv type     "--type s,d,c,z"
+setenv real     "--type s,d"
+setenv complex  "--type c,z"
 
 setenv n        "--dim 25:100:25"
 setenv mn       "${n} --dim 25x50,50x25 --dim 25x100,100x25"
@@ -43,6 +45,8 @@ echo "-------------------- Level 1 BLAS"
 ./test dotu  ${opts} ${type} ${n} ${incx} ${incy} > dotu.txt
 ./test iamax ${opts} ${type} ${n} ${incx_pos}     > iamax.txt
 ./test nrm2  ${opts} ${type} ${n} ${incx_pos}     > nrm2.txt
+./test rot   ${opts} ${real} ${n} ${incx} ${incy} > rot_sd.txt  # todo: complex
+./test rotm  ${opts} ${real} ${n} ${incx} ${incy} > rotm.txt
 ./test scal  ${opts} ${type} ${n} ${incx_pos}     > scal.txt
 ./test swap  ${opts} ${type} ${n} ${incx} ${incy} > swap.txt
 
@@ -64,13 +68,13 @@ echo "-------------------- Level 3 BLAS"
 ./test hemm  ${opts} ${type} ${layout} ${align} ${side}   ${uplo}   ${mn}  > hemm.txt
 ./test symm  ${opts} ${type} ${layout} ${align} ${side}   ${uplo}   ${mn}  > symm.txt
 
-./test herk  ${opts} --type s,d ${layout} ${align} ${uplo} ${trans}    ${mn} > herk_sd.txt
-./test herk  ${opts} --type c,z ${layout} ${align} ${uplo} ${trans_nc} ${mn} > herk_cz.txt
-./test syrk  ${opts} --type s,d ${layout} ${align} ${uplo} ${trans}    ${mn} > syrk_sd.txt
-./test syrk  ${opts} --type c,z ${layout} ${align} ${uplo} ${trans_nt} ${mn} > syrk_cz.txt
-./test her2k ${opts} --type s,d ${layout} ${align} ${uplo} ${trans}    ${mn} > her2k_sd.txt
-./test her2k ${opts} --type c,z ${layout} ${align} ${uplo} ${trans_nc} ${mn} > her2k_cz.txt
-./test syr2k ${opts} --type s,d ${layout} ${align} ${uplo} ${trans}    ${mn} > syr2k_sd.txt
-./test syr2k ${opts} --type c,z ${layout} ${align} ${uplo} ${trans_nt} ${mn} > syr2k_cz.txt
+./test herk  ${opts} ${real}    ${layout} ${align} ${uplo} ${trans}    ${mn} > herk_sd.txt
+./test herk  ${opts} ${complex} ${layout} ${align} ${uplo} ${trans_nc} ${mn} > herk_cz.txt
+./test syrk  ${opts} ${real}    ${layout} ${align} ${uplo} ${trans}    ${mn} > syrk_sd.txt
+./test syrk  ${opts} ${complex} ${layout} ${align} ${uplo} ${trans_nt} ${mn} > syrk_cz.txt
+./test her2k ${opts} ${real}    ${layout} ${align} ${uplo} ${trans}    ${mn} > her2k_sd.txt
+./test her2k ${opts} ${complex} ${layout} ${align} ${uplo} ${trans_nc} ${mn} > her2k_cz.txt
+./test syr2k ${opts} ${real}    ${layout} ${align} ${uplo} ${trans}    ${mn} > syr2k_sd.txt
+./test syr2k ${opts} ${complex} ${layout} ${align} ${uplo} ${trans_nt} ${mn} > syr2k_cz.txt
 
 unset echo

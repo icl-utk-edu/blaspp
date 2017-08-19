@@ -8,6 +8,7 @@
 
 #include "copy.hh"
 #include "rotm.hh"
+#include "rotmg.hh"
 
 // -----------------------------------------------------------------------------
 template< typename TX >
@@ -40,7 +41,6 @@ void test_rotm_work( Params& params, bool run )
     TX* xref = new TX[ size_x ];
     TX* y    = new TX[ size_y ];
     TX* yref = new TX[ size_y ];
-    TX p[5];
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
@@ -48,6 +48,12 @@ void test_rotm_work( Params& params, bool run )
     lapack_larnv( idist, iseed, size_y, y );
     cblas_copy( n, x, incx, xref, incx );
     cblas_copy( n, y, incy, yref, incy );
+
+    // compute random rotation
+    TX d[4];
+    TX p[5];
+    lapack_larnv( idist, iseed, 4, d );
+    blas::rotmg( &d[0], &d[1], &d[2], d[3], p );
 
     // norms for error check
     norm_t Xnorm = cblas_nrm2( n, x, abs(incx) );
@@ -84,7 +90,7 @@ void test_rotm_work( Params& params, bool run )
         // run reference
         libtest::flush_cache( params.cache.value() );
         time = omp_get_wtime();
-        //cblas_rotm( n, xref, incx, yref, incy, p );  // todo
+        cblas_rotm( n, xref, incx, yref, incy, p );  // todo
         time = omp_get_wtime() - time;
 
         params.ref_time.value()   = time * 1000;  // msec
@@ -96,7 +102,7 @@ void test_rotm_work( Params& params, bool run )
         }
 
         // check error compared to reference
-        // C = [x y] * R for n x 2 matrix C and 2 x 2 rotation R
+        // C = [x y] * R + C0, for n x 2 matrix C and 2 x 2 rotation R
         // alpha=1, beta=0, C0norm=0
         TX* C    = new TX[ 2*n ];
         TX* Cref = new TX[ 2*n ];
@@ -104,7 +110,7 @@ void test_rotm_work( Params& params, bool run )
         blas::copy( n, y,    incy, &C[n],    1 );
         blas::copy( n, xref, incx, &Cref[0], 1 );
         blas::copy( n, yref, incy, &Cref[n], 1 );
-        norm_t Rnorm = sqrt(2);  // ||R||_F
+        norm_t Rnorm = sqrt(2);  // ||R||_F  // todo
         norm_t error;
         int64_t okay;
         check_gemm( n, 2, 2, TX(1), TX(0), Anorm, Rnorm, norm_t(0),

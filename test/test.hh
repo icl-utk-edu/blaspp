@@ -67,10 +67,12 @@ void test_dot   ( Params& params, bool run );
 void test_dotu  ( Params& params, bool run );
 void test_iamax ( Params& params, bool run );
 void test_nrm2  ( Params& params, bool run );
+void test_rot   ( Params& params, bool run );
+void test_rotg  ( Params& params, bool run );
+void test_rotm  ( Params& params, bool run );
+void test_rotmg ( Params& params, bool run );
 void test_scal  ( Params& params, bool run );
 void test_swap  ( Params& params, bool run );
-
-// todo: rotg, rot, rotmg, rotm
 
 // -----------------------------------------------------------------------------
 // Level 2 BLAS

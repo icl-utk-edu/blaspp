@@ -43,6 +43,10 @@ std::vector< libtest::routines_t > routines = {
     { "dotu",   test_dotu,   Section::blas1   },
     { "iamax",  test_iamax,  Section::blas1   },
     { "nrm2",   test_nrm2,   Section::blas1   },
+    { "rot",    test_rot,    Section::blas1   },
+    { "rotg",   test_rotg,   Section::blas1   },
+    { "rotm",   test_rotm,   Section::blas1   },
+    { "rotmg",  test_rotmg,  Section::blas1   },
     { "scal",   test_scal,   Section::blas1   },
     { "swap",   test_swap,   Section::blas1   },
 
