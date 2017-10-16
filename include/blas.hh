@@ -37,4 +37,12 @@
 // =============================================================================
 // Level 3 BLAS
 
+#include "gemm.hh"
+#include "syrk.hh"
+#include "herk.hh"
+#include "syr2k.hh"
+#include "her2k.hh"
+#include "trmm.hh"
+#include "trsm.hh"
+
 #endif        //  #ifndef BLAS_HH
