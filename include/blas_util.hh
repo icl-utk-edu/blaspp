@@ -217,7 +217,6 @@ template<>
 class traits2< double, std::complex<float> >
 {
 public:
-    // TODO: what should this be? do we care?
     typedef std::complex<double> scalar_t;
     typedef double real_t;
 };
