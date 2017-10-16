@@ -117,19 +117,19 @@ int64_t iamax(
     int64_t n,
     T const *x, int64_t incx )
 {
-    typedef typename traits<T>::norm_t norm_t;
+    typedef typename traits<T>::real_t real_t;
 
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail
 
     // todo: check NAN
-    norm_t result = -1;
+    real_t result = -1;
     int64_t index = -1;
     if (incx == 1) {
         // unit stride
         for (int64_t i = 0; i < n; ++i) {
-            norm_t tmp = abs1( x[i] );
+            real_t tmp = abs1( x[i] );
             if (tmp > result) {
                 result = tmp;
                 index = i;
@@ -140,7 +140,7 @@ int64_t iamax(
         // non-unit stride
         int64_t ix = 0;
         for (int64_t i = 0; i < n; ++i) {
-            norm_t tmp = abs1( x[ix] );
+            real_t tmp = abs1( x[ix] );
             if (tmp > result) {
                 result = tmp;
                 index = i;

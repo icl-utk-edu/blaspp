@@ -13,7 +13,7 @@ template< typename T >
 void test_scal_work( Params& params, bool run )
 {
     using namespace blas;
-    typedef typename traits<T>::norm_t norm_t;
+    typedef typename traits<T>::real_t real_t;
     typedef long long lld;
 
     // get & mark input values
@@ -83,13 +83,13 @@ void test_scal_work( Params& params, bool run )
 
         // error = ||xref - x|| / ||x|| ... todo
         cblas_axpy( n, -1.0, x, incx, xref, incx );
-        norm_t error = cblas_nrm2( n, xref, abs(incx) );
-        norm_t xnorm = cblas_nrm2( n, x,    abs(incx) );
+        real_t error = cblas_nrm2( n, xref, abs(incx) );
+        real_t xnorm = cblas_nrm2( n, x,    abs(incx) );
         error /= xnorm;
         params.error.value() = error;
 
-        norm_t eps = std::numeric_limits< norm_t >::epsilon();
-        norm_t tol = params.tol.value() * eps;
+        real_t eps = std::numeric_limits< real_t >::epsilon();
+        real_t tol = params.tol.value() * eps;
         params.okay.value() = (error < tol);
     }
 

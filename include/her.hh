@@ -182,17 +182,17 @@ void her(
     blas::Layout layout,
     blas::Uplo uplo,
     int64_t n,
-    typename blas::traits2<TA, TX>::norm_t alpha,  // zher takes double alpha; use norm_t
+    typename blas::traits2<TA, TX>::real_t alpha,  // zher takes double alpha; use real_t
     TX const *x, int64_t incx,
     TA       *A, int64_t lda )
 {
     typedef typename blas::traits2<TA, TX>::scalar_t scalar_t;
-    typedef typename blas::traits2<TA, TX>::norm_t norm_t;
+    typedef typename blas::traits2<TA, TX>::real_t real_t;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]
 
     // constants
-    const norm_t zero = 0;
+    const real_t zero = 0;
 
     // check arguments
     throw_if_( layout != Layout::ColMajor &&

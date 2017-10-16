@@ -14,7 +14,7 @@ void test_swap_work( Params& params, bool run )
 {
     using namespace blas;
     typedef typename traits2< TX, TY >::scalar_t scalar_t;
-    typedef typename traits< scalar_t >::norm_t norm_t;
+    typedef typename traits< scalar_t >::real_t real_t;
     typedef long long lld;
 
     // get & mark input values
@@ -92,7 +92,7 @@ void test_swap_work( Params& params, bool run )
         // error = ||xref - x|| + ||yref - y||
         cblas_axpy( n, -1.0, x, incx, xref, incx );
         cblas_axpy( n, -1.0, y, incy, yref, incy );
-        norm_t error = cblas_nrm2( n, xref, abs(incx) )
+        real_t error = cblas_nrm2( n, xref, abs(incx) )
                      + cblas_nrm2( n, yref, abs(incy) );
         params.error.value() = error;
 

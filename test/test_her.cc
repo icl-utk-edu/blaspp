@@ -15,13 +15,13 @@ void test_her_work( Params& params, bool run )
 {
     using namespace blas;
     typedef typename traits2< TA, TX >::scalar_t scalar_t;
-    typedef typename traits< scalar_t >::norm_t norm_t;
+    typedef typename traits< scalar_t >::real_t real_t;
     typedef long long lld;
 
     // get & mark input values
     blas::Layout layout = params.layout.value();
     blas::Uplo uplo = params.uplo.value();
-    norm_t alpha    = params.alpha.value();  // note: real
+    real_t alpha    = params.alpha.value();  // note: real
     int64_t n       = params.dim.n();
     int64_t incx    = params.incx.value();
     int64_t align   = params.align.value();
@@ -49,9 +49,9 @@ void test_her_work( Params& params, bool run )
     lapack_lacpy( "g", n, n, A, lda, Aref, lda );
 
     // norms for error check
-    norm_t work[1];
-    norm_t Anorm = lapack_lanhe( "f", uplo2str(uplo), n, A, lda, work );
-    norm_t Xnorm = cblas_nrm2( n, x, abs(incx) );
+    real_t work[1];
+    real_t Anorm = lapack_lanhe( "f", uplo2str(uplo), n, A, lda, work );
+    real_t Xnorm = cblas_nrm2( n, x, abs(incx) );
 
     if (verbose >= 1) {
         printf( "A n=%5lld, lda=%5lld, size=%5lld, norm=%.2e\n"
@@ -96,9 +96,9 @@ void test_her_work( Params& params, bool run )
 
         // check error compared to reference
         // beta = 1
-        norm_t error;
+        real_t error;
         int64_t okay;
-        check_herk( uplo, n, 1, alpha, norm_t(1), Xnorm, Xnorm, Anorm,
+        check_herk( uplo, n, 1, alpha, real_t(1), Xnorm, Xnorm, Anorm,
                     Aref, lda, A, lda, &error, &okay );
         params.error.value() = error;
         params.okay.value() = okay;

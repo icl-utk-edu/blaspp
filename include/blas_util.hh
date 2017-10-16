@@ -157,7 +157,7 @@ template< typename T >
 class traits
 {
 public:
-    typedef T norm_t;
+    typedef T real_t;
 };
 
 // ----------------------------------------
@@ -165,7 +165,7 @@ template< typename T >
 class traits< std::complex<T> >
 {
 public:
-    typedef T norm_t;
+    typedef T real_t;
 };
 
 
@@ -180,7 +180,7 @@ class traits2
 {
 public:
     typedef T1 scalar_t;
-    typedef T1 norm_t;
+    typedef T1 real_t;
 };
 
 // ----------------------------------------
@@ -190,7 +190,7 @@ class traits2< float, double >
 {
 public:
     typedef double scalar_t;
-    typedef double norm_t;
+    typedef double real_t;
 };
 
 // ---------------
@@ -199,7 +199,7 @@ class traits2< float, std::complex<float> >
 {
 public:
     typedef std::complex<float> scalar_t;
-    typedef float norm_t;
+    typedef float real_t;
 };
 
 // ---------------
@@ -208,7 +208,7 @@ class traits2< float, std::complex<double> >
 {
 public:
     typedef std::complex<double> scalar_t;
-    typedef double norm_t;
+    typedef double real_t;
 };
 
 // ----------------------------------------
@@ -219,7 +219,7 @@ class traits2< double, std::complex<float> >
 public:
     // TODO: what should this be? do we care?
     typedef std::complex<double> scalar_t;
-    typedef double norm_t;
+    typedef double real_t;
 };
 
 // ---------------
@@ -228,7 +228,7 @@ class traits2< double, std::complex<double> >
 {
 public:
     typedef std::complex<double> scalar_t;
-    typedef double norm_t;
+    typedef double real_t;
 };
 
 // ----------------------------------------
@@ -238,7 +238,7 @@ class traits2< std::complex<float>, std::complex<double> >
 {
 public:
     typedef std::complex<double> scalar_t;
-    typedef double norm_t;
+    typedef double real_t;
 };
 
 
@@ -254,7 +254,7 @@ public:
         traits2< typename traits2<T1,T2>::scalar_t, T3 >::scalar_t scalar_t;
 
     typedef typename
-        traits2< typename traits2<T1,T2>::scalar_t, T3 >::norm_t norm_t;
+        traits2< typename traits2<T1,T2>::scalar_t, T3 >::real_t real_t;
 };
 
 

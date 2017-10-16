@@ -15,7 +15,7 @@ void test_gemv_work( Params& params, bool run )
 {
     using namespace blas;
     typedef typename traits3< TA, TX, TY >::scalar_t scalar_t;
-    typedef typename traits< scalar_t >::norm_t norm_t;
+    typedef typename traits< scalar_t >::real_t real_t;
     typedef long long lld;
 
     // get & mark input values
@@ -59,10 +59,10 @@ void test_gemv_work( Params& params, bool run )
     cblas_copy( Ym, y, incy, yref, incy );
 
     // norms for error check
-    norm_t work[1];
-    norm_t Anorm = lapack_lange( "f", Am, An, A, lda, work );
-    norm_t Xnorm = cblas_nrm2( Xm, x, abs(incx) );
-    norm_t Ynorm = cblas_nrm2( Ym, y, abs(incy) );
+    real_t work[1];
+    real_t Anorm = lapack_lange( "f", Am, An, A, lda, work );
+    real_t Xnorm = cblas_nrm2( Xm, x, abs(incx) );
+    real_t Ynorm = cblas_nrm2( Ym, y, abs(incy) );
 
     if (verbose >= 1) {
         printf( "A Am=%5lld, An=%5lld, lda=%5lld, size=%5lld, norm=%.2e\n"
@@ -112,7 +112,7 @@ void test_gemv_work( Params& params, bool run )
 
         // check error compared to reference
         // treat y as 1 x Ym matrix with ld = incy; k = Xm is reduction dimension
-        norm_t error;
+        real_t error;
         int64_t okay;
         check_gemm( 1, Ym, Xm, alpha, beta, Anorm, Xnorm, Ynorm,
                     yref, abs(incy), y, abs(incy), &error, &okay );

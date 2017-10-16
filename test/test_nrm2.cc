@@ -13,7 +13,7 @@ template< typename T >
 void test_nrm2_work( Params& params, bool run )
 {
     using namespace blas;
-    typedef typename traits<T>::norm_t norm_t;
+    typedef typename traits<T>::real_t real_t;
     typedef long long lld;
 
     // get & mark input values
@@ -51,7 +51,7 @@ void test_nrm2_work( Params& params, bool run )
     // run test
     libtest::flush_cache( params.cache.value() );
     double time = omp_get_wtime();
-    norm_t result = blas::nrm2( n, x, incx );
+    real_t result = blas::nrm2( n, x, incx );
     time = omp_get_wtime() - time;
 
     double gflop = gflop_nrm2( n, x );
@@ -66,7 +66,7 @@ void test_nrm2_work( Params& params, bool run )
         // run reference
         libtest::flush_cache( params.cache.value() );
         time = omp_get_wtime();
-        norm_t ref = cblas_nrm2( n, x, abs(incx) );
+        real_t ref = cblas_nrm2( n, x, abs(incx) );
         time = omp_get_wtime() - time;
 
         params.ref_time.value()   = time * 1000;  // msec
@@ -77,11 +77,11 @@ void test_nrm2_work( Params& params, bool run )
         }
 
         // error = |ref - result| / |result|
-        norm_t error = std::abs( ref - result ) / std::abs( result );
+        real_t error = std::abs( ref - result ) / std::abs( result );
         params.error.value() = error;
 
-        norm_t eps = std::numeric_limits< norm_t >::epsilon();
-        norm_t tol = params.tol.value() * eps;
+        real_t eps = std::numeric_limits< real_t >::epsilon();
+        real_t tol = params.tol.value() * eps;
         params.okay.value() = (error < tol);
     }
 

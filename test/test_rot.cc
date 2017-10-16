@@ -18,7 +18,7 @@ template< typename TX, typename TS >
 void test_rot_work( Params& params, bool run )
 {
     using namespace blas;
-    typedef typename traits< TX >::norm_t norm_t;
+    typedef typename traits< TX >::real_t real_t;
     typedef long long lld;
 
     // get & mark input values
@@ -46,7 +46,7 @@ void test_rot_work( Params& params, bool run )
     TX* y    = new TX[ size_y ];
     TX* yref = new TX[ size_y ];
     TX s = rand() / double(RAND_MAX);    // todo: imag
-    norm_t c = sqrt( 1 - real(s*conj(s)) );  // real
+    real_t c = sqrt( 1 - real(s*conj(s)) );  // real
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
@@ -56,9 +56,9 @@ void test_rot_work( Params& params, bool run )
     cblas_copy( n, y, incy, yref, incy );
 
     // norms for error check
-    norm_t Xnorm = cblas_nrm2( n, x, abs(incx) );
-    norm_t Ynorm = cblas_nrm2( n, y, abs(incy) );
-    norm_t Anorm = sqrt( Xnorm*Xnorm + Ynorm*Ynorm ); // || [x y] ||_F
+    real_t Xnorm = cblas_nrm2( n, x, abs(incx) );
+    real_t Ynorm = cblas_nrm2( n, y, abs(incy) );
+    real_t Anorm = sqrt( Xnorm*Xnorm + Ynorm*Ynorm ); // || [x y] ||_F
 
     if (verbose >= 1) {
         printf( "x n=%5lld, inc=%5lld, size=%5lld\n"
@@ -110,10 +110,10 @@ void test_rot_work( Params& params, bool run )
         blas::copy( n, y,    incy, &C[n],    1 );
         blas::copy( n, xref, incx, &Cref[0], 1 );
         blas::copy( n, yref, incy, &Cref[n], 1 );
-        norm_t Rnorm = sqrt(2);  // ||R||_F
-        norm_t error;
+        real_t Rnorm = sqrt(2);  // ||R||_F
+        real_t error;
         int64_t okay;
-        check_gemm( n, 2, 2, TX(1), TX(0), Anorm, Rnorm, norm_t(0),
+        check_gemm( n, 2, 2, TX(1), TX(0), Anorm, Rnorm, real_t(0),
                     Cref, n, C, n, &error, &okay );
         params.error.value() = error;
         params.okay.value() = okay;

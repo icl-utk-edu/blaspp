@@ -216,9 +216,9 @@ void herk(
     blas::Uplo uplo,
     blas::Op trans,
     int64_t n, int64_t k,
-    typename traits3<TA, TB, TC>::norm_t alpha,  // note: real
+    typename traits3<TA, TB, TC>::real_t alpha,  // note: real
     TA const *A, int64_t lda,
-    typename traits3<TA, TB, TC>::norm_t beta,  // note: real
+    typename traits3<TA, TB, TC>::real_t beta,  // note: real
     TC       *C, int64_t ldc )
 {
     typedef typename blas::traits3<TA, TB, TC>::scalar_t scalar_t;

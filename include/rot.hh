@@ -214,7 +214,7 @@ void rot(
     int64_t n,
     TX *x, int64_t incx,
     TY *y, int64_t incy,
-    typename blas::traits2<TX,TY>::norm_t   c,
+    typename blas::traits2<TX,TY>::real_t   c,
     typename blas::traits2<TX,TY>::scalar_t s )
 {
     typedef typename blas::traits2<TX,TY>::scalar_t scalar_t;

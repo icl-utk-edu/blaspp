@@ -15,7 +15,7 @@ void test_syr_work( Params& params, bool run )
 {
     using namespace blas;
     typedef typename traits2< TA, TX >::scalar_t scalar_t;
-    typedef typename traits< scalar_t >::norm_t norm_t;
+    typedef typename traits< scalar_t >::real_t real_t;
     typedef long long lld;
 
     // get & mark input values
@@ -49,9 +49,9 @@ void test_syr_work( Params& params, bool run )
     lapack_lacpy( "g", n, n, A, lda, Aref, lda );
 
     // norms for error check
-    norm_t work[1];
-    norm_t Anorm = lapack_lansy( "f", uplo2str(uplo), n, A, lda, work );
-    norm_t Xnorm = cblas_nrm2( n, x, abs(incx) );
+    real_t work[1];
+    real_t Anorm = lapack_lansy( "f", uplo2str(uplo), n, A, lda, work );
+    real_t Xnorm = cblas_nrm2( n, x, abs(incx) );
 
     if (verbose >= 1) {
         printf( "A n=%5lld, lda=%5lld, size=%5lld, norm=%.2e\n"
@@ -97,7 +97,7 @@ void test_syr_work( Params& params, bool run )
 
         // check error compared to reference
         // beta = 1
-        norm_t error;
+        real_t error;
         int64_t okay;
         check_herk( uplo, n, 1, alpha, scalar_t(1), Xnorm, Xnorm, Anorm,
                     Aref, lda, A, lda, &error, &okay );

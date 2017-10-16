@@ -13,7 +13,7 @@ template< typename T >
 void test_iamax_work( Params& params, bool run )
 {
     using namespace blas;
-    typedef typename traits< T >::norm_t norm_t;
+    typedef typename traits< T >::real_t real_t;
     typedef long long lld;
 
     // get & mark input values
@@ -77,7 +77,7 @@ void test_iamax_work( Params& params, bool run )
         }
 
         // error = |ref - result|
-        norm_t error = std::abs( ref - result );
+        real_t error = std::abs( ref - result );
         params.error.value() = error;
 
         // iamax must be exact!

@@ -13,18 +13,18 @@ void check_gemm(
     int64_t m, int64_t n, int64_t k,
     T alpha,
     T beta,
-    typename blas::traits<T>::norm_t Anorm,
-    typename blas::traits<T>::norm_t Bnorm,
-    typename blas::traits<T>::norm_t Cnorm,
+    typename blas::traits<T>::real_t Anorm,
+    typename blas::traits<T>::real_t Bnorm,
+    typename blas::traits<T>::real_t Cnorm,
     T const* Cref, int64_t ldcref,
     T* C, int64_t ldc,
-    typename blas::traits<T>::norm_t error[1],
+    typename blas::traits<T>::real_t error[1],
     int64_t* okay )
 {
     #define    C(i_, j_)    C[ (i_) + (j_)*ldc ]
     #define Cref(i_, j_) Cref[ (i_) + (j_)*ldcref ]
 
-    typedef typename blas::traits<T>::norm_t norm_t;
+    typedef typename blas::traits<T>::real_t real_t;
 
     assert( m >= 0 );
     assert( n >= 0 );
@@ -39,12 +39,12 @@ void check_gemm(
         }
     }
 
-    norm_t work[1];
+    real_t work[1];
     error[0] = lapack_lange( "f", m, n, C, ldc, work )
-             / (sqrt(norm_t(k)+2)*fabs(alpha)*Anorm*Bnorm + 2*fabs(beta)*Cnorm);
+             / (sqrt(real_t(k)+2)*fabs(alpha)*Anorm*Bnorm + 2*fabs(beta)*Cnorm);
 
     // Allow 3*eps; complex needs 2*sqrt(2) factor; see Higham, 2002, sec. 3.6.
-    norm_t eps = std::numeric_limits< norm_t >::epsilon();
+    real_t eps = std::numeric_limits< real_t >::epsilon();
     *okay = (error[0] < 3*eps);
 
     #undef C
@@ -67,18 +67,18 @@ void check_herk(
     int64_t n, int64_t k,
     TA alpha,
     TB beta,
-    typename blas::traits<T>::norm_t Anorm,
-    typename blas::traits<T>::norm_t Bnorm,
-    typename blas::traits<T>::norm_t Cnorm,
+    typename blas::traits<T>::real_t Anorm,
+    typename blas::traits<T>::real_t Bnorm,
+    typename blas::traits<T>::real_t Cnorm,
     T const* Cref, int64_t ldcref,
     T* C, int64_t ldc,
-    typename blas::traits<T>::norm_t error[1],
+    typename blas::traits<T>::real_t error[1],
     int64_t* okay )
 {
     #define    C(i_, j_)    C[ (i_) + (j_)*ldc ]
     #define Cref(i_, j_) Cref[ (i_) + (j_)*ldcref ]
 
-    typedef typename blas::traits<T>::norm_t norm_t;
+    typedef typename blas::traits<T>::real_t real_t;
 
     assert( n >= 0 );
     assert( k >= 0 );
@@ -101,12 +101,12 @@ void check_herk(
         }
     }
 
-    norm_t work[1];
+    real_t work[1];
     error[0] = lapack_lanhe( "f", uplo2str(uplo), n, C, ldc, work )
-             / (sqrt(norm_t(k)+2)*fabs(alpha)*Anorm*Bnorm + 2*fabs(beta)*Cnorm);
+             / (sqrt(real_t(k)+2)*fabs(alpha)*Anorm*Bnorm + 2*fabs(beta)*Cnorm);
 
     // Allow 3*eps; complex needs 2*sqrt(2) factor; see Higham, 2002, sec. 3.6.
-    norm_t eps = std::numeric_limits< norm_t >::epsilon();
+    real_t eps = std::numeric_limits< real_t >::epsilon();
     *okay = (error[0] < 3*eps);
 
     #undef C

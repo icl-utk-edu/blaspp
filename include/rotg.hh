@@ -80,7 +80,7 @@ template< typename TX, typename TY >
 void rotg(
     TX a,
     TY b,
-    typename blas::traits2<TX,TY>::norm_t   c,
+    typename blas::traits2<TX,TY>::real_t   c,
     typename blas::traits2<TX,TY>::scalar_t s )
 {
     assert( false );

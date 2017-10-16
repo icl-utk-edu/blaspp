@@ -15,7 +15,7 @@ void test_trmv_work( Params& params, bool run )
 {
     using namespace blas;
     typedef typename traits2< TA, TX >::scalar_t scalar_t;
-    typedef typename traits< scalar_t >::norm_t norm_t;
+    typedef typename traits< scalar_t >::real_t real_t;
     typedef long long lld;
 
     // get & mark input values
@@ -55,10 +55,10 @@ void test_trmv_work( Params& params, bool run )
     cblas_copy( n, x, incx, xref, incx );
 
     // norms for error check
-    norm_t work[1];
-    norm_t Anorm = lapack_lantr( "f", uplo2str(uplo), diag2str(diag),
+    real_t work[1];
+    real_t Anorm = lapack_lantr( "f", uplo2str(uplo), diag2str(diag),
                                  n, n, A, lda, work );
-    norm_t Xnorm = cblas_nrm2( n, x, abs(incx) );
+    real_t Xnorm = cblas_nrm2( n, x, abs(incx) );
 
     if (verbose >= 1) {
         printf( "A n=%5lld, lda=%5lld, size=%5lld, norm=%.2e\n"
@@ -106,9 +106,9 @@ void test_trmv_work( Params& params, bool run )
         // check error compared to reference
         // treat x as 1 x n matrix with ld = incx; k = n is reduction dimension
         // alpha = 1, beta = 0.
-        norm_t error;
+        real_t error;
         int64_t okay;
-        check_gemm( 1, n, n, scalar_t(1), scalar_t(0), Anorm, Xnorm, norm_t(0),
+        check_gemm( 1, n, n, scalar_t(1), scalar_t(0), Anorm, Xnorm, real_t(0),
                     xref, abs(incx), x, abs(incx), &error, &okay );
         params.error.value() = error;
         params.okay.value() = okay;

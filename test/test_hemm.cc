@@ -15,7 +15,7 @@ void test_hemm_work( Params& params, bool run )
 {
     using namespace blas;
     typedef typename traits3< TA, TB, TC >::scalar_t scalar_t;
-    typedef typename traits< scalar_t >::norm_t norm_t;
+    typedef typename traits< scalar_t >::real_t real_t;
     typedef long long lld;
 
     // get & mark input values
@@ -61,10 +61,10 @@ void test_hemm_work( Params& params, bool run )
     lapack_lacpy( "g", Cm, Cn, C, ldc, Cref, ldc );
 
     // norms for error check
-    norm_t work[1];
-    norm_t Anorm = lapack_lansy( "f", uplo2str(uplo), An, A, lda, work );
-    norm_t Bnorm = lapack_lange( "f", Cm, Cn, B, ldb, work );
-    norm_t Cnorm = lapack_lange( "f", Cm, Cn, C, ldc, work );
+    real_t work[1];
+    real_t Anorm = lapack_lansy( "f", uplo2str(uplo), An, A, lda, work );
+    real_t Bnorm = lapack_lange( "f", Cm, Cn, B, ldb, work );
+    real_t Cnorm = lapack_lange( "f", Cm, Cn, C, ldc, work );
 
     if (verbose >= 1) {
         printf( "side %c, uplo %c\n"
@@ -118,7 +118,7 @@ void test_hemm_work( Params& params, bool run )
         }
 
         // check error compared to reference
-        norm_t error;
+        real_t error;
         int64_t okay;
         check_gemm( Cm, Cn, An, alpha, beta, Anorm, Bnorm, Cnorm,
                     Cref, ldc, C, ldc, &error, &okay );

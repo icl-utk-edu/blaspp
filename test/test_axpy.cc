@@ -15,7 +15,7 @@ void test_axpy_work( Params& params, bool run )
 {
     using namespace blas;
     typedef typename traits2< TX, TY >::scalar_t scalar_t;
-    typedef typename traits< scalar_t >::norm_t norm_t;
+    typedef typename traits< scalar_t >::real_t real_t;
     typedef long long lld;
 
     // get & mark input values
@@ -92,13 +92,13 @@ void test_axpy_work( Params& params, bool run )
 
         // error = ||yref - y|| / ||y|| ... todo
         cblas_axpy( n, -1.0, y, incy, yref, incy );
-        norm_t error = cblas_nrm2( n, yref, abs(incy) );
-        norm_t ynorm = cblas_nrm2( n, y,    abs(incy) );
+        real_t error = cblas_nrm2( n, yref, abs(incy) );
+        real_t ynorm = cblas_nrm2( n, y,    abs(incy) );
         error /= ynorm;
         params.error.value() = error;
 
-        norm_t eps = std::numeric_limits< norm_t >::epsilon();
-        norm_t tol = params.tol.value() * eps;
+        real_t eps = std::numeric_limits< real_t >::epsilon();
+        real_t tol = params.tol.value() * eps;
         params.okay.value() = (error < tol);
     }
 

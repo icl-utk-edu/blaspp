@@ -239,7 +239,7 @@ void her2k(
     typename traits3<TA, TB, TC>::scalar_t alpha,  // note: complex
     TA const *A, int64_t lda,
     TB const *B, int64_t ldb,
-    typename traits3<TA, TB, TC>::norm_t beta,  // note: real
+    typename traits3<TA, TB, TC>::real_t beta,  // note: real
     TC       *C, int64_t ldc )
 {
     typedef typename blas::traits3<TA, TB, TC>::scalar_t scalar_t;

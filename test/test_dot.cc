@@ -15,7 +15,7 @@ void test_dot_work( Params& params, bool run )
 {
     using namespace blas;
     typedef typename traits2< TX, TY >::scalar_t scalar_t;
-    typedef typename traits< scalar_t >::norm_t norm_t;
+    typedef typename traits< scalar_t >::real_t real_t;
     typedef long long lld;
 
     // get & mark input values
@@ -47,8 +47,8 @@ void test_dot_work( Params& params, bool run )
     lapack_larnv( idist, iseed, size_y, y );
 
     // norms for error check
-    norm_t Xnorm = cblas_nrm2( n, x, abs(incx) );
-    norm_t Ynorm = cblas_nrm2( n, y, abs(incy) );
+    real_t Xnorm = cblas_nrm2( n, x, abs(incx) );
+    real_t Ynorm = cblas_nrm2( n, y, abs(incy) );
 
     if (verbose >= 1) {
         printf( "x n=%5lld, inc=%5lld, size=%5lld, norm %.2e\n"
@@ -92,9 +92,9 @@ void test_dot_work( Params& params, bool run )
         // check error compared to reference
         // treat result as 1 x 1 matrix; k = n is reduction dimension
         // alpha=1, beta=0, Cnorm=0
-        norm_t error;
+        real_t error;
         int64_t okay;
-        check_gemm( 1, 1, n, scalar_t(1), scalar_t(0), Xnorm, Ynorm, norm_t(0),
+        check_gemm( 1, 1, n, scalar_t(1), scalar_t(0), Xnorm, Ynorm, real_t(0),
                     &ref, 1, &result, 1, &error, &okay );
         params.error.value() = error;
         params.okay.value() = okay;
