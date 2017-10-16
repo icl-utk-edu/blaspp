@@ -260,16 +260,20 @@ public:
 // -----------------------------------------------------------------------------
 // internal helper function; throws Error if cond is true
 // called by throw_if_ macro
-inline void throw_if__( bool cond, const char* condstr )
+namespace internal {
+
+inline void throw_if( bool cond, const char* condstr )
 {
     if (cond) {
         throw Error( condstr );
     }
 }
 
+} // namespace internal
+
 // internal macro to get string #cond; throws Error if cond is true
 #define throw_if_( cond ) \
-    throw_if__( cond, #cond )
+    internal::throw_if( cond, #cond )
 
 }  // namespace blas
 
