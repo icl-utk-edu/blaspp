@@ -128,18 +128,14 @@ private:
 
 // -----------------------------------------------------------------------------
 // Extend real, imag, conj to other datatypes.
-inline int    real( int    x ) { return x; }
-inline float  real( float  x ) { return x; }
-inline double real( double x ) { return x; }
+template< typename T >
+inline T real( T x ) { return x; }
 
-inline int    imag( int    x ) { return 0; }
-inline float  imag( float  x ) { return 0; }
-inline double imag( double x ) { return 0; }
+template< typename T >
+inline T imag( T x ) { return 0; }
 
-inline int    conj( int    x ) { return x; }
-inline float  conj( float  x ) { return x; }
-inline double conj( double x ) { return x; }
-
+template< typename T >
+inline T conj( T x ) { return x; }
 
 // -----------------------------------------------------------------------------
 // 1-norm absolute value, |Re(x)| + |Im(x)|
