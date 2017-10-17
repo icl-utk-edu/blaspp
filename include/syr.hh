@@ -24,6 +24,8 @@ void syr(
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
+    throw_if_( uplo != Uplo::Lower &&
+               uplo != Uplo::Upper );
     throw_if_( n < 0 );
     throw_if_( lda < n );
     throw_if_( incx == 0 );
@@ -61,6 +63,8 @@ void syr(
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
+    throw_if_( uplo != Uplo::Lower &&
+               uplo != Uplo::Upper );
     throw_if_( n < 0 );
     throw_if_( lda < n );
     throw_if_( incx == 0 );
@@ -98,6 +102,8 @@ void syr(
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
+    throw_if_( uplo != Uplo::Lower &&
+               uplo != Uplo::Upper );
     throw_if_( n < 0 );
     throw_if_( lda < n );
     throw_if_( incx == 0 );
@@ -135,6 +141,8 @@ void syr(
     // check arguments
     throw_if_( layout != Layout::ColMajor &&
                layout != Layout::RowMajor );
+    throw_if_( uplo != Uplo::Lower &&
+               uplo != Uplo::Upper );
     throw_if_( n < 0 );
     throw_if_( lda < n );
     throw_if_( incx == 0 );

@@ -86,7 +86,7 @@ void scal(
 {
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
+    throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {

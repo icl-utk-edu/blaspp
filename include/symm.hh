@@ -33,10 +33,14 @@ void symm(
                uplo != Uplo::Upper );
     throw_if_( m < 0 );
     throw_if_( n < 0 );
-    if (side == Side::Left)
+    if ((layout == Layout::ColMajor) == (side == Side::Left)) {
+        // (colmajor && left) || (rowmajor && right)
         throw_if_( lda < m );
-    else
+    }
+    else {
+        // (colmajor && right) || (rowmajor && left)
         throw_if_( lda < n );
+    }
     if (layout == Layout::ColMajor) {
         throw_if_( ldb < m );
         throw_if_( ldc < m );
@@ -96,10 +100,14 @@ void symm(
                uplo != Uplo::Upper );
     throw_if_( m < 0 );
     throw_if_( n < 0 );
-    if (side == Side::Left)
+    if ((layout == Layout::ColMajor) == (side == Side::Left)) {
+        // (colmajor && left) || (rowmajor && right)
         throw_if_( lda < m );
-    else
+    }
+    else {
+        // (colmajor && right) || (rowmajor && left)
         throw_if_( lda < n );
+    }
     if (layout == Layout::ColMajor) {
         throw_if_( ldb < m );
         throw_if_( ldc < m );
@@ -159,10 +167,14 @@ void symm(
                uplo != Uplo::Upper );
     throw_if_( m < 0 );
     throw_if_( n < 0 );
-    if (side == Side::Left)
+    if ((layout == Layout::ColMajor) == (side == Side::Left)) {
+        // (colmajor && left) || (rowmajor && right)
         throw_if_( lda < m );
-    else
+    }
+    else {
+        // (colmajor && right) || (rowmajor && left)
         throw_if_( lda < n );
+    }
     if (layout == Layout::ColMajor) {
         throw_if_( ldb < m );
         throw_if_( ldc < m );
@@ -222,10 +234,14 @@ void symm(
                uplo != Uplo::Upper );
     throw_if_( m < 0 );
     throw_if_( n < 0 );
-    if (side == Side::Left)
+    if ((layout == Layout::ColMajor) == (side == Side::Left)) {
+        // (colmajor && left) || (rowmajor && right)
         throw_if_( lda < m );
-    else
+    }
+    else {
+        // (colmajor && right) || (rowmajor && left)
         throw_if_( lda < n );
+    }
     if (layout == Layout::ColMajor) {
         throw_if_( ldb < m );
         throw_if_( ldc < m );
