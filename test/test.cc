@@ -200,31 +200,34 @@ int main( int argc, char** argv )
 
     // run tests
     int status = 0;
-    try {
-        int repeat = params.repeat.value();
-        libtest::DataType last = params.datatype.value();
-        params.header();
-        do {
-            if (params.datatype.value() != last) {
-                last = params.datatype.value();
-                printf( "\n" );
-            }
-            for (int iter = 0; iter < repeat; ++iter) {
+    int repeat = params.repeat.value();
+    libtest::DataType last = params.datatype.value();
+    params.header();
+    do {
+        if (params.datatype.value() != last) {
+            last = params.datatype.value();
+            printf( "\n" );
+        }
+        for (int iter = 0; iter < repeat; ++iter) {
+            try {
                 test_routine( params, true );
-                params.print();
-                status += ! params.okay.value();
             }
-            if (repeat > 1) {
-                printf( "\n" );
+            catch (blas::Error& err) {
+                params.okay.value() = false;
+                printf( "BLAS error: %s\n", err.what() );
             }
-        } while( params.next() );
-    }
-    catch( blas::Error& e ) {
-        status = 1;
-        params.okay.value() = false;
-        printf( "BLAS error: %s\n", e.what() );
-        params.print();
-    }
+            catch (...) {
+                // happens for assert_throw failures
+                params.okay.value() = false;
+                //printf( "Caught error\n" );
+            }
+            params.print();
+            status += ! params.okay.value();
+        }
+        if (repeat > 1) {
+            printf( "\n" );
+        }
+    } while( params.next() );
 
     if (status) {
         printf( "Some tests FAILED.\n" );
