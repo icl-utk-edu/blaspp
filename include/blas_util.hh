@@ -108,17 +108,23 @@ inline Side char2side( char side )
     return Side( side );
 }
 
-
 // -----------------------------------------------------------------------------
 class Error: public std::exception {
 public:
-    Error(): std::exception() {}
-    Error( const char* msg ): std::exception(), msg_( msg ) {}
+    Error():
+        std::exception()
+    {}
+
+    Error( const char* msg, const char* func ):
+        std::exception(),
+        msg_( std::string(func) + ": " + msg )
+    {}
+
     virtual const char* what() { return msg_.c_str(); }
+
 private:
     std::string msg_;
 };
-
 
 // -----------------------------------------------------------------------------
 // Extend real, imag, conj to other datatypes.
@@ -167,7 +173,6 @@ class traits< std::complex<T> >
 public:
     typedef T real_t;
 };
-
 
 // -----------------------------------------------------------------------------
 // traits2: given 2 types, defines their scalar and norm types.
@@ -240,7 +245,6 @@ public:
     typedef double real_t;
 };
 
-
 // -----------------------------------------------------------------------------
 // traits2: given 3 types, defines their scalar and norm types.
 
@@ -256,16 +260,15 @@ public:
         traits2< typename traits2<T1,T2>::scalar_t, T3 >::real_t real_t;
 };
 
-
 // -----------------------------------------------------------------------------
 // internal helper function; throws Error if cond is true
 // called by throw_if_ macro
 namespace internal {
 
-inline void throw_if( bool cond, const char* condstr )
+inline void throw_if( bool cond, const char* condstr, const char* func )
 {
     if (cond) {
-        throw Error( condstr );
+        throw Error( condstr, func );
     }
 }
 
@@ -273,7 +276,7 @@ inline void throw_if( bool cond, const char* condstr )
 
 // internal macro to get string #cond; throws Error if cond is true
 #define throw_if_( cond ) \
-    internal::throw_if( cond, #cond )
+    internal::throw_if( cond, #cond, __func__ )
 
 }  // namespace blas
 
