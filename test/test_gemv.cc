@@ -64,6 +64,18 @@ void test_gemv_work( Params& params, bool run )
     real_t Xnorm = cblas_nrm2( Xm, x, abs(incx) );
     real_t Ynorm = cblas_nrm2( Ym, y, abs(incy) );
 
+    // test error exits
+    assert_throw( blas::gemv( Layout(0), trans,  m,  n, alpha, A, lda, x, incx, beta, y, incy ), blas::Error );
+    assert_throw( blas::gemv( layout,    Op(0),  m,  n, alpha, A, lda, x, incx, beta, y, incy ), blas::Error );
+    assert_throw( blas::gemv( layout,    trans, -1,  n, alpha, A, lda, x, incx, beta, y, incy ), blas::Error );
+    assert_throw( blas::gemv( layout,    trans,  m, -1, alpha, A, lda, x, incx, beta, y, incy ), blas::Error );
+
+    assert_throw( blas::gemv( Layout::ColMajor, trans,  m,  n, alpha, A, m-1, x, incx, beta, y, incy ), blas::Error );
+    assert_throw( blas::gemv( Layout::RowMajor, trans,  m,  n, alpha, A, n-1, x, incx, beta, y, incy ), blas::Error );
+
+    assert_throw( blas::gemv( layout,    trans,  m,  n, alpha, A, lda, x, 0,    beta, y, incy ), blas::Error );
+    assert_throw( blas::gemv( layout,    trans,  m,  n, alpha, A, lda, x, incx, beta, y, 0    ), blas::Error );
+
     if (verbose >= 1) {
         printf( "A Am=%5lld, An=%5lld, lda=%5lld, size=%5lld, norm=%.2e\n"
                 "x Xm=%5lld, inc=%5lld,          size=%5lld, norm=%.2e\n"

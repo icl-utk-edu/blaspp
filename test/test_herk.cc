@@ -60,6 +60,23 @@ void test_herk_work( Params& params, bool run )
     real_t Anorm = lapack_lange( "f", Am, An, A, lda, work );
     real_t Cnorm = lapack_lansy( "f", uplo2str(uplo), n, C, ldc, work );
 
+    // test error exits
+    assert_throw( blas::herk( Layout(0), uplo,    trans,  n,  k, alpha, A, lda, beta, C, ldc ), blas::Error );
+    assert_throw( blas::herk( layout,    Uplo(0), trans,  n,  k, alpha, A, lda, beta, C, ldc ), blas::Error );
+    assert_throw( blas::herk( layout,    uplo,    Op(0),  n,  k, alpha, A, lda, beta, C, ldc ), blas::Error );
+    assert_throw( blas::herk( layout,    uplo,    trans, -1,  k, alpha, A, lda, beta, C, ldc ), blas::Error );
+    assert_throw( blas::herk( layout,    uplo,    trans,  n, -1, alpha, A, lda, beta, C, ldc ), blas::Error );
+
+    assert_throw( blas::herk( Layout::ColMajor, uplo, Op::NoTrans,   n, k, alpha, A, n-1, beta, C, ldc ), blas::Error );
+    assert_throw( blas::herk( Layout::ColMajor, uplo, Op::Trans,     n, k, alpha, A, k-1, beta, C, ldc ), blas::Error );
+    assert_throw( blas::herk( Layout::ColMajor, uplo, Op::ConjTrans, n, k, alpha, A, k-1, beta, C, ldc ), blas::Error );
+
+    assert_throw( blas::herk( Layout::RowMajor, uplo, Op::NoTrans,   n, k, alpha, A, k-1, beta, C, ldc ), blas::Error );
+    assert_throw( blas::herk( Layout::RowMajor, uplo, Op::Trans,     n, k, alpha, A, n-1, beta, C, ldc ), blas::Error );
+    assert_throw( blas::herk( Layout::RowMajor, uplo, Op::ConjTrans, n, k, alpha, A, n-1, beta, C, ldc ), blas::Error );
+
+    assert_throw( blas::herk( layout,    uplo,    trans,  n,  k, alpha, A, lda, beta, C, n-1 ), blas::Error );
+
     if (verbose >= 1) {
         printf( "uplo %c, trans %c\n"
                 "A An=%5lld, An=%5lld, lda=%5lld, size=%5lld, norm %.2e\n"

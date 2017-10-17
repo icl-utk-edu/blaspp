@@ -40,6 +40,11 @@ void test_nrm2_work( Params& params, bool run )
     int iseed[4] = { 0, 0, 0, 1 };
     lapack_larnv( idist, iseed, size_x, x );
 
+    // test error exits
+    assert_throw( blas::nrm2( -1, x, incx ), blas::Error );
+    assert_throw( blas::nrm2(  n, x,    0 ), blas::Error );
+    assert_throw( blas::nrm2(  n, x,   -1 ), blas::Error );
+
     if (verbose >= 1) {
         printf( "x n=%5lld, inc=%5lld, size=%5lld\n",
                 (lld) n, (lld) incx, (lld) size_x );

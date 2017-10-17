@@ -60,6 +60,17 @@ void test_geru_work( Params& params, bool run )
     real_t Xnorm = cblas_nrm2( m, x, abs(incx) );
     real_t Ynorm = cblas_nrm2( n, y, abs(incy) );
 
+    // test error exits
+    assert_throw( blas::geru( Layout(0),  m,  n, alpha, A, lda, x, incx, y, incy ), blas::Error );
+    assert_throw( blas::geru( layout,    -1,  n, alpha, A, lda, x, incx, y, incy ), blas::Error );
+    assert_throw( blas::geru( layout,     m, -1, alpha, A, lda, x, incx, y, incy ), blas::Error );
+
+    assert_throw( blas::geru( Layout::ColMajor,  m,  n, alpha, A, m-1, x, incx, y, incy ), blas::Error );
+    assert_throw( blas::geru( Layout::RowMajor,  m,  n, alpha, A, n-1, x, incx, y, incy ), blas::Error );
+
+    assert_throw( blas::geru( layout,     m,  n, alpha, A, lda, x, 0,    y, incy ), blas::Error );
+    assert_throw( blas::geru( layout,     m,  n, alpha, A, lda, x, incx, y, 0    ), blas::Error );
+
     if (verbose >= 1) {
         printf( "A Am=%5lld, An=%5lld, lda=%5lld, size=%5lld, norm=%.2e\n"
                 "x Xm=%5lld, inc=%5lld,          size=%5lld, norm=%.2e\n"

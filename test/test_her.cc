@@ -53,6 +53,13 @@ void test_her_work( Params& params, bool run )
     real_t Anorm = lapack_lanhe( "f", uplo2str(uplo), n, A, lda, work );
     real_t Xnorm = cblas_nrm2( n, x, abs(incx) );
 
+    // test error exits
+    assert_throw( blas::her( Layout(0), uplo,     n, alpha, x, incx, A, lda ), blas::Error );
+    assert_throw( blas::her( layout,    Uplo(0),  n, alpha, x, incx, A, lda ), blas::Error );
+    assert_throw( blas::her( layout,    uplo,    -1, alpha, x, incx, A, lda ), blas::Error );
+    assert_throw( blas::her( layout,    uplo,     n, alpha, x,    0, A, lda ), blas::Error );
+    assert_throw( blas::her( layout,    uplo,     n, alpha, x, incx, A, n-1 ), blas::Error );
+
     if (verbose >= 1) {
         printf( "A n=%5lld, lda=%5lld, size=%5lld, norm=%.2e\n"
                 "x n=%5lld, inc=%5lld, size=%5lld, norm=%.2e\n",

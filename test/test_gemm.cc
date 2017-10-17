@@ -73,6 +73,33 @@ void test_gemm_work( Params& params, bool run )
     real_t Bnorm = lapack_lange( "f", Bm, Bn, B, ldb, work );
     real_t Cnorm = lapack_lange( "f", Cm, Cn, C, ldc, work );
 
+    // test error exits
+    assert_throw( blas::gemm( Layout(0), transA, transB,  m,  n,  k, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::gemm( layout,    Op(0),  transB,  m,  n,  k, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::gemm( layout,    transA, Op(0),   m,  n,  k, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::gemm( layout,    transA, transB, -1,  n,  k, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::gemm( layout,    transA, transB,  m, -1,  k, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::gemm( layout,    transA, transB,  m,  n, -1, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
+
+    assert_throw( blas::gemm( Layout::ColMajor, Op::NoTrans,   Op::NoTrans, m, n, k, alpha, A, m-1, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::gemm( Layout::ColMajor, Op::Trans,     Op::NoTrans, m, n, k, alpha, A, k-1, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::gemm( Layout::ColMajor, Op::ConjTrans, Op::NoTrans, m, n, k, alpha, A, k-1, B, ldb, beta, C, ldc ), blas::Error );
+
+    assert_throw( blas::gemm( Layout::RowMajor, Op::NoTrans,   Op::NoTrans, m, n, k, alpha, A, k-1, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::gemm( Layout::RowMajor, Op::Trans,     Op::NoTrans, m, n, k, alpha, A, m-1, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::gemm( Layout::RowMajor, Op::ConjTrans, Op::NoTrans, m, n, k, alpha, A, m-1, B, ldb, beta, C, ldc ), blas::Error );
+
+    assert_throw( blas::gemm( Layout::ColMajor, Op::NoTrans, Op::NoTrans,   m, n, k, alpha, A, lda, B, k-1, beta, C, ldc ), blas::Error );
+    assert_throw( blas::gemm( Layout::ColMajor, Op::NoTrans, Op::Trans,     m, n, k, alpha, A, lda, B, n-1, beta, C, ldc ), blas::Error );
+    assert_throw( blas::gemm( Layout::ColMajor, Op::NoTrans, Op::ConjTrans, m, n, k, alpha, A, lda, B, n-1, beta, C, ldc ), blas::Error );
+
+    assert_throw( blas::gemm( Layout::RowMajor, Op::NoTrans, Op::NoTrans,   m, n, k, alpha, A, lda, B, n-1, beta, C, ldc ), blas::Error );
+    assert_throw( blas::gemm( Layout::RowMajor, Op::NoTrans, Op::Trans,     m, n, k, alpha, A, lda, B, k-1, beta, C, ldc ), blas::Error );
+    assert_throw( blas::gemm( Layout::RowMajor, Op::NoTrans, Op::ConjTrans, m, n, k, alpha, A, lda, B, k-1, beta, C, ldc ), blas::Error );
+
+    assert_throw( blas::gemm( Layout::ColMajor, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, m-1 ), blas::Error );
+    assert_throw( blas::gemm( Layout::RowMajor, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, n-1 ), blas::Error );
+
     if (verbose >= 1) {
         printf( "A Am=%5lld, An=%5lld, lda=%5lld, size=%5lld, norm %.2e\n"
                 "B Bm=%5lld, Bn=%5lld, ldb=%5lld, size=%5lld, norm %.2e\n"

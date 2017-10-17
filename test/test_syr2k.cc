@@ -65,6 +65,31 @@ void test_syr2k_work( Params& params, bool run )
     real_t Bnorm = lapack_lange( "f", Am, An, B, ldb, work );
     real_t Cnorm = lapack_lansy( "f", uplo2str(uplo), n, C, ldc, work );
 
+    // test error exits
+    assert_throw( blas::syr2k( Layout(0), uplo,    trans,  n,  k, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::syr2k( layout,    Uplo(0), trans,  n,  k, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::syr2k( layout,    uplo,    Op(0),  n,  k, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::syr2k( layout,    uplo,    trans, -1,  k, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::syr2k( layout,    uplo,    trans,  n, -1, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
+
+    assert_throw( blas::syr2k( Layout::ColMajor, uplo, Op::NoTrans,   n, k, alpha, A, n-1, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::syr2k( Layout::ColMajor, uplo, Op::Trans,     n, k, alpha, A, k-1, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::syr2k( Layout::ColMajor, uplo, Op::ConjTrans, n, k, alpha, A, k-1, B, ldb, beta, C, ldc ), blas::Error );
+
+    assert_throw( blas::syr2k( Layout::RowMajor, uplo, Op::NoTrans,   n, k, alpha, A, k-1, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::syr2k( Layout::RowMajor, uplo, Op::Trans,     n, k, alpha, A, n-1, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::syr2k( Layout::RowMajor, uplo, Op::ConjTrans, n, k, alpha, A, n-1, B, ldb, beta, C, ldc ), blas::Error );
+
+    assert_throw( blas::syr2k( Layout::ColMajor, uplo, Op::NoTrans,   n, k, alpha, A, lda, B, n-1, beta, C, ldc ), blas::Error );
+    assert_throw( blas::syr2k( Layout::ColMajor, uplo, Op::Trans,     n, k, alpha, A, lda, B, k-1, beta, C, ldc ), blas::Error );
+    assert_throw( blas::syr2k( Layout::ColMajor, uplo, Op::ConjTrans, n, k, alpha, A, lda, B, k-1, beta, C, ldc ), blas::Error );
+
+    assert_throw( blas::syr2k( Layout::RowMajor, uplo, Op::NoTrans,   n, k, alpha, A, lda, B, k-1, beta, C, ldc ), blas::Error );
+    assert_throw( blas::syr2k( Layout::RowMajor, uplo, Op::Trans,     n, k, alpha, A, lda, B, n-1, beta, C, ldc ), blas::Error );
+    assert_throw( blas::syr2k( Layout::RowMajor, uplo, Op::ConjTrans, n, k, alpha, A, lda, B, n-1, beta, C, ldc ), blas::Error );
+
+    assert_throw( blas::syr2k( layout,    uplo,    trans,  n,  k, alpha, A, lda, B, ldb, beta, C, n-1 ), blas::Error );
+
     if (verbose >= 1) {
         printf( "uplo %c, trans %c\n"
                 "A An=%5lld, An=%5lld, lda=%5lld, size=%5lld, norm %.2e\n"

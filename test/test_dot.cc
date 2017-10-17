@@ -50,6 +50,11 @@ void test_dot_work( Params& params, bool run )
     real_t Xnorm = cblas_nrm2( n, x, abs(incx) );
     real_t Ynorm = cblas_nrm2( n, y, abs(incy) );
 
+    // test error exits
+    assert_throw( blas::dot( -1, x, incx, y, incy ), blas::Error );
+    assert_throw( blas::dot(  n, x,    0, y, incy ), blas::Error );
+    assert_throw( blas::dot(  n, x, incx, y,    0 ), blas::Error );
+
     if (verbose >= 1) {
         printf( "x n=%5lld, inc=%5lld, size=%5lld, norm %.2e\n"
                 "y n=%5lld, inc=%5lld, size=%5lld, norm %.2e\n",

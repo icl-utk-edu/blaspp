@@ -62,6 +62,11 @@ void test_rotm_work( Params& params, bool run )
     real_t Ynorm = cblas_nrm2( n, y, abs(incy) );
     real_t Anorm = sqrt( Xnorm*Xnorm + Ynorm*Ynorm ); // || [x y] ||_F
 
+    // test error exits
+    assert_throw( blas::rotm( -1, x, incx, y, incy, p ), blas::Error );
+    assert_throw( blas::rotm(  n, x,    0, y, incy, p ), blas::Error );
+    assert_throw( blas::rotm(  n, x, incx, y,    0, p ), blas::Error );
+
     if (verbose >= 1) {
         printf( "x n=%5lld, inc=%5lld, size=%5lld\n"
                 "y n=%5lld, inc=%5lld, size=%5lld\n",

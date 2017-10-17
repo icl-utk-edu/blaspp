@@ -66,6 +66,25 @@ void test_symm_work( Params& params, bool run )
     real_t Bnorm = lapack_lange( "f", Cm, Cn, B, ldb, work );
     real_t Cnorm = lapack_lange( "f", Cm, Cn, C, ldc, work );
 
+    // test error exits
+    assert_throw( blas::symm( Layout(0), side,     uplo,     m,  n, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::symm( layout,    Side(0),  uplo,     m,  n, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::symm( layout,    side,     Uplo(0),  m,  n, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::symm( layout,    side,     uplo,    -1,  n, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::symm( layout,    side,     uplo,     m, -1, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
+
+    assert_throw( blas::symm( Layout::ColMajor, Side::Left,  uplo, m, n, alpha, A, m-1, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::symm( Layout::ColMajor, Side::Right, uplo, m, n, alpha, A, n-1, B, ldb, beta, C, ldc ), blas::Error );
+
+    assert_throw( blas::symm( Layout::RowMajor, Side::Left,  uplo, m, n, alpha, A, n-1, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::symm( Layout::RowMajor, Side::Right, uplo, m, n, alpha, A, m-1, B, ldb, beta, C, ldc ), blas::Error );
+
+    assert_throw( blas::symm( Layout::ColMajor, side,        uplo, m, n, alpha, A, lda, B, m-1, beta, C, ldc ), blas::Error );
+    assert_throw( blas::symm( Layout::RowMajor, side,        uplo, m, n, alpha, A, lda, B, n-1, beta, C, ldc ), blas::Error );
+
+    assert_throw( blas::symm( Layout::ColMajor, side,        uplo, m, n, alpha, A, lda, B, ldb, beta, C, m-1 ), blas::Error );
+    assert_throw( blas::symm( Layout::RowMajor, side,        uplo, m, n, alpha, A, lda, B, ldb, beta, C, n-1 ), blas::Error );
+
     if (verbose >= 1) {
         printf( "side %c, uplo %c\n"
                 "A An=%5lld, An=%5lld, lda=%5lld, size=%5lld, norm %.2e\n"

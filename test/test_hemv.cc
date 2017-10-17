@@ -59,6 +59,14 @@ void test_hemv_work( Params& params, bool run )
     real_t Xnorm = cblas_nrm2( n, x, abs(incx) );
     real_t Ynorm = cblas_nrm2( n, y, abs(incy) );
 
+    // test error exits
+    assert_throw( blas::hemv( Layout(0), uplo,     n, alpha, A, lda, x, incx, beta, y, incy ), blas::Error );
+    assert_throw( blas::hemv( layout,    Uplo(0),  n, alpha, A, lda, x, incx, beta, y, incy ), blas::Error );
+    assert_throw( blas::hemv( layout,    uplo,    -1, alpha, A, lda, x, incx, beta, y, incy ), blas::Error );
+    assert_throw( blas::hemv( layout,    uplo,     n, alpha, A, n-1, x, incx, beta, y, incy ), blas::Error );
+    assert_throw( blas::hemv( layout,    uplo,     n, alpha, A, lda, x,    0, beta, y, incy ), blas::Error );
+    assert_throw( blas::hemv( layout,    uplo,     n, alpha, A, lda, x, incx, beta, y,    0 ), blas::Error );
+
     if (verbose >= 1) {
         printf( "A n=%5lld, lda=%5lld, size=%5lld, norm=%.2e\n"
                 "x n=%5lld, inc=%5lld, size=%5lld, norm=%.2e\n"

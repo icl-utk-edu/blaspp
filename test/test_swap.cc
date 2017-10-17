@@ -49,6 +49,11 @@ void test_swap_work( Params& params, bool run )
     cblas_copy( n, x, incx, xref, incx );
     cblas_copy( n, y, incy, yref, incy );
 
+    // test error exits
+    assert_throw( blas::swap( -1, x, incx, y, incy ), blas::Error );
+    assert_throw( blas::swap(  n, x,    0, y, incy ), blas::Error );
+    assert_throw( blas::swap(  n, x, incx, y,    0 ), blas::Error );
+
     if (verbose >= 1) {
         printf( "x n=%5lld, inc=%5lld, size=%5lld\n"
                 "y n=%5lld, inc=%5lld, size=%5lld\n",

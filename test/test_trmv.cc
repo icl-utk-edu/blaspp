@@ -60,6 +60,15 @@ void test_trmv_work( Params& params, bool run )
                                  n, n, A, lda, work );
     real_t Xnorm = cblas_nrm2( n, x, abs(incx) );
 
+    // test error exits
+    assert_throw( blas::trmv( Layout(0), uplo,    trans, diag,     n, A, lda, x, incx ), blas::Error );
+    assert_throw( blas::trmv( layout,    Uplo(0), trans, diag,     n, A, lda, x, incx ), blas::Error );
+    assert_throw( blas::trmv( layout,    uplo,    Op(0), diag,     n, A, lda, x, incx ), blas::Error );
+    assert_throw( blas::trmv( layout,    uplo,    trans, Diag(0),  n, A, lda, x, incx ), blas::Error );
+    assert_throw( blas::trmv( layout,    uplo,    trans, diag,    -1, A, lda, x, incx ), blas::Error );
+    assert_throw( blas::trmv( layout,    uplo,    trans, diag,     n, A, n-1, x, incx ), blas::Error );
+    assert_throw( blas::trmv( layout,    uplo,    trans, diag,     n, A, lda, x,    0 ), blas::Error );
+
     if (verbose >= 1) {
         printf( "A n=%5lld, lda=%5lld, size=%5lld, norm=%.2e\n"
                 "x n=%5lld, inc=%5lld, size=%5lld, norm=%.2e\n",

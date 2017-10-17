@@ -43,6 +43,11 @@ void test_scal_work( Params& params, bool run )
     lapack_larnv( idist, iseed, size_x, x );
     cblas_copy( n, x, incx, xref, incx );
 
+    // test error exits
+    assert_throw( blas::scal( -1, alpha, x, incx ), blas::Error );
+    assert_throw( blas::scal(  n, alpha, x,    0 ), blas::Error );
+    assert_throw( blas::scal(  n, alpha, x,   -1 ), blas::Error );
+
     if (verbose >= 1) {
         printf( "x n=%5lld, inc=%5lld, size=%5lld\n",
                 (lld) n, (lld) incx, (lld) size_x );

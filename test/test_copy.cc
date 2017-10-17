@@ -48,6 +48,11 @@ void test_copy_work( Params& params, bool run )
     lapack_larnv( idist, iseed, size_y, y );
     lapack_larnv( idist, iseed, size_y, yref );
 
+    // test error exits
+    assert_throw( blas::copy( -1, x, incx, y, incy ), blas::Error );
+    assert_throw( blas::copy(  n, x,    0, y, incy ), blas::Error );
+    assert_throw( blas::copy(  n, x, incx, y,    0 ), blas::Error );
+
     if (verbose >= 1) {
         printf( "x n=%5lld, inc=%5lld, size=%5lld\n"
                 "y n=%5lld, inc=%5lld, size=%5lld\n",
