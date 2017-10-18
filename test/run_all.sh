@@ -67,6 +67,8 @@ echo "-------------------- Level 3 BLAS"
 ./test gemm  ${opts} ${type} ${layout} ${align} ${transA} ${transB} ${mnk} > gemm.txt
 ./test hemm  ${opts} ${type} ${layout} ${align} ${side}   ${uplo}   ${mn}  > hemm.txt
 ./test symm  ${opts} ${type} ${layout} ${align} ${side}   ${uplo}   ${mn}  > symm.txt
+./test trmm  ${opts} ${type} ${layout} ${align} ${side} ${uplo} ${trans} ${diag} ${mn} > trmm.txt
+./test trsm  ${opts} ${type} ${layout} ${align} ${side} ${uplo} ${trans} ${diag} ${mn} > trsm.txt
 
 ./test herk  ${opts} ${real}    ${layout} ${align} ${uplo} ${trans}    ${mn} > herk_sd.txt
 ./test herk  ${opts} ${complex} ${layout} ${align} ${uplo} ${trans_nc} ${mn} > herk_cz.txt

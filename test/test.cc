@@ -83,8 +83,8 @@ std::vector< libtest::routines_t > routines = {
     { "syr2k",  test_syr2k,  Section::blas3   },
     { "",       nullptr,     Section::newline },
 
-    { "trmm",   nullptr,     Section::blas3   },
-    { "trsm",   nullptr,     Section::blas3   },
+    { "trmm",   test_trmm,   Section::blas3   },
+    { "trsm",   test_trsm,   Section::blas3   },
 };
 
 // -----------------------------------------------------------------------------
