@@ -256,11 +256,11 @@ public:
         traits2< typename traits2<T1,T2>::scalar_t, T3 >::real_t real_t;
 };
 
+namespace internal {
+
 // -----------------------------------------------------------------------------
 // internal helper function; throws Error if cond is true
 // called by throw_if_ macro
-namespace internal {
-
 inline void throw_if( bool cond, const char* condstr, const char* func )
 {
     if (cond) {
@@ -268,11 +268,33 @@ inline void throw_if( bool cond, const char* condstr, const char* func )
     }
 }
 
+// -----------------------------------------------------------------------------
+// internal helper function; throws Error if cond is true
+// uses printf-style format for error message
+// called by throw_if_msg_ macro
+inline void throw_if( bool cond, const char* condstr, const char* func, const char* format, ... )
+{
+    if (cond) {
+        char buf[80];
+        va_list va;
+        va_start( va, format );
+        vsnprintf( buf, sizeof(buf), format, va );
+        throw Error( buf, func );
+    }
+}
+
 } // namespace internal
 
 // internal macro to get string #cond; throws Error if cond is true
+// ex: throw_if_( a < b );
 #define throw_if_( cond ) \
     internal::throw_if( cond, #cond, __func__ )
+
+// internal macro takes cond and printf-style format for error message.
+// throws Error if cond is true.
+// ex: throw_if_msg_( a < b, "a %d < b %d", a, b );
+#define throw_if_msg_( cond, ... ) \
+    internal::throw_if( cond, #cond, __func__, __VA_ARGS__ )
 
 }  // namespace blas
 
