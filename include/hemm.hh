@@ -102,7 +102,7 @@ void hemm(
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
         std::swap( m_, n_ );
     }
-    
+
     char side_ = side2char( side );
     char uplo_ = uplo2char( uplo );
     f77_chemm( &side_, &uplo_, &m_, &n_,
@@ -167,7 +167,7 @@ void hemm(
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
         std::swap( m_, n_ );
     }
-    
+
     char side_ = side2char( side );
     char uplo_ = uplo2char( uplo );
     f77_zhemm( &side_, &uplo_, &m_, &n_,

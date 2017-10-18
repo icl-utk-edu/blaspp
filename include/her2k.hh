@@ -66,7 +66,7 @@ void her2k(
                trans != Op::ConjTrans );
     throw_if_( n < 0 );
     throw_if_( k < 0 );
-        
+
     if ((trans == Op::NoTrans) ^ (layout == Layout::RowMajor)) {
         throw_if_( lda < n );
         throw_if_( ldb < n );
@@ -75,9 +75,9 @@ void her2k(
         throw_if_( lda < k );
         throw_if_( ldb < k );
     }
-    
+
     throw_if_( ldc < n );
-    
+
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
         throw_if_( n   > std::numeric_limits<blas_int>::max() );
@@ -98,7 +98,7 @@ void her2k(
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
         trans = (trans == Op::NoTrans ? Op::ConjTrans : Op::NoTrans);
     }
-    
+
     char uplo_ = uplo2char( uplo );
     char trans_ = op2char( trans );
     f77_cher2k( &uplo_, &trans_, &n_, &k_,
@@ -127,7 +127,7 @@ void her2k(
                trans != Op::ConjTrans );
     throw_if_( n < 0 );
     throw_if_( k < 0 );
-        
+
     if ((trans == Op::NoTrans) ^ (layout == Layout::RowMajor)) {
         throw_if_( lda < n );
         throw_if_( ldb < n );
@@ -136,9 +136,9 @@ void her2k(
         throw_if_( lda < k );
         throw_if_( ldb < k );
     }
-    
+
     throw_if_( ldc < n );
-    
+
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
         throw_if_( n   > std::numeric_limits<blas_int>::max() );
@@ -159,7 +159,7 @@ void her2k(
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
         trans = (trans == Op::NoTrans ? Op::ConjTrans : Op::NoTrans);
     }
-    
+
     char uplo_ = uplo2char( uplo );
     char trans_ = op2char( trans );
     f77_zher2k( &uplo_, &trans_, &n_, &k_,
@@ -223,7 +223,7 @@ void her2k(
 ///
 /// @param[in] C
 ///         The n-by-n Hermitian matrix C,
-///         stored in an lda-by-n [RowMajor: n-by-lda] array. 
+///         stored in an lda-by-n [RowMajor: n-by-lda] array.
 ///
 /// @param[in] ldc
 ///         Leading dimension of C. ldc >= max(1,n).

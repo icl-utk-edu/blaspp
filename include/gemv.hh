@@ -31,10 +31,12 @@ void gemv(
                trans != Op::ConjTrans );
     throw_if_( m < 0 );
     throw_if_( n < 0 );
+
     if (layout == Layout::ColMajor)
         throw_if_( lda < m );
     else
         throw_if_( lda < n );
+
     throw_if_( incx == 0 );
     throw_if_( incy == 0 );
 
@@ -84,10 +86,12 @@ void gemv(
                trans != Op::ConjTrans );
     throw_if_( m < 0 );
     throw_if_( n < 0 );
+
     if (layout == Layout::ColMajor)
         throw_if_( lda < m );
     else
         throw_if_( lda < n );
+
     throw_if_( incx == 0 );
     throw_if_( incy == 0 );
 
@@ -137,10 +141,12 @@ void gemv(
                trans != Op::ConjTrans );
     throw_if_( m < 0 );
     throw_if_( n < 0 );
+
     if (layout == Layout::ColMajor)
         throw_if_( lda < m );
     else
         throw_if_( lda < n );
+
     throw_if_( incx == 0 );
     throw_if_( incy == 0 );
 
@@ -222,10 +228,12 @@ void gemv(
                trans != Op::ConjTrans );
     throw_if_( m < 0 );
     throw_if_( n < 0 );
+
     if (layout == Layout::ColMajor)
         throw_if_( lda < m );
     else
         throw_if_( lda < n );
+
     throw_if_( incx == 0 );
     throw_if_( incy == 0 );
 
@@ -377,10 +385,12 @@ void gemv(
                trans != Op::ConjTrans );
     throw_if_( m < 0 );
     throw_if_( n < 0 );
+
     if (layout == Layout::ColMajor)
         throw_if_( lda < m );
     else
         throw_if_( lda < n );
+
     throw_if_( incx == 0 );
     throw_if_( incy == 0 );
 

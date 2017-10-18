@@ -28,6 +28,7 @@ void ger(
     throw_if_( n < 0 );
     throw_if_( incx == 0 );
     throw_if_( incy == 0 );
+
     if (layout == Layout::ColMajor)
         throw_if_( lda < m );
     else
@@ -74,6 +75,7 @@ void ger(
     throw_if_( n < 0 );
     throw_if_( incx == 0 );
     throw_if_( incy == 0 );
+
     if (layout == Layout::ColMajor)
         throw_if_( lda < m );
     else
@@ -120,6 +122,7 @@ void ger(
     throw_if_( n < 0 );
     throw_if_( incx == 0 );
     throw_if_( incy == 0 );
+
     if (layout == Layout::ColMajor)
         throw_if_( lda < m );
     else
@@ -179,6 +182,7 @@ void ger(
     throw_if_( n < 0 );
     throw_if_( incx == 0 );
     throw_if_( incy == 0 );
+
     if (layout == Layout::ColMajor)
         throw_if_( lda < m );
     else
@@ -290,6 +294,7 @@ void ger(
     throw_if_( n < 0 );
     throw_if_( incx == 0 );
     throw_if_( incy == 0 );
+
     if (layout == Layout::ColMajor)
         throw_if_( lda < m );
     else

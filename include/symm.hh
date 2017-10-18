@@ -47,7 +47,7 @@ void symm(
         throw_if_( ldb < n );
         throw_if_( ldc < n );
     }
-    
+
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
         throw_if_( m   > std::numeric_limits<blas_int>::max() );
@@ -69,7 +69,7 @@ void symm(
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
         std::swap( m_, n_ );
     }
-    
+
     char side_ = side2char( side );
     char uplo_ = uplo2char( uplo );
     f77_ssymm( &side_, &uplo_, &m_, &n_,
@@ -134,7 +134,7 @@ void symm(
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
         std::swap( m_, n_ );
     }
-    
+
     char side_ = side2char( side );
     char uplo_ = uplo2char( uplo );
     f77_dsymm( &side_, &uplo_, &m_, &n_,
@@ -199,7 +199,7 @@ void symm(
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
         std::swap( m_, n_ );
     }
-    
+
     char side_ = side2char( side );
     char uplo_ = uplo2char( uplo );
     f77_csymm( &side_, &uplo_, &m_, &n_,
@@ -264,7 +264,7 @@ void symm(
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
         std::swap( m_, n_ );
     }
-    
+
     char side_ = side2char( side );
     char uplo_ = uplo2char( uplo );
     f77_zsymm( &side_, &uplo_, &m_, &n_,
@@ -322,7 +322,7 @@ void symm(
 ///         Scalar beta. When beta is zero, C need not be set on input.
 ///
 /// @param[in] C
-///         The m-by-n matrix C, stored in an lda-by-n array. 
+///         The m-by-n matrix C, stored in an lda-by-n array.
 ///
 /// @param[in] ldc
 ///         Leading dimension of C. ldc >= max(1,n).
