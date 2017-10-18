@@ -73,11 +73,8 @@ void test_hemm_work( Params& params, bool run )
     assert_throw( blas::hemm( layout,    side,     uplo,    -1,  n, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
     assert_throw( blas::hemm( layout,    side,     uplo,     m, -1, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
 
-    assert_throw( blas::hemm( Layout::ColMajor, Side::Left,  uplo, m, n, alpha, A, m-1, B, ldb, beta, C, ldc ), blas::Error );
-    assert_throw( blas::hemm( Layout::ColMajor, Side::Right, uplo, m, n, alpha, A, n-1, B, ldb, beta, C, ldc ), blas::Error );
-
-    assert_throw( blas::hemm( Layout::RowMajor, Side::Left,  uplo, m, n, alpha, A, n-1, B, ldb, beta, C, ldc ), blas::Error );
-    assert_throw( blas::hemm( Layout::RowMajor, Side::Right, uplo, m, n, alpha, A, m-1, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::hemm( layout, Side::Left,  uplo,     m,  n, alpha, A, m-1, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::hemm( layout, Side::Right, uplo,     m,  n, alpha, A, n-1, B, ldb, beta, C, ldc ), blas::Error );
 
     assert_throw( blas::hemm( Layout::ColMajor, side,        uplo, m, n, alpha, A, lda, B, m-1, beta, C, ldc ), blas::Error );
     assert_throw( blas::hemm( Layout::RowMajor, side,        uplo, m, n, alpha, A, lda, B, n-1, beta, C, ldc ), blas::Error );

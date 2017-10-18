@@ -73,11 +73,8 @@ void test_symm_work( Params& params, bool run )
     assert_throw( blas::symm( layout,    side,     uplo,    -1,  n, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
     assert_throw( blas::symm( layout,    side,     uplo,     m, -1, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
 
-    assert_throw( blas::symm( Layout::ColMajor, Side::Left,  uplo, m, n, alpha, A, m-1, B, ldb, beta, C, ldc ), blas::Error );
-    assert_throw( blas::symm( Layout::ColMajor, Side::Right, uplo, m, n, alpha, A, n-1, B, ldb, beta, C, ldc ), blas::Error );
-
-    assert_throw( blas::symm( Layout::RowMajor, Side::Left,  uplo, m, n, alpha, A, n-1, B, ldb, beta, C, ldc ), blas::Error );
-    assert_throw( blas::symm( Layout::RowMajor, Side::Right, uplo, m, n, alpha, A, m-1, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::symm( layout, Side::Left,  uplo,     m,  n, alpha, A, m-1, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( blas::symm( layout, Side::Right, uplo,     m,  n, alpha, A, n-1, B, ldb, beta, C, ldc ), blas::Error );
 
     assert_throw( blas::symm( Layout::ColMajor, side,        uplo, m, n, alpha, A, lda, B, m-1, beta, C, ldc ), blas::Error );
     assert_throw( blas::symm( Layout::RowMajor, side,        uplo, m, n, alpha, A, lda, B, n-1, beta, C, ldc ), blas::Error );

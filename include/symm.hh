@@ -33,14 +33,12 @@ void symm(
                uplo != Uplo::Upper );
     throw_if_( m < 0 );
     throw_if_( n < 0 );
-    if ((layout == Layout::ColMajor) == (side == Side::Left)) {
-        // (colmajor && left) || (rowmajor && right)
-        throw_if_( lda < m );
-    }
-    else {
-        // (colmajor && right) || (rowmajor && left)
-        throw_if_( lda < n );
-    }
+
+    if (side == Side::Left)
+        throw_if_msg_( lda < m, "lda %d < m %d", lda, m );
+    else
+        throw_if_msg_( lda < n, "lda %d < n %d", lda, n );
+
     if (layout == Layout::ColMajor) {
         throw_if_( ldb < m );
         throw_if_( ldc < m );
@@ -100,14 +98,12 @@ void symm(
                uplo != Uplo::Upper );
     throw_if_( m < 0 );
     throw_if_( n < 0 );
-    if ((layout == Layout::ColMajor) == (side == Side::Left)) {
-        // (colmajor && left) || (rowmajor && right)
-        throw_if_( lda < m );
-    }
-    else {
-        // (colmajor && right) || (rowmajor && left)
-        throw_if_( lda < n );
-    }
+
+    if (side == Side::Left)
+        throw_if_msg_( lda < m, "lda %d < m %d", lda, m );
+    else
+        throw_if_msg_( lda < n, "lda %d < n %d", lda, n );
+
     if (layout == Layout::ColMajor) {
         throw_if_( ldb < m );
         throw_if_( ldc < m );
@@ -167,14 +163,12 @@ void symm(
                uplo != Uplo::Upper );
     throw_if_( m < 0 );
     throw_if_( n < 0 );
-    if ((layout == Layout::ColMajor) == (side == Side::Left)) {
-        // (colmajor && left) || (rowmajor && right)
-        throw_if_( lda < m );
-    }
-    else {
-        // (colmajor && right) || (rowmajor && left)
-        throw_if_( lda < n );
-    }
+
+    if (side == Side::Left)
+        throw_if_msg_( lda < m, "lda %d < m %d", lda, m );
+    else
+        throw_if_msg_( lda < n, "lda %d < n %d", lda, n );
+
     if (layout == Layout::ColMajor) {
         throw_if_( ldb < m );
         throw_if_( ldc < m );
@@ -234,14 +228,12 @@ void symm(
                uplo != Uplo::Upper );
     throw_if_( m < 0 );
     throw_if_( n < 0 );
-    if ((layout == Layout::ColMajor) == (side == Side::Left)) {
-        // (colmajor && left) || (rowmajor && right)
-        throw_if_( lda < m );
-    }
-    else {
-        // (colmajor && right) || (rowmajor && left)
-        throw_if_( lda < n );
-    }
+
+    if (side == Side::Left)
+        throw_if_msg_( lda < m, "lda %d < m %d", lda, m );
+    else
+        throw_if_msg_( lda < n, "lda %d < n %d", lda, n );
+
     if (layout == Layout::ColMajor) {
         throw_if_( ldb < m );
         throw_if_( ldc < m );
