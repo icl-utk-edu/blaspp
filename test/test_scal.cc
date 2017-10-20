@@ -49,7 +49,8 @@ void test_scal_work( Params& params, bool run )
     assert_throw( blas::scal(  n, alpha, x,   -1 ), blas::Error );
 
     if (verbose >= 1) {
-        printf( "x n=%5lld, inc=%5lld, size=%5lld\n",
+        printf( "\n"
+                "x n=%5lld, inc=%5lld, size=%10lld\n",
                 (lld) n, (lld) incx, (lld) size_x );
     }
     if (verbose >= 2) {

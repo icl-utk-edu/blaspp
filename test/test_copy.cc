@@ -54,8 +54,9 @@ void test_copy_work( Params& params, bool run )
     assert_throw( blas::copy(  n, x, incx, y,    0 ), blas::Error );
 
     if (verbose >= 1) {
-        printf( "x n=%5lld, inc=%5lld, size=%5lld\n"
-                "y n=%5lld, inc=%5lld, size=%5lld\n",
+        printf( "\n"
+                "x n=%5lld, inc=%5lld, size=%10lld\n"
+                "y n=%5lld, inc=%5lld, size=%10lld\n",
                 (lld) n, (lld) incx, (lld) size_x,
                 (lld) n, (lld) incy, (lld) size_y );
     }

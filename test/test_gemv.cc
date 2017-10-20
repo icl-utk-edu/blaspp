@@ -77,9 +77,10 @@ void test_gemv_work( Params& params, bool run )
     assert_throw( blas::gemv( layout,    trans,  m,  n, alpha, A, lda, x, incx, beta, y, 0    ), blas::Error );
 
     if (verbose >= 1) {
-        printf( "A Am=%5lld, An=%5lld, lda=%5lld, size=%5lld, norm=%.2e\n"
-                "x Xm=%5lld, inc=%5lld,          size=%5lld, norm=%.2e\n"
-                "y Ym=%5lld, inc=%5lld,          size=%5lld, norm=%.2e\n",
+        printf( "\n"
+                "A Am=%5lld, An=%5lld, lda=%5lld, size=%10lld, norm=%.2e\n"
+                "x Xm=%5lld, inc=%5lld,           size=%10lld, norm=%.2e\n"
+                "y Ym=%5lld, inc=%5lld,           size=%10lld, norm=%.2e\n",
                 (lld) Am, (lld) An, (lld) lda, (lld) size_A, Anorm,
                 (lld) Xm, (lld) incx,          (lld) size_x, Xnorm,
                 (lld) Ym, (lld) incy,          (lld) size_y, Ynorm );

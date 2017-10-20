@@ -76,17 +76,18 @@ void test_hemm_work( Params& params, bool run )
     assert_throw( blas::hemm( layout, Side::Left,  uplo,     m,  n, alpha, A, m-1, B, ldb, beta, C, ldc ), blas::Error );
     assert_throw( blas::hemm( layout, Side::Right, uplo,     m,  n, alpha, A, n-1, B, ldb, beta, C, ldc ), blas::Error );
 
-    assert_throw( blas::hemm( Layout::ColMajor, side,        uplo, m, n, alpha, A, lda, B, m-1, beta, C, ldc ), blas::Error );
-    assert_throw( blas::hemm( Layout::RowMajor, side,        uplo, m, n, alpha, A, lda, B, n-1, beta, C, ldc ), blas::Error );
+    assert_throw( blas::hemm( Layout::ColMajor, side, uplo,  m,  n, alpha, A, lda, B, m-1, beta, C, ldc ), blas::Error );
+    assert_throw( blas::hemm( Layout::RowMajor, side, uplo,  m,  n, alpha, A, lda, B, n-1, beta, C, ldc ), blas::Error );
 
-    assert_throw( blas::hemm( Layout::ColMajor, side,        uplo, m, n, alpha, A, lda, B, ldb, beta, C, m-1 ), blas::Error );
-    assert_throw( blas::hemm( Layout::RowMajor, side,        uplo, m, n, alpha, A, lda, B, ldb, beta, C, n-1 ), blas::Error );
+    assert_throw( blas::hemm( Layout::ColMajor, side, uplo,  m,  n, alpha, A, lda, B, ldb, beta, C, m-1 ), blas::Error );
+    assert_throw( blas::hemm( Layout::RowMajor, side, uplo,  m,  n, alpha, A, lda, B, ldb, beta, C, n-1 ), blas::Error );
 
     if (verbose >= 1) {
-        printf( "side %c, uplo %c\n"
-                "A An=%5lld, An=%5lld, lda=%5lld, size=%5lld, norm %.2e\n"
-                "B  m=%5lld,  n=%5lld, ldb=%5lld, size=%5lld, norm %.2e\n"
-                "C  m=%5lld,  n=%5lld, ldc=%5lld, size=%5lld, norm %.2e\n",
+        printf( "\n"
+                "side %c, uplo %c\n"
+                "A An=%5lld, An=%5lld, lda=%5lld, size=%10lld, norm %.2e\n"
+                "B  m=%5lld,  n=%5lld, ldb=%5lld, size=%10lld, norm %.2e\n"
+                "C  m=%5lld,  n=%5lld, ldc=%5lld, size=%10lld, norm %.2e\n",
                 side2char(side), uplo2char(uplo),
                 (lld) An, (lld) An, (lld) lda, (lld) size_A, Anorm,
                 (lld)  m, (lld)  n, (lld) ldb, (lld) size_B, Bnorm,

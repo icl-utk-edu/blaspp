@@ -91,10 +91,11 @@ void test_syr2k_work( Params& params, bool run )
     assert_throw( blas::syr2k( layout,    uplo,    trans,  n,  k, alpha, A, lda, B, ldb, beta, C, n-1 ), blas::Error );
 
     if (verbose >= 1) {
-        printf( "uplo %c, trans %c\n"
-                "A An=%5lld, An=%5lld, lda=%5lld, size=%5lld, norm %.2e\n"
-                "B Bn=%5lld, Bn=%5lld, ldb=%5lld, size=%5lld, norm %.2e\n"
-                "C  n=%5lld,  n=%5lld, ldc=%5lld, size=%5lld, norm %.2e\n",
+        printf( "\n"
+                "uplo %c, trans %c\n"
+                "A An=%5lld, An=%5lld, lda=%5lld, size=%10lld, norm %.2e\n"
+                "B Bn=%5lld, Bn=%5lld, ldb=%5lld, size=%10lld, norm %.2e\n"
+                "C  n=%5lld,  n=%5lld, ldc=%5lld, size=%10lld, norm %.2e\n",
                 uplo2char(uplo), op2char(trans),
                 (lld) Am, (lld) An, (lld) lda, (lld) size_A, Anorm,
                 (lld) Am, (lld) An, (lld) ldb, (lld) size_B, Bnorm,

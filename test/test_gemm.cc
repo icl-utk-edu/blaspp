@@ -101,9 +101,10 @@ void test_gemm_work( Params& params, bool run )
     assert_throw( blas::gemm( Layout::RowMajor, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, n-1 ), blas::Error );
 
     if (verbose >= 1) {
-        printf( "A Am=%5lld, An=%5lld, lda=%5lld, size=%5lld, norm %.2e\n"
-                "B Bm=%5lld, Bn=%5lld, ldb=%5lld, size=%5lld, norm %.2e\n"
-                "C Cm=%5lld, Cn=%5lld, ldc=%5lld, size=%5lld, norm %.2e\n",
+        printf( "\n"
+                "A Am=%5lld, An=%5lld, lda=%5lld, size=%10lld, norm %.2e\n"
+                "B Bm=%5lld, Bn=%5lld, ldb=%5lld, size=%10lld, norm %.2e\n"
+                "C Cm=%5lld, Cn=%5lld, ldc=%5lld, size=%10lld, norm %.2e\n",
                 (lld) Am, (lld) An, (lld) lda, (lld) size_A, Anorm,
                 (lld) Bm, (lld) Bn, (lld) ldb, (lld) size_B, Bnorm,
                 (lld) Cm, (lld) Cn, (lld) ldc, (lld) size_C, Cnorm );
