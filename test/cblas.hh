@@ -1577,4 +1577,104 @@ cblas_syr2k(
     cblas_zsyr2k( layout, uplo, trans, n, k, &alpha, A, lda, B, ldb, &beta, C, ldc );
 }
 
+
+// -----------------------------------------------------------------------------
+inline void
+cblas_trmm(
+    CBLAS_LAYOUT layout, CBLAS_SIDE side, CBLAS_UPLO uplo,
+    CBLAS_TRANSPOSE trans, CBLAS_DIAG diag,
+    int m, int n,
+    float alpha,
+    float const *A, int lda,
+    float       *B, int ldb )
+{
+    cblas_strmm( layout, side, uplo, trans, diag, m, n,  alpha, A, lda, B, ldb);
+}
+
+inline void
+cblas_trmm(
+    CBLAS_LAYOUT layout, CBLAS_SIDE side, CBLAS_UPLO uplo,
+    CBLAS_TRANSPOSE trans, CBLAS_DIAG diag,
+    int m, int n,
+    double alpha,
+    double const *A, int lda,
+    double       *B, int ldb )
+{
+    cblas_dtrmm( layout, side, uplo, trans, diag, m, n,  alpha, A, lda, B, ldb);
+}
+
+inline void
+cblas_trmm(
+    CBLAS_LAYOUT layout, CBLAS_SIDE side, CBLAS_UPLO uplo,
+    CBLAS_TRANSPOSE trans, CBLAS_DIAG diag,
+    int m, int n,
+    std::complex<float> alpha,
+    std::complex<float> const *A, int lda,
+    std::complex<float>       *B, int ldb )
+{
+    cblas_ctrmm( layout, side, uplo, trans, diag, m, n, &alpha, A, lda, B, ldb );
+}
+
+inline void
+cblas_trmm(
+    CBLAS_LAYOUT layout, CBLAS_SIDE side, CBLAS_UPLO uplo,
+    CBLAS_TRANSPOSE trans, CBLAS_DIAG diag,
+    int m, int n,
+    std::complex<double> alpha,
+    std::complex<double> const *A, int lda,
+    std::complex<double>       *B, int ldb )
+{
+    cblas_ztrmm( layout, side, uplo, trans, diag, m, n, &alpha, A, lda, B, ldb );
+}
+
+
+// -----------------------------------------------------------------------------
+inline void
+cblas_trsm(
+    CBLAS_LAYOUT layout, CBLAS_SIDE side, CBLAS_UPLO uplo,
+    CBLAS_TRANSPOSE trans, CBLAS_DIAG diag,
+    int m, int n,
+    float alpha,
+    float const *A, int lda,
+    float       *B, int ldb )
+{
+    cblas_strsm( layout, side, uplo, trans, diag, m, n,  alpha, A, lda, B, ldb);
+}
+
+inline void
+cblas_trsm(
+    CBLAS_LAYOUT layout, CBLAS_SIDE side, CBLAS_UPLO uplo,
+    CBLAS_TRANSPOSE trans, CBLAS_DIAG diag,
+    int m, int n,
+    double alpha,
+    double const *A, int lda,
+    double       *B, int ldb )
+{
+    cblas_dtrsm( layout, side, uplo, trans, diag, m, n,  alpha, A, lda, B, ldb);
+}
+
+inline void
+cblas_trsm(
+    CBLAS_LAYOUT layout, CBLAS_SIDE side, CBLAS_UPLO uplo,
+    CBLAS_TRANSPOSE trans, CBLAS_DIAG diag,
+    int m, int n,
+    std::complex<float> alpha,
+    std::complex<float> const *A, int lda,
+    std::complex<float>       *B, int ldb )
+{
+    cblas_ctrsm( layout, side, uplo, trans, diag, m, n, &alpha, A, lda, B, ldb );
+}
+
+inline void
+cblas_trsm(
+    CBLAS_LAYOUT layout, CBLAS_SIDE side, CBLAS_UPLO uplo,
+    CBLAS_TRANSPOSE trans, CBLAS_DIAG diag,
+    int m, int n,
+    std::complex<double> alpha,
+    std::complex<double> const *A, int lda,
+    std::complex<double>       *B, int ldb )
+{
+    cblas_ztrsm( layout, side, uplo, trans, diag, m, n, &alpha, A, lda, B, ldb );
+}
+
 #endif        //  #ifndef CBLAS_HH

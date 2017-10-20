@@ -527,4 +527,58 @@ inline double gbyte_syr2k( double n, double k, T* x )
     return gbyte_herk( n, k, x );
 }
 
+
+// -----------------------------------------------------------------------------
+inline double fmuls_trmm( blas::Side side, double m, double n )
+{
+    if (side == blas::Side::Left)
+        return 0.5*n*m*(m + 1);
+    else
+        return 0.5*m*n*(n + 1);
+}
+
+inline double fadds_trmm( blas::Side side, double m, double n )
+{
+    if (side == blas::Side::Left)
+        return 0.5*n*m*(m - 1);
+    else
+        return 0.5*m*n*(n - 1);
+}
+
+template< typename T >
+inline double gflop_trmm( blas::Side side, double m, double n, T* x )
+{
+    return (fmuls_trmm(side, m, n) + fadds_trmm(side, m, n)) / 1e9;
+}
+
+template< typename T >
+inline double gflop_trmm( blas::Side side, double m, double n, std::complex<T>* x )
+{
+    return (6*fmuls_trmm(side, m, n) + 2*fadds_trmm(side, m, n)) / 1e9;
+}
+
+template< typename T >
+inline double gbyte_trmm( blas::Side side, double m, double n, T* x )
+{
+    // read A triangle, x; write x
+    if (side == blas::Side::Left)
+        return (0.5*(m+1)*m + 2*m*n) * sizeof(T);
+    else
+        return (0.5*(n+1)*n + 2*m*n) * sizeof(T);
+}
+
+
+// -----------------------------------------------------------------------------
+template< typename T >
+inline double gflop_trsm( blas::Side side, double m, double n, T* x )
+{
+    return gflop_trmm( side, m, n, x );
+}
+
+template< typename T >
+inline double gbyte_trsm( blas::Side side, double m, double n, T* x )
+{
+    return gbyte_trmm( side, m, n, x );
+}
+
 #endif        //  #ifndef FLOPS_HH
