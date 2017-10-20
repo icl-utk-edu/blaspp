@@ -12,6 +12,7 @@ namespace blas {
 // Overloaded wrappers for s, d, c, z precisions.
 
 // -----------------------------------------------------------------------------
+/// @ingroup trsv
 inline
 void trsv(
     blas::Layout layout,
@@ -61,6 +62,7 @@ void trsv(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup trsv
 inline
 void trsv(
     blas::Layout layout,
@@ -110,6 +112,7 @@ void trsv(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup trsv
 inline
 void trsv(
     blas::Layout layout,
@@ -178,6 +181,7 @@ void trsv(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup trsv
 inline
 void trsv(
     blas::Layout layout,
@@ -247,13 +251,13 @@ void trsv(
 
 // =============================================================================
 /// Solve the triangular matrix-vector equation
-///     op(A)*x = b,
+///     \f[ op(A) x = b, \f]
 /// where op(A) is one of
-///     op(A) = A    or
-///     op(A) = A^T  or
-///     op(A) = A^H,
-/// x and b are vectors, and A is an n-by-n, unit or non-unit,
-/// upper or lower triangular matrix.
+///     \f[ op(A) = A,   \f]
+///     \f[ op(A) = A^T, \f]
+///     \f[ op(A) = A^H, \f]
+/// x and b are vectors,
+/// and A is an n-by-n, unit or non-unit, upper or lower triangular matrix.
 ///
 /// No test for singularity or near-singularity is included in this
 /// routine. Such tests must be performed before calling this routine.
@@ -262,37 +266,43 @@ void trsv(
 /// Generic implementation for arbitrary data types.
 ///
 /// @param[in] layout
-///         Matrix storage, Layout::ColMajor or Layout::RowMajor.
+///     Matrix storage, Layout::ColMajor or Layout::RowMajor.
 ///
 /// @param[in] uplo
-///         TODO
+///     What part of the matrix A is referenced,
+///     the opposite triangle being assumed to be zero.
+///     - Uplo::Lower: A is lower triangular.
+///     - Uplo::Upper: A is upper triangular.
 ///
 /// @param[in] trans
-///         The equation to be solved:
-///         trans = Op::NoTrans   is A*x   = b,
-///         trans = Op::Trans     is A^T*x = b,
-///         trans = Op::ConjTrans is A^H*x = b.
+///     The equation to be solved:
+///     - Op::NoTrans:   \f$ A   x = b, \f$
+///     - Op::Trans:     \f$ A^T x = b, \f$
+///     - Op::ConjTrans: \f$ A^H x = b. \f$
 ///
 /// @param[in] diag
-///         TODO
+///     Whether A has a unit or non-unit diagonal:
+///     - Diag::Unit:    A is assumed to be unit triangular.
+///                      The diagonal elements of A are not referenced.
+///     - Diag::NonUnit: A is not assumed to be unit triangular.
 ///
 /// @param[in] n
-///         Number of rows and columns of the matrix A.
+///     Number of rows and columns of the matrix A. n >= 0.
 ///
 /// @param[in] A
-///         The n-by-n matrix A, stored in an lda-by-n array.
+///     The n-by-n matrix A, stored in an lda-by-n array [RowMajor: n-by-lda].
 ///
 /// @param[in] lda
-///         Leading dimension of A, i.e., column stride. lda >= max(1,m).
+///     Leading dimension of A. lda >= max(1,n).
 ///
 /// @param[in,out] x
-///         The n-element vector x, of length (n-1)*abs(incx) + 1.
+///     The n-element vector x, in an array of length (n-1)*abs(incx) + 1.
 ///
 /// @param[in] incx
-///         Stride between elements of x. incx must not be zero.
-///         If incx < 0, uses elements of x in reverse order: x(n-1), ..., x(0).
+///     Stride between elements of x. incx must not be zero.
+///     If incx < 0, uses elements of x in reverse order: x(n-1), ..., x(0).
 ///
-/// @ingroup blas2
+/// @ingroup trsv
 
 template< typename TA, typename TX >
 void trsv(

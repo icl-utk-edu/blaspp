@@ -13,6 +13,7 @@ namespace blas {
 // Conjugated version, x^H y.
 
 // -----------------------------------------------------------------------------
+/// @ingroup dot
 inline
 float dot(
     int64_t n,
@@ -38,6 +39,7 @@ float dot(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup dot
 inline
 double dot(
     int64_t n,
@@ -63,6 +65,7 @@ double dot(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup dot
 inline
 std::complex<float> dot(
     int64_t n,
@@ -97,6 +100,7 @@ std::complex<float> dot(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup dot
 inline
 std::complex<double> dot(
     int64_t n,
@@ -134,6 +138,7 @@ std::complex<double> dot(
 // Unconjugated version, x^T y
 
 // -----------------------------------------------------------------------------
+/// @ingroup dotu
 inline
 float dotu(
     int64_t n,
@@ -144,6 +149,7 @@ float dotu(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup dotu
 inline
 double dotu(
     int64_t n,
@@ -154,6 +160,7 @@ double dotu(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup dotu
 inline
 std::complex<float> dotu(
     int64_t n,
@@ -188,6 +195,7 @@ std::complex<float> dotu(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup dotu
 inline
 std::complex<double> dotu(
     int64_t n,
@@ -222,29 +230,29 @@ std::complex<double> dotu(
 }
 
 // =============================================================================
-/// @return dot product, x^H y.
-/// @see dotu for unconjugated version, x^T y.
+/// @return dot product, \f$ x^H y. \f$
+/// @see dotu for unconjugated version, \f$ x^T y. \f$
 ///
 /// Generic implementation for arbitrary data types.
 ///
 /// @param[in] n
-///         Number of elements in x and y.
+///     Number of elements in x and y. n >= 0.
 ///
 /// @param[in] x
-///         The n-element vector x, of length (n-1)*abs(incx) + 1.
+///     The n-element vector x, in an array of length (n-1)*abs(incx) + 1.
 ///
 /// @param[in] incx
-///         Stride between elements of x. incx must not be zero.
-///         If incx < 0, uses elements of x in reverse order: x(n-1), ..., x(0).
+///     Stride between elements of x. incx must not be zero.
+///     If incx < 0, uses elements of x in reverse order: x(n-1), ..., x(0).
 ///
-/// @param[in,out] y
-///         The n-element vector y, of length (n-1)*abs(incy) + 1.
+/// @param[in] y
+///     The n-element vector y, in an array of length (n-1)*abs(incy) + 1.
 ///
 /// @param[in] incy
-///         Stride between elements of y. incy must not be zero.
-///         If incy < 0, uses elements of y in reverse order: y(n-1), ..., y(0).
+///     Stride between elements of y. incy must not be zero.
+///     If incy < 0, uses elements of y in reverse order: y(n-1), ..., y(0).
 ///
-/// @ingroup blas1
+/// @ingroup dot
 
 template< typename TX, typename TY >
 typename traits2<TX,TY>::scalar_t dot(
@@ -280,29 +288,29 @@ typename traits2<TX,TY>::scalar_t dot(
 }
 
 // =============================================================================
-/// @return unconjugated dot product, x^T y.
-/// @see dot for conjugated version, x^H y.
+/// @return unconjugated dot product, \f$ x^T y. \f$
+/// @see dot for conjugated version, \f$ x^H y. \f$
 ///
 /// Generic implementation for arbitrary data types.
 ///
 /// @param[in] n
-///         Number of elements in x and y.
+///     Number of elements in x and y. n >= 0.
 ///
 /// @param[in] x
-///         The n-element vector x, of length (n-1)*abs(incx) + 1.
+///     The n-element vector x, in an array of length (n-1)*abs(incx) + 1.
 ///
 /// @param[in] incx
-///         Stride between elements of x. incx must not be zero.
-///         If incx < 0, uses elements of x in reverse order: x(n-1), ..., x(0).
+///     Stride between elements of x. incx must not be zero.
+///     If incx < 0, uses elements of x in reverse order: x(n-1), ..., x(0).
 ///
-/// @param[in,out] y
-///         The n-element vector y, of length (n-1)*abs(incy) + 1.
+/// @param[in] y
+///     The n-element vector y, in an array of length (n-1)*abs(incy) + 1.
 ///
 /// @param[in] incy
-///         Stride between elements of y. incy must not be zero.
-///         If incy < 0, uses elements of y in reverse order: y(n-1), ..., y(0).
+///     Stride between elements of y. incy must not be zero.
+///     If incy < 0, uses elements of y in reverse order: y(n-1), ..., y(0).
 ///
-/// @ingroup blas1
+/// @ingroup dotu
 
 template< typename TX, typename TY >
 typename traits2<TX,TY>::scalar_t dotu(

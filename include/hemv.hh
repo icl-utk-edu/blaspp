@@ -13,6 +13,7 @@ namespace blas {
 // Overloaded wrappers for s, d, c, z precisions.
 
 // -----------------------------------------------------------------------------
+/// @ingroup hemv
 inline
 void hemv(
     blas::Layout layout,
@@ -28,6 +29,7 @@ void hemv(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup hemv
 inline
 void hemv(
     blas::Layout layout,
@@ -43,6 +45,7 @@ void hemv(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup hemv
 inline
 void hemv(
     blas::Layout layout,
@@ -117,6 +120,7 @@ void hemv(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup hemv
 inline
 void hemv(
     blas::Layout layout,
@@ -190,50 +194,54 @@ void hemv(
 }
 
 // =============================================================================
-/// Symmetric matrix-vector multiply,
-///     y = alpha*A*x + beta*y,
+/// Hermitian matrix-vector multiply,
+///     \f[ y = \alpha A x + \beta y, \f]
 /// where alpha and beta are scalars, x and y are vectors,
-/// and A is an n-by-n symmetric matrix.
+/// and A is an n-by-n Hermitian matrix.
 ///
 /// Generic implementation for arbitrary data types.
 ///
 /// @param[in] layout
-///         Matrix storage, Layout::ColMajor or Layout::RowMajor.
+///     Matrix storage, Layout::ColMajor or Layout::RowMajor.
 ///
 /// @param[in] uplo
-///         TODO
+///     What part of the matrix A is referenced,
+///     the opposite triangle being assumed from symmetry.
+///     - Uplo::Lower: only the lower triangular part of A is referenced.
+///     - Uplo::Upper: only the upper triangular part of A is referenced.
 ///
 /// @param[in] n
-///         Number of rows and columns of the matrix A.
+///     Number of rows and columns of the matrix A. n >= 0.
 ///
 /// @param[in] alpha
-///         Scalar alpha. If alpha is zero, A and x are not accessed.
+///     Scalar alpha. If alpha is zero, A and x are not accessed.
 ///
 /// @param[in] A
-///         The n-by-n matrix A, stored in an lda-by-n array.
-///         TODO uplo
+///     The n-by-n matrix A, stored in an lda-by-n array [RowMajor: n-by-lda].
+///     Imaginary parts of the diagonal elements need not be set,
+///     and are assumed to be zero.
 ///
 /// @param[in] lda
-///         Leading dimension of A, i.e., column stride. lda >= max(1,n).
+///     Leading dimension of A. lda >= max(1,n).
 ///
 /// @param[in] x
-///         The n-element vector x, of length (n-1)*abs(incx) + 1.
+///     The n-element vector x, in an array of length (n-1)*abs(incx) + 1.
 ///
 /// @param[in] incx
-///         Stride between elements of x. incx must not be zero.
-///         If incx < 0, uses elements of x in reverse order: x(n-1), ..., x(0).
+///     Stride between elements of x. incx must not be zero.
+///     If incx < 0, uses elements of x in reverse order: x(n-1), ..., x(0).
 ///
 /// @param[in] beta
-///         Scalar beta. When beta is zero, y need not be set on input.
+///     Scalar beta. If beta is zero, y need not be set on input.
 ///
 /// @param[in,out] y
-///         The n-element vector y, of length (n-1)*abs(incy) + 1.
+///     The n-element vector y, in an array of length (n-1)*abs(incy) + 1.
 ///
 /// @param[in] incy
-///         Stride between elements of y. incy must not be zero.
-///         If incy < 0, uses elements of y in reverse order: y(n-1), ..., y(0).
+///     Stride between elements of y. incy must not be zero.
+///     If incy < 0, uses elements of y in reverse order: y(n-1), ..., y(0).
 ///
-/// @ingroup blas2
+/// @ingroup hemv
 
 template< typename TA, typename TX, typename TY >
 void hemv(

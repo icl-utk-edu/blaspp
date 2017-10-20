@@ -13,6 +13,7 @@ namespace blas {
 // Overloaded wrappers for s, d, c, z precisions.
 
 // -----------------------------------------------------------------------------
+/// @ingroup geru
 inline
 void geru(
     blas::Layout layout,
@@ -26,6 +27,7 @@ void geru(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup geru
 inline
 void geru(
     blas::Layout layout,
@@ -39,6 +41,7 @@ void geru(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup geru
 inline
 void geru(
     blas::Layout layout,
@@ -86,6 +89,7 @@ void geru(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup geru
 inline
 void geru(
     blas::Layout layout,
@@ -134,49 +138,45 @@ void geru(
 
 // =============================================================================
 /// General matrix rank-1 update,
-///     A = alpha*x*y^H + A,
+///     \f[ A = \alpha x y^T + A, \f]
 /// where alpha is a scalar, x and y are vectors,
 /// and A is an m-by-n matrix.
 ///
 /// Generic implementation for arbitrary data types.
 ///
 /// @param[in] layout
-///         Matrix storage, Layout::ColMajor or Layout::RowMajor.
+///     Matrix storage, Layout::ColMajor or Layout::RowMajor.
 ///
 /// @param[in] m
-///         Number of rows of the matrix A.
+///     Number of rows of the matrix A. m >= 0.
 ///
 /// @param[in] n
-///         Number of columns of the matrix A.
+///     Number of columns of the matrix A. n >= 0.
 ///
 /// @param[in] alpha
-///         Scalar alpha. If alpha is zero, A is not updated.
+///     Scalar alpha. If alpha is zero, A is not updated.
 ///
 /// @param[in] x
-///         The m-element vector x, of length (m-1)*abs(incx) + 1.
+///     The m-element vector x, in an array of length (m-1)*abs(incx) + 1.
 ///
 /// @param[in] incx
-///         Stride between elements of x. incx must not be zero.
-///         If incx < 0, uses elements of x in reverse order: x(n-1), ..., x(0).
+///     Stride between elements of x. incx must not be zero.
+///     If incx < 0, uses elements of x in reverse order: x(n-1), ..., x(0).
 ///
 /// @param[in] y
-///         The n-element vector y, of length (n-1)*abs(incy) + 1.
+///     The n-element vector y, in an array of length (n-1)*abs(incy) + 1.
 ///
 /// @param[in] incy
-///         Stride between elements of y. incy must not be zero.
-///         If incy < 0, uses elements of y in reverse order: y(n-1), ..., y(0).
+///     Stride between elements of y. incy must not be zero.
+///     If incy < 0, uses elements of y in reverse order: y(n-1), ..., y(0).
 ///
-/// @param[in] A
-///         The m-by-n matrix A.
-///         ColMajor: stored in an lda-by-n array.
-///         RowMajor: stored in an m-by-lda array.
+/// @param[in,out] A
+///     The m-by-n matrix A, stored in an lda-by-n array [RowMajor: m-by-lda].
 ///
 /// @param[in] lda
-///         Leading dimension of A.
-///         ColMajor: lda >= max(1,m).
-///         RowMajor: lda >= max(1,n).
+///     Leading dimension of A. lda >= max(1,m) [RowMajor: lda >= max(1,n)].
 ///
-/// @ingroup blas2
+/// @ingroup geru
 
 template< typename TA, typename TX, typename TY >
 void geru(

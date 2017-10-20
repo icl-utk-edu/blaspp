@@ -13,6 +13,7 @@ namespace blas {
 // Overloaded wrappers for s, d, c, z precisions.
 
 // -----------------------------------------------------------------------------
+/// @ingroup rotg
 inline
 void rotg(
     float *a,
@@ -24,6 +25,7 @@ void rotg(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup rotg
 inline
 void rotg(
     double *a,
@@ -35,6 +37,7 @@ void rotg(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup rotg
 inline
 void rotg(
     std::complex<float> *a,
@@ -46,6 +49,7 @@ void rotg(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup rotg
 inline
 void rotg(
     std::complex<double> *a,
@@ -57,24 +61,32 @@ void rotg(
 }
 
 // =============================================================================
-/// Construct plane rotation.
-/// TODO: describe.
+/// Construct plane rotation that eliminates b, such that
+//      [ z ] = [  c  s ] [ a ]
+//      [ 0 ]   [ -s  c ] [ b ]
+//
+///     \f[ \begin{bmatrix} z     \\ 0      \end{bmatrix} =
+///         \begin{bmatrix} c & s \\ -s & c \end{bmatrix}
+///         \begin{bmatrix} a     \\ b      \end{bmatrix} \f]
+///
+/// @see rot to apply the rotation.
 ///
 /// Generic implementation for arbitrary data types.
+/// TODO: generic version not yet implemented.
 ///
 /// @param[in,out] a
-///         Scalar a.
+///     On entry, scalar a. On exit, set to z.
 ///
 /// @param[in,out] b
-///         Scalar b.
+///     On entry, scalar b. On exit, set to s, 1/c, or 0.
 ///
-/// @param[in] c
-///         Cosine of rotation; real.
+/// @param[out] c
+///     Cosine of rotation; real.
 ///
-/// @param[in] s
-///         Sine of rotation; complex.
+/// @param[out] s
+///     Sine of rotation; complex.
 ///
-/// @ingroup blas1
+/// @ingroup rotg
 
 template< typename TX, typename TY >
 void rotg(
@@ -83,7 +95,7 @@ void rotg(
     typename blas::traits2<TX,TY>::real_t   c,
     typename blas::traits2<TX,TY>::scalar_t s )
 {
-    assert( false );
+    throw std::exception();  // not yet implemented
 }
 
 }  // namespace blas

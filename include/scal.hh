@@ -12,6 +12,7 @@ namespace blas {
 // Overloaded wrappers for s, d, c, z precisions.
 
 // -----------------------------------------------------------------------------
+/// @ingroup scal
 inline
 void scal(
     int64_t n,
@@ -34,6 +35,7 @@ void scal(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup scal
 inline
 void scal(
     int64_t n,
@@ -56,6 +58,7 @@ void scal(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup scal
 inline
 void scal(
     int64_t n,
@@ -78,6 +81,7 @@ void scal(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup scal
 inline
 void scal(
     int64_t n,
@@ -100,23 +104,23 @@ void scal(
 }
 
 // =============================================================================
-/// Scale vector by constant, x = alpha*x.
+/// Scale vector by constant, \f$ x = \alpha x. \f$
 ///
 /// Generic implementation for arbitrary data types.
 ///
 /// @param[in] n
-///         Number of elements in x.
+///     Number of elements in x. n >= 0.
 ///
 /// @param[in] alpha
-///         Scalar alpha.
+///     Scalar alpha.
 ///
 /// @param[in] x
-///         The n-element vector x, of length (n-1)*incx + 1.
+///     The n-element vector x, in an array of length (n-1)*incx + 1.
 ///
 /// @param[in] incx
-///         Stride between elements of x. incx > 0.
+///     Stride between elements of x. incx > 0.
 ///
-/// @ingroup blas1
+/// @ingroup scal
 
 template< typename T >
 void scal(

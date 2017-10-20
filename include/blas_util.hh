@@ -109,17 +109,21 @@ inline Side char2side( char side )
 }
 
 // -----------------------------------------------------------------------------
+/// Exception class for BLAS errors.
 class Error: public std::exception {
 public:
+    /// Constructs BLAS error
     Error():
         std::exception()
     {}
 
+    /// Constructs BLAS error with message: "func: msg"
     Error( const char* msg, const char* func ):
         std::exception(),
         msg_( std::string(func) + ": " + msg )
     {}
 
+    /// Returns BLAS error message
     virtual const char* what() { return msg_.c_str(); }
 
 private:
@@ -152,9 +156,10 @@ T abs1( std::complex<T> x )
 }
 
 // -----------------------------------------------------------------------------
-// traits: given a type, defines its norm type
+//  traits
+/// Given a type, defines corresponding real type.
+/// E.g., for complex<float>, real_t = float.
 
-// ----------------------------------------
 template< typename T >
 class traits
 {
@@ -171,11 +176,11 @@ public:
 };
 
 // -----------------------------------------------------------------------------
-// traits2: given 2 types, defines their scalar and norm types.
-// Default is type T1, then overrides are given for cases where it should be T2
-// or something different.
+//  traits2
+/// Given two types, defines scalar and real types compatible with both types.
+/// E.g., for pair (float, complex<float>),
+/// scalar_t = complex<float>, real_t = float.
 
-// ----------------------------------------
 template< typename T1, typename T2 >
 class traits2
 {
@@ -242,7 +247,10 @@ public:
 };
 
 // -----------------------------------------------------------------------------
-// traits2: given 3 types, defines their scalar and norm types.
+// traits3
+/// Given three types, defines scalar and real types compatible with all types.
+/// E.g., for the triple (float, complex<float>, double),
+/// scalar_t = complex<double>, real_t = double.
 
 // ----------------------------------------
 template< typename T1, typename T2, typename T3 >

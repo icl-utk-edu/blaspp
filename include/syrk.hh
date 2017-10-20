@@ -12,6 +12,7 @@ namespace blas {
 // Overloaded wrappers for s, d, c, z precisions.
 
 // -----------------------------------------------------------------------------
+/// @ingroup syrk
 inline
 void syrk(
     blas::Layout layout,
@@ -68,6 +69,7 @@ void syrk(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup syrk
 inline
 void syrk(
     blas::Layout layout,
@@ -124,6 +126,7 @@ void syrk(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup syrk
 inline
 void syrk(
     blas::Layout layout,
@@ -179,6 +182,7 @@ void syrk(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup syrk
 inline
 void syrk(
     blas::Layout layout,
@@ -235,61 +239,63 @@ void syrk(
 
 // =============================================================================
 /// Symmetric rank-k update,
-///     C = alpha A A^T + beta C,
+///     \f[ C = \alpha A A^T + \beta C, \f]
 /// or
-///     C = alpha A^T A + beta C,
+///     \f[ C = \alpha A^T A + \beta C, \f]
 /// where alpha and beta are scalars, C is an n-by-n symmetric matrix,
 /// and A is an n-by-k or k-by-n matrix.
 ///
 /// Generic implementation for arbitrary data types.
+/// TODO: generic version not yet implemented.
 ///
 /// @param[in] layout
-///         Matrix storage, Layout::ColMajor or Layout::RowMajor.
+///     Matrix storage, Layout::ColMajor or Layout::RowMajor.
 ///
 /// @param[in] uplo
-///         What part of the matrix C is referenced:
-///         uplo = Lower: only the lower triangular part of C is referenced.
-///         uplo = Upper: only the upper triangular part of C is referenced.
+///     What part of the matrix C is referenced,
+///     the opposite triangle being assumed from symmetry:
+///     - Uplo::Lower: only the lower triangular part of C is referenced.
+///     - Uplo::Upper: only the upper triangular part of C is referenced.
 ///
 /// @param[in] trans
-///         The operation to be performed
-///         trans = Op::NoTrans   is C = alpha A A^T + beta C,
-///         trans = Op::Trans     is C = alpha A^T A + beta C.
-///         In the real    case, Op::ConjTrans is interpretted as Op::Trans.
-///         In the complex case, Op::ConjTrans is illegal (@see herk instead).
+///     The operation to be performed:
+///     - Op::NoTrans: \f$ C = \alpha A A^T + \beta C. \f$
+///     - Op::Trans:   \f$ C = \alpha A^T A + \beta C. \f$
+///     - In the real    case, Op::ConjTrans is interpreted as Op::Trans.
+///       In the complex case, Op::ConjTrans is illegal (see @ref herk instead).
 ///
 /// @param[in] n
-///         Number of rows and columns of the matrix C.
+///     Number of rows and columns of the matrix C. n >= 0.
 ///
 /// @param[in] k
-///         If trans = Op::NoTrans: number of columns of the matrix A.
-///         If trans = Op::Trans:   number of rows of the matrix A.
+///     - If trans = NoTrans: number of columns of the matrix A. k >= 0.
+///     - Otherwise:          number of rows    of the matrix A. k >= 0.
 ///
 /// @param[in] alpha
-///         Scalar alpha. If alpha is zero, A is not accessed.
+///     Scalar alpha. If alpha is zero, A is not accessed.
 ///
 /// @param[in] A
-///         If trans = Op::NoTrans:
-///         n-by-k matrix A, stored in an lda-by-k [RowMajor: n-by-lda] array.
-///         If trans = Op::Trans:
-///         k-by-n matrix A, stored in an lda-by-n [RowMajor: k-by-lda] array.
+///     - If trans = NoTrans:
+///       the n-by-k matrix A, stored in an lda-by-k array [RowMajor: n-by-lda].
+///     - Otherwise:
+///       the k-by-n matrix A, stored in an lda-by-n array [RowMajor: k-by-lda].
 ///
 /// @param[in] lda
-///         Leading dimension of A.
-///         If trans = Op::NoTrans: lda >= max(1,n) [RowMajor: max(1,k)],
-///         If trans = Op::Trans:   lda >= max(1,k) [RowMajor: max(1,n)].
+///     Leading dimension of A.
+///     - If trans = NoTrans: lda >= max(1,n) [RowMajor: lda >= max(1,k)],
+///     - Otherwise:              lda >= max(1,k) [RowMajor: lda >= max(1,n)].
 ///
 /// @param[in] beta
-///         Scalar beta. When beta is zero, C need not be set on input.
+///     Scalar beta. If beta is zero, C need not be set on input.
 ///
 /// @param[in] C
-///         The n-by-n symmetric matrix C,
-///         stored in an lda-by-n [RowMajor: n-by-lda] array.
+///     The n-by-n symmetric matrix C,
+///     stored in an lda-by-n array [RowMajor: n-by-lda].
 ///
 /// @param[in] ldc
-///         Leading dimension of C. ldc >= max(1,n).
+///     Leading dimension of C. ldc >= max(1,n).
 ///
-/// @ingroup blas3
+/// @ingroup syrk
 
 template< typename TA, typename TB, typename TC >
 void syrk(
@@ -302,7 +308,7 @@ void syrk(
     typename traits3<TA, TB, TC>::scalar_t beta,
     TC       *C, int64_t ldc )
 {
-    typedef typename blas::traits3<TA, TB, TC>::scalar_t scalar_t;
+    throw std::exception();  // not yet implemented
 }
 
 }  // namespace blas

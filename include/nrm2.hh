@@ -12,6 +12,7 @@ namespace blas {
 // Overloaded wrappers for s, d, c, z precisions.
 
 // -----------------------------------------------------------------------------
+/// @ingroup nrm2
 inline
 float nrm2(
     int64_t n,
@@ -33,6 +34,7 @@ float nrm2(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup nrm2
 inline
 double nrm2(
     int64_t n,
@@ -54,6 +56,7 @@ double nrm2(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup nrm2
 inline
 float nrm2(
     int64_t n,
@@ -75,6 +78,7 @@ float nrm2(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup nrm2
 inline
 double nrm2(
     int64_t n,
@@ -96,21 +100,23 @@ double nrm2(
 }
 
 // =============================================================================
-/// @return 2-norm of vector, || x ||.
+/// @return 2-norm of vector,
+///     \f$ || x ||_2
+///         = (\sum_{i=0}^{n-1} |x_i|^2)^{1/2}. \f$
 ///
 /// Generic implementation for arbitrary data types.
-/// TODO: does not currently scale to avoid over- or underflow.
+/// TODO: generic implementation does not currently scale to avoid over- or underflow.
 ///
 /// @param[in] n
-///         Number of elements in x.
+///     Number of elements in x. n >= 0.
 ///
 /// @param[in] x
-///         The n-element vector x, of length (n-1)*incx + 1.
+///     The n-element vector x, in an array of length (n-1)*incx + 1.
 ///
 /// @param[in] incx
-///         Stride between elements of x. incx > 0.
+///     Stride between elements of x. incx > 0.
 ///
-/// @ingroup blas1
+/// @ingroup nrm2
 
 template< typename T >
 typename traits<T>::real_t

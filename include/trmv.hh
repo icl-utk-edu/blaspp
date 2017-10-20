@@ -12,6 +12,7 @@ namespace blas {
 // Overloaded wrappers for s, d, c, z precisions.
 
 // -----------------------------------------------------------------------------
+/// @ingroup trmv
 inline
 void trmv(
     blas::Layout layout,
@@ -61,6 +62,7 @@ void trmv(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup trmv
 inline
 void trmv(
     blas::Layout layout,
@@ -110,6 +112,7 @@ void trmv(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup trmv
 inline
 void trmv(
     blas::Layout layout,
@@ -178,6 +181,7 @@ void trmv(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup trmv
 inline
 void trmv(
     blas::Layout layout,
@@ -247,48 +251,54 @@ void trmv(
 
 // =============================================================================
 /// Triangular matrix-vector multiply,
-///     x = op(A)*x,
+///     \f[ x = op(A) x, \f]
 /// where op(A) is one of
-///     op(A) = A    or
-///     op(A) = A^T  or
-///     op(A) = A^H,
-/// x is a vector, and A is an n-by-n, unit or non-unit,
-/// upper or lower triangular matrix.
+///     \f[ op(A) = A,   \f]
+///     \f[ op(A) = A^T, \f]
+///     \f[ op(A) = A^H, \f]
+/// x is a vector,
+/// and A is an n-by-n, unit or non-unit, upper or lower triangular matrix.
 ///
 /// Generic implementation for arbitrary data types.
 ///
 /// @param[in] layout
-///         Matrix storage, Layout::ColMajor or Layout::RowMajor.
+///     Matrix storage, Layout::ColMajor or Layout::RowMajor.
 ///
 /// @param[in] uplo
-///         TODO
+///     What part of the matrix A is referenced,
+///     the opposite triangle being assumed to be zero.
+///     - Uplo::Lower: A is lower triangular.
+///     - Uplo::Upper: A is upper triangular.
 ///
 /// @param[in] trans
-///         The operation to be performed:
-///         trans = Op::NoTrans   is x = A*x,
-///         trans = Op::Trans     is x = A^T*x,
-///         trans = Op::ConjTrans is x = A^H*x.
+///     The operation to be performed:
+///     - Op::NoTrans:   \f$ x = A   x, \f$
+///     - Op::Trans:     \f$ x = A^T x, \f$
+///     - Op::ConjTrans: \f$ x = A^H x. \f$
 ///
 /// @param[in] diag
-///         TODO
+///     Whether A has a unit or non-unit diagonal:
+///     - Diag::Unit:    A is assumed to be unit triangular.
+///                      The diagonal elements of A are not referenced.
+///     - Diag::NonUnit: A is not assumed to be unit triangular.
 ///
 /// @param[in] n
-///         Number of rows and columns of the matrix A.
+///     Number of rows and columns of the matrix A. n >= 0.
 ///
 /// @param[in] A
-///         The n-by-n matrix A, stored in an lda-by-n array.
+///     The n-by-n matrix A, stored in an lda-by-n array [RowMajor: n-by-lda].
 ///
 /// @param[in] lda
-///         Leading dimension of A, i.e., column stride. lda >= max(1,m).
+///     Leading dimension of A. lda >= max(1,n).
 ///
 /// @param[in,out] x
-///         The n-element vector x, of length (n-1)*abs(incx) + 1.
+///     The n-element vector x, in an array of length (n-1)*abs(incx) + 1.
 ///
 /// @param[in] incx
-///         Stride between elements of x. incx must not be zero.
-///         If incx < 0, uses elements of x in reverse order: x(n-1), ..., x(0).
+///     Stride between elements of x. incx must not be zero.
+///     If incx < 0, uses elements of x in reverse order: x(n-1), ..., x(0).
 ///
-/// @ingroup blas2
+/// @ingroup trmv
 
 template< typename TA, typename TX >
 void trmv(

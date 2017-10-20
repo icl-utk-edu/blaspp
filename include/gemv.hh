@@ -12,6 +12,7 @@ namespace blas {
 // Overloaded wrappers for s, d, c, z precisions.
 
 // -----------------------------------------------------------------------------
+/// @ingroup gemv
 inline
 void gemv(
     blas::Layout layout,
@@ -67,6 +68,7 @@ void gemv(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup gemv
 inline
 void gemv(
     blas::Layout layout,
@@ -122,6 +124,7 @@ void gemv(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup gemv
 inline
 void gemv(
     blas::Layout layout,
@@ -209,6 +212,7 @@ void gemv(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup gemv
 inline
 void gemv(
     blas::Layout layout,
@@ -297,66 +301,64 @@ void gemv(
 
 // =============================================================================
 /// General matrix-vector multiply,
-///     y = alpha*op(A)*x + beta*y,
+///     \f[ y = \alpha op(A) x + \beta y, \f]
 /// where op(A) is one of
-///     op(A) = A    or
-///     op(A) = A^T  or
-///     op(A) = A^H,
+///     \f[ op(A) = A,   \f]
+///     \f[ op(A) = A^T, \f]
+///     \f[ op(A) = A^H, \f]
 /// alpha and beta are scalars, x and y are vectors,
 /// and A is an m-by-n matrix.
 ///
 /// Generic implementation for arbitrary data types.
 ///
 /// @param[in] layout
-///         Matrix storage, Layout::ColMajor or Layout::RowMajor.
+///     Matrix storage, Layout::ColMajor or Layout::RowMajor.
 ///
 /// @param[in] trans
-///         The operation to be performed:
-///         trans = Op::NoTrans   is y = alpha*A*x   + beta*y,
-///         trans = Op::Trans     is y = alpha*A^T*x + beta*y,
-///         trans = Op::ConjTrans is y = alpha*A^H*x + beta*y.
+///     The operation to be performed:
+///     - Op::NoTrans:   \f$ y = \alpha A   x + \beta y, \f$
+///     - Op::Trans:     \f$ y = \alpha A^T x + \beta y, \f$
+///     - Op::ConjTrans: \f$ y = \alpha A^H x + \beta y. \f$
 ///
 /// @param[in] m
-///         Number of rows of the matrix A.
+///     Number of rows of the matrix A. m >= 0.
 ///
 /// @param[in] n
-///         Number of columns of the matrix A.
+///     Number of columns of the matrix A. n >= 0.
 ///
 /// @param[in] alpha
-///         Scalar alpha. If alpha is zero, A and x are not accessed.
+///     Scalar alpha. If alpha is zero, A and x are not accessed.
 ///
 /// @param[in] A
-///         The m-by-n matrix A.
-///         ColMajor: stored in an lda-by-n array.
-///         RowMajor: stored in an m-by-lda array.
+///     The m-by-n matrix A, stored in an lda-by-n array [RowMajor: m-by-lda].
 ///
 /// @param[in] lda
-///         Leading dimension of A.
-///         ColMajor: lda >= max(1,m).
-///         RowMajor: lda >= max(1,n).
+///     Leading dimension of A. lda >= max(1,m) [RowMajor: lda >= max(1,n)].
 ///
 /// @param[in] x
-///         If trans = Op::NoTrans,
-///                    the n-element vector x, of length (n-1)*abs(incx) + 1.
-///         Otherwise, the m-element vector x, of length (m-1)*abs(incx) + 1.
+///     - If trans = NoTrans:
+///       the n-element vector x, in an array of length (n-1)*abs(incx) + 1.
+///     - Otherwise:
+///       the m-element vector x, in an array of length (m-1)*abs(incx) + 1.
 ///
 /// @param[in] incx
-///         Stride between elements of x. incx must not be zero.
-///         If incx < 0, uses elements of x in reverse order: x(n-1), ..., x(0).
+///     Stride between elements of x. incx must not be zero.
+///     If incx < 0, uses elements of x in reverse order: x(n-1), ..., x(0).
 ///
 /// @param[in] beta
-///         Scalar beta. When beta is zero, y need not be set on input.
+///     Scalar beta. If beta is zero, y need not be set on input.
 ///
 /// @param[in,out] y
-///         If trans = Op::NoTrans,
-///                    the m-element vector y, of length (m-1)*abs(incy) + 1.
-///         Otherwise, the n-element vector y, of length (n-1)*abs(incy) + 1.
+///     - If trans = NoTrans:
+///       the m-element vector y, in an array of length (m-1)*abs(incy) + 1.
+///     - Otherwise:
+///       the n-element vector y, in an array of length (n-1)*abs(incy) + 1.
 ///
 /// @param[in] incy
-///         Stride between elements of y. incy must not be zero.
-///         If incy < 0, uses elements of y in reverse order: y(n-1), ..., y(0).
+///     Stride between elements of y. incy must not be zero.
+///     If incy < 0, uses elements of y in reverse order: y(n-1), ..., y(0).
 ///
-/// @ingroup blas2
+/// @ingroup gemv
 
 template< typename TA, typename TX, typename TY >
 void gemv(

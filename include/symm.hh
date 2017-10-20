@@ -12,6 +12,7 @@ namespace blas {
 // Overloaded wrappers for s, d, c, z precisions.
 
 // -----------------------------------------------------------------------------
+/// @ingroup symm
 inline
 void symm(
     blas::Layout layout,
@@ -77,6 +78,7 @@ void symm(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup symm
 inline
 void symm(
     blas::Layout layout,
@@ -142,6 +144,7 @@ void symm(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup symm
 inline
 void symm(
     blas::Layout layout,
@@ -207,6 +210,7 @@ void symm(
 }
 
 // -----------------------------------------------------------------------------
+/// @ingroup symm
 inline
 void symm(
     blas::Layout layout,
@@ -273,61 +277,62 @@ void symm(
 
 // =============================================================================
 /// Symmetric matrix-matrix multiply,
-///     C = alpha*A*B + beta*C,
+///     \f[ C = \alpha A B + \beta C, \f]
 /// or
-///     C = alpha*B*A + beta*C,
-/// where alpha and beta are scalars, A is a symmetric matrix,
+///     \f[ C = \alpha B A + \beta C, \f]
+/// where alpha and beta are scalars, A is an m-by-m or n-by-n symmetric matrix,
 /// and B and C are m-by-n matrices.
 ///
 /// Generic implementation for arbitrary data types.
+/// TODO: generic version not yet implemented.
 ///
 /// @param[in] layout
-///         Matrix storage, Layout::ColMajor or Layout::RowMajor.
+///     Matrix storage, Layout::ColMajor or Layout::RowMajor.
 ///
 /// @param[in] side
-///         The side the matrix A appears on:
-///         side = Side::Left  is C = alpha*A*B + beta*C,
-///         side = Side::Right is C = alpha*B*A + beta*C.
+///     The side the matrix A appears on:
+///     - Side::Left:  \f$ C = \alpha A B + \beta C, \f$
+///     - Side::Right: \f$ C = \alpha B A + \beta C. \f$
 ///
 /// @param[in] uplo
-///         What part of the matrix A is referenced:
-///         uplo = Lower: only the lower triangular part of A is referenced.
-///         uplo = Upper: only the upper triangular part of A is referenced.
+///     What part of the matrix A is referenced:
+///     - Uplo::Lower: only the lower triangular part of A is referenced.
+///     - Uplo::Upper: only the upper triangular part of A is referenced.
 ///
 /// @param[in] m
-///         Number of rows of the matrices B and C.
+///     Number of rows of the matrices B and C.
 ///
 /// @param[in] n
-///         Number of columns of the matrices B and C.
+///     Number of columns of the matrices B and C.
 ///
 /// @param[in] alpha
-///         Scalar alpha. If alpha is zero, A and B are not accessed.
+///     Scalar alpha. If alpha is zero, A and B are not accessed.
 ///
 /// @param[in] A
-///         side = Left:  The m-by-m matrix A, stored in an lda-by-m array.
-///         side = Right: The n-by-n matrix A, stored in an lda-by-n array.
+///     - If side = Left:  The m-by-m matrix A, stored in an lda-by-m array.
+///     - If side = Right: The n-by-n matrix A, stored in an lda-by-n array.
 ///
 /// @param[in] lda
-///         Leading dimension of A.
-///         side = Left:  lda >= max(1,m).
-///         side = Right: lda >= max(1,n).
+///     Leading dimension of A.
+///     - If side = Left:  lda >= max(1,m).
+///     - If side = Right: lda >= max(1,n).
 ///
 /// @param[in] B
-///         The m-by-n matrix B, stored in an ldb-by-n array.
+///     The m-by-n matrix B, stored in an ldb-by-n array.
 ///
 /// @param[in] ldb
-///         Leading dimension of B. ldb >= max(1,n).
+///     Leading dimension of B. ldb >= max(1,n).
 ///
 /// @param[in] beta
-///         Scalar beta. When beta is zero, C need not be set on input.
+///     Scalar beta. If beta is zero, C need not be set on input.
 ///
 /// @param[in] C
-///         The m-by-n matrix C, stored in an lda-by-n array.
+///     The m-by-n matrix C, stored in an lda-by-n array.
 ///
 /// @param[in] ldc
-///         Leading dimension of C. ldc >= max(1,n).
+///     Leading dimension of C. ldc >= max(1,n).
 ///
-/// @ingroup blas3
+/// @ingroup symm
 
 template< typename TA, typename TB, typename TC >
 void symm(
@@ -341,7 +346,7 @@ void symm(
     typename traits3<TA, TB, TC>::scalar_t beta,
     TC       *C, int64_t ldc )
 {
-    typedef typename blas::traits3<TA, TB, TC>::scalar_t scalar_t;
+    throw std::exception();  // not yet implemented
 }
 
 }  // namespace blas
