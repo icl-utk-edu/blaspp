@@ -1,0 +1,2 @@
+docs:
+	cd ../.. && ${MAKE} docs
