@@ -1,4 +1,4 @@
-pwd = $(shell pwd)
+pwd = ${shell pwd}
 
 CXX      = g++
 LDFLAGS  = -fPIC -fopenmp
@@ -17,9 +17,11 @@ CXXFLAGS += -Wno-unused-local-typedefs -Wno-unused-but-set-variable
 CXXFLAGS += -Werror
 #CXXFLAGS += -Wconversion
 
-src := $(wildcard *.cc)
-obj := $(addsuffix .o, $(basename ${src}))
-dep := $(addsuffix .d, $(basename ${src}))
+src := ${wildcard *.cc}
+obj := ${addsuffix .o, ${basename ${src}}}
+dep := ${addsuffix .d, ${basename ${src}}}
+
+.PHONY: clean test_headers
 
 test: ${obj}
 	${CXX} ${LDFLAGS} -o $@ $^ ${LIBS}
@@ -31,6 +33,18 @@ test: ${obj}
 	${CXX} ${CXXFLAGS} ${CPPFLAGS} -E -o $@ $<
 
 clean:
-	-rm -f *.o *.d test
+	-${RM} *.o *.d test gch/*.gch
 
 -include ${dep}
+
+# --------------------
+# compile headers to verify self-sufficiency
+header_gch = ${addprefix gch/, ${addsuffix .gch, ${wildcard *.hh}}}
+
+test_headers: ${header_gch}
+
+gch/%.hh.gch: %.hh | gch
+	${CXX} ${CXXFLAGS} ${CPPFLAGS} -c -o $@ $<
+
+gch:
+	mkdir $@
