@@ -1,5 +1,8 @@
-#ifndef LAPACK_HH
-#define LAPACK_HH
+#ifndef LAPACK_TMP_HH
+#define LAPACK_TMP_HH
+
+// This is a temporary file giving simple LAPACK wrappers,
+// until the real lapackpp wrappers are available.
 
 // -----------------------------------------------------------------------------
 // clapack / MacOS Accelerate return double instead of float
@@ -439,4 +442,4 @@ void lapack_getrf(  int m, int n,
     lapack_zgetrf( &m, &n, A, &lda, ipiv, info );
 }
 
-#endif        //  #ifndef LAPACK_HH
+#endif        //  #ifndef LAPACK_TMP_HH

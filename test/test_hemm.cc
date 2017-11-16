@@ -2,7 +2,7 @@
 
 #include "test.hh"
 #include "cblas.hh"
-#include "lapack.hh"
+#include "lapack_tmp.hh"
 #include "flops.hh"
 #include "print_matrix.hh"
 #include "check_gemm.hh"

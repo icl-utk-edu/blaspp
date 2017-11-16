@@ -2,7 +2,7 @@
 #define CHECK_GEMM_HH
 
 #include "blas_util.hh"
-#include "lapack.hh"
+#include "lapack_tmp.hh"
 
 // -----------------------------------------------------------------------------
 // Computes error for multiplication with general matrix result.
