@@ -181,12 +181,42 @@ public:
 /// E.g., for pair (float, complex<float>),
 /// scalar_t = complex<float>, real_t = float.
 
+// By default, scalars and reals are T1.
+// Later classes specialize if it should be T2 or something else
 template< typename T1, typename T2 >
 class traits2
 {
 public:
     typedef T1 scalar_t;
     typedef T1 real_t;
+};
+
+// ----------------------------------------
+// int
+template<>
+class traits2< int, int64_t >
+{
+public:
+    typedef int64_t scalar_t;
+    typedef int64_t real_t;
+};
+
+// ---------------
+template<>
+class traits2< int, float >
+{
+public:
+    typedef float scalar_t;
+    typedef float real_t;
+};
+
+// ---------------
+template<>
+class traits2< int, double >
+{
+public:
+    typedef double scalar_t;
+    typedef double real_t;
 };
 
 // ----------------------------------------
@@ -246,6 +276,24 @@ public:
     typedef double real_t;
 };
 
+template<>
+class traits2< std::complex<float>, std::complex<float> >
+{
+public:
+    typedef std::complex<float> scalar_t;
+    typedef float real_t;
+};
+
+// ----------------------------------------
+// complex<double>
+template<>
+class traits2< std::complex<double>, std::complex<double> >
+{
+public:
+    typedef std::complex<double> scalar_t;
+    typedef double real_t;
+};
+
 // -----------------------------------------------------------------------------
 // traits3
 /// Given three types, defines scalar and real types compatible with all types.
@@ -263,6 +311,24 @@ public:
     typedef typename
         traits2< typename traits2<T1,T2>::scalar_t, T3 >::real_t real_t;
 };
+
+// -----------------------------------------------------------------------------
+// max that works with different data types, e.g., max( int, int64_t )
+template< typename T1, typename T2 >
+typename blas::traits2< T1, T2 >::scalar_t
+max( T1 a, T2 b )
+{
+    return (a >= b ? a : b);
+}
+
+// -----------------------------------------------------------------------------
+// min that works with different data types, e.g., min( int, int64_t )
+template< typename T1, typename T2 >
+typename blas::traits2< T1, T2 >::scalar_t
+min( T1 a, T2 b )
+{
+    return (a <= b ? a : b);
+}
 
 namespace internal {
 
