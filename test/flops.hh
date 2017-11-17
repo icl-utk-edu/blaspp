@@ -1,6 +1,8 @@
 #ifndef FLOPS_HH
 #define FLOPS_HH
 
+#include "blas.hh"
+
 // =============================================================================
 // Level 1 BLAS
 
@@ -371,13 +373,13 @@ inline double gbyte_her2( double n, T* x )
 template< typename T >
 inline double gflop_syr2( double n, T* x )
 {
-    return gflop_her( n, x );
+    return gflop_her2( n, x );
 }
 
 template< typename T >
 inline double gbyte_syr2( double n, T* x )
 {
-    return gbyte_her( n, x );
+    return gbyte_her2( n, x );
 }
 
 
@@ -524,7 +526,7 @@ inline double gflop_syr2k( double n, double k, T* x )
 template< typename T >
 inline double gbyte_syr2k( double n, double k, T* x )
 {
-    return gbyte_herk( n, k, x );
+    return gbyte_her2k( n, k, x );
 }
 
 
@@ -580,5 +582,290 @@ inline double gbyte_trsm( blas::Side side, double m, double n, T* x )
 {
     return gbyte_trmm( side, m, n, x );
 }
+
+//==============================================================================
+// template class. Example:
+// gflop< float >::gemm( m, n, k ) yields flops for sgemm.
+// gflop< std::complex<float> >::gemm( m, n, k ) yields flops for cgemm.
+//==============================================================================
+template< typename T >
+class Gbyte
+{
+public:
+    // ----------------------------------------
+    // Level 1 BLAS
+    static double asum( double n )
+    {
+        // read x
+        return 1e-9 * (n * sizeof(T));
+    }
+
+    static double axpy( double n )
+    {
+        // read x, y; write y
+        return 1e-9 * (3*n * sizeof(T));
+    }
+
+    static double copy( double n )
+    {
+        // read x; write y
+        return 1e-9 * (2*n * sizeof(T));
+    }
+
+    static double iamax( double n )
+    {
+        // read x
+        return 1e-9 * (n * sizeof(T));
+    }
+
+    static double nrm2( double n )
+    {
+        // read x
+        return 1e-9 * (n * sizeof(T));
+    }
+
+    static double dot( double n )
+    {
+        // read x, y
+        return 1e-9 * (2*n * sizeof(T));
+    }
+
+    static double scal( double n )
+    {
+        // read x; write x
+        return 1e-9 * (2*n * sizeof(T));
+    }
+
+    static double swap( double n )
+    {
+        // read x, y; write x, y
+        return 1e-9 * (4*n * sizeof(T));
+    }
+
+    // ----------------------------------------
+    // Level 2 BLAS
+    static double gemv( double m, double n )
+    {
+        // read A, x; write y
+        return 1e-9 * ((m*n + m + n) * sizeof(T));
+    }
+
+    static double hemv( double n )
+    {
+        // read A triangle, x; write y
+        return 1e-9 * ((0.5*(n+1)*n + 2*n) * sizeof(T));
+    }
+
+    static double symv( double n )
+    {
+        return hemv( n );
+    }
+
+    static double trmv( double n )
+    {
+        // read A triangle, x; write x
+        return 1e-9 * ((0.5*(n+1)*n + 2*n) * sizeof(T));
+    }
+
+    static double trsv( double n )
+    {
+        return trmv( n );
+    }
+
+    static double ger( double m, double n )
+    {
+        // read A, x, y; write A
+        return 1e-9 * ((2*m*n + m + n) * sizeof(T));
+    }
+
+    static double her( double n )
+    {
+        // read A triangle, x; write A triangle
+        return 1e-9 * (((n+1)*n + n) * sizeof(T));
+    }
+
+    static double syr( double n )
+    {
+        return her( n );
+    }
+
+    static double her2( double n )
+    {
+        // read A triangle, x, y; write A triangle
+        return 1e-9 * (((n+1)*n + n + n) * sizeof(T));
+    }
+
+    static double syr2( double n )
+    {
+        return her2( n );
+    }
+
+    // ----------------------------------------
+    // Level 3 BLAS
+    static double gemm( double m, double n, double k )
+    {
+        // read A, B, C; write C
+        return 1e-9 * ((m*k + k*n + 2*m*n) * sizeof(T));
+    }
+
+    static double hemm( blas::Side side, double m, double n )
+    {
+        // read A, B, C; write C
+        double sizeA = (side == blas::Side::Left ? 0.5*m*(m+1) : 0.5*n*(n+1));
+        return 1e-9 * ((sizeA + 3*m*n) * sizeof(T));
+    }
+
+    static double symm( blas::Side side, double m, double n )
+    {
+        return hemm( side, m, n );
+    }
+
+    static double herk( double n, double k )
+    {
+        // read A, C; write C
+        double sizeC = 0.5*n*(n+1);
+        return 1e-9 * ((n*k + 2*sizeC) * sizeof(T));
+    }
+
+    static double syrk( double n, double k )
+    {
+        return herk( n, k );
+    }
+
+    static double her2k( double n, double k )
+    {
+        // read A, B, C; write C
+        double sizeC = 0.5*n*(n+1);
+        return 1e-9 * ((2*n*k + 2*sizeC) * sizeof(T));
+    }
+
+    static double syr2k( double n, double k )
+    {
+        return her2k( n, k );
+    }
+
+    static double trmm( blas::Side side, double m, double n )
+    {
+        // read A triangle, x; write x
+        if (side == blas::Side::Left)
+            return 1e-9 * ((0.5*(m+1)*m + 2*m*n) * sizeof(T));
+        else
+            return 1e-9 * ((0.5*(n+1)*n + 2*m*n) * sizeof(T));
+    }
+
+    static double trsm( blas::Side side, double m, double n )
+    {
+        return trmm( side, m, n );
+    }
+};
+
+//==============================================================================
+// template class. Example:
+// gflop< float >::gemm( m, n, k ) yields flops for sgemm.
+// gflop< std::complex<float> >::gemm( m, n, k ) yields flops for cgemm.
+//==============================================================================
+template< typename T >
+class Gflop
+{
+public:
+    // ----------------------------------------
+    // Level 1 BLAS
+    static double asum( double n, std::complex<T>* x )
+    {
+        return (6*fmuls_asum(n) + 2*fadds_asum(n)) / 1e9;
+    }
+
+    // ----------------------------------------
+    // Level 2 BLAS
+    static double gemv(double m, double n)
+        { return 1e-9 * (fmuls_gemv(m, n) + fadds_gemv(m, n)); }
+
+    static double symv(double n)
+        { return gemv( n, n ); }
+
+    static double hemv(double n)
+        { return symv( n, n ); }
+
+    // ----------------------------------------
+    // Level 3 BLAS
+    static double gemm(double m, double n, double k)
+        { return 1e-9 * (fmuls_gemm(m, n, k) + fadds_gemm(m, n, k)); }
+
+    static double hemm(blas::Side side, double m, double n)
+        { return 1e-9 * (fmuls_hemm(side, m, n) + fadds_hemm(side, m, n)); }
+
+    static double symm(blas::Side side, double m, double n)
+        { return hemm( side, m, n ); }
+
+    static double herk(double n, double k)
+        { return 1e-9 * (fmuls_herk(n, k) + fadds_herk(n, k)); }
+
+    static double syrk(double n, double k)
+        { return syrk( n, k ); }
+
+    static double her2k(double n, double k)
+        { return 1e-9 * (fmuls_her2k(n, k) + fadds_her2k(n, k)); }
+
+    static double syr2k(double n, double k)
+        { return syr2k( n, k ); }
+
+    static double trmm(blas::Side side, double m, double n)
+        { return 1e-9 * (fmuls_trmm(side, m, n) + fadds_trmm(side, m, n)); }
+
+    static double trsm(blas::Side side, double m, double n)
+        { return trmm( side, m, n ); }
+};
+
+//==============================================================================
+// specialization for complex
+// flops = 6*muls + 2*adds
+//==============================================================================
+template< typename T >
+class Gflop< std::complex<T> >
+{
+public:
+    // ----------------------------------------
+    // Level 1 BLAS
+
+    // ----------------------------------------
+    // Level 2 BLAS
+    static double gemv(double m, double n)
+        { return 1e-9 * (6*fmuls_gemv(m, n) + 2*fadds_gemv(m, n)); }
+
+    static double hemv(double n)
+        { return gemv( n, n ); }
+
+    static double symv(double n)
+        { return hemv( n ); }
+
+    // ----------------------------------------
+    // Level 3 BLAS
+    static double gemm(double m, double n, double k)
+        { return 1e-9 * (6*fmuls_gemm(m, n, k) + 2*fadds_gemm(m, n, k)); }
+
+    static double hemm(blas::Side side, double m, double n)
+        { return 1e-9 * (6*fmuls_hemm(side, m, n) + 2*fadds_hemm(side, m, n)); }
+
+    static double symm(blas::Side side, double m, double n)
+        { return hemm( side, m, n ); }
+
+    static double herk(double n, double k)
+        { return 1e-9 * (6*fmuls_herk(n, k) + 2*fadds_herk(n, k)); }
+
+    static double syrk(double n, double k)
+        { return herk( n, k ); }
+
+    static double her2k(double n, double k)
+        { return 1e-9 * (6*fmuls_her2k(n, k) + 2*fadds_her2k(n, k)); }
+
+    static double syr2k(double n, double k)
+        { return her2k( n, k ); }
+
+    static double trmm(blas::Side side, double m, double n)
+        { return 1e-9 * (6*fmuls_trmm(side, m, n) + 2*fadds_trmm(side, m, n)); }
+
+    static double trsm(blas::Side side, double m, double n)
+        { return trmm( side, m, n ); }
+};
 
 #endif        //  #ifndef FLOPS_HH
