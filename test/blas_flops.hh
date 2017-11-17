@@ -773,9 +773,7 @@ public:
     // ----------------------------------------
     // Level 1 BLAS
     static double asum( double n, std::complex<T>* x )
-    {
-        return (6*fmuls_asum(n) + 2*fadds_asum(n)) / 1e9;
-    }
+        { return 1e-9 * (fmuls_asum(n) + fadds_asum(n)); }
 
     // ----------------------------------------
     // Level 2 BLAS
