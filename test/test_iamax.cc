@@ -3,7 +3,7 @@
 #include "test.hh"
 #include "cblas.hh"
 #include "lapack_tmp.hh"
-#include "flops.hh"
+#include "blas_flops.hh"
 #include "print_matrix.hh"
 
 #include "iamax.hh"

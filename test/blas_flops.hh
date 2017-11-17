@@ -3,6 +3,8 @@
 
 #include "blas.hh"
 
+namespace blas {
+
 // =============================================================================
 // Level 1 BLAS
 
@@ -867,5 +869,7 @@ public:
     static double trsm(blas::Side side, double m, double n)
         { return trmm( side, m, n ); }
 };
+
+}  // namespace blas
 
 #endif        //  #ifndef FLOPS_HH
