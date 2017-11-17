@@ -801,13 +801,13 @@ public:
         { return 1e-9 * (fmuls_herk(n, k) + fadds_herk(n, k)); }
 
     static double syrk(double n, double k)
-        { return syrk( n, k ); }
+        { return herk( n, k ); }
 
     static double her2k(double n, double k)
         { return 1e-9 * (fmuls_her2k(n, k) + fadds_her2k(n, k)); }
 
     static double syr2k(double n, double k)
-        { return syr2k( n, k ); }
+        { return her2k( n, k ); }
 
     static double trmm(blas::Side side, double m, double n)
         { return 1e-9 * (fmuls_trmm(side, m, n) + fadds_trmm(side, m, n)); }
