@@ -35,7 +35,7 @@ void test_trsm_work( Params& params, bool run )
     params.ref_gflops.value();
 
     // adjust header to msec
-    params.time.name( "SLATE\ntime (ms)" );
+    params.time.name( "BLAS++\ntime (ms)" );
     params.ref_time.name( "Ref.\ntime (ms)" );
 
     if (! run)

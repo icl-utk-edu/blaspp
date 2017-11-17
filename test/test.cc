@@ -131,12 +131,12 @@ Params::Params():
     // ----- output parameters
     // min, max are ignored
     //          name,                  w, p, type,              def, min, max, help
-    error     ( "SLATE\nerror",       11, 4, ParamType::Output, nan,   0,   0, "numerical error" ),
-    ortho     ( "SLATE\north. error", 11, 4, ParamType::Output, nan,   0,   0, "orthogonality error" ),
-    time      ( "SLATE\ntime (s)",    11, 4, ParamType::Output, nan,   0,   0, "time to solution" ),
-    gflops    ( "SLATE\nGflop/s",     11, 4, ParamType::Output, nan,   0,   0, "Gflop/s rate" ),
-    gbytes    ( "SLATE\nGbyte/s",     11, 4, ParamType::Output, nan,   0,   0, "Gbyte/s rate" ),
-    iters     ( "SLATE\niters",        6,    ParamType::Output,   0,   0,   0, "iterations to solution" ),
+    error     ( "BLAS++\nerror",       11, 4, ParamType::Output, nan,   0,   0, "numerical error" ),
+    ortho     ( "BLAS++\north. error", 11, 4, ParamType::Output, nan,   0,   0, "orthogonality error" ),
+    time      ( "BLAS++\ntime (s)",    11, 4, ParamType::Output, nan,   0,   0, "time to solution" ),
+    gflops    ( "BLAS++\nGflop/s",     11, 4, ParamType::Output, nan,   0,   0, "Gflop/s rate" ),
+    gbytes    ( "BLAS++\nGbyte/s",     11, 4, ParamType::Output, nan,   0,   0, "Gbyte/s rate" ),
+    iters     ( "BLAS++\niters",        6,    ParamType::Output,   0,   0,   0, "iterations to solution" ),
 
     ref_error ( "Ref.\nerror",        11, 4, ParamType::Output, nan,   0,   0, "reference numerical error" ),
     ref_ortho ( "Ref.\north. error",  11, 4, ParamType::Output, nan,   0,   0, "reference orthogonality error" ),
