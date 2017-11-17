@@ -1,7 +1,11 @@
 #ifndef CBLAS_HH
 #define CBLAS_HH
 
-#include <cblas.h>
+#ifdef HAVE_MKL
+    #include <mkl_cblas.h>
+#else
+    #include <cblas.h>
+#endif
 
 #include <complex>
 
@@ -12,9 +16,18 @@
 // =============================================================================
 // constants
 
-// -----------------------------------------------------------------------------
+// MKL and Netlib LAPACK now use 'typedef enum { ... } CBLAS_ORDER;'
+// Original CBLAS used 'enum CBLAS_ORDER { ... };'
+// Add some typedefs to make original CBLAS consistent with MKL and LAPACK.
+#if ! (defined(HAVE_MKL) || defined(HAVE_NETLIB_LAPACK))
 typedef enum CBLAS_ORDER CBLAS_LAYOUT;
+typedef enum CBLAS_DIAG CBLAS_DIAG;
+typedef enum CBLAS_SIDE CBLAS_SIDE;
+typedef enum CBLAS_TRANSPOSE CBLAS_TRANSPOSE;
+typedef enum CBLAS_UPLO CBLAS_UPLO;
+#endif
 
+// -----------------------------------------------------------------------------
 inline CBLAS_LAYOUT cblas_layout_const( blas::Layout layout )
 {
     switch (layout) {
@@ -46,8 +59,6 @@ inline char lapack_layout_const( CBLAS_LAYOUT layout )
 
 
 // -----------------------------------------------------------------------------
-typedef enum CBLAS_DIAG CBLAS_DIAG;
-
 inline CBLAS_DIAG cblas_diag_const( blas::Diag diag )
 {
     switch (diag) {
@@ -79,8 +90,6 @@ inline char lapack_diag_const( CBLAS_DIAG diag )
 
 
 // -----------------------------------------------------------------------------
-typedef enum CBLAS_SIDE CBLAS_SIDE;
-
 inline CBLAS_SIDE cblas_side_const( blas::Side side )
 {
     switch (side) {
@@ -112,8 +121,6 @@ inline char lapack_side_const( CBLAS_SIDE side )
 
 
 // -----------------------------------------------------------------------------
-typedef enum CBLAS_TRANSPOSE CBLAS_TRANSPOSE;
-
 inline CBLAS_TRANSPOSE cblas_trans_const( blas::Op trans )
 {
     switch (trans) {
@@ -148,8 +155,6 @@ inline char lapack_trans_const( CBLAS_TRANSPOSE trans )
 
 
 // -----------------------------------------------------------------------------
-typedef enum CBLAS_UPLO CBLAS_UPLO;
-
 inline CBLAS_UPLO cblas_uplo_const( blas::Uplo uplo )
 {
     switch (uplo) {

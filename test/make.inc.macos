@@ -1,0 +1,17 @@
+# MacOS Accelerate framework with GNU gcc/g++
+# Note that Apple's clang doesn't yet support OpenMP, as of version 8.0.0.
+# See http://hpc.sourceforge.net/ for GNU compilers for MacOS.
+# Assumes $CBLASDIR is set to where cblas.h exists, e.g., in ~/.bashrc:
+#     export CBLASDIR=/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers
+
+CXX      = g++
+
+LDFLAGS  = -fPIC -fopenmp
+CXXFLAGS = -fPIC -fopenmp -MMD -std=c++11 -pedantic \
+           -Wall -Wno-unused-local-typedefs -Wno-unused-but-set-variable
+
+CPPFLAGS = -I${CBLASDIR} \
+           -DHAVE_MACOS_ACCELERATE \
+           -DBLAS_COMPLEX_RETURN_ARGUMENT
+
+LIBS     = -framework Accelerate

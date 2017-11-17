@@ -1,41 +1,53 @@
-pwd = ${shell pwd}
+include make.inc
 
-CXX      = g++
-LDFLAGS  = -fPIC -fopenmp
-CXXFLAGS = -fPIC -fopenmp -MMD -Wall -pedantic -std=c++11
-CPPFLAGS = -I../../libtest -I../include -I/opt/intel/mkl/include \
-           -I${CBLASDIR} \
-           -DFORTRAN_LOWER \
-           -DHAVE_MACOS_ACCELERATE \
-           -DBLAS_COMPLEX_RETURN_ARGUMENT \
-           -DMKL_Complex8="std::complex<float>" \
-           -DMKL_Complex16="std::complex<double>"
-LIBS     = -L../../libtest -Wl,-rpath,${pwd}/../../libtest -ltest \
-           -framework Accelerate
+# defaults if not defined in make.inc
+CXX      ?= g++
 
-CXXFLAGS += -Wno-unused-local-typedefs -Wno-unused-but-set-variable
-CXXFLAGS += -Werror
+LDFLAGS  ?= -fPIC -fopenmp
+CXXFLAGS ?= -fPIC -fopenmp -MMD -std=c++11 -pedantic \
+            -Wall -Wno-unused-local-typedefs -Wno-unused-but-set-variable
+#CXXFLAGS += -Werror
 #CXXFLAGS += -Wconversion
 
+CPPFLAGS ?= -I${CBLASDIR}
+
+LIBS     ?= -lblas
+
+
+# --------------------
+# SLATE specific flags
+pwd = ${shell pwd}
+
+INC = -I../../libtest -I../include
+
+LIBS += -L../../libtest -Wl,-rpath,${pwd}/../../libtest -ltest
+
+
+# --------------------
+# files
 src := ${wildcard *.cc}
 obj := ${addsuffix .o, ${basename ${src}}}
 dep := ${addsuffix .d, ${basename ${src}}}
 
+
+# --------------------
+# rules
 .PHONY: clean test_headers
 
 test: ${obj}
 	${CXX} ${LDFLAGS} -o $@ $^ ${LIBS}
 
 %.o: %.cc
-	${CXX} ${CXXFLAGS} ${CPPFLAGS} -c -o $@ $<
+	${CXX} ${CXXFLAGS} ${CPPFLAGS} ${INC} -c -o $@ $<
 
 %.i: %.cc
-	${CXX} ${CXXFLAGS} ${CPPFLAGS} -E -o $@ $<
+	${CXX} ${CXXFLAGS} ${CPPFLAGS} ${INC} -E -o $@ $<
 
 clean:
 	-${RM} *.o *.d test gch/*.gch
 
 -include ${dep}
+
 
 # --------------------
 # compile headers to verify self-sufficiency
