@@ -126,7 +126,7 @@ void test_gemm_work( Params& params, bool run )
     time = omp_get_wtime() - time;
 
     double gflop = gflop_gemm( m, n, k, C );
-    params.time.value()   = time * 1000;  // msec
+    params.time.value()   = time;
     params.gflops.value() = gflop / time;
 
     if (verbose >= 2) {
@@ -143,7 +143,7 @@ void test_gemm_work( Params& params, bool run )
                     m, n, k, alpha, A, lda, B, ldb, beta, Cref, ldc );
         time = omp_get_wtime() - time;
 
-        params.ref_time.value()   = time * 1000;  // msec
+        params.ref_time.value()   = time;
         params.ref_gflops.value() = gflop / time;
 
         if (verbose >= 2) {

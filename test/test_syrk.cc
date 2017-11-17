@@ -102,7 +102,7 @@ void test_syrk_work( Params& params, bool run )
     time = omp_get_wtime() - time;
 
     double gflop = gflop_syrk( n, k, C );
-    params.time.value()   = time * 1000;  // msec
+    params.time.value()   = time;
     params.gflops.value() = gflop / time;
 
     if (verbose >= 2) {
@@ -119,7 +119,7 @@ void test_syrk_work( Params& params, bool run )
                     n, k, alpha, A, lda, beta, Cref, ldc );
         time = omp_get_wtime() - time;
 
-        params.ref_time.value()   = time * 1000;  // msec
+        params.ref_time.value()   = time;
         params.ref_gflops.value() = gflop / time;
 
         if (verbose >= 2) {

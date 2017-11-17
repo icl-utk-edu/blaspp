@@ -34,10 +34,6 @@ void test_trsm_work( Params& params, bool run )
     params.ref_time.value();
     params.ref_gflops.value();
 
-    // adjust header to msec
-    params.time.name( "BLAS++\ntime (ms)" );
-    params.ref_time.name( "Ref.\ntime (ms)" );
-
     if (! run)
         return;
 
@@ -102,7 +98,7 @@ void test_trsm_work( Params& params, bool run )
     time = omp_get_wtime() - time;
 
     double gflop = gflop_trsm( side, m, n, A );
-    params.time.value()   = time * 1000;  // msec
+    params.time.value()   = time;
     params.gflops.value() = gflop / time;
 
     if (verbose >= 2) {
@@ -121,7 +117,7 @@ void test_trsm_work( Params& params, bool run )
                     m, n, alpha, A, lda, Bref, ldb );
         time = omp_get_wtime() - time;
 
-        params.ref_time.value()   = time * 1000;  // msec
+        params.ref_time.value()   = time;
         params.ref_gflops.value() = gflop / time;
 
         if (verbose >= 2) {
