@@ -135,12 +135,14 @@ Params::Params():
     ortho     ( "SLATE\north. error", 11, 4, ParamType::Output, nan,   0,   0, "orthogonality error" ),
     time      ( "SLATE\ntime (s)",    11, 4, ParamType::Output, nan,   0,   0, "time to solution" ),
     gflops    ( "SLATE\nGflop/s",     11, 4, ParamType::Output, nan,   0,   0, "Gflop/s rate" ),
+    gbytes    ( "SLATE\nGbyte/s",     11, 4, ParamType::Output, nan,   0,   0, "Gbyte/s rate" ),
     iters     ( "SLATE\niters",        6,    ParamType::Output,   0,   0,   0, "iterations to solution" ),
 
     ref_error ( "Ref.\nerror",        11, 4, ParamType::Output, nan,   0,   0, "reference numerical error" ),
     ref_ortho ( "Ref.\north. error",  11, 4, ParamType::Output, nan,   0,   0, "reference orthogonality error" ),
     ref_time  ( "Ref.\ntime (s)",     11, 4, ParamType::Output, nan,   0,   0, "reference time to solution" ),
     ref_gflops( "Ref.\nGflop/s",      11, 4, ParamType::Output, nan,   0,   0, "reference Gflop/s rate" ),
+    ref_gbytes( "Ref.\nGbyte/s",      11, 4, ParamType::Output, nan,   0,   0, "reference Gbyte/s rate" ),
     ref_iters ( "Ref.\niters",         6,    ParamType::Output,   0,   0,   0, "reference iterations to solution" ),
 
     // default -1 means "no check"
