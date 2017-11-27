@@ -4,14 +4,15 @@
 # Assumes $CBLASDIR is set to where cblas.h exists, e.g., in ~/.bashrc:
 #     export CBLASDIR=/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers
 
-CXX      = g++
+CXX       = g++
 
-LDFLAGS  = -fPIC -fopenmp
-CXXFLAGS = -fPIC -fopenmp -MMD -std=c++11 -pedantic \
-           -Wall -Wno-unused-local-typedefs -Wno-unused-but-set-variable
+LDFLAGS   = -fPIC -fopenmp
+CXXFLAGS  = -fPIC -fopenmp -MMD -std=c++11 -pedantic \
+            -Wall -Wmissing-declarations \
+            -Wno-unused-local-typedefs
 
-CPPFLAGS = -I${CBLASDIR} \
-           -DHAVE_MACOS_ACCELERATE \
-           -DBLAS_COMPLEX_RETURN_ARGUMENT
+CXXFLAGS += -I${CBLASDIR} \
+            -DHAVE_MACOS_ACCELERATE \
+            -DBLAS_COMPLEX_RETURN_ARGUMENT
 
-LIBS     = -framework Accelerate
+LIBS      = -framework Accelerate

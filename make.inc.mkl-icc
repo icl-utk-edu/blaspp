@@ -1,0 +1,19 @@
+# Intel MKL with Intel icc/icpc
+# Assumes $MKLROOT is set, e.g., in ~/.bashrc:
+#     source /opt/intel/bin/compilervars.sh intel64
+# or
+#     source /opt/intel/mkl/bin/mklvars.sh intel64
+
+CXX       = icpc
+
+LDFLAGS   = -fPIC -qopenmp
+CXXFLAGS  = -fPIC -qopenmp -MMD -std=c++11 -pedantic \
+            -Wall -Wmissing-declarations \
+            -Wno-unused-local-typedefs
+
+CXXFLAGS += -I${MKLROOT}/include \
+            -DHAVE_MKL \
+            -DMKL_Complex8="std::complex<float>" \
+            -DMKL_Complex16="std::complex<double>"
+
+LIBS      = -L${MKLROOT}/lib -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -lm
