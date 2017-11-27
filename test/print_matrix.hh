@@ -1,6 +1,7 @@
 #ifndef PRINT_HH
 #define PRINT_HH
 
+#include <assert.h>
 #include <complex>
 
 // -----------------------------------------------------------------------------

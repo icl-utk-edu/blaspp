@@ -4,6 +4,8 @@
 #include "blas_util.hh"
 #include "lapack_tmp.hh"
 
+#include <limits>
+
 // -----------------------------------------------------------------------------
 // Computes error for multiplication with general matrix result.
 // Covers dot, gemv, ger, geru, gemm, symv, hemv, symm, trmv, trsv?, trmm, trsm?.

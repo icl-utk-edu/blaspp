@@ -1,6 +1,10 @@
 #ifndef LAPACK_TMP_HH
 #define LAPACK_TMP_HH
 
+#include "blas_mangling.hh"
+
+#include <complex>
+
 // This is a temporary file giving simple LAPACK wrappers,
 // until the real lapackpp wrappers are available.
 
