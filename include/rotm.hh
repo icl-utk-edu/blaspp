@@ -111,7 +111,6 @@ void rotm(
     typename blas::traits2<TX,TY>::scalar_t const param[5] )
 {
     throw std::exception();  // not yet implemented
-    typedef typename blas::traits2<TX,TY>::scalar_t scalar_t;
 
     // check arguments
     throw_if_( n < 0 );

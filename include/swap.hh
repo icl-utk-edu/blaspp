@@ -145,8 +145,6 @@ void swap(
     TX *x, int64_t incx,
     TY *y, int64_t incy )
 {
-    typedef typename blas::traits2<TX,TY>::scalar_t scalar_t;
-
     // check arguments
     throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
     throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0

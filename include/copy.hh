@@ -145,8 +145,6 @@ void copy(
     TX const *x, int64_t incx,
     TY       *y, int64_t incy )
 {
-    typedef typename blas::traits2<TX,TY>::scalar_t scalar_t;
-
     // check arguments
     throw_if_( n < 0 );
     throw_if_( incx == 0 );
