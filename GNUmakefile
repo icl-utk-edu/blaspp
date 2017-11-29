@@ -49,8 +49,13 @@ test/test: ${test_obj}
 %.i: %.cc
 	${CXX} ${CXXFLAGS} ${BLASPP_FLAGS} -E -o $@ $<
 
-clean:
-	-${RM} test/*.o test/*.d test/test
+clean: include/clean test/clean
+
+include/clean:
+	-${RM} gch/include/*.gch
+
+test/clean:
+	-${RM} test/test test/*.{o,d} gch/test/*.gch
 
 -include ${test_dep}
 
