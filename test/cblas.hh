@@ -1046,23 +1046,6 @@ cblas_her(
 
 
 // -----------------------------------------------------------------------------
-#define lapack_csyr FORTRAN_NAME( csyr, CSYR )
-#define lapack_zsyr FORTRAN_NAME( zsyr, ZSYR )
-
-extern "C"
-void   lapack_csyr(   const char *uplo,
-                      const int *n,
-                      const std::complex<float> *alpha,
-                      const std::complex<float> *x, const int *incx,
-                            std::complex<float> *A, const int *lda );
-
-extern "C"
-void   lapack_zsyr(   const char *uplo,
-                      const int *n,
-                      const std::complex<double> *alpha,
-                      const std::complex<double> *x, const int *incx,
-                            std::complex<double> *A, const int *lda );
-
 inline void
 cblas_syr(
     CBLAS_LAYOUT layout, CBLAS_UPLO uplo, int n,
@@ -1082,35 +1065,6 @@ cblas_syr(
 {
     cblas_dsyr( layout, uplo, n, alpha, x, incx, A, lda );
 }
-
-inline void
-cblas_syr(
-    CBLAS_LAYOUT layout, CBLAS_UPLO uplo, int n,
-    std::complex<float> alpha,
-    std::complex<float> const *x, int incx,
-    std::complex<float>* A, int lda )
-{
-    char uplo_ = lapack_uplo_const( uplo );
-    if (layout == CblasRowMajor) {
-        uplo_ = (uplo == CblasUpper ? 'l' : 'u');  // switch upper <=> lower
-    }
-    lapack_csyr( &uplo_, &n, &alpha, x, &incx, A, &lda );
-}
-
-inline void
-cblas_syr(
-    CBLAS_LAYOUT layout, CBLAS_UPLO uplo, int n,
-    std::complex<double> alpha,
-    std::complex<double> const *x, int incx,
-    std::complex<double>* A, int lda )
-{
-    char uplo_ = lapack_uplo_const( uplo );
-    if (layout == CblasRowMajor) {
-        uplo_ = (uplo == CblasUpper ? 'l' : 'u');  // switch upper <=> lower
-    }
-    lapack_zsyr( &uplo_, &n, &alpha, x, &incx, A, &lda );
-}
-
 
 // -----------------------------------------------------------------------------
 inline void

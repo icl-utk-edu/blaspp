@@ -589,21 +589,22 @@ void f77_dsyr(
     double const *x, blas_int const *incx,
     double       *A, blas_int const *lda );
 
-#define f77_csyr FORTRAN_NAME( csyr, CSYR )
-void FORTRAN_NAME( csyr, CSYR )(
-    char const *uplo,
-    blas_int const *n,
-    std::complex<float> const *alpha,
-    std::complex<float> const *x, blas_int const *incx,
-    std::complex<float>       *A, blas_int const *lda );
-
-#define f77_zsyr FORTRAN_NAME( zsyr, ZSYR )
-void f77_zsyr(
-    char const *uplo,
-    blas_int const *n,
-    std::complex<double> const *alpha,
-    std::complex<double> const *x, blas_int const *incx,
-    std::complex<double>       *A, blas_int const *lda );
+// conflicts with current prototype in lapacke.h
+//#define f77_csyr FORTRAN_NAME( csyr, CSYR )
+//void FORTRAN_NAME( csyr, CSYR )(
+//    char const *uplo,
+//    blas_int const *n,
+//    std::complex<float> const *alpha,
+//    std::complex<float> const *x, blas_int const *incx,
+//    std::complex<float>       *A, blas_int const *lda );
+//
+//#define f77_zsyr FORTRAN_NAME( zsyr, ZSYR )
+//void f77_zsyr(
+//    char const *uplo,
+//    blas_int const *n,
+//    std::complex<double> const *alpha,
+//    std::complex<double> const *x, blas_int const *incx,
+//    std::complex<double>       *A, blas_int const *lda );
 
 // -----------------------------------------------------------------------------
 // alpha is real

@@ -58,7 +58,7 @@ echo "-------------------- Level 2 BLAS"
 ./test her   ${opts} ${type} ${layout} ${align} ${uplo}  ${n}  ${incx}         > her.txt
 ./test her2  ${opts} ${type} ${layout} ${align} ${uplo}  ${n}  ${incx} ${incy} > her2.txt
 ./test symv  ${opts} ${type} ${layout} ${align} ${uplo}  ${n}  ${incx} ${incy} > symv.txt
-./test syr   ${opts} ${type} ${layout} ${align} ${uplo}  ${n}  ${incx}         > syr.txt
+./test syr   ${opts} ${real} ${layout} ${align} ${uplo}  ${n}  ${incx}         > syr_sd.txt  # real only
 ./test syr2  ${opts} ${type} ${layout} ${align} ${uplo}  ${n}  ${incx} ${incy} > syr2.txt
 ./test trmv  ${opts} ${type} ${layout} ${align} ${uplo} ${trans} ${diag} ${n} ${incx} > trmv.txt
 ./test trsv  ${opts} ${type} ${layout} ${align} ${uplo} ${trans} ${diag} ${n} ${incx} > trsv.txt

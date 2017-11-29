@@ -136,13 +136,15 @@ void test_syr( Params& params, bool run )
             break;
 
         case libtest::DataType::SingleComplex:
-            test_syr_work< std::complex<float>, std::complex<float> >
-                ( params, run );
+            throw blas::Error( "syr< complex > in LAPACK++", __func__ );
+            //test_syr_work< std::complex<float>, std::complex<float> >
+            //    ( params, run );
             break;
 
         case libtest::DataType::DoubleComplex:
-            test_syr_work< std::complex<double>, std::complex<double> >
-                ( params, run );
+            throw blas::Error( "syr< complex > in LAPACK++", __func__ );
+            //test_syr_work< std::complex<double>, std::complex<double> >
+            //    ( params, run );
             break;
     }
 }
