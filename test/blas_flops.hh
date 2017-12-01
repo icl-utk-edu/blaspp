@@ -784,7 +784,7 @@ public:
         { return gemv( n, n ); }
 
     static double hemv(double n)
-        { return symv( n, n ); }
+        { return symv( n ); }
 
     // ----------------------------------------
     // Level 3 BLAS
