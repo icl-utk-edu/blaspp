@@ -232,7 +232,7 @@ int main( int argc, char** argv )
     } while( params.next() );
 
     if (status) {
-        printf( "Some tests FAILED.\n" );
+        printf( "%d tests FAILED.\n", status );
     }
     else {
         printf( "All tests passed.\n" );
