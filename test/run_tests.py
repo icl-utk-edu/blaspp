@@ -9,8 +9,8 @@
 #     ./run_tests.py > output.txt
 #
 # run Level 1 BLAS (axpy, dot, ...)
-# with float, double and default sizes
-#     ./run_tests.py -f -d --blas1
+# with single, double and default sizes
+#     ./run_tests.py --blas1 --type s,d
 #
 # run gemm, gemv with small, medium sizes
 #     ./run_tests.py -s -m gemm gemv
@@ -25,12 +25,6 @@ import argparse
 # ------------------------------------------------------------------------------
 # command line arguments
 parser = argparse.ArgumentParser()
-
-group_type = parser.add_argument_group( 'precisions (default is all)' )
-group_type.add_argument( '-f', '--float',          action='store_true', help='run float (single precision) tests' )
-group_type.add_argument( '-d', '--double',         action='store_true', help='run double precision tests' )
-group_type.add_argument( '-c', '--complex-float',  action='store_true', help='run complex-float precision tests' )
-group_type.add_argument( '-z', '--complex-double', action='store_true', help='run complex-double precision tests' )
 
 group_size = parser.add_argument_group( 'matrix dimensions (default is medium)' )
 group_size.add_argument( '-x', '--xsmall', action='store_true', help='run x-small tests' )
@@ -47,15 +41,22 @@ categories = [
 ]
 categories = map( lambda x: x.dest, categories ) # map to names: ['lu', 'chol', ...]
 
+group_opt = parser.add_argument_group( 'options' )
+# BLAS and LAPACK
+group_opt.add_argument( '--type',   action='store', help='default=s,d,c,z',   default='s,d,c,z' )
+group_opt.add_argument( '--layout', action='store', help='default=c,r',       default='c,r' )
+group_opt.add_argument( '--transA', action='store', help='default=n,t,c',     default='n,t,c' )
+group_opt.add_argument( '--transB', action='store', help='default=n,t,c',     default='n,t,c' )
+group_opt.add_argument( '--trans',  action='store', help='default=n,t,c',     default='n,t,c' )
+group_opt.add_argument( '--uplo',   action='store', help='default=l,u',       default='l,u' )
+group_opt.add_argument( '--diag',   action='store', help='default=n,u',       default='n,u' )
+group_opt.add_argument( '--side',   action='store', help='default=l,r',       default='l,r' )
+group_opt.add_argument( '--incx',   action='store', help='default=1,2,-1,-2', default='1,2,-1,-2' )
+group_opt.add_argument( '--incy',   action='store', help='default=1,2,-1,-2', default='1,2,-1,-2' )
+group_opt.add_argument( '--align',  action='store', help='default=32',        default='32' )
+
 parser.add_argument( 'tests', nargs=argparse.REMAINDER )
 opts = parser.parse_args()
-
-# by default, run all precisions
-if (not (opts.float or opts.double or opts.complex_float or opts.complex_double)):
-    opts.float          = True
-    opts.double         = True
-    opts.complex_float  = True
-    opts.complex_double = True
 
 # by default, run medium sizes
 if (not (opts.xsmall or opts.small or opts.medium or opts.large)):
@@ -127,44 +128,40 @@ if (not opts.dim):
     nk  = n + nk_tall + nk_wide
 # end
 
-incx_pos = ' --incx 1,2'
-incx     = ' --incx 1,2,-1,-2'
-incy_pos = ' --incy 1,2'
-incy     = ' --incy 1,2,-1,-2'
+# BLAS and LAPACK
+dtype  = ' --type '   + opts.type   if (opts.type)   else ''
+layout = ' --layout ' + opts.layout if (opts.layout) else ''
+transA = ' --transA ' + opts.transA if (opts.transA) else ''
+transB = ' --transB ' + opts.transB if (opts.transB) else ''
+trans  = ' --trans '  + opts.trans  if (opts.trans)  else ''
+uplo   = ' --uplo '   + opts.uplo   if (opts.uplo)   else ''
+diag   = ' --diag '   + opts.diag   if (opts.diag)   else ''
+side   = ' --side '   + opts.side   if (opts.side)   else ''
+incx   = ' --incx '   + opts.incx   if (opts.incx)   else ''
+incy   = ' --incy '   + opts.incy   if (opts.incy)   else ''
+align  = ' --align '  + opts.align  if (opts.align)  else ''
 
-dtypes = []
-if (opts.float):  dtypes.append( 's' )
-if (opts.double): dtypes.append( 'd' )
-if (opts.complex_float):  dtypes.append( 'c' )
-if (opts.complex_double): dtypes.append( 'z' )
-dtype         = ' --type ' + ','.join( dtypes )
+# ------------------------------------------------------------------------------
+# filters a comma separated list csv based on items in list values.
+# if no items from csv are in values, returns first item in values.
+def filter_csv( values, csv ):
+    f = filter( lambda x: x in values, csv.split( ',' ))
+    if (not f):
+        return values[0]
+    return ','.join( f )
+# end
 
-r = filter( lambda x: x in ('s', 'd'), dtypes )
-if (r):
-    dtype_real = ' --type ' + ','.join( r )
-else:
-    dtype_real = ''
+# ------------------------------------------------------------------------------
+# limit options to specific values
+dtype_real    = ' --type ' + filter_csv( ('s', 'd'), opts.type )
+dtype_complex = ' --type ' + filter_csv( ('c', 'z'), opts.type )
 
-c = filter( lambda x: x in ('c', 'z'), dtypes )
-if (c):
-    dtype_complex = ' --type ' + ','.join( c )
-else:
-    dtype_complex = ''
+trans_nt = ' --trans ' + filter_csv( ('n', 't'), opts.trans )
+trans_nc = ' --trans ' + filter_csv( ('n', 'c'), opts.trans )
 
-layout   = ' --layout c,r'
-transA   = ' --transA n,t,c'
-transB   = ' --transB n,t,c'
-trans    = ' --trans n,t,c'
-trans_nt = ' --trans n,t'
-trans_nc = ' --trans n,c'
-uplo     = ' --uplo l,u'
-norm     = ' --norm 1,inf,fro,max'
-diag     = ' --diag n,u'
-direct   = ' --direct f,b'
-storev   = ' --storev c,r'
-side     = ' --side l,r'
-mtype    = ' --matrixtype g,l,u'
-align    = ' --align 32'
+# positive inc
+incx_pos = ' --incx ' + filter_csv( ('1', '2'), opts.incx )
+incy_pos = ' --incy ' + filter_csv( ('1', '2'), opts.incy )
 
 # ------------------------------------------------------------------------------
 cmds = []
