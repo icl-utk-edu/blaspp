@@ -125,7 +125,7 @@ void test_gemm_work( Params& params, bool run )
                 alpha, A, lda, B, ldb, beta, C, ldc );
     time = omp_get_wtime() - time;
 
-    double gflop = gflop_gemm( m, n, k, C );
+    double gflop = Gflop < scalar_t >::gemm( m, n, k );
     params.time.value()   = time;
     params.gflops.value() = gflop / time;
 

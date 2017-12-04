@@ -101,7 +101,7 @@ void test_syrk_work( Params& params, bool run )
                 alpha, A, lda, beta, C, ldc );
     time = omp_get_wtime() - time;
 
-    double gflop = gflop_syrk( n, k, C );
+    double gflop = Gflop < scalar_t >::syrk( n, k );
     params.time.value()   = time;
     params.gflops.value() = gflop / time;
 

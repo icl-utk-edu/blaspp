@@ -28,8 +28,10 @@ void test_rot_work( Params& params, bool run )
     int64_t verbose = params.verbose.value();
 
     // mark non-standard output values
+    params.gbytes.value();
     params.ref_time.value();
     params.ref_gflops.value();
+    params.ref_gbytes.value();
 
     // adjust header names
     params.time.name( "SLATE\ntime (ms)" );
@@ -83,9 +85,11 @@ void test_rot_work( Params& params, bool run )
     blas::rot( n, x, incx, y, incy, c, s );
     time = omp_get_wtime() - time;
 
-    double gflop = gflop_dot( n, x );
+    double gflop = Gflop < real_t >::dot( n );
+    double gbyte = Gbyte < real_t >::dot( n );
     params.time.value()   = time * 1000;  // msec
     params.gflops.value() = gflop / time;
+    params.gbytes.value() = gbyte / time;
 
     if (verbose >= 1) {
         printf( "x2   = " ); print_vector( n, x, incx );
@@ -101,6 +105,7 @@ void test_rot_work( Params& params, bool run )
 
         params.ref_time.value()   = time * 1000;  // msec
         params.ref_gflops.value() = gflop / time;
+        params.ref_gbytes.value() = gbyte / time;
 
         if (verbose >= 1) {
             printf( "xref = " ); print_vector( n, xref, incx );

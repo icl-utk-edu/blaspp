@@ -24,8 +24,10 @@ void test_swap_work( Params& params, bool run )
     int64_t verbose = params.verbose.value();
 
     // mark non-standard output values
+    params.gbytes.value();
     params.ref_time.value();
     params.ref_gflops.value();
+    params.ref_gbytes.value();
 
     // adjust header names
     params.time.name( "SLATE\ntime (ms)" );
@@ -72,9 +74,11 @@ void test_swap_work( Params& params, bool run )
     blas::swap( n, x, incx, y, incy );
     time = omp_get_wtime() - time;
 
-    double gflop = gflop_swap( n, x );
+    double gflop = Gflop < real_t >::swap( n );
+    double gbyte = Gbyte < real_t >::swap( n );
     params.time.value()   = time * 1000;  // msec
     params.gflops.value() = gflop / time;
+    params.gbytes.value() = gbyte / time;
 
     if (verbose >= 2) {
         printf( "x2   = " ); print_vector( n, x, incx );
@@ -94,6 +98,7 @@ void test_swap_work( Params& params, bool run )
 
         params.ref_time.value()   = time * 1000;  // msec
         params.ref_gflops.value() = gflop / time;
+        params.ref_gbytes.value() = gbyte / time;
 
         // error = ||xref - x|| + ||yref - y||
         cblas_axpy( n, -1.0, x, incx, xref, incx );

@@ -22,8 +22,10 @@ void test_nrm2_work( Params& params, bool run )
     int64_t verbose = params.verbose.value();
 
     // mark non-standard output values
+    params.gbytes.value();
     params.ref_time.value();
     params.ref_gflops.value();
+    params.ref_gbytes.value();
 
     // adjust header names
     params.time.name( "SLATE\ntime (ms)" );
@@ -60,9 +62,11 @@ void test_nrm2_work( Params& params, bool run )
     real_t result = blas::nrm2( n, x, incx );
     time = omp_get_wtime() - time;
 
-    double gflop = gflop_nrm2( n, x );
+    double gflop = Gflop < real_t >::nrm2( n );
+    double gbyte = Gbyte < real_t >::nrm2( n );
     params.time.value()   = time * 1000;  // msec
     params.gflops.value() = gflop / time;
+    params.gbytes.value() = gbyte / time;
 
     if (verbose >= 2) {
         printf( "result = %.4e\n", result );
@@ -77,6 +81,7 @@ void test_nrm2_work( Params& params, bool run )
 
         params.ref_time.value()   = time * 1000;  // msec
         params.ref_gflops.value() = gflop / time;
+        params.ref_gbytes.value() = gbyte / time;
 
         if (verbose >= 2) {
             printf( "ref    = %.4e\n", ref );

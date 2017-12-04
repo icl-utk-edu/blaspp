@@ -29,8 +29,10 @@ void test_ger_work( Params& params, bool run )
     int64_t verbose = params.verbose.value();
 
     // mark non-standard output values
+    params.gbytes.value();
     params.ref_time.value();
     params.ref_gflops.value();
+    params.ref_gbytes.value();
 
     if ( ! run)
         return;
@@ -94,9 +96,11 @@ void test_ger_work( Params& params, bool run )
     blas::ger( layout, m, n, alpha, x, incx, y, incy, A, lda );
     time = omp_get_wtime() - time;
 
-    double gflop = gflop_ger( m, n, x );
+    double gflop = Gflop< scalar_t >::ger( m, n );
+    double gbyte = Gbyte< scalar_t >::ger( m, n );
     params.time.value()   = time * 1000;  // msec
     params.gflops.value() = gflop / time;
+    params.gbytes.value() = gbyte / time;
 
     if (verbose >= 2) {
         printf( "A2 = " ); print_matrix( Am, An, A, lda );
@@ -111,6 +115,7 @@ void test_ger_work( Params& params, bool run )
 
         params.ref_time.value()   = time * 1000;  // msec
         params.ref_gflops.value() = gflop / time;
+        params.ref_gbytes.value() = gbyte / time;
 
         if (verbose >= 2) {
             printf( "Aref = " ); print_matrix( Am, An, Aref, lda );

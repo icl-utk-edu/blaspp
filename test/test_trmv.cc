@@ -29,8 +29,10 @@ void test_trmv_work( Params& params, bool run )
     int64_t verbose = params.verbose.value();
 
     // mark non-standard output values
+    params.gbytes.value();
     params.ref_time.value();
     params.ref_gflops.value();
+    params.ref_gbytes.value();
 
     // adjust header to msec
     params.time.name( "BLAS++\ntime (ms)" );
@@ -87,9 +89,11 @@ void test_trmv_work( Params& params, bool run )
     blas::trmv( layout, uplo, trans, diag, n, A, lda, x, incx );
     time = omp_get_wtime() - time;
 
-    double gflop = gflop_trmv( n, x );
+    double gflop = Gflop < real_t >::trmv( n );
+    double gbyte = Gbyte < real_t >::trmv( n );
     params.time.value()   = time * 1000;  // msec
     params.gflops.value() = gflop / time;
+    params.gbytes.value() = gbyte / time;
 
     if (verbose >= 2) {
         printf( "x2   = [];\n" ); print_vector( n, x, incx );
@@ -108,6 +112,7 @@ void test_trmv_work( Params& params, bool run )
 
         params.ref_time.value()   = time * 1000;  // msec
         params.ref_gflops.value() = gflop / time;
+        params.ref_gbytes.value() = gbyte / time;
 
         if (verbose >= 2) {
             printf( "xref = [];\n" ); print_vector( n, xref, incx );

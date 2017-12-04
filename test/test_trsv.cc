@@ -31,8 +31,10 @@ void test_trsv_work( Params& params, bool run )
     int64_t verbose = params.verbose.value();
 
     // mark non-standard output values
+    params.gbytes.value();
     params.ref_time.value();
     params.ref_gflops.value();
+    params.ref_gbytes.value();
 
     if ( ! run)
         return;
@@ -106,9 +108,11 @@ void test_trsv_work( Params& params, bool run )
     blas::trsv( layout, uplo, trans, diag, n, A, lda, x, incx );
     time = omp_get_wtime() - time;
 
-    double gflop = gflop_trsv( n, x );
+    double gflop = Gflop < real_t >::trsv( n );
+    double gbyte = Gbyte < real_t >::trsv( n );
     params.time.value()   = time * 1000;  // msec
     params.gflops.value() = gflop / time;
+    params.gbytes.value() = gbyte / time;
 
     if (verbose >= 2) {
         printf( "x2   = " ); print_vector( n, x, incx );
@@ -127,6 +131,7 @@ void test_trsv_work( Params& params, bool run )
 
         params.ref_time.value()   = time * 1000;  // msec
         params.ref_gflops.value() = gflop / time;
+        params.ref_gbytes.value() = gbyte / time;
 
         if (verbose >= 2) {
             printf( "xref = " ); print_vector( n, xref, incx );

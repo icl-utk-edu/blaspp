@@ -117,7 +117,7 @@ void test_her2k_work( Params& params, bool run )
                  alpha, A, lda, B, ldb, beta, C, ldc );
     time = omp_get_wtime() - time;
 
-    double gflop = gflop_her2k( n, k, C );
+    double gflop = Gflop < scalar_t >::her2k( n, k );
     params.time.value()   = time;
     params.gflops.value() = gflop / time;
 

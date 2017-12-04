@@ -109,7 +109,7 @@ void test_hemm_work( Params& params, bool run )
                 alpha, A, lda, B, ldb, beta, C, ldc );
     time = omp_get_wtime() - time;
 
-    double gflop = gflop_hemm( side, m, n, C );
+    double gflop = Gflop < scalar_t >::hemm( side, m, n );
     params.time.value()   = time;
     params.gflops.value() = gflop / time;
 

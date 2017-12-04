@@ -25,8 +25,10 @@ void test_dot_work( Params& params, bool run )
     int64_t verbose = params.verbose.value();
 
     // mark non-standard output values
+    params.gbytes.value();
     params.ref_time.value();
     params.ref_gflops.value();
+    params.ref_gbytes.value();
 
     // adjust header names
     params.time.name( "SLATE\ntime (ms)" );
@@ -73,9 +75,11 @@ void test_dot_work( Params& params, bool run )
     scalar_t result = blas::dot( n, x, incx, y, incy );
     time = omp_get_wtime() - time;
 
-    double gflop = gflop_dot( n, x );
+    double gflop = Gflop < scalar_t >::dot( n );
+    double gbyte = Gbyte < scalar_t >::dot( n );
     params.time.value()   = time * 1000;  // msec
     params.gflops.value() = gflop / time;
+    params.gbytes.value() = gbyte / time;
 
     if (verbose >= 1) {
         printf( "dot = %.4e + %.4ei\n", real(result), imag(result) );
@@ -90,6 +94,7 @@ void test_dot_work( Params& params, bool run )
 
         params.ref_time.value()   = time * 1000;  // msec
         params.ref_gflops.value() = gflop / time;
+        params.ref_gbytes.value() = gflop / time;
 
         if (verbose >= 1) {
             printf( "ref = %.4e + %.4ei\n", real(ref), imag(ref) );

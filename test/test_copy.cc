@@ -25,8 +25,10 @@ void test_copy_work( Params& params, bool run )
     int64_t verbose = params.verbose.value();
 
     // mark non-standard output values
+    params.gbytes.value();
     params.ref_time.value();
     params.ref_gflops.value();
+    params.ref_gbytes.value();
 
     // adjust header names
     params.time.name( "SLATE\ntime (ms)" );
@@ -71,9 +73,11 @@ void test_copy_work( Params& params, bool run )
     blas::copy( n, x, incx, y, incy );
     time = omp_get_wtime() - time;
 
-    double gflop = gflop_copy( n, x );
+    double gflop = Gflop < real_t >::copy( n );
+    double gbyte = Gbyte < real_t >::copy( n );
     params.time.value()   = time * 1000;  // msec
     params.gflops.value() = gflop / time;
+    params.gbytes.value() = gbyte / time;
 
     if (verbose >= 2) {
         printf( "y2   = " ); print_vector( n, y, incy );
@@ -88,6 +92,7 @@ void test_copy_work( Params& params, bool run )
 
         params.ref_time.value()   = time * 1000;  // msec
         params.ref_gflops.value() = gflop / time;
+        params.ref_gbytes.value() = gbyte / time;
 
         if (verbose >= 2) {
             printf( "yref = " ); print_vector( n, yref, incy );

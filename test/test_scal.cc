@@ -23,8 +23,10 @@ void test_scal_work( Params& params, bool run )
     int64_t verbose = params.verbose.value();
 
     // mark non-standard output values
+    params.gbytes.value();
     params.ref_time.value();
     params.ref_gflops.value();
+    params.ref_gbytes.value();
 
     // adjust header names
     params.time.name( "SLATE\ntime (ms)" );
@@ -65,9 +67,11 @@ void test_scal_work( Params& params, bool run )
     blas::scal( n, alpha, x, incx );
     time = omp_get_wtime() - time;
 
-    double gflop = gflop_scal( n, x );
+    double gflop = Gflop < real_t >::scal( n );
+    double gbyte = Gbyte < real_t >::scal( n );
     params.time.value()   = time * 1000;  // msec
     params.gflops.value() = gflop / time;
+    params.gbytes.value() = gbyte / time;
 
     if (verbose >= 2) {
         printf( "x2   = " ); print_vector( n, x, incx );
@@ -82,6 +86,7 @@ void test_scal_work( Params& params, bool run )
 
         params.ref_time.value()   = time * 1000;  // msec
         params.ref_gflops.value() = gflop / time;
+        params.ref_gbytes.value() = gbyte / time;
 
         if (verbose >= 2) {
             printf( "xref = " ); print_vector( n, xref, incx );

@@ -23,8 +23,10 @@ void test_asum_work( Params& params, bool run )
     int64_t verbose = params.verbose.value();
 
     // mark non-standard output values
+    params.gbytes.value();
     params.ref_time.value();
     params.ref_gflops.value();
+    params.ref_gbytes.value();
 
     // adjust header names
     params.time.name( "SLATE\ntime (ms)" );
@@ -61,9 +63,11 @@ void test_asum_work( Params& params, bool run )
     real_t result = blas::asum( n, x, incx );
     time = omp_get_wtime() - time;
 
-    double gflop = gflop_asum( n, x );
+    double gflop = Gflop < real_t >::asum( n );
+    double gbyte = Gbyte < real_t >::asum( n );
     params.time.value()   = time * 1000;  // msec
     params.gflops.value() = gflop / time;
+    params.gbytes.value() = gbyte / time;
 
     if (verbose >= 1) {
         printf( "result = %.4e\n", result );
@@ -78,6 +82,7 @@ void test_asum_work( Params& params, bool run )
 
         params.ref_time.value()   = time * 1000;  // msec
         params.ref_gflops.value() = gflop / time;
+        params.ref_gbytes.value() = gbyte / time;
 
         if (verbose >= 1) {
             printf( "ref    = %.4e\n", ref );

@@ -29,8 +29,10 @@ void test_syr2_work( Params& params, bool run )
     int64_t verbose = params.verbose.value();
 
     // mark non-standard output values
+    params.gbytes.value();
     params.ref_time.value();
     params.ref_gflops.value();
+    params.ref_gbytes.value();
 
     if ( ! run)
         return;
@@ -92,9 +94,11 @@ void test_syr2_work( Params& params, bool run )
     blas::syr2( layout, uplo, n, alpha, x, incx, y, incy, A, lda );
     time = omp_get_wtime() - time;
 
-    double gflop = gflop_syr2( n, A );
+    double gflop = Gflop < real_t >::syr2( n );
+    double gbyte = Gbyte < real_t >::syr2( n );
     params.time.value()   = time * 1000;  // msec
     params.gflops.value() = gflop / time;
+    params.gbytes.value() = gbyte / time;
 
     if (verbose >= 2) {
         printf( "A2 = " ); print_matrix( n, n, A, lda );
@@ -127,6 +131,7 @@ void test_syr2_work( Params& params, bool run )
 
         params.ref_time.value()   = time * 1000;  // msec
         params.ref_gflops.value() = gflop / time;
+        params.ref_gbytes.value() = gbyte / time;
 
         if (verbose >= 2) {
             printf( "Aref = " ); print_matrix( n, n, Aref, lda );

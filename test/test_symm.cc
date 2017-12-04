@@ -109,7 +109,7 @@ void test_symm_work( Params& params, bool run )
                 alpha, A, lda, B, ldb, beta, C, ldc );
     time = omp_get_wtime() - time;
 
-    double gflop = gflop_symm( side, m, n, C );
+    double gflop = Gflop < scalar_t >::symm( side, m, n );
     params.time.value()   = time * 1000;  // msec
     params.gflops.value() = gflop / time;
 
