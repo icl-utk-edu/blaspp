@@ -28,8 +28,8 @@ void test_asum_work( Params& params, bool run )
     params.ref_gflops.value();
     params.ref_gbytes.value();
 
-    // adjust header names
-    params.time.name( "SLATE\ntime (ms)" );
+    // adjust header to msec
+    params.time.name( "BLAS++\ntime (ms)" );
     params.ref_time.name( "Ref.\ntime (ms)" );
 
     if ( ! run)

@@ -33,6 +33,10 @@ void test_symm_work( Params& params, bool run )
     params.ref_time.value();
     params.ref_gflops.value();
 
+    // adjust header to msec
+    params.time.name( "BLAS++\ntime (ms)" );
+    params.ref_time.name( "Ref.\ntime (ms)" );
+
     if ( ! run)
         return;
 
