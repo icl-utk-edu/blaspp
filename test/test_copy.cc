@@ -73,8 +73,8 @@ void test_copy_work( Params& params, bool run )
     blas::copy( n, x, incx, y, incy );
     time = omp_get_wtime() - time;
 
-    double gflop = Gflop < real_t >::copy( n );
-    double gbyte = Gbyte < real_t >::copy( n );
+    double gflop = Gflop < scalar_t >::copy( n );
+    double gbyte = Gbyte < scalar_t >::copy( n );
     params.time.value()   = time * 1000;  // msec
     params.gflops.value() = gflop / time;
     params.gbytes.value() = gbyte / time;

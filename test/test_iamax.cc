@@ -62,8 +62,8 @@ void test_iamax_work( Params& params, bool run )
     int64_t result = blas::iamax( n, x, incx );
     time = omp_get_wtime() - time;
 
-    double gflop = Gflop < real_t >::iamax( n );
-    double gbyte = Gbyte < real_t >::iamax( n );
+    double gflop = Gflop < T >::iamax( n );
+    double gbyte = Gbyte < T >::iamax( n );
     params.time.value()   = time * 1000;  // msec
     params.gflops.value() = gflop / time;
     params.gbytes.value() = gbyte / time;

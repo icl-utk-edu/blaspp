@@ -86,8 +86,8 @@ void test_syr_work( Params& params, bool run )
     blas::syr( layout, uplo, n, alpha, x, incx, A, lda );
     time = omp_get_wtime() - time;
 
-    double gflop = Gflop < real_t >::syr( n );
-    double gbyte = Gbyte < real_t >::syr( n );
+    double gflop = Gflop < scalar_t >::syr( n );
+    double gbyte = Gbyte < scalar_t >::syr( n );
     params.time.value()   = time * 1000;  // msec
     params.gflops.value() = gflop / time;
     params.gbytes.value() = gbyte / time;

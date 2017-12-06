@@ -112,8 +112,8 @@ void test_trsv_work( Params& params, bool run )
     blas::trsv( layout, uplo, trans, diag, n, A, lda, x, incx );
     time = omp_get_wtime() - time;
 
-    double gflop = Gflop < real_t >::trsv( n );
-    double gbyte = Gbyte < real_t >::trsv( n );
+    double gflop = Gflop < scalar_t >::trsv( n );
+    double gbyte = Gbyte < scalar_t >::trsv( n );
     params.time.value()   = time * 1000;  // msec
     params.gflops.value() = gflop / time;
     params.gbytes.value() = gbyte / time;

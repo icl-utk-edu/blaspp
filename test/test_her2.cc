@@ -95,8 +95,8 @@ void test_her2_work( Params& params, bool run )
     blas::her2( layout, uplo, n, alpha, x, incx, y, incy, A, lda );
     time = omp_get_wtime() - time;
 
-    double gflop = Gflop < real_t >::her2( n );
-    double gbyte = Gbyte < real_t >::her2( n );
+    double gflop = Gflop < scalar_t >::her2( n );
+    double gbyte = Gbyte < scalar_t >::her2( n );
     params.time.value()   = time * 1000;  // msec
     params.gflops.value() = gflop / time;
     params.gbytes.value() = gbyte / time;
