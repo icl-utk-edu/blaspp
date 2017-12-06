@@ -27,14 +27,14 @@ void test_axpy_work( Params& params, bool run )
 
     // mark non-standard output values
     params.gbytes.value();
-	params.ref_time.value();
-	params.ref_gflops.value();
-	params.ref_gbytes.value();
+    params.ref_time.value();
+    params.ref_gflops.value();
+    params.ref_gbytes.value();
 
     // adjust header to msec
     params.time.name( "BLAS++\ntime (ms)" );
     params.ref_time.name( "Ref.\ntime (ms)" );
-    
+
     if ( ! run)
         return;
 
