@@ -140,9 +140,9 @@ void test_symm_work( Params& params, bool run )
 
         // check error compared to reference
         real_t error;
-        int64_t okay;
+        bool okay;
         check_gemm( Cm, Cn, An, alpha, beta, Anorm, Bnorm, Cnorm,
-                    Cref, ldc, C, ldc, &error, &okay );
+                    Cref, ldc, C, ldc, verbose, &error, &okay );
         params.error.value() = error;
         params.okay.value() = okay;
     }

@@ -127,10 +127,10 @@ void test_trsm_work( Params& params, bool run )
         // check error compared to reference
         // Am is reduction dimension
         // beta = 0, Cnorm = 0 (initial).
-        real_t error = 0;
-        int64_t okay = 0;
+        real_t error;
+        bool okay;
         check_gemm( Bm, Bn, Am, alpha, scalar_t(0), Anorm, Bnorm, real_t(0),
-                    Bref, ldb, B, ldb, &error, &okay );
+                    Bref, ldb, B, ldb, verbose, &error, &okay );
         params.error.value() = error;
         params.okay.value() = okay;
     }

@@ -115,9 +115,9 @@ void test_syr_work( Params& params, bool run )
         // check error compared to reference
         // beta = 1
         real_t error;
-        int64_t okay;
+        bool okay;
         check_herk( uplo, n, 1, alpha, scalar_t(1), Xnorm, Xnorm, Anorm,
-                    Aref, lda, A, lda, &error, &okay );
+                    Aref, lda, A, lda, verbose, &error, &okay );
         params.error.value() = error;
         params.okay.value() = okay;
     }

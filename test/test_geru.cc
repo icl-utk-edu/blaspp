@@ -128,9 +128,9 @@ void test_geru_work( Params& params, bool run )
         // check error compared to reference
         // beta = 1
         real_t error;
-        int64_t okay;
+        bool okay;
         check_gemm( Am, An, 1, alpha, scalar_t(1), Xnorm, Ynorm, Anorm,
-                    Aref, lda, A, lda, &error, &okay );
+                    Aref, lda, A, lda, verbose, &error, &okay );
         params.error.value() = error;
         params.okay.value() = okay;
     }

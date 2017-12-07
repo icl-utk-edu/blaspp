@@ -123,9 +123,9 @@ void test_rot_work( Params& params, bool run )
         blas::copy( n, yref, incy, &Cref[n], 1 );
         real_t Rnorm = sqrt(2);  // ||R||_F
         real_t error;
-        int64_t okay;
+        bool okay;
         check_gemm( n, 2, 2, TX(1), TX(0), Anorm, Rnorm, real_t(0),
-                    Cref, n, C, n, &error, &okay );
+                    Cref, n, C, n, verbose, &error, &okay );
         params.error.value() = error;
         params.okay.value() = okay;
 

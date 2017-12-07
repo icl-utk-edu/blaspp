@@ -104,9 +104,9 @@ void test_dot_work( Params& params, bool run )
         // treat result as 1 x 1 matrix; k = n is reduction dimension
         // alpha=1, beta=0, Cnorm=0
         real_t error;
-        int64_t okay;
+        bool okay;
         check_gemm( 1, 1, n, scalar_t(1), scalar_t(0), Xnorm, Ynorm, real_t(0),
-                    &ref, 1, &result, 1, &error, &okay );
+                    &ref, 1, &result, 1, verbose, &error, &okay );
         params.error.value() = error;
         params.okay.value() = okay;
     }

@@ -20,9 +20,12 @@ void check_gemm(
     typename blas::traits<T>::real_t Cnorm,
     T const* Cref, int64_t ldcref,
     T* C, int64_t ldc,
+    bool verbose,
     typename blas::traits<T>::real_t error[1],
-    int64_t* okay )
+    bool* okay )
 {
+    typedef long long int lld;
+
     #define    C(i_, j_)    C[ (i_) + (j_)*ldc ]
     #define Cref(i_, j_) Cref[ (i_) + (j_)*ldcref ]
 
@@ -41,9 +44,15 @@ void check_gemm(
         }
     }
 
-    real_t work[1];
-    error[0] = lapack_lange( "f", m, n, C, ldc, work )
+    real_t work[1], Cout_norm;
+    Cout_norm = lapack_lange( "f", m, n, C, ldc, work );
+    error[0] = Cout_norm
              / (sqrt(real_t(k)+2)*fabs(alpha)*Anorm*Bnorm + 2*fabs(beta)*Cnorm);
+    if (verbose) {
+        printf( "error: ||Cout||=%.2e / (sqrt(k=%lld + 2) * |alpha|=%.2e * ||A||=%.2e * ||B||=%.2e + 2 * |beta|=%.2e * ||C||=%.2e) = %.2e\n",
+                Cout_norm, (lld) k, fabs(alpha), Anorm, Bnorm,
+                fabs(beta), Cnorm, error[0] );
+    }
 
     // Allow 3*eps; complex needs 2*sqrt(2) factor; see Higham, 2002, sec. 3.6.
     real_t eps = std::numeric_limits< real_t >::epsilon();
@@ -74,9 +83,12 @@ void check_herk(
     typename blas::traits<T>::real_t Cnorm,
     T const* Cref, int64_t ldcref,
     T* C, int64_t ldc,
+    bool verbose,
     typename blas::traits<T>::real_t error[1],
-    int64_t* okay )
+    bool* okay )
 {
+    typedef long long int lld;
+
     #define    C(i_, j_)    C[ (i_) + (j_)*ldc ]
     #define Cref(i_, j_) Cref[ (i_) + (j_)*ldcref ]
 
@@ -103,9 +115,15 @@ void check_herk(
         }
     }
 
-    real_t work[1];
-    error[0] = lapack_lanhe( "f", uplo2str(uplo), n, C, ldc, work )
+    real_t work[1], Cout_norm;
+    Cout_norm = lapack_lanhe( "f", uplo2str(uplo), n, C, ldc, work );
+    error[0] = Cout_norm
              / (sqrt(real_t(k)+2)*fabs(alpha)*Anorm*Bnorm + 2*fabs(beta)*Cnorm);
+    if (verbose) {
+        printf( "error: ||Cout||=%.2e / (sqrt(k=%lld + 2) * |alpha|=%.2e * ||A||=%.2e * ||B||=%.2e + 2 * |beta|=%.2e * ||C||=%.2e) = %.2e\n",
+                Cout_norm, (lld) k, fabs(alpha), Anorm, Bnorm,
+                fabs(beta), Cnorm, error[0] );
+    }
 
     // Allow 3*eps; complex needs 2*sqrt(2) factor; see Higham, 2002, sec. 3.6.
     real_t eps = std::numeric_limits< real_t >::epsilon();

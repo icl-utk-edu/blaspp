@@ -126,9 +126,9 @@ void test_herk_work( Params& params, bool run )
 
         // check error compared to reference
         real_t error;
-        int64_t okay;
+        bool okay;
         check_herk( uplo, n, k, alpha, beta, Anorm, Anorm, Cnorm,
-                    Cref, ldc, C, ldc, &error, &okay );
+                    Cref, ldc, C, ldc, verbose, &error, &okay );
         params.error.value() = error;
         params.okay.value() = okay;
     }

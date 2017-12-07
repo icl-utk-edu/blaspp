@@ -122,9 +122,9 @@ void test_trmv_work( Params& params, bool run )
         // treat x as 1 x n matrix with ld = incx; k = n is reduction dimension
         // alpha = 1, beta = 0.
         real_t error;
-        int64_t okay;
+        bool okay;
         check_gemm( 1, n, n, scalar_t(1), scalar_t(0), Anorm, Xnorm, real_t(0),
-                    xref, abs(incx), x, abs(incx), &error, &okay );
+                    xref, abs(incx), x, abs(incx), verbose, &error, &okay );
         params.error.value() = error;
         params.okay.value() = okay;
     }

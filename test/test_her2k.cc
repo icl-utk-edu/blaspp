@@ -144,9 +144,9 @@ void test_her2k_work( Params& params, bool run )
 
         // check error compared to reference
         real_t error;
-        int64_t okay;
+        bool okay;
         check_herk( uplo, n, 2*k, alpha, beta, Anorm, Bnorm, Cnorm,
-                    Cref, ldc, C, ldc, &error, &okay );
+                    Cref, ldc, C, ldc, verbose, &error, &okay );
         params.error.value() = error;
         params.okay.value() = okay;
     }

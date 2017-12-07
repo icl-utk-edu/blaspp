@@ -135,9 +135,9 @@ void test_gemv_work( Params& params, bool run )
         // check error compared to reference
         // treat y as 1 x Ym matrix with ld = incy; k = Xm is reduction dimension
         real_t error;
-        int64_t okay;
+        bool okay;
         check_gemm( 1, Ym, Xm, alpha, beta, Anorm, Xnorm, Ynorm,
-                    yref, abs(incy), y, abs(incy), &error, &okay );
+                    yref, abs(incy), y, abs(incy), verbose, &error, &okay );
         params.error.value() = error;
         params.okay.value() = okay;
     }
