@@ -157,14 +157,16 @@ T abs1( std::complex<T> x )
 
 // -----------------------------------------------------------------------------
 //  traits
-/// Given a type, defines corresponding real type.
-/// E.g., for complex<float>, real_t = float.
+/// Given a type, defines corresponding real and complex types.
+/// E.g., for float,          real_t = float, complex_t = std::complex<float>,
+///       for complex<float>, real_t = float, complex_t = std::complex<float>.
 
 template< typename T >
 class traits
 {
 public:
     typedef T real_t;
+    typedef std::complex<T> complex_t;
 };
 
 // ----------------------------------------
@@ -173,6 +175,7 @@ class traits< std::complex<T> >
 {
 public:
     typedef T real_t;
+    typedef std::complex<T> complex_t;
 };
 
 // -----------------------------------------------------------------------------
