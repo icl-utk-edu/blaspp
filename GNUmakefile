@@ -15,11 +15,15 @@ LIBS     ?= -lblas
 # ------------------------------------------------------------------------------
 # BLAS++ specific flags
 pwd = ${shell pwd}
+libtest_path = ${realpath ${pwd}/../libtest}
+libtest_src  = ${wildcard ${libtest_path}/*.cc} \
+               ${wildcard ${libtest_path}/*.hh}
+libtest_so   = ${libtest_path}/libtest.so
 
 BLASPP_FLAGS = -I../libtest \
                -Iinclude
 
-BLASPP_LIBS  = -L../libtest -Wl,-rpath,${pwd}/../libtest -ltest
+BLASPP_LIBS  = -L../libtest -Wl,-rpath,${libtest_path} -ltest
 
 # ------------------------------------------------------------------------------
 # files
@@ -40,8 +44,11 @@ include: test_headers
 
 test: test/test
 
-test/test: ${test_obj}
+test/test: ${test_obj} ${libtest_so}
 	${CXX} ${LDFLAGS} -o $@ ${test_obj} ${BLASPP_LIBS} ${LIBS}
+
+${libtest_so}: ${libtest_src}
+	cd ${libtest_path} && ${MAKE}
 
 %.o: %.cc
 	${CXX} ${CXXFLAGS} ${BLASPP_FLAGS} -c -o $@ $<
