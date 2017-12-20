@@ -47,15 +47,22 @@ Resources
 * Visit the [ECP website](https://exascaleproject.org) to find out more about the DOE Exascale Computing Initiative.
 * Visit the [SLATE website](http://icl.utk.edu/slate/) for more information about the SLATE project.
 * Visit the [SLATE Working Notes](http://www.icl.utk.edu/publications/series/swans) to find out more about ongoing SLATE developments.
-* Feel free to join the [SLATE User](https://groups.google.com/a/icl.utk.edu/forum/#!forum/slate-user) Google group by following the link and clicking *Apply to join group*. Then email your questions and comments to *slate-user@icl.utk.edu*.
+
+* * *
+
+Getting Help
+============
+
+Need assistance with the SLATE software?
+Join the *SLATE User* Google group by going to
+https://groups.google.com/a/icl.utk.edu/forum/#!forum/slate-user
+and clicking `Apply to join group`.
+Upon acceptance email your questions and comments to *slate-user@icl.utk.edu*.
 
 * * *
 
 Acknowledgments
 ===============
-
-Funding
--------
 
 This research was supported by the Exascale Computing Project (17-SC-20-SC),
 a collaborative effort of two U.S. Department of Energy organizations
@@ -63,9 +70,6 @@ a collaborative effort of two U.S. Department of Energy organizations
 responsible for the planning and preparation of a capable exascale ecosystem,
 including software, applications, hardware, advanced system engineering
 and early testbed platforms, in support of the nation's exascale computing imperative.
-
-Cycles
-------
 
 This research uses resources of the Oak Ridge Leadership Computing Facility,
 which is a DOE Office of Science User Facility supported under Contract DE-AC05-00OR22725.
