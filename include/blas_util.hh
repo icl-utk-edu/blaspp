@@ -3,6 +3,7 @@
 
 #include <exception>
 #include <complex>
+#include <cstdarg>
 
 #include <assert.h>
 
