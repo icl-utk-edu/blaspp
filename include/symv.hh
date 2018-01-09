@@ -25,21 +25,21 @@ void symv(
     float       *y, int64_t incy )
 {
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( uplo != Uplo::Upper &&
-               uplo != Uplo::Lower );
-    throw_if_( n < 0 );
-    throw_if_( lda < n );
-    throw_if_( incx == 0 );
-    throw_if_( incy == 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( uplo != Uplo::Upper &&
+                   uplo != Uplo::Lower );
+    blas_error_if( n < 0 );
+    blas_error_if( lda < n );
+    blas_error_if( incx == 0 );
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda            > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( lda            > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
@@ -53,7 +53,7 @@ void symv(
     }
 
     char uplo_ = uplo2char( uplo );
-    f77_ssymv( &uplo_, &n_,
+    BLAS_ssymv( &uplo_, &n_,
                &alpha, A, &lda_, x, &incx_, &beta, y, &incy_ );
 }
 
@@ -71,21 +71,21 @@ void symv(
     double       *y, int64_t incy )
 {
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( uplo != Uplo::Upper &&
-               uplo != Uplo::Lower );
-    throw_if_( n < 0 );
-    throw_if_( lda < n );
-    throw_if_( incx == 0 );
-    throw_if_( incy == 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( uplo != Uplo::Upper &&
+                   uplo != Uplo::Lower );
+    blas_error_if( n < 0 );
+    blas_error_if( lda < n );
+    blas_error_if( incx == 0 );
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda            > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( lda            > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
@@ -99,7 +99,7 @@ void symv(
     }
 
     char uplo_ = uplo2char( uplo );
-    f77_dsymv( &uplo_, &n_,
+    BLAS_dsymv( &uplo_, &n_,
                &alpha, A, &lda_, x, &incx_, &beta, y, &incy_ );
 }
 
@@ -117,21 +117,21 @@ void symv(
     std::complex<float>       *y, int64_t incy )
 {
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( uplo != Uplo::Upper &&
-               uplo != Uplo::Lower );
-    throw_if_( n < 0 );
-    throw_if_( lda < n );
-    throw_if_( incx == 0 );
-    throw_if_( incy == 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( uplo != Uplo::Upper &&
+                   uplo != Uplo::Lower );
+    blas_error_if( n < 0 );
+    blas_error_if( lda < n );
+    blas_error_if( incx == 0 );
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda            > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( lda            > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
@@ -145,7 +145,7 @@ void symv(
     }
 
     char uplo_ = uplo2char( uplo );
-    f77_csymv( &uplo_, &n_,
+    BLAS_csymv( &uplo_, &n_,
                &alpha, A, &lda_, x, &incx_, &beta, y, &incy_ );
 }
 
@@ -163,21 +163,21 @@ void symv(
     std::complex<double>       *y, int64_t incy )
 {
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( uplo != Uplo::Upper &&
-               uplo != Uplo::Lower );
-    throw_if_( n < 0 );
-    throw_if_( lda < n );
-    throw_if_( incx == 0 );
-    throw_if_( incy == 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( uplo != Uplo::Upper &&
+                   uplo != Uplo::Lower );
+    blas_error_if( n < 0 );
+    blas_error_if( lda < n );
+    blas_error_if( incx == 0 );
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda            > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( lda            > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
@@ -191,7 +191,7 @@ void symv(
     }
 
     char uplo_ = uplo2char( uplo );
-    f77_zsymv( &uplo_, &n_,
+    BLAS_zsymv( &uplo_, &n_,
                &alpha, A, &lda_, x, &incx_, &beta, y, &incy_ );
 }
 
@@ -263,14 +263,14 @@ void symv(
     const scalar_t one  = 1;
 
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( uplo != Uplo::Lower &&
-               uplo != Uplo::Upper );
-    throw_if_( n < 0 );
-    throw_if_( lda < n );
-    throw_if_( incx == 0 );
-    throw_if_( incy == 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( uplo != Uplo::Lower &&
+                   uplo != Uplo::Upper );
+    blas_error_if( n < 0 );
+    blas_error_if( lda < n );
+    blas_error_if( incx == 0 );
+    blas_error_if( incy == 0 );
 
     // quick return
     if (n == 0 || (alpha == zero && beta == one))

@@ -24,24 +24,24 @@ void trmv(
     float       *x, int64_t incx )
 {
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( uplo != Uplo::Lower &&
-               uplo != Uplo::Upper );
-    throw_if_( trans != Op::NoTrans &&
-               trans != Op::Trans &&
-               trans != Op::ConjTrans );
-    throw_if_( diag != Diag::NonUnit &&
-               diag != Diag::Unit );
-    throw_if_( n < 0 );
-    throw_if_( lda < n );
-    throw_if_( incx == 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( uplo != Uplo::Lower &&
+                   uplo != Uplo::Upper );
+    blas_error_if( trans != Op::NoTrans &&
+                   trans != Op::Trans &&
+                   trans != Op::ConjTrans );
+    blas_error_if( diag != Diag::NonUnit &&
+                   diag != Diag::Unit );
+    blas_error_if( n < 0 );
+    blas_error_if( lda < n );
+    blas_error_if( incx == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda            > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( lda            > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
@@ -58,7 +58,7 @@ void trmv(
     char uplo_  = uplo2char( uplo );
     char trans_ = op2char( trans );
     char diag_  = diag2char( diag );
-    f77_strmv( &uplo_, &trans_, &diag_, &n_, A, &lda_, x, &incx_ );
+    BLAS_strmv( &uplo_, &trans_, &diag_, &n_, A, &lda_, x, &incx_ );
 }
 
 // -----------------------------------------------------------------------------
@@ -74,24 +74,24 @@ void trmv(
     double       *x, int64_t incx )
 {
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( uplo != Uplo::Lower &&
-               uplo != Uplo::Upper );
-    throw_if_( trans != Op::NoTrans &&
-               trans != Op::Trans &&
-               trans != Op::ConjTrans );
-    throw_if_( diag != Diag::NonUnit &&
-               diag != Diag::Unit );
-    throw_if_( n < 0 );
-    throw_if_( lda < n );
-    throw_if_( incx == 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( uplo != Uplo::Lower &&
+                   uplo != Uplo::Upper );
+    blas_error_if( trans != Op::NoTrans &&
+                   trans != Op::Trans &&
+                   trans != Op::ConjTrans );
+    blas_error_if( diag != Diag::NonUnit &&
+                   diag != Diag::Unit );
+    blas_error_if( n < 0 );
+    blas_error_if( lda < n );
+    blas_error_if( incx == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda            > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( lda            > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
@@ -108,7 +108,7 @@ void trmv(
     char uplo_  = uplo2char( uplo );
     char trans_ = op2char( trans );
     char diag_  = diag2char( diag );
-    f77_dtrmv( &uplo_, &trans_, &diag_, &n_, A, &lda_, x, &incx_ );
+    BLAS_dtrmv( &uplo_, &trans_, &diag_, &n_, A, &lda_, x, &incx_ );
 }
 
 // -----------------------------------------------------------------------------
@@ -124,24 +124,24 @@ void trmv(
     std::complex<float>       *x, int64_t incx )
 {
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( uplo != Uplo::Lower &&
-               uplo != Uplo::Upper );
-    throw_if_( trans != Op::NoTrans &&
-               trans != Op::Trans &&
-               trans != Op::ConjTrans );
-    throw_if_( diag != Diag::NonUnit &&
-               diag != Diag::Unit );
-    throw_if_( n < 0 );
-    throw_if_( lda < n );
-    throw_if_( incx == 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( uplo != Uplo::Lower &&
+                   uplo != Uplo::Upper );
+    blas_error_if( trans != Op::NoTrans &&
+                   trans != Op::Trans &&
+                   trans != Op::ConjTrans );
+    blas_error_if( diag != Diag::NonUnit &&
+                   diag != Diag::Unit );
+    blas_error_if( n < 0 );
+    blas_error_if( lda < n );
+    blas_error_if( incx == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda            > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( lda            > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
@@ -168,7 +168,7 @@ void trmv(
     char uplo_  = uplo2char( uplo );
     char trans_ = op2char( trans2 );
     char diag_  = diag2char( diag );
-    f77_ctrmv( &uplo_, &trans_, &diag_, &n_, A, &lda_, x, &incx_ );
+    BLAS_ctrmv( &uplo_, &trans_, &diag_, &n_, A, &lda_, x, &incx_ );
 
     if (layout == Layout::RowMajor && trans == Op::ConjTrans) {
         // conjugate x (in-place)
@@ -193,24 +193,24 @@ void trmv(
     std::complex<double>       *x, int64_t incx )
 {
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( uplo != Uplo::Lower &&
-               uplo != Uplo::Upper );
-    throw_if_( trans != Op::NoTrans &&
-               trans != Op::Trans &&
-               trans != Op::ConjTrans );
-    throw_if_( diag != Diag::NonUnit &&
-               diag != Diag::Unit );
-    throw_if_( n < 0 );
-    throw_if_( lda < n );
-    throw_if_( incx == 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( uplo != Uplo::Lower &&
+                   uplo != Uplo::Upper );
+    blas_error_if( trans != Op::NoTrans &&
+                   trans != Op::Trans &&
+                   trans != Op::ConjTrans );
+    blas_error_if( diag != Diag::NonUnit &&
+                   diag != Diag::Unit );
+    blas_error_if( n < 0 );
+    blas_error_if( lda < n );
+    blas_error_if( incx == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda            > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( lda            > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
@@ -237,7 +237,7 @@ void trmv(
     char uplo_  = uplo2char( uplo );
     char trans_ = op2char( trans2 );
     char diag_  = diag2char( diag );
-    f77_ztrmv( &uplo_, &trans_, &diag_, &n_, A, &lda_, x, &incx_ );
+    BLAS_ztrmv( &uplo_, &trans_, &diag_, &n_, A, &lda_, x, &incx_ );
 
     if (layout == Layout::RowMajor && trans == Op::ConjTrans) {
         // conjugate x (in-place)
@@ -319,18 +319,18 @@ void trmv(
     const scalar_t one  = 1;
 
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( uplo != Uplo::Lower &&
-               uplo != Uplo::Upper );
-    throw_if_( trans != Op::NoTrans &&
-               trans != Op::Trans &&
-               trans != Op::ConjTrans );
-    throw_if_( diag != Diag::NonUnit &&
-               diag != Diag::Unit );
-    throw_if_( n < 0 );
-    throw_if_( lda < n );
-    throw_if_( incx == 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( uplo != Uplo::Lower &&
+                   uplo != Uplo::Upper );
+    blas_error_if( trans != Op::NoTrans &&
+                   trans != Op::Trans &&
+                   trans != Op::ConjTrans );
+    blas_error_if( diag != Diag::NonUnit &&
+                   diag != Diag::Unit );
+    blas_error_if( n < 0 );
+    blas_error_if( lda < n );
+    blas_error_if( incx == 0 );
 
     // quick return
     if (n == 0)

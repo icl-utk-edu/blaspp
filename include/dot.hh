@@ -21,21 +21,21 @@ float dot(
     float const *y, int64_t incy )
 {
     // check arguments
-    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    throw_if_( incy == 0 );
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
-    return f77_sdot( &n_, x, &incx_, y, &incy_ );
+    return BLAS_sdot( &n_, x, &incx_, y, &incy_ );
 }
 
 // -----------------------------------------------------------------------------
@@ -47,21 +47,21 @@ double dot(
     double const *y, int64_t incy )
 {
     // check arguments
-    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    throw_if_( incy == 0 );
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
-    return f77_ddot( &n_, x, &incx_, y, &incy_ );
+    return BLAS_ddot( &n_, x, &incx_, y, &incy_ );
 }
 
 // -----------------------------------------------------------------------------
@@ -73,15 +73,15 @@ std::complex<float> dot(
     std::complex<float> const *y, int64_t incy )
 {
     // check arguments
-    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    throw_if_( incy == 0 );
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
@@ -91,11 +91,11 @@ std::complex<float> dot(
     #ifdef BLAS_COMPLEX_RETURN_ARGUMENT
         // Intel icc convention
         std::complex<float> value;
-        f77_cdotc( &value, &n_, x, &incx_, y, &incy_ );
+        BLAS_cdotc( &value, &n_, x, &incx_, y, &incy_ );
         return value;
     #else
         // GNU gcc convention
-        return f77_cdotc( &n_, x, &incx_, y, &incy_ );
+        return BLAS_cdotc( &n_, x, &incx_, y, &incy_ );
     #endif
 }
 
@@ -108,15 +108,15 @@ std::complex<double> dot(
     std::complex<double> const *y, int64_t incy )
 {
     // check arguments
-    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    throw_if_( incy == 0 );
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
@@ -126,11 +126,11 @@ std::complex<double> dot(
     #ifdef BLAS_COMPLEX_RETURN_ARGUMENT
         // Intel icc convention
         std::complex<double> value;
-        f77_zdotc( &value, &n_, x, &incx_, y, &incy_ );
+        BLAS_zdotc( &value, &n_, x, &incx_, y, &incy_ );
         return value;
     #else
         // GNU gcc convention
-        return f77_zdotc( &n_, x, &incx_, y, &incy_ );
+        return BLAS_zdotc( &n_, x, &incx_, y, &incy_ );
     #endif
 }
 
@@ -168,15 +168,15 @@ std::complex<float> dotu(
     std::complex<float> const *y, int64_t incy )
 {
     // check arguments
-    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    throw_if_( incy == 0 );
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
@@ -186,11 +186,11 @@ std::complex<float> dotu(
     #ifdef BLAS_COMPLEX_RETURN_ARGUMENT
         // Intel icc convention
         std::complex<float> value;
-        f77_cdotu( &value, &n_, x, &incx_, y, &incy_ );
+        BLAS_cdotu( &value, &n_, x, &incx_, y, &incy_ );
         return value;
     #else
         // GNU gcc convention
-        return f77_cdotu( &n_, x, &incx_, y, &incy_ );
+        return BLAS_cdotu( &n_, x, &incx_, y, &incy_ );
     #endif
 }
 
@@ -203,15 +203,15 @@ std::complex<double> dotu(
     std::complex<double> const *y, int64_t incy )
 {
     // check arguments
-    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    throw_if_( incy == 0 );
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
@@ -221,11 +221,11 @@ std::complex<double> dotu(
     #ifdef BLAS_COMPLEX_RETURN_ARGUMENT
         // Intel icc convention
         std::complex<double> value;
-        f77_zdotu( &value, &n_, x, &incx_, y, &incy_ );
+        BLAS_zdotu( &value, &n_, x, &incx_, y, &incy_ );
         return value;
     #else
         // GNU gcc convention
-        return f77_zdotu( &n_, x, &incx_, y, &incy_ );
+        return BLAS_zdotu( &n_, x, &incx_, y, &incy_ );
     #endif
 }
 
@@ -263,9 +263,9 @@ typename traits2<TX,TY>::scalar_t dot(
     typedef typename traits2<TX,TY>::scalar_t scalar_t;
 
     // check arguments
-    throw_if_( n < 0 );
-    throw_if_( incx == 0 );
-    throw_if_( incy == 0 );
+    blas_error_if( n < 0 );
+    blas_error_if( incx == 0 );
+    blas_error_if( incy == 0 );
 
     scalar_t result = 0;
     if (incx == 1 && incy == 1) {
@@ -321,9 +321,9 @@ typename traits2<TX,TY>::scalar_t dotu(
     typedef typename traits2<TX,TY>::scalar_t scalar_t;
 
     // check arguments
-    throw_if_( n < 0 );
-    throw_if_( incx == 0 );
-    throw_if_( incy == 0 );
+    blas_error_if( n < 0 );
+    blas_error_if( incx == 0 );
+    blas_error_if( incy == 0 );
 
     scalar_t result = 0;
     if (incx == 1 && incy == 1) {

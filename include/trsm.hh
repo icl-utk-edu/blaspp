@@ -27,36 +27,36 @@ void trsm(
     float       *B, int64_t ldb )
 {
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( side != Side::Left &&
-               side != Side::Right );
-    throw_if_( uplo != Uplo::Lower &&
-               uplo != Uplo::Upper );
-    throw_if_( trans != Op::NoTrans &&
-               trans != Op::Trans &&
-               trans != Op::ConjTrans );
-    throw_if_( diag != Diag::NonUnit &&
-               diag != Diag::Unit );
-    throw_if_( m < 0 );
-    throw_if_( n < 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( side != Side::Left &&
+                   side != Side::Right );
+    blas_error_if( uplo != Uplo::Lower &&
+                   uplo != Uplo::Upper );
+    blas_error_if( trans != Op::NoTrans &&
+                   trans != Op::Trans &&
+                   trans != Op::ConjTrans );
+    blas_error_if( diag != Diag::NonUnit &&
+                   diag != Diag::Unit );
+    blas_error_if( m < 0 );
+    blas_error_if( n < 0 );
 
     if (side == Side::Left)
-        throw_if_( lda < m );
+        blas_error_if( lda < m );
     else
-        throw_if_( lda < n );
+        blas_error_if( lda < n );
 
     if (layout == Layout::ColMajor)
-        throw_if_( ldb < m );
+        blas_error_if( ldb < m );
     else
-        throw_if_( ldb < n );
+        blas_error_if( ldb < n );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( m   > std::numeric_limits<blas_int>::max() );
-        throw_if_( n   > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda > std::numeric_limits<blas_int>::max() );
-        throw_if_( ldb > std::numeric_limits<blas_int>::max() );
+        blas_error_if( m   > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n   > std::numeric_limits<blas_int>::max() );
+        blas_error_if( lda > std::numeric_limits<blas_int>::max() );
+        blas_error_if( ldb > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int m_   = (blas_int) m;
@@ -75,7 +75,7 @@ void trsm(
     char uplo_  = uplo2char( uplo );
     char trans_ = op2char( trans );
     char diag_  = diag2char( diag );
-    f77_strsm( &side_, &uplo_, &trans_, &diag_, &m_, &n_, &alpha,
+    BLAS_strsm( &side_, &uplo_, &trans_, &diag_, &m_, &n_, &alpha,
                A, &lda_, B, &ldb_ );
 }
 
@@ -95,36 +95,36 @@ void trsm(
     double       *B, int64_t ldb )
 {
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( side != Side::Left &&
-               side != Side::Right );
-    throw_if_( uplo != Uplo::Lower &&
-               uplo != Uplo::Upper );
-    throw_if_( trans != Op::NoTrans &&
-               trans != Op::Trans &&
-               trans != Op::ConjTrans );
-    throw_if_( diag != Diag::NonUnit &&
-               diag != Diag::Unit );
-    throw_if_( m < 0 );
-    throw_if_( n < 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( side != Side::Left &&
+                   side != Side::Right );
+    blas_error_if( uplo != Uplo::Lower &&
+                   uplo != Uplo::Upper );
+    blas_error_if( trans != Op::NoTrans &&
+                   trans != Op::Trans &&
+                   trans != Op::ConjTrans );
+    blas_error_if( diag != Diag::NonUnit &&
+                   diag != Diag::Unit );
+    blas_error_if( m < 0 );
+    blas_error_if( n < 0 );
 
     if (side == Side::Left)
-        throw_if_( lda < m );
+        blas_error_if( lda < m );
     else
-        throw_if_( lda < n );
+        blas_error_if( lda < n );
 
     if (layout == Layout::ColMajor)
-        throw_if_( ldb < m );
+        blas_error_if( ldb < m );
     else
-        throw_if_( ldb < n );
+        blas_error_if( ldb < n );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( m   > std::numeric_limits<blas_int>::max() );
-        throw_if_( n   > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda > std::numeric_limits<blas_int>::max() );
-        throw_if_( ldb > std::numeric_limits<blas_int>::max() );
+        blas_error_if( m   > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n   > std::numeric_limits<blas_int>::max() );
+        blas_error_if( lda > std::numeric_limits<blas_int>::max() );
+        blas_error_if( ldb > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int m_   = (blas_int) m;
@@ -143,7 +143,7 @@ void trsm(
     char uplo_  = uplo2char( uplo );
     char trans_ = op2char( trans );
     char diag_  = diag2char( diag );
-    f77_dtrsm( &side_, &uplo_, &trans_, &diag_, &m_, &n_, &alpha,
+    BLAS_dtrsm( &side_, &uplo_, &trans_, &diag_, &m_, &n_, &alpha,
                A, &lda_, B, &ldb_ );
 }
 
@@ -163,36 +163,36 @@ void trsm(
     std::complex<float>       *B, int64_t ldb )
 {
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( side != Side::Left &&
-               side != Side::Right );
-    throw_if_( uplo != Uplo::Lower &&
-               uplo != Uplo::Upper );
-    throw_if_( trans != Op::NoTrans &&
-               trans != Op::Trans &&
-               trans != Op::ConjTrans );
-    throw_if_( diag != Diag::NonUnit &&
-               diag != Diag::Unit );
-    throw_if_( m < 0 );
-    throw_if_( n < 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( side != Side::Left &&
+                   side != Side::Right );
+    blas_error_if( uplo != Uplo::Lower &&
+                   uplo != Uplo::Upper );
+    blas_error_if( trans != Op::NoTrans &&
+                   trans != Op::Trans &&
+                   trans != Op::ConjTrans );
+    blas_error_if( diag != Diag::NonUnit &&
+                   diag != Diag::Unit );
+    blas_error_if( m < 0 );
+    blas_error_if( n < 0 );
 
     if (side == Side::Left)
-        throw_if_( lda < m );
+        blas_error_if( lda < m );
     else
-        throw_if_( lda < n );
+        blas_error_if( lda < n );
 
     if (layout == Layout::ColMajor)
-        throw_if_( ldb < m );
+        blas_error_if( ldb < m );
     else
-        throw_if_( ldb < n );
+        blas_error_if( ldb < n );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( m   > std::numeric_limits<blas_int>::max() );
-        throw_if_( n   > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda > std::numeric_limits<blas_int>::max() );
-        throw_if_( ldb > std::numeric_limits<blas_int>::max() );
+        blas_error_if( m   > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n   > std::numeric_limits<blas_int>::max() );
+        blas_error_if( lda > std::numeric_limits<blas_int>::max() );
+        blas_error_if( ldb > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int m_   = (blas_int) m;
@@ -211,7 +211,7 @@ void trsm(
     char uplo_  = uplo2char( uplo );
     char trans_ = op2char( trans );
     char diag_  = diag2char( diag );
-    f77_ctrsm( &side_, &uplo_, &trans_, &diag_, &m_, &n_, &alpha,
+    BLAS_ctrsm( &side_, &uplo_, &trans_, &diag_, &m_, &n_, &alpha,
                A, &lda_, B, &ldb_ );
 }
 
@@ -231,36 +231,36 @@ void trsm(
     std::complex<double>       *B, int64_t ldb )
 {
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( side != Side::Left &&
-               side != Side::Right );
-    throw_if_( uplo != Uplo::Lower &&
-               uplo != Uplo::Upper );
-    throw_if_( trans != Op::NoTrans &&
-               trans != Op::Trans &&
-               trans != Op::ConjTrans );
-    throw_if_( diag != Diag::NonUnit &&
-               diag != Diag::Unit );
-    throw_if_( m < 0 );
-    throw_if_( n < 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( side != Side::Left &&
+                   side != Side::Right );
+    blas_error_if( uplo != Uplo::Lower &&
+                   uplo != Uplo::Upper );
+    blas_error_if( trans != Op::NoTrans &&
+                   trans != Op::Trans &&
+                   trans != Op::ConjTrans );
+    blas_error_if( diag != Diag::NonUnit &&
+                   diag != Diag::Unit );
+    blas_error_if( m < 0 );
+    blas_error_if( n < 0 );
 
     if (side == Side::Left)
-        throw_if_( lda < m );
+        blas_error_if( lda < m );
     else
-        throw_if_( lda < n );
+        blas_error_if( lda < n );
 
     if (layout == Layout::ColMajor)
-        throw_if_( ldb < m );
+        blas_error_if( ldb < m );
     else
-        throw_if_( ldb < n );
+        blas_error_if( ldb < n );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( m   > std::numeric_limits<blas_int>::max() );
-        throw_if_( n   > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda > std::numeric_limits<blas_int>::max() );
-        throw_if_( ldb > std::numeric_limits<blas_int>::max() );
+        blas_error_if( m   > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n   > std::numeric_limits<blas_int>::max() );
+        blas_error_if( lda > std::numeric_limits<blas_int>::max() );
+        blas_error_if( ldb > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int m_   = (blas_int) m;
@@ -279,7 +279,7 @@ void trsm(
     char uplo_  = uplo2char( uplo );
     char trans_ = op2char( trans );
     char diag_  = diag2char( diag );
-    f77_ztrsm( &side_, &uplo_, &trans_, &diag_, &m_, &n_, &alpha,
+    BLAS_ztrsm( &side_, &uplo_, &trans_, &diag_, &m_, &n_, &alpha,
                A, &lda_, B, &ldb_ );
 }
 

@@ -58,28 +58,28 @@ void herk(
     std::complex<float>       *C, int64_t ldc )
 {
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( uplo != Uplo::Lower &&
-               uplo != Uplo::Upper );
-    throw_if_( trans != Op::NoTrans &&
-               trans != Op::ConjTrans );
-    throw_if_( n < 0 );
-    throw_if_( k < 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( uplo != Uplo::Lower &&
+                   uplo != Uplo::Upper );
+    blas_error_if( trans != Op::NoTrans &&
+                   trans != Op::ConjTrans );
+    blas_error_if( n < 0 );
+    blas_error_if( k < 0 );
 
     if ((trans == Op::NoTrans) ^ (layout == Layout::RowMajor))
-        throw_if_( lda < n );
+        blas_error_if( lda < n );
     else
-        throw_if_( lda < k );
+        blas_error_if( lda < k );
 
-    throw_if_( ldc < n );
+    blas_error_if( ldc < n );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n   > std::numeric_limits<blas_int>::max() );
-        throw_if_( k   > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda > std::numeric_limits<blas_int>::max() );
-        throw_if_( ldc > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n   > std::numeric_limits<blas_int>::max() );
+        blas_error_if( k   > std::numeric_limits<blas_int>::max() );
+        blas_error_if( lda > std::numeric_limits<blas_int>::max() );
+        blas_error_if( ldc > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_   = (blas_int) n;
@@ -96,7 +96,7 @@ void herk(
 
     char uplo_ = uplo2char( uplo );
     char trans_ = op2char( trans );
-    f77_cherk( &uplo_, &trans_, &n_, &k_,
+    BLAS_cherk( &uplo_, &trans_, &n_, &k_,
                &alpha, A, &lda_, &beta, C, &ldc_ );
 }
 
@@ -114,28 +114,28 @@ void herk(
     std::complex<double>       *C, int64_t ldc )
 {
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( uplo != Uplo::Lower &&
-               uplo != Uplo::Upper );
-    throw_if_( trans != Op::NoTrans &&
-               trans != Op::ConjTrans );
-    throw_if_( n < 0 );
-    throw_if_( k < 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( uplo != Uplo::Lower &&
+                   uplo != Uplo::Upper );
+    blas_error_if( trans != Op::NoTrans &&
+                   trans != Op::ConjTrans );
+    blas_error_if( n < 0 );
+    blas_error_if( k < 0 );
 
     if ((trans == Op::NoTrans) ^ (layout == Layout::RowMajor))
-        throw_if_( lda < n );
+        blas_error_if( lda < n );
     else
-        throw_if_( lda < k );
+        blas_error_if( lda < k );
 
-    throw_if_( ldc < n );
+    blas_error_if( ldc < n );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n   > std::numeric_limits<blas_int>::max() );
-        throw_if_( k   > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda > std::numeric_limits<blas_int>::max() );
-        throw_if_( ldc > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n   > std::numeric_limits<blas_int>::max() );
+        blas_error_if( k   > std::numeric_limits<blas_int>::max() );
+        blas_error_if( lda > std::numeric_limits<blas_int>::max() );
+        blas_error_if( ldc > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_   = (blas_int) n;
@@ -152,7 +152,7 @@ void herk(
 
     char uplo_ = uplo2char( uplo );
     char trans_ = op2char( trans );
-    f77_zherk( &uplo_, &trans_, &n_, &k_,
+    BLAS_zherk( &uplo_, &trans_, &n_, &k_,
                &alpha, A, &lda_, &beta, C, &ldc_ );
 }
 

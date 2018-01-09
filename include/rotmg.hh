@@ -23,7 +23,7 @@ void rotmg(
     float  b,
     float  param[5] )
 {
-    f77_srotmg( d1, d2, a, &b, param );
+    BLAS_srotmg( d1, d2, a, &b, param );
 }
 
 // -----------------------------------------------------------------------------
@@ -36,7 +36,7 @@ void rotmg(
     double  b,
     double  param[5] )
 {
-    f77_drotmg( d1, d2, a, &b, param );
+    BLAS_drotmg( d1, d2, a, &b, param );
 }
 
 // =============================================================================

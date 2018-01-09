@@ -19,18 +19,18 @@ float nrm2(
     float const *x, int64_t incx )
 {
     // check arguments
-    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( incx > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( incx > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
-    return f77_snrm2( &n_, x, &incx_ );
+    return BLAS_snrm2( &n_, x, &incx_ );
 }
 
 // -----------------------------------------------------------------------------
@@ -41,18 +41,18 @@ double nrm2(
     double const *x, int64_t incx )
 {
     // check arguments
-    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( incx > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( incx > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
-    return f77_dnrm2( &n_, x, &incx_ );
+    return BLAS_dnrm2( &n_, x, &incx_ );
 }
 
 // -----------------------------------------------------------------------------
@@ -63,18 +63,18 @@ float nrm2(
     std::complex<float> const *x, int64_t incx )
 {
     // check arguments
-    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( incx > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( incx > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
-    return f77_scnrm2( &n_, x, &incx_ );
+    return BLAS_scnrm2( &n_, x, &incx_ );
 }
 
 // -----------------------------------------------------------------------------
@@ -85,18 +85,18 @@ double nrm2(
     std::complex<double> const *x, int64_t incx )
 {
     // check arguments
-    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n    > std::numeric_limits<blas_int>::max() );
-        throw_if_( incx > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n    > std::numeric_limits<blas_int>::max() );
+        blas_error_if( incx > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
-    return f77_dznrm2( &n_, x, &incx_ );
+    return BLAS_dznrm2( &n_, x, &incx_ );
 }
 
 // =============================================================================
@@ -127,8 +127,8 @@ nrm2(
     typedef typename traits<T>::real_t real_t;
 
     // check arguments
-    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
 
     // todo: scale to avoid overflow & underflow
     real_t result = 0;

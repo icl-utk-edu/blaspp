@@ -24,21 +24,21 @@ void axpy(
     float       *y, int64_t incy )
 {
     // check arguments
-    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    throw_if_( incy == 0 );
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
-    f77_saxpy( &n_, &alpha, x, &incx_, y, &incy_ );
+    BLAS_saxpy( &n_, &alpha, x, &incx_, y, &incy_ );
 }
 
 // -----------------------------------------------------------------------------
@@ -51,21 +51,21 @@ void axpy(
     double       *y, int64_t incy )
 {
     // check arguments
-    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    throw_if_( incy == 0 );
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
-    f77_daxpy( &n_, &alpha, x, &incx_, y, &incy_ );
+    BLAS_daxpy( &n_, &alpha, x, &incx_, y, &incy_ );
 }
 
 // -----------------------------------------------------------------------------
@@ -78,21 +78,21 @@ void axpy(
     std::complex<float>       *y, int64_t incy )
 {
     // check arguments
-    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    throw_if_( incy == 0 );
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
-    f77_caxpy( &n_, &alpha, x, &incx_, y, &incy_ );
+    BLAS_caxpy( &n_, &alpha, x, &incx_, y, &incy_ );
 }
 
 // -----------------------------------------------------------------------------
@@ -105,21 +105,21 @@ void axpy(
     std::complex<double>       *y, int64_t incy )
 {
     // check arguments
-    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    throw_if_( incy == 0 );
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
-    f77_zaxpy( &n_, &alpha, x, &incx_, y, &incy_ );
+    BLAS_zaxpy( &n_, &alpha, x, &incx_, y, &incy_ );
 }
 
 // =============================================================================
@@ -159,9 +159,9 @@ void axpy(
     typedef typename blas::traits2<TX,TY>::scalar_t scalar_t;
 
     // check arguments
-    throw_if_( n < 0 );
-    throw_if_( incx == 0 );
-    throw_if_( incy == 0 );
+    blas_error_if( n < 0 );
+    blas_error_if( incx == 0 );
+    blas_error_if( incy == 0 );
 
     // quick return
     if (alpha == scalar_t(0))

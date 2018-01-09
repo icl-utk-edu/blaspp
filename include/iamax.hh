@@ -19,18 +19,18 @@ int64_t iamax(
     float const *x, int64_t incx )
 {
     // check arguments
-    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n    > std::numeric_limits<blas_int>::max() );
-        throw_if_( incx > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n    > std::numeric_limits<blas_int>::max() );
+        blas_error_if( incx > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
-    return f77_isamax( &n_, x, &incx_ ) - 1;
+    return BLAS_isamax( &n_, x, &incx_ ) - 1;
 }
 
 // -----------------------------------------------------------------------------
@@ -41,18 +41,18 @@ int64_t iamax(
     double const *x, int64_t incx )
 {
     // check arguments
-    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n    > std::numeric_limits<blas_int>::max() );
-        throw_if_( incx > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n    > std::numeric_limits<blas_int>::max() );
+        blas_error_if( incx > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
-    return f77_idamax( &n_, x, &incx_ ) - 1;
+    return BLAS_idamax( &n_, x, &incx_ ) - 1;
 }
 
 // -----------------------------------------------------------------------------
@@ -63,18 +63,18 @@ int64_t iamax(
     std::complex<float> const *x, int64_t incx )
 {
     // check arguments
-    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n    > std::numeric_limits<blas_int>::max() );
-        throw_if_( incx > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n    > std::numeric_limits<blas_int>::max() );
+        blas_error_if( incx > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
-    return f77_icamax( &n_, x, &incx_ ) - 1;
+    return BLAS_icamax( &n_, x, &incx_ ) - 1;
 }
 
 // -----------------------------------------------------------------------------
@@ -85,18 +85,18 @@ int64_t iamax(
     std::complex<double> const *x, int64_t incx )
 {
     // check arguments
-    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n    > std::numeric_limits<blas_int>::max() );
-        throw_if_( incx > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n    > std::numeric_limits<blas_int>::max() );
+        blas_error_if( incx > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
-    return f77_izamax( &n_, x, &incx_ ) - 1;
+    return BLAS_izamax( &n_, x, &incx_ ) - 1;
 }
 
 // =============================================================================
@@ -126,8 +126,8 @@ int64_t iamax(
     typedef typename traits<T>::real_t real_t;
 
     // check arguments
-    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx <= 0 );  // standard BLAS returns, doesn't fail
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
 
     // todo: check NAN
     real_t result = -1;

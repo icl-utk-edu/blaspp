@@ -23,21 +23,21 @@ void rot(
     float s )
 {
     // check arguments
-    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    throw_if_( incy == 0 );
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
-    f77_srot( &n_, x, &incx_, y, &incy_, &c, &s );
+    BLAS_srot( &n_, x, &incx_, y, &incy_, &c, &s );
 }
 
 // -----------------------------------------------------------------------------
@@ -51,21 +51,21 @@ void rot(
     double s )
 {
     // check arguments
-    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    throw_if_( incy == 0 );
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
-    f77_drot( &n_, x, &incx_, y, &incy_, &c, &s );
+    BLAS_drot( &n_, x, &incx_, y, &incy_, &c, &s );
 }
 
 // -----------------------------------------------------------------------------
@@ -80,21 +80,21 @@ void rot(
     float s )
 {
     // check arguments
-    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    throw_if_( incy == 0 );
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
-    f77_csrot( &n_, x, &incx_, y, &incy_, &c, &s );
+    BLAS_csrot( &n_, x, &incx_, y, &incy_, &c, &s );
 }
 
 // -----------------------------------------------------------------------------
@@ -109,21 +109,21 @@ void rot(
     double s )
 {
     // check arguments
-    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    throw_if_( incy == 0 );
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
-    f77_zdrot( &n_, x, &incx_, y, &incy_, &c, &s );
+    BLAS_zdrot( &n_, x, &incx_, y, &incy_, &c, &s );
 }
 
 // -----------------------------------------------------------------------------
@@ -138,21 +138,21 @@ void rot(
     std::complex<float> s )
 {
     // check arguments
-    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    throw_if_( incy == 0 );
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
-    f77_crot( &n_, x, &incx_, y, &incy_, &c, &s );
+    BLAS_crot( &n_, x, &incx_, y, &incy_, &c, &s );
 }
 
 // -----------------------------------------------------------------------------
@@ -167,21 +167,21 @@ void rot(
     std::complex<double> s )
 {
     // check arguments
-    throw_if_( n < 0 );      // standard BLAS returns, doesn't fail
-    throw_if_( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    throw_if_( incy == 0 );
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
-    f77_zrot( &n_, x, &incx_, y, &incy_, &c, &s );
+    BLAS_zrot( &n_, x, &incx_, y, &incy_, &c, &s );
 }
 
 // =============================================================================
@@ -234,9 +234,9 @@ void rot(
     throw std::exception();  // not yet implemented
 
     // check arguments
-    throw_if_( n < 0 );
-    throw_if_( incx == 0 );
-    throw_if_( incy == 0 );
+    blas_error_if( n < 0 );
+    blas_error_if( incx == 0 );
+    blas_error_if( incy == 0 );
 
     if (incx == 1 && incy == 1) {
         // unit stride

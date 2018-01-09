@@ -71,6 +71,8 @@ test/clean:
 headers     = ${wildcard include/*.h include/*.hh test/*.hh}
 headers_gch = ${addprefix gch/, ${addsuffix .gch, ${headers}}}
 
+include/test_headers: test_headers
+
 test_headers: ${headers_gch}
 
 gch/include/%.h.gch: include/%.h | gch/include

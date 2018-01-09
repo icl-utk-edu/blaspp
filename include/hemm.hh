@@ -61,36 +61,36 @@ void hemm(
     std::complex<float>       *C, int64_t ldc )
 {
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( side != Side::Left &&
-               side != Side::Right );
-    throw_if_( uplo != Uplo::Lower &&
-               uplo != Uplo::Upper );
-    throw_if_( m < 0 );
-    throw_if_( n < 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( side != Side::Left &&
+                   side != Side::Right );
+    blas_error_if( uplo != Uplo::Lower &&
+                   uplo != Uplo::Upper );
+    blas_error_if( m < 0 );
+    blas_error_if( n < 0 );
 
     if (side == Side::Left)
-        throw_if_msg_( lda < m, "lda %d < m %d", lda, m );
+        blas_error_if_msg( lda < m, "lda %d < m %d", lda, m );
     else
-        throw_if_msg_( lda < n, "lda %d < n %d", lda, n );
+        blas_error_if_msg( lda < n, "lda %d < n %d", lda, n );
 
     if (layout == Layout::ColMajor) {
-        throw_if_( ldb < m );
-        throw_if_( ldc < m );
+        blas_error_if( ldb < m );
+        blas_error_if( ldc < m );
     }
     else {
-        throw_if_( ldb < n );
-        throw_if_( ldc < n );
+        blas_error_if( ldb < n );
+        blas_error_if( ldc < n );
     }
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( m   > std::numeric_limits<blas_int>::max() );
-        throw_if_( n   > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda > std::numeric_limits<blas_int>::max() );
-        throw_if_( ldb > std::numeric_limits<blas_int>::max() );
-        throw_if_( ldc > std::numeric_limits<blas_int>::max() );
+        blas_error_if( m   > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n   > std::numeric_limits<blas_int>::max() );
+        blas_error_if( lda > std::numeric_limits<blas_int>::max() );
+        blas_error_if( ldb > std::numeric_limits<blas_int>::max() );
+        blas_error_if( ldc > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int m_   = (blas_int) m;
@@ -108,7 +108,7 @@ void hemm(
 
     char side_ = side2char( side );
     char uplo_ = uplo2char( uplo );
-    f77_chemm( &side_, &uplo_, &m_, &n_,
+    BLAS_chemm( &side_, &uplo_, &m_, &n_,
                &alpha, A, &lda_, B, &ldb_, &beta, C, &ldc_ );
 }
 
@@ -127,36 +127,36 @@ void hemm(
     std::complex<double>       *C, int64_t ldc )
 {
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( side != Side::Left &&
-               side != Side::Right );
-    throw_if_( uplo != Uplo::Lower &&
-               uplo != Uplo::Upper );
-    throw_if_( m < 0 );
-    throw_if_( n < 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( side != Side::Left &&
+                   side != Side::Right );
+    blas_error_if( uplo != Uplo::Lower &&
+                   uplo != Uplo::Upper );
+    blas_error_if( m < 0 );
+    blas_error_if( n < 0 );
 
     if (side == Side::Left)
-        throw_if_msg_( lda < m, "lda %d < m %d", lda, m );
+        blas_error_if_msg( lda < m, "lda %d < m %d", lda, m );
     else
-        throw_if_msg_( lda < n, "lda %d < n %d", lda, n );
+        blas_error_if_msg( lda < n, "lda %d < n %d", lda, n );
 
     if (layout == Layout::ColMajor) {
-        throw_if_( ldb < m );
-        throw_if_( ldc < m );
+        blas_error_if( ldb < m );
+        blas_error_if( ldc < m );
     }
     else {
-        throw_if_( ldb < n );
-        throw_if_( ldc < n );
+        blas_error_if( ldb < n );
+        blas_error_if( ldc < n );
     }
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( m   > std::numeric_limits<blas_int>::max() );
-        throw_if_( n   > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda > std::numeric_limits<blas_int>::max() );
-        throw_if_( ldb > std::numeric_limits<blas_int>::max() );
-        throw_if_( ldc > std::numeric_limits<blas_int>::max() );
+        blas_error_if( m   > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n   > std::numeric_limits<blas_int>::max() );
+        blas_error_if( lda > std::numeric_limits<blas_int>::max() );
+        blas_error_if( ldb > std::numeric_limits<blas_int>::max() );
+        blas_error_if( ldc > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int m_   = (blas_int) m;
@@ -174,7 +174,7 @@ void hemm(
 
     char side_ = side2char( side );
     char uplo_ = uplo2char( uplo );
-    f77_zhemm( &side_, &uplo_, &m_, &n_,
+    BLAS_zhemm( &side_, &uplo_, &m_, &n_,
                &alpha, A, &lda_, B, &ldb_, &beta, C, &ldc_ );
 }
 

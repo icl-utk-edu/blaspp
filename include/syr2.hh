@@ -24,21 +24,21 @@ void syr2(
     float       *A, int64_t lda )
 {
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( uplo != Uplo::Lower &&
-               uplo != Uplo::Upper );
-    throw_if_( n < 0 );
-    throw_if_( lda < n );
-    throw_if_( incx == 0 );
-    throw_if_( incy == 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( uplo != Uplo::Lower &&
+                   uplo != Uplo::Upper );
+    blas_error_if( n < 0 );
+    blas_error_if( lda < n );
+    blas_error_if( incx == 0 );
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda            > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( lda            > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
@@ -52,7 +52,7 @@ void syr2(
     }
 
     char uplo_ = uplo2char( uplo );
-    f77_ssyr2( &uplo_, &n_, &alpha, x, &incx_, y, &incy_, A, &lda_ );
+    BLAS_ssyr2( &uplo_, &n_, &alpha, x, &incx_, y, &incy_, A, &lda_ );
 }
 
 // -----------------------------------------------------------------------------
@@ -68,21 +68,21 @@ void syr2(
     double       *A, int64_t lda )
 {
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( uplo != Uplo::Lower &&
-               uplo != Uplo::Upper );
-    throw_if_( n < 0 );
-    throw_if_( lda < n );
-    throw_if_( incx == 0 );
-    throw_if_( incy == 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( uplo != Uplo::Lower &&
+                   uplo != Uplo::Upper );
+    blas_error_if( n < 0 );
+    blas_error_if( lda < n );
+    blas_error_if( incx == 0 );
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda            > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( lda            > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
@@ -96,7 +96,7 @@ void syr2(
     }
 
     char uplo_ = uplo2char( uplo );
-    f77_dsyr2( &uplo_, &n_, &alpha, x, &incx_, y, &incy_, A, &lda_ );
+    BLAS_dsyr2( &uplo_, &n_, &alpha, x, &incx_, y, &incy_, A, &lda_ );
 }
 
 // -----------------------------------------------------------------------------
@@ -112,21 +112,21 @@ void syr2(
     std::complex<float>       *A, int64_t lda )
 {
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( uplo != Uplo::Lower &&
-               uplo != Uplo::Upper );
-    throw_if_( n < 0 );
-    throw_if_( lda < n );
-    throw_if_( incx == 0 );
-    throw_if_( incy == 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( uplo != Uplo::Lower &&
+                   uplo != Uplo::Upper );
+    blas_error_if( n < 0 );
+    blas_error_if( lda < n );
+    blas_error_if( incx == 0 );
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda            > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( lda            > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
@@ -176,7 +176,7 @@ void syr2(
     std::complex<float> beta = 1;
 
     char uplo_ = uplo2char( uplo );
-    f77_csyr2k( &uplo_, &trans_, &n_, &k_,
+    BLAS_csyr2k( &uplo_, &trans_, &n_, &k_,
                 &alpha, x2, &ldx_, y2, &ldy_, &beta, A, &lda_ );
 
     if (x2 != x) {
@@ -198,21 +198,21 @@ void syr2(
     std::complex<double>       *A, int64_t lda )
 {
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( uplo != Uplo::Lower &&
-               uplo != Uplo::Upper );
-    throw_if_( n < 0 );
-    throw_if_( lda < n );
-    throw_if_( incx == 0 );
-    throw_if_( incy == 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( uplo != Uplo::Lower &&
+                   uplo != Uplo::Upper );
+    blas_error_if( n < 0 );
+    blas_error_if( lda < n );
+    blas_error_if( incx == 0 );
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda            > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( lda            > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int n_    = (blas_int) n;
@@ -262,7 +262,7 @@ void syr2(
     std::complex<double> beta = 1;
 
     char uplo_ = uplo2char( uplo );
-    f77_zsyr2k( &uplo_, &trans_, &n_, &k_,
+    BLAS_zsyr2k( &uplo_, &trans_, &n_, &k_,
                 &alpha, x2, &ldx_, y2, &ldy_, &beta, A, &lda_ );
 
     if (x2 != x) {
@@ -334,14 +334,14 @@ void syr2(
     const scalar_t zero = 0;
 
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( uplo != Uplo::Lower &&
-               uplo != Uplo::Upper );
-    throw_if_( n < 0 );
-    throw_if_( incx == 0 );
-    throw_if_( incy == 0 );
-    throw_if_( lda < n );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( uplo != Uplo::Lower &&
+                   uplo != Uplo::Upper );
+    blas_error_if( n < 0 );
+    blas_error_if( incx == 0 );
+    blas_error_if( incy == 0 );
+    blas_error_if( lda < n );
 
     // quick return
     if (n == 0 || alpha == zero)

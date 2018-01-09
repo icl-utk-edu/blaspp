@@ -30,118 +30,118 @@ extern "C" {
 // Level 1 BLAS - Fortran prototypes
 
 // -----------------------------------------------------------------------------
-#define f77_saxpy FORTRAN_NAME( saxpy, SAXPY )
-void f77_saxpy(
+#define BLAS_saxpy BLAS_FORTRAN_NAME( saxpy, SAXPY )
+void BLAS_saxpy(
     blas_int const *n,
     float const *alpha,
     float const *x, blas_int const *incx,
     float       *y, blas_int const *incy );
 
-#define f77_daxpy FORTRAN_NAME( daxpy, DAXPY )
-void f77_daxpy(
+#define BLAS_daxpy BLAS_FORTRAN_NAME( daxpy, DAXPY )
+void BLAS_daxpy(
     blas_int const *n,
     double const *alpha,
     double const *x, blas_int const *incx,
     double       *y, blas_int const *incy );
 
-#define f77_caxpy FORTRAN_NAME( caxpy, CAXPY )
-void f77_caxpy(
+#define BLAS_caxpy BLAS_FORTRAN_NAME( caxpy, CAXPY )
+void BLAS_caxpy(
     blas_int const *n,
     std::complex<float> const *alpha,
     std::complex<float> const *x, blas_int const *incx,
     std::complex<float>       *y, blas_int const *incy );
 
-#define f77_zaxpy FORTRAN_NAME( zaxpy, ZAXPY )
-void f77_zaxpy(
+#define BLAS_zaxpy BLAS_FORTRAN_NAME( zaxpy, ZAXPY )
+void BLAS_zaxpy(
     blas_int const *n,
     std::complex<double> const *alpha,
     std::complex<double> const *x, blas_int const *incx,
     std::complex<double>       *y, blas_int const *incy );
 
 // -----------------------------------------------------------------------------
-#define f77_sscal FORTRAN_NAME( sscal, SSCAL )
-void f77_sscal(
+#define BLAS_sscal BLAS_FORTRAN_NAME( sscal, SSCAL )
+void BLAS_sscal(
     blas_int const *n,
     float const *alpha,
     float       *x, blas_int const *incx );
 
-#define f77_dscal FORTRAN_NAME( dscal, DSCAL )
-void f77_dscal(
+#define BLAS_dscal BLAS_FORTRAN_NAME( dscal, DSCAL )
+void BLAS_dscal(
     blas_int const *n,
     double const *alpha,
     double       *x, blas_int const *incx );
 
-#define f77_cscal FORTRAN_NAME( cscal, CSCAL )
-void f77_cscal(
+#define BLAS_cscal BLAS_FORTRAN_NAME( cscal, CSCAL )
+void BLAS_cscal(
     blas_int const *n,
     std::complex<float> const *alpha,
     std::complex<float>       *x, blas_int const *incx );
 
-#define f77_zscal FORTRAN_NAME( zscal, ZSCAL )
-void f77_zscal(
+#define BLAS_zscal BLAS_FORTRAN_NAME( zscal, ZSCAL )
+void BLAS_zscal(
     blas_int const *n,
     std::complex<double> const *alpha,
     std::complex<double>       *x, blas_int const *incx );
 
 // -----------------------------------------------------------------------------
-#define f77_scopy FORTRAN_NAME( scopy, SCOPY )
-void f77_scopy(
+#define BLAS_scopy BLAS_FORTRAN_NAME( scopy, SCOPY )
+void BLAS_scopy(
     blas_int const *n,
     float const *x, blas_int const *incx,
     float       *y, blas_int const *incy );
 
-#define f77_dcopy FORTRAN_NAME( dcopy, DCOPY )
-void f77_dcopy(
+#define BLAS_dcopy BLAS_FORTRAN_NAME( dcopy, DCOPY )
+void BLAS_dcopy(
     blas_int const *n,
     double const *x, blas_int const *incx,
     double       *y, blas_int const *incy );
 
-#define f77_ccopy FORTRAN_NAME( ccopy, CCOPY )
-void f77_ccopy(
+#define BLAS_ccopy BLAS_FORTRAN_NAME( ccopy, CCOPY )
+void BLAS_ccopy(
     blas_int const *n,
     std::complex<float> const *x, blas_int const *incx,
     std::complex<float>       *y, blas_int const *incy );
 
-#define f77_zcopy FORTRAN_NAME( zcopy, ZCOPY )
-void f77_zcopy(
+#define BLAS_zcopy BLAS_FORTRAN_NAME( zcopy, ZCOPY )
+void BLAS_zcopy(
     blas_int const *n,
     std::complex<double> const *x, blas_int const *incx,
     std::complex<double>       *y, blas_int const *incy );
 
 // -----------------------------------------------------------------------------
-#define f77_sswap FORTRAN_NAME( sswap, SSWAP )
-void f77_sswap(
+#define BLAS_sswap BLAS_FORTRAN_NAME( sswap, SSWAP )
+void BLAS_sswap(
     blas_int const *n,
     float *x, blas_int const *incx,
     float *y, blas_int const *incy );
 
-#define f77_dswap FORTRAN_NAME( dswap, DSWAP )
-void f77_dswap(
+#define BLAS_dswap BLAS_FORTRAN_NAME( dswap, DSWAP )
+void BLAS_dswap(
     blas_int const *n,
     double *x, blas_int const *incx,
     double *y, blas_int const *incy );
 
-#define f77_cswap FORTRAN_NAME( cswap, CSWAP )
-void f77_cswap(
+#define BLAS_cswap BLAS_FORTRAN_NAME( cswap, CSWAP )
+void BLAS_cswap(
     blas_int const *n,
     std::complex<float> *x, blas_int const *incx,
     std::complex<float> *y, blas_int const *incy );
 
-#define f77_zswap FORTRAN_NAME( zswap, ZSWAP )
-void f77_zswap(
+#define BLAS_zswap BLAS_FORTRAN_NAME( zswap, ZSWAP )
+void BLAS_zswap(
     blas_int const *n,
     std::complex<double> *x, blas_int const *incx,
     std::complex<double> *y, blas_int const *incy );
 
 // -----------------------------------------------------------------------------
-#define f77_sdot FORTRAN_NAME( sdot, SDOT )
-blas_float_return f77_sdot(
+#define BLAS_sdot BLAS_FORTRAN_NAME( sdot, SDOT )
+blas_float_return BLAS_sdot(
     blas_int const *n,
     float const *x, blas_int const *incx,
     float const *y, blas_int const *incy );
 
-#define f77_ddot FORTRAN_NAME( ddot, DDOT )
-double f77_ddot(
+#define BLAS_ddot BLAS_FORTRAN_NAME( ddot, DDOT )
+double BLAS_ddot(
     blas_int const *n,
     double const *x, blas_int const *incx,
     double const *y, blas_int const *incy );
@@ -152,29 +152,29 @@ double f77_ddot(
 // else the default is to return complex values (GNU gcc).
 #ifdef BLAS_COMPLEX_RETURN_ARGUMENT
 
-#define f77_cdotc FORTRAN_NAME( cdotc, CDOTC )
-void f77_cdotc(
+#define BLAS_cdotc BLAS_FORTRAN_NAME( cdotc, CDOTC )
+void BLAS_cdotc(
     std::complex<float> *result,
     blas_int const *n,
     std::complex<float> const *x, blas_int const *incx,
     std::complex<float> const *y, blas_int const *incy );
 
-#define f77_zdotc FORTRAN_NAME( zdotc, ZDOTC )
-void f77_zdotc(
+#define BLAS_zdotc BLAS_FORTRAN_NAME( zdotc, ZDOTC )
+void BLAS_zdotc(
     std::complex<double> *result,
     blas_int const *n,
     std::complex<double> const *x, blas_int const *incx,
     std::complex<double> const *y, blas_int const *incy );
 
-#define f77_cdotu FORTRAN_NAME( cdotu, CDOTU )
-void f77_cdotu(
+#define BLAS_cdotu BLAS_FORTRAN_NAME( cdotu, CDOTU )
+void BLAS_cdotu(
     std::complex<float> *result,
     blas_int const *n,
     std::complex<float> const *x, blas_int const *incx,
     std::complex<float> const *y, blas_int const *incy );
 
-#define f77_zdotu FORTRAN_NAME( zdotu, ZDOTU )
-void f77_zdotu(
+#define BLAS_zdotu BLAS_FORTRAN_NAME( zdotu, ZDOTU )
+void BLAS_zdotu(
     std::complex<double> *result,
     blas_int const *n,
     std::complex<double> const *x, blas_int const *incx,
@@ -183,26 +183,26 @@ void f77_zdotu(
 // --------------------
 #else // ! defined(BLAS_COMPLEX_RETURN_ARGUMENT)
 
-#define f77_cdotc FORTRAN_NAME( cdotc, CDOTC )
-std::complex<float> f77_cdotc(
+#define BLAS_cdotc BLAS_FORTRAN_NAME( cdotc, CDOTC )
+std::complex<float> BLAS_cdotc(
     blas_int const *n,
     std::complex<float> const *x, blas_int const *incx,
     std::complex<float> const *y, blas_int const *incy );
 
-#define f77_zdotc FORTRAN_NAME( zdotc, ZDOTC )
-std::complex<double> f77_zdotc(
+#define BLAS_zdotc BLAS_FORTRAN_NAME( zdotc, ZDOTC )
+std::complex<double> BLAS_zdotc(
     blas_int const *n,
     std::complex<double> const *x, blas_int const *incx,
     std::complex<double> const *y, blas_int const *incy );
 
-#define f77_cdotu FORTRAN_NAME( cdotu, CDOTU )
-std::complex<float> f77_cdotu(
+#define BLAS_cdotu BLAS_FORTRAN_NAME( cdotu, CDOTU )
+std::complex<float> BLAS_cdotu(
     blas_int const *n,
     std::complex<float> const *x, blas_int const *incx,
     std::complex<float> const *y, blas_int const *incy );
 
-#define f77_zdotu FORTRAN_NAME( zdotu, ZDOTU )
-std::complex<double> f77_zdotu(
+#define BLAS_zdotu BLAS_FORTRAN_NAME( zdotu, ZDOTU )
+std::complex<double> BLAS_zdotu(
     blas_int const *n,
     std::complex<double> const *x, blas_int const *incx,
     std::complex<double> const *y, blas_int const *incy );
@@ -210,94 +210,94 @@ std::complex<double> f77_zdotu(
 #endif // ! defined(BLAS_COMPLEX_RETURN)
 
 // -----------------------------------------------------------------------------
-#define f77_snrm2 FORTRAN_NAME( snrm2, SNRM2 )
-blas_float_return f77_snrm2(
+#define BLAS_snrm2 BLAS_FORTRAN_NAME( snrm2, SNRM2 )
+blas_float_return BLAS_snrm2(
     blas_int const *n,
     float const *x, blas_int const *incx );
 
-#define f77_dnrm2 FORTRAN_NAME( dnrm2, DNRM2 )
-double f77_dnrm2(
+#define BLAS_dnrm2 BLAS_FORTRAN_NAME( dnrm2, DNRM2 )
+double BLAS_dnrm2(
     blas_int const *n,
     double const *x, blas_int const *incx );
 
-#define f77_scnrm2 FORTRAN_NAME( scnrm2, SCNRM2 )
-blas_float_return f77_scnrm2(
+#define BLAS_scnrm2 BLAS_FORTRAN_NAME( scnrm2, SCNRM2 )
+blas_float_return BLAS_scnrm2(
     blas_int const *n,
     std::complex<float> const *x, blas_int const *incx );
 
-#define f77_dznrm2 FORTRAN_NAME( dznrm2, DZNRM2 )
-double f77_dznrm2(
+#define BLAS_dznrm2 BLAS_FORTRAN_NAME( dznrm2, DZNRM2 )
+double BLAS_dznrm2(
     blas_int const *n,
     std::complex<double> const *x, blas_int const *incx );
 
 // -----------------------------------------------------------------------------
-#define f77_sasum FORTRAN_NAME( sasum, SASUM )
-blas_float_return f77_sasum(
+#define BLAS_sasum BLAS_FORTRAN_NAME( sasum, SASUM )
+blas_float_return BLAS_sasum(
     blas_int const *n,
     float const *x, blas_int const *incx );
 
-#define f77_dasum FORTRAN_NAME( dasum, DASUM )
-double f77_dasum(
+#define BLAS_dasum BLAS_FORTRAN_NAME( dasum, DASUM )
+double BLAS_dasum(
     blas_int const *n,
     double const *x, blas_int const *incx );
 
-#define f77_scasum FORTRAN_NAME( scasum, SCASUM )
-blas_float_return f77_scasum(
+#define BLAS_scasum BLAS_FORTRAN_NAME( scasum, SCASUM )
+blas_float_return BLAS_scasum(
     blas_int const *n,
     std::complex<float> const *x, blas_int const *incx );
 
-#define f77_dzasum FORTRAN_NAME( dzasum, DZASUM )
-double f77_dzasum(
+#define BLAS_dzasum BLAS_FORTRAN_NAME( dzasum, DZASUM )
+double BLAS_dzasum(
     blas_int const *n,
     std::complex<double> const *x, blas_int const *incx );
 
 // -----------------------------------------------------------------------------
-#define f77_isamax FORTRAN_NAME( isamax, ISAMAX )
-blas_int f77_isamax(
+#define BLAS_isamax BLAS_FORTRAN_NAME( isamax, ISAMAX )
+blas_int BLAS_isamax(
     blas_int const *n,
     float const *x, blas_int const *incx );
 
-#define f77_idamax FORTRAN_NAME( idamax, IDAMAX )
-blas_int f77_idamax(
+#define BLAS_idamax BLAS_FORTRAN_NAME( idamax, IDAMAX )
+blas_int BLAS_idamax(
     blas_int const *n,
     double const *x, blas_int const *incx );
 
-#define f77_icamax FORTRAN_NAME( icamax, ICAMAX )
-blas_int f77_icamax(
+#define BLAS_icamax BLAS_FORTRAN_NAME( icamax, ICAMAX )
+blas_int BLAS_icamax(
     blas_int const *n,
     std::complex<float> const *x, blas_int const *incx );
 
-#define f77_izamax FORTRAN_NAME( izamax, IZAMAX )
-blas_int f77_izamax(
+#define BLAS_izamax BLAS_FORTRAN_NAME( izamax, IZAMAX )
+blas_int BLAS_izamax(
     blas_int const *n,
     std::complex<double> const *x, blas_int const *incx );
 
 // -----------------------------------------------------------------------------
 // c is real
 // oddly, b is const for crotg, zrotg
-#define f77_srotg FORTRAN_NAME( srotg, SROTG )
-void f77_srotg(
+#define BLAS_srotg BLAS_FORTRAN_NAME( srotg, SROTG )
+void BLAS_srotg(
     float *a,
     float *b,
     float *c,
     float *s );
 
-#define f77_drotg FORTRAN_NAME( drotg, DROTG )
-void f77_drotg(
+#define BLAS_drotg BLAS_FORTRAN_NAME( drotg, DROTG )
+void BLAS_drotg(
     double *a,
     double *b,
     double *c,
     double *s );
 
-#define f77_crotg FORTRAN_NAME( crotg, CROTG )
-void f77_crotg(
+#define BLAS_crotg BLAS_FORTRAN_NAME( crotg, CROTG )
+void BLAS_crotg(
     std::complex<float> *a,
     std::complex<float> const *b,
     float *c,
     std::complex<float> *s );
 
-#define f77_zrotg FORTRAN_NAME( zrotg, ZROTG )
-void f77_zrotg(
+#define BLAS_zrotg BLAS_FORTRAN_NAME( zrotg, ZROTG )
+void BLAS_zrotg(
     std::complex<double> *a,
     std::complex<double> const *b,
     double *c,
@@ -305,48 +305,48 @@ void f77_zrotg(
 
 // -----------------------------------------------------------------------------
 // c is real
-#define f77_srot FORTRAN_NAME( srot, SROT )
-void f77_srot(
+#define BLAS_srot BLAS_FORTRAN_NAME( srot, SROT )
+void BLAS_srot(
     blas_int const *n,
     float *x, blas_int const *incx,
     float *y, blas_int const *incy,
     float const *c,
     float const *s );
 
-#define f77_drot FORTRAN_NAME( drot, DROT )
-void f77_drot(
+#define BLAS_drot BLAS_FORTRAN_NAME( drot, DROT )
+void BLAS_drot(
     blas_int const *n,
     double *x, blas_int const *incx,
     double *y, blas_int const *incy,
     double const *c,
     double const *s );
 
-#define f77_csrot FORTRAN_NAME( csrot, CSROT )
-void f77_csrot(
+#define BLAS_csrot BLAS_FORTRAN_NAME( csrot, CSROT )
+void BLAS_csrot(
     blas_int const *n,
     std::complex<float> *x, blas_int const *incx,
     std::complex<float> *y, blas_int const *incy,
     float const *c,
     float const *s );
 
-#define f77_zdrot FORTRAN_NAME( zdrot, ZDROT )
-void f77_zdrot(
+#define BLAS_zdrot BLAS_FORTRAN_NAME( zdrot, ZDROT )
+void BLAS_zdrot(
     blas_int const *n,
     std::complex<double> *x, blas_int const *incx,
     std::complex<double> *y, blas_int const *incy,
     double const *c,
     double const *s );
 
-#define f77_crot FORTRAN_NAME( crot, CROT )
-void f77_crot(
+#define BLAS_crot BLAS_FORTRAN_NAME( crot, CROT )
+void BLAS_crot(
     blas_int const *n,
     std::complex<float> *x, blas_int const *incx,
     std::complex<float> *y, blas_int const *incy,
     float const *c,
     std::complex<float> const *s );
 
-#define f77_zrot FORTRAN_NAME( zrot, ZROT )
-void f77_zrot(
+#define BLAS_zrot BLAS_FORTRAN_NAME( zrot, ZROT )
+void BLAS_zrot(
     blas_int const *n,
     std::complex<double> *x, blas_int const *incx,
     std::complex<double> *y, blas_int const *incy,
@@ -354,32 +354,32 @@ void f77_zrot(
     std::complex<double> const *s );
 
 // -----------------------------------------------------------------------------
-#define f77_srotmg FORTRAN_NAME( srotmg, SROTMG )
-void f77_srotmg(
+#define BLAS_srotmg BLAS_FORTRAN_NAME( srotmg, SROTMG )
+void BLAS_srotmg(
     float *d1,
     float *d2,
     float *x1,
     float const *y1,
     float *param );
 
-#define f77_drotmg FORTRAN_NAME( drotmg, DROTMG )
-void f77_drotmg(
+#define BLAS_drotmg BLAS_FORTRAN_NAME( drotmg, DROTMG )
+void BLAS_drotmg(
     double *d1,
     double *d2,
     double *x1,
     double const *y1,
     double *param );
 
-#define f77_crotmg FORTRAN_NAME( crotmg, CROTMG )
-void f77_crotmg(
+#define BLAS_crotmg BLAS_FORTRAN_NAME( crotmg, CROTMG )
+void BLAS_crotmg(
     std::complex<float> *d1,
     std::complex<float> *d2,
     std::complex<float> *x1,
     std::complex<float> const *y1,
     std::complex<float> *param );
 
-#define f77_zrotmg FORTRAN_NAME( zrotmg, ZROTMG )
-void f77_zrotmg(
+#define BLAS_zrotmg BLAS_FORTRAN_NAME( zrotmg, ZROTMG )
+void BLAS_zrotmg(
     std::complex<double> *d1,
     std::complex<double> *d2,
     std::complex<double> *x1,
@@ -387,29 +387,29 @@ void f77_zrotmg(
     std::complex<double> *param );
 
 // -----------------------------------------------------------------------------
-#define f77_srotm FORTRAN_NAME( srotm, SROTM )
-void f77_srotm(
+#define BLAS_srotm BLAS_FORTRAN_NAME( srotm, SROTM )
+void BLAS_srotm(
     blas_int const *n,
     float *x, blas_int const *incx,
     float *y, blas_int const *incy,
     float const *param );
 
-#define f77_drotm FORTRAN_NAME( drotm, DROTM )
-void f77_drotm(
+#define BLAS_drotm BLAS_FORTRAN_NAME( drotm, DROTM )
+void BLAS_drotm(
     blas_int const *n,
     double *x, blas_int const *incx,
     double *y, blas_int const *incy,
     double const *param );
 
-#define f77_crotm FORTRAN_NAME( crotm, CROTM )
-void f77_crotm(
+#define BLAS_crotm BLAS_FORTRAN_NAME( crotm, CROTM )
+void BLAS_crotm(
     blas_int const *n,
     std::complex<float> *x, blas_int const *incx,
     std::complex<float> *y, blas_int const *incy,
     std::complex<float> const *param );
 
-#define f77_zrotm FORTRAN_NAME( zrotm, ZROTM )
-void f77_zrotm(
+#define BLAS_zrotm BLAS_FORTRAN_NAME( zrotm, ZROTM )
+void BLAS_zrotm(
     blas_int const *n,
     std::complex<double> *x, blas_int const *incx,
     std::complex<double> *y, blas_int const *incy,
@@ -419,8 +419,8 @@ void f77_zrotm(
 // Level 2 BLAS - Fortran prototypes
 
 // -----------------------------------------------------------------------------
-#define f77_sgemv FORTRAN_NAME( sgemv, SGEMV )
-void f77_sgemv(
+#define BLAS_sgemv BLAS_FORTRAN_NAME( sgemv, SGEMV )
+void BLAS_sgemv(
     char const *trans,
     blas_int const *m, blas_int const *n,
     float const *alpha,
@@ -429,8 +429,8 @@ void f77_sgemv(
     float const *beta,
     float       *y, blas_int const *incy );
 
-#define f77_dgemv FORTRAN_NAME( dgemv, DGEMV )
-void f77_dgemv(
+#define BLAS_dgemv BLAS_FORTRAN_NAME( dgemv, DGEMV )
+void BLAS_dgemv(
     char const *trans,
     blas_int const *m, blas_int const *n,
     double const *alpha,
@@ -439,8 +439,8 @@ void f77_dgemv(
     double const *beta,
     double       *y, blas_int const *incy );
 
-#define f77_cgemv FORTRAN_NAME( cgemv, CGEMV )
-void f77_cgemv(
+#define BLAS_cgemv BLAS_FORTRAN_NAME( cgemv, CGEMV )
+void BLAS_cgemv(
     char const *trans,
     blas_int const *m, blas_int const *n,
     std::complex<float> const *alpha,
@@ -449,8 +449,8 @@ void f77_cgemv(
     std::complex<float> const *beta,
     std::complex<float>       *y, blas_int const *incy );
 
-#define f77_zgemv FORTRAN_NAME( zgemv, ZGEMV )
-void f77_zgemv(
+#define BLAS_zgemv BLAS_FORTRAN_NAME( zgemv, ZGEMV )
+void BLAS_zgemv(
     char const *trans,
     blas_int const *m, blas_int const *n,
     std::complex<double> const *alpha,
@@ -460,16 +460,16 @@ void f77_zgemv(
     std::complex<double>       *y, blas_int const *incy );
 
 // -----------------------------------------------------------------------------
-#define f77_sger FORTRAN_NAME( sger, SGER )
-void f77_sger(
+#define BLAS_sger BLAS_FORTRAN_NAME( sger, SGER )
+void BLAS_sger(
     blas_int const *m, blas_int const *n,
     float const *alpha,
     float const *x, blas_int const *incx,
     float const *y, blas_int const *incy,
     float       *A, blas_int const *lda );
 
-#define f77_dger FORTRAN_NAME( dger, DGER )
-void f77_dger(
+#define BLAS_dger BLAS_FORTRAN_NAME( dger, DGER )
+void BLAS_dger(
     blas_int const *m, blas_int const *n,
     double const *alpha,
     double const *x, blas_int const *incx,
@@ -477,16 +477,16 @@ void f77_dger(
     double       *A, blas_int const *lda );
 
 // -----------------------------------------------------------------------------
-#define f77_cgerc FORTRAN_NAME( cgerc, CGERC )
-void f77_cgerc(
+#define BLAS_cgerc BLAS_FORTRAN_NAME( cgerc, CGERC )
+void BLAS_cgerc(
     blas_int const *m, blas_int const *n,
     std::complex<float> const *alpha,
     std::complex<float> const *x, blas_int const *incx,
     std::complex<float> const *y, blas_int const *incy,
     std::complex<float>       *A, blas_int const *lda );
 
-#define f77_zgerc FORTRAN_NAME( zgerc, ZGERC )
-void f77_zgerc(
+#define BLAS_zgerc BLAS_FORTRAN_NAME( zgerc, ZGERC )
+void BLAS_zgerc(
     blas_int const *m, blas_int const *n,
     std::complex<double> const *alpha,
     std::complex<double> const *x, blas_int const *incx,
@@ -494,16 +494,16 @@ void f77_zgerc(
     std::complex<double>       *A, blas_int const *lda );
 
 // -----------------------------------------------------------------------------
-#define f77_cgeru FORTRAN_NAME( cgeru, CGERU )
-void f77_cgeru(
+#define BLAS_cgeru BLAS_FORTRAN_NAME( cgeru, CGERU )
+void BLAS_cgeru(
     blas_int const *m, blas_int const *n,
     std::complex<float> const *alpha,
     std::complex<float> const *x, blas_int const *incx,
     std::complex<float> const *y, blas_int const *incy,
     std::complex<float>       *A, blas_int const *lda );
 
-#define f77_zgeru FORTRAN_NAME( zgeru, ZGERU )
-void f77_zgeru(
+#define BLAS_zgeru BLAS_FORTRAN_NAME( zgeru, ZGERU )
+void BLAS_zgeru(
     blas_int const *m, blas_int const *n,
     std::complex<double> const *alpha,
     std::complex<double> const *x, blas_int const *incx,
@@ -511,8 +511,8 @@ void f77_zgeru(
     std::complex<double>       *A, blas_int const *lda );
 
 // -----------------------------------------------------------------------------
-#define f77_ssymv FORTRAN_NAME( ssymv, SSYMV )
-void f77_ssymv(
+#define BLAS_ssymv BLAS_FORTRAN_NAME( ssymv, SSYMV )
+void BLAS_ssymv(
     char const *uplo,
     blas_int const *n,
     float const *alpha,
@@ -521,8 +521,8 @@ void f77_ssymv(
     float const *beta,
     float       *y, blas_int const *incy );
 
-#define f77_dsymv FORTRAN_NAME( dsymv, DSYMV )
-void f77_dsymv(
+#define BLAS_dsymv BLAS_FORTRAN_NAME( dsymv, DSYMV )
+void BLAS_dsymv(
     char const *uplo,
     blas_int const *n,
     double const *alpha,
@@ -531,8 +531,8 @@ void f77_dsymv(
     double const *beta,
     double       *y, blas_int const *incy );
 
-#define f77_csymv FORTRAN_NAME( csymv, CSYMV )
-void f77_csymv(
+#define BLAS_csymv BLAS_FORTRAN_NAME( csymv, CSYMV )
+void BLAS_csymv(
     char const *uplo,
     blas_int const *n,
     std::complex<float> const *alpha,
@@ -541,8 +541,8 @@ void f77_csymv(
     std::complex<float> const *beta,
     std::complex<float>       *y, blas_int const *incy );
 
-#define f77_zsymv FORTRAN_NAME( zsymv, ZSYMV )
-void f77_zsymv(
+#define BLAS_zsymv BLAS_FORTRAN_NAME( zsymv, ZSYMV )
+void BLAS_zsymv(
     char const *uplo,
     blas_int const *n,
     std::complex<double> const *alpha,
@@ -552,8 +552,8 @@ void f77_zsymv(
     std::complex<double>       *y, blas_int const *incy );
 
 // -----------------------------------------------------------------------------
-#define f77_chemv FORTRAN_NAME( chemv, CHEMV )
-void f77_chemv(
+#define BLAS_chemv BLAS_FORTRAN_NAME( chemv, CHEMV )
+void BLAS_chemv(
     char const *uplo,
     blas_int const *n,
     std::complex<float> const *alpha,
@@ -562,8 +562,8 @@ void f77_chemv(
     std::complex<float> const *beta,
     std::complex<float>       *y, blas_int const *incy );
 
-#define f77_zhemv FORTRAN_NAME( zhemv, ZHEMV )
-void f77_zhemv(
+#define BLAS_zhemv BLAS_FORTRAN_NAME( zhemv, ZHEMV )
+void BLAS_zhemv(
     char const *uplo,
     blas_int const *n,
     std::complex<double> const *alpha,
@@ -573,16 +573,16 @@ void f77_zhemv(
     std::complex<double>       *y, blas_int const *incy );
 
 // -----------------------------------------------------------------------------
-#define f77_ssyr FORTRAN_NAME( ssyr, SSYR )
-void f77_ssyr(
+#define BLAS_ssyr BLAS_FORTRAN_NAME( ssyr, SSYR )
+void BLAS_ssyr(
     char const *uplo,
     blas_int const *n,
     float const *alpha,
     float const *x, blas_int const *incx,
     float       *A, blas_int const *lda );
 
-#define f77_dsyr FORTRAN_NAME( dsyr, DSYR )
-void f77_dsyr(
+#define BLAS_dsyr BLAS_FORTRAN_NAME( dsyr, DSYR )
+void BLAS_dsyr(
     char const *uplo,
     blas_int const *n,
     double const *alpha,
@@ -590,16 +590,16 @@ void f77_dsyr(
     double       *A, blas_int const *lda );
 
 // conflicts with current prototype in lapacke.h
-//#define f77_csyr FORTRAN_NAME( csyr, CSYR )
-//void FORTRAN_NAME( csyr, CSYR )(
+//#define BLAS_csyr BLAS_FORTRAN_NAME( csyr, CSYR )
+//void BLAS_FORTRAN_NAME( csyr, CSYR )(
 //    char const *uplo,
 //    blas_int const *n,
 //    std::complex<float> const *alpha,
 //    std::complex<float> const *x, blas_int const *incx,
 //    std::complex<float>       *A, blas_int const *lda );
 //
-//#define f77_zsyr FORTRAN_NAME( zsyr, ZSYR )
-//void f77_zsyr(
+//#define BLAS_zsyr BLAS_FORTRAN_NAME( zsyr, ZSYR )
+//void BLAS_zsyr(
 //    char const *uplo,
 //    blas_int const *n,
 //    std::complex<double> const *alpha,
@@ -608,16 +608,16 @@ void f77_dsyr(
 
 // -----------------------------------------------------------------------------
 // alpha is real
-#define f77_cher FORTRAN_NAME( cher, CHER )
-void f77_cher(
+#define BLAS_cher BLAS_FORTRAN_NAME( cher, CHER )
+void BLAS_cher(
     char const *uplo,
     blas_int const *n,
     float const *alpha,
     std::complex<float> const *x, blas_int const *incx,
     std::complex<float>       *A, blas_int const *lda );
 
-#define f77_zher FORTRAN_NAME( zher, ZHER )
-void f77_zher(
+#define BLAS_zher BLAS_FORTRAN_NAME( zher, ZHER )
+void BLAS_zher(
     char const *uplo,
     blas_int const *n,
     double const *alpha,
@@ -626,8 +626,8 @@ void f77_zher(
 
 // -----------------------------------------------------------------------------
 // [cz]syr2 not available in standard BLAS or LAPACK; use [cz]syr2k with k=1.
-#define f77_ssyr2 FORTRAN_NAME( ssyr2, SSYR2 )
-void f77_ssyr2(
+#define BLAS_ssyr2 BLAS_FORTRAN_NAME( ssyr2, SSYR2 )
+void BLAS_ssyr2(
     char const *uplo,
     blas_int const *n,
     float const *alpha,
@@ -635,8 +635,8 @@ void f77_ssyr2(
     float const *y, blas_int const *incy,
     float       *A, blas_int const *lda );
 
-#define f77_dsyr2 FORTRAN_NAME( dsyr2, DSYR2 )
-void f77_dsyr2(
+#define BLAS_dsyr2 BLAS_FORTRAN_NAME( dsyr2, DSYR2 )
+void BLAS_dsyr2(
     char const *uplo,
     blas_int const *n,
     double const *alpha,
@@ -645,8 +645,8 @@ void f77_dsyr2(
     double       *A, blas_int const *lda );
 
 // -----------------------------------------------------------------------------
-#define f77_cher2 FORTRAN_NAME( cher2, CHER2 )
-void f77_cher2(
+#define BLAS_cher2 BLAS_FORTRAN_NAME( cher2, CHER2 )
+void BLAS_cher2(
     char const *uplo,
     blas_int const *n,
     std::complex<float> const *alpha,
@@ -654,8 +654,8 @@ void f77_cher2(
     std::complex<float> const *y, blas_int const *incy,
     std::complex<float>       *A, blas_int const *lda );
 
-#define f77_zher2 FORTRAN_NAME( zher2, ZHER2 )
-void f77_zher2(
+#define BLAS_zher2 BLAS_FORTRAN_NAME( zher2, ZHER2 )
+void BLAS_zher2(
     char const *uplo,
     blas_int const *n,
     std::complex<double> const *alpha,
@@ -664,58 +664,58 @@ void f77_zher2(
     std::complex<double>       *A, blas_int const *lda );
 
 // -----------------------------------------------------------------------------
-#define f77_strmv FORTRAN_NAME( strmv, STRMV )
-void f77_strmv(
+#define BLAS_strmv BLAS_FORTRAN_NAME( strmv, STRMV )
+void BLAS_strmv(
     char const *uplo, char const *trans, char const *diag,
     blas_int const *n,
     float const *A, blas_int const *lda,
     float       *x, blas_int const *incx );
 
-#define f77_dtrmv FORTRAN_NAME( dtrmv, DTRMV )
-void f77_dtrmv(
+#define BLAS_dtrmv BLAS_FORTRAN_NAME( dtrmv, DTRMV )
+void BLAS_dtrmv(
     char const *uplo, char const *trans, char const *diag,
     blas_int const *n,
     double const *A, blas_int const *lda,
     double       *x, blas_int const *incx );
 
-#define f77_ctrmv FORTRAN_NAME( ctrmv, CTRMV )
-void f77_ctrmv(
+#define BLAS_ctrmv BLAS_FORTRAN_NAME( ctrmv, CTRMV )
+void BLAS_ctrmv(
     char const *uplo, char const *trans, char const *diag,
     blas_int const *n,
     std::complex<float> const *A, blas_int const *lda,
     std::complex<float>       *x, blas_int const *incx );
 
-#define f77_ztrmv FORTRAN_NAME( ztrmv, ZTRMV )
-void f77_ztrmv(
+#define BLAS_ztrmv BLAS_FORTRAN_NAME( ztrmv, ZTRMV )
+void BLAS_ztrmv(
     char const *uplo, char const *trans, char const *diag,
     blas_int const *n,
     std::complex<double> const *A, blas_int const *lda,
     std::complex<double>       *x, blas_int const *incx );
 
 // -----------------------------------------------------------------------------
-#define f77_strsv FORTRAN_NAME( strsv, STRSV )
-void f77_strsv(
+#define BLAS_strsv BLAS_FORTRAN_NAME( strsv, STRSV )
+void BLAS_strsv(
     char const *uplo, char const *trans, char const *diag,
     blas_int const *n,
     float const *A, blas_int const *lda,
     float       *x, blas_int const *incx );
 
-#define f77_dtrsv FORTRAN_NAME( dtrsv, DTRSV )
-void f77_dtrsv(
+#define BLAS_dtrsv BLAS_FORTRAN_NAME( dtrsv, DTRSV )
+void BLAS_dtrsv(
     char const *uplo, char const *trans, char const *diag,
     blas_int const *n,
     double const *A, blas_int const *lda,
     double       *x, blas_int const *incx );
 
-#define f77_ctrsv FORTRAN_NAME( ctrsv, CTRSV )
-void f77_ctrsv(
+#define BLAS_ctrsv BLAS_FORTRAN_NAME( ctrsv, CTRSV )
+void BLAS_ctrsv(
     char const *uplo, char const *trans, char const *diag,
     blas_int const *n,
     std::complex<float> const *A, blas_int const *lda,
     std::complex<float>       *x, blas_int const *incx );
 
-#define f77_ztrsv FORTRAN_NAME( ztrsv, ZTRSV )
-void f77_ztrsv(
+#define BLAS_ztrsv BLAS_FORTRAN_NAME( ztrsv, ZTRSV )
+void BLAS_ztrsv(
     char const *uplo, char const *trans, char const *diag,
     blas_int const *n,
     std::complex<double> const *A, blas_int const *lda,
@@ -725,8 +725,8 @@ void f77_ztrsv(
 // Level 3 BLAS - Fortran prototypes
 
 // -----------------------------------------------------------------------------
-#define f77_sgemm FORTRAN_NAME( sgemm, SGEMM )
-void f77_sgemm(
+#define BLAS_sgemm BLAS_FORTRAN_NAME( sgemm, SGEMM )
+void BLAS_sgemm(
     char const *transA, char const *transB,
     blas_int const *m, blas_int const *n, blas_int const *k,
     float const *alpha,
@@ -735,8 +735,8 @@ void f77_sgemm(
     float const *beta,
     float       *C, blas_int const *ldc );
 
-#define f77_dgemm FORTRAN_NAME( dgemm, DGEMM )
-void f77_dgemm(
+#define BLAS_dgemm BLAS_FORTRAN_NAME( dgemm, DGEMM )
+void BLAS_dgemm(
     char const *transA, char const *transB,
     blas_int const *m, blas_int const *n, blas_int const *k,
     double const *alpha,
@@ -745,8 +745,8 @@ void f77_dgemm(
     double const *beta,
     double       *C, blas_int const *ldc );
 
-#define f77_cgemm FORTRAN_NAME( cgemm, CGEMM )
-void f77_cgemm(
+#define BLAS_cgemm BLAS_FORTRAN_NAME( cgemm, CGEMM )
+void BLAS_cgemm(
     char const *transA, char const *transB,
     blas_int const *m, blas_int const *n, blas_int const *k,
     std::complex<float> const *alpha,
@@ -755,8 +755,8 @@ void f77_cgemm(
     std::complex<float> const *beta,
     std::complex<float>       *C, blas_int const *ldc );
 
-#define f77_zgemm FORTRAN_NAME( zgemm, ZGEMM )
-void f77_zgemm(
+#define BLAS_zgemm BLAS_FORTRAN_NAME( zgemm, ZGEMM )
+void BLAS_zgemm(
     char const *transA, char const *transB,
     blas_int const *m, blas_int const *n, blas_int const *k,
     std::complex<double> const *alpha,
@@ -766,8 +766,8 @@ void f77_zgemm(
     std::complex<double>       *C, blas_int const *ldc );
 
 // -----------------------------------------------------------------------------
-#define f77_ssymm FORTRAN_NAME( ssymm, SSYMM )
-void f77_ssymm(
+#define BLAS_ssymm BLAS_FORTRAN_NAME( ssymm, SSYMM )
+void BLAS_ssymm(
     char const *side, char const *uplo,
     blas_int const *m, blas_int const *n,
     float const *alpha,
@@ -776,8 +776,8 @@ void f77_ssymm(
     float const *beta,
     float       *C, blas_int const *ldc );
 
-#define f77_dsymm FORTRAN_NAME( dsymm, DSYMM )
-void f77_dsymm(
+#define BLAS_dsymm BLAS_FORTRAN_NAME( dsymm, DSYMM )
+void BLAS_dsymm(
     char const *side, char const *uplo,
     blas_int const *m, blas_int const *n,
     double const *alpha,
@@ -786,8 +786,8 @@ void f77_dsymm(
     double const *beta,
     double       *C, blas_int const *ldc );
 
-#define f77_csymm FORTRAN_NAME( csymm, CSYMM )
-void f77_csymm(
+#define BLAS_csymm BLAS_FORTRAN_NAME( csymm, CSYMM )
+void BLAS_csymm(
     char const *side, char const *uplo,
     blas_int const *m, blas_int const *n,
     std::complex<float> const *alpha,
@@ -796,8 +796,8 @@ void f77_csymm(
     std::complex<float> const *beta,
     std::complex<float>       *C, blas_int const *ldc );
 
-#define f77_zsymm FORTRAN_NAME( zsymm, ZSYMM )
-void f77_zsymm(
+#define BLAS_zsymm BLAS_FORTRAN_NAME( zsymm, ZSYMM )
+void BLAS_zsymm(
     char const *side, char const *uplo,
     blas_int const *m, blas_int const *n,
     std::complex<double> const *alpha,
@@ -807,8 +807,8 @@ void f77_zsymm(
     std::complex<double>       *C, blas_int const *ldc );
 
 // -----------------------------------------------------------------------------
-#define f77_chemm FORTRAN_NAME( chemm, CHEMM )
-void f77_chemm(
+#define BLAS_chemm BLAS_FORTRAN_NAME( chemm, CHEMM )
+void BLAS_chemm(
     char const *side, char const *uplo,
     blas_int const *m, blas_int const *n,
     std::complex<float> const *alpha,
@@ -817,8 +817,8 @@ void f77_chemm(
     std::complex<float> const *beta,
     std::complex<float>       *C, blas_int const *ldc );
 
-#define f77_zhemm FORTRAN_NAME( zhemm, ZHEMM )
-void f77_zhemm(
+#define BLAS_zhemm BLAS_FORTRAN_NAME( zhemm, ZHEMM )
+void BLAS_zhemm(
     char const *side, char const *uplo,
     blas_int const *m, blas_int const *n,
     std::complex<double> const *alpha,
@@ -828,8 +828,8 @@ void f77_zhemm(
     std::complex<double>       *C, blas_int const *ldc );
 
 // -----------------------------------------------------------------------------
-#define f77_ssyrk FORTRAN_NAME( ssyrk, SSYRK )
-void f77_ssyrk(
+#define BLAS_ssyrk BLAS_FORTRAN_NAME( ssyrk, SSYRK )
+void BLAS_ssyrk(
     char const *uplo, char const *transA,
     blas_int const *n, blas_int const *k,
     float const *alpha,
@@ -837,8 +837,8 @@ void f77_ssyrk(
     float const *beta,
     float       *C, blas_int const *ldc );
 
-#define f77_dsyrk FORTRAN_NAME( dsyrk, DSYRK )
-void f77_dsyrk(
+#define BLAS_dsyrk BLAS_FORTRAN_NAME( dsyrk, DSYRK )
+void BLAS_dsyrk(
     char const *uplo, char const *transA,
     blas_int const *n, blas_int const *k,
     double const *alpha,
@@ -846,8 +846,8 @@ void f77_dsyrk(
     double const *beta,
     double       *C, blas_int const *ldc );
 
-#define f77_csyrk FORTRAN_NAME( csyrk, CSYRK )
-void f77_csyrk(
+#define BLAS_csyrk BLAS_FORTRAN_NAME( csyrk, CSYRK )
+void BLAS_csyrk(
     char const *uplo, char const *transA,
     blas_int const *n, blas_int const *k,
     std::complex<float> const *alpha,
@@ -855,8 +855,8 @@ void f77_csyrk(
     std::complex<float> const *beta,
     std::complex<float>       *C, blas_int const *ldc );
 
-#define f77_zsyrk FORTRAN_NAME( zsyrk, ZSYRK )
-void f77_zsyrk(
+#define BLAS_zsyrk BLAS_FORTRAN_NAME( zsyrk, ZSYRK )
+void BLAS_zsyrk(
     char const *uplo, char const *transA,
     blas_int const *n, blas_int const *k,
     std::complex<double> const *alpha,
@@ -866,8 +866,8 @@ void f77_zsyrk(
 
 // -----------------------------------------------------------------------------
 // alpha and beta are real
-#define f77_cherk FORTRAN_NAME( cherk, CHERK )
-void f77_cherk(
+#define BLAS_cherk BLAS_FORTRAN_NAME( cherk, CHERK )
+void BLAS_cherk(
     char const *uplo, char const *transA,
     blas_int const *n, blas_int const *k,
     float const *alpha,
@@ -875,8 +875,8 @@ void f77_cherk(
     float const *beta,
     std::complex<float>       *C, blas_int const *ldc );
 
-#define f77_zherk FORTRAN_NAME( zherk, ZHERK )
-void f77_zherk(
+#define BLAS_zherk BLAS_FORTRAN_NAME( zherk, ZHERK )
+void BLAS_zherk(
     char const *uplo, char const *transA,
     blas_int const *n, blas_int const *k,
     double const *alpha,
@@ -885,8 +885,8 @@ void f77_zherk(
     std::complex<double>       *C, blas_int const *ldc );
 
 // -----------------------------------------------------------------------------
-#define f77_ssyr2k FORTRAN_NAME( ssyr2k, SSYR2K )
-void f77_ssyr2k(
+#define BLAS_ssyr2k BLAS_FORTRAN_NAME( ssyr2k, SSYR2K )
+void BLAS_ssyr2k(
     char const *uplo, char const *transA,
     blas_int const *n, blas_int const *k,
     float const *alpha,
@@ -895,8 +895,8 @@ void f77_ssyr2k(
     float const *beta,
     float       *C, blas_int const *ldc );
 
-#define f77_dsyr2k FORTRAN_NAME( dsyr2k, DSYR2K )
-void f77_dsyr2k(
+#define BLAS_dsyr2k BLAS_FORTRAN_NAME( dsyr2k, DSYR2K )
+void BLAS_dsyr2k(
     char const *uplo, char const *transA,
     blas_int const *n, blas_int const *k,
     double const *alpha,
@@ -905,8 +905,8 @@ void f77_dsyr2k(
     double const *beta,
     double       *C, blas_int const *ldc );
 
-#define f77_csyr2k FORTRAN_NAME( csyr2k, CSYR2K )
-void f77_csyr2k(
+#define BLAS_csyr2k BLAS_FORTRAN_NAME( csyr2k, CSYR2K )
+void BLAS_csyr2k(
     char const *uplo, char const *transA,
     blas_int const *n, blas_int const *k,
     std::complex<float> const *alpha,
@@ -915,8 +915,8 @@ void f77_csyr2k(
     std::complex<float> const *beta,
     std::complex<float>       *C, blas_int const *ldc );
 
-#define f77_zsyr2k FORTRAN_NAME( zsyr2k, ZSYR2K )
-void f77_zsyr2k(
+#define BLAS_zsyr2k BLAS_FORTRAN_NAME( zsyr2k, ZSYR2K )
+void BLAS_zsyr2k(
     char const *uplo, char const *transA,
     blas_int const *n, blas_int const *k,
     std::complex<double> const *alpha,
@@ -927,8 +927,8 @@ void f77_zsyr2k(
 
 // -----------------------------------------------------------------------------
 // beta is real
-#define f77_cher2k FORTRAN_NAME( cher2k, CHER2K )
-void f77_cher2k(
+#define BLAS_cher2k BLAS_FORTRAN_NAME( cher2k, CHER2K )
+void BLAS_cher2k(
     char const *uplo, char const *transA,
     blas_int const *n, blas_int const *k,
     std::complex<float> const *alpha,
@@ -937,8 +937,8 @@ void f77_cher2k(
     float const *beta,
     std::complex<float>       *C, blas_int const *ldc );
 
-#define f77_zher2k FORTRAN_NAME( zher2k, ZHER2K )
-void f77_zher2k(
+#define BLAS_zher2k BLAS_FORTRAN_NAME( zher2k, ZHER2K )
+void BLAS_zher2k(
     char const *uplo, char const *transA,
     blas_int const *n, blas_int const *k,
     std::complex<double> const *alpha,
@@ -948,32 +948,32 @@ void f77_zher2k(
     std::complex<double>       *C, blas_int const *ldc );
 
 // -----------------------------------------------------------------------------
-#define f77_strmm FORTRAN_NAME( strmm, STRMM )
-void f77_strmm(
+#define BLAS_strmm BLAS_FORTRAN_NAME( strmm, STRMM )
+void BLAS_strmm(
     char const *side, char const *uplo, char const *trans, char const *diag,
     blas_int const *m, blas_int const *n,
     float const *alpha,
     float const *A, blas_int const *lda,
     float       *B, blas_int const *ldb );
 
-#define f77_dtrmm FORTRAN_NAME( dtrmm, DTRMM )
-void f77_dtrmm(
+#define BLAS_dtrmm BLAS_FORTRAN_NAME( dtrmm, DTRMM )
+void BLAS_dtrmm(
     char const *side, char const *uplo, char const *trans, char const *diag,
     blas_int const *m, blas_int const *n,
     double const *alpha,
     double const *A, blas_int const *lda,
     double       *B, blas_int const *ldb );
 
-#define f77_ctrmm FORTRAN_NAME( ctrmm, CTRMM )
-void f77_ctrmm(
+#define BLAS_ctrmm BLAS_FORTRAN_NAME( ctrmm, CTRMM )
+void BLAS_ctrmm(
     char const *side, char const *uplo, char const *trans, char const *diag,
     blas_int const *m, blas_int const *n,
     std::complex<float> const *alpha,
     std::complex<float> const *A, blas_int const *lda,
     std::complex<float>       *B, blas_int const *ldb );
 
-#define f77_ztrmm FORTRAN_NAME( ztrmm, ZTRMM )
-void f77_ztrmm(
+#define BLAS_ztrmm BLAS_FORTRAN_NAME( ztrmm, ZTRMM )
+void BLAS_ztrmm(
     char const *side, char const *uplo, char const *trans, char const *diag,
     blas_int const *m, blas_int const *n,
     std::complex<double> const *alpha,
@@ -981,32 +981,32 @@ void f77_ztrmm(
     std::complex<double>       *B, blas_int const *ldb );
 
 // -----------------------------------------------------------------------------
-#define f77_strsm FORTRAN_NAME( strsm, STRSM )
-void f77_strsm(
+#define BLAS_strsm BLAS_FORTRAN_NAME( strsm, STRSM )
+void BLAS_strsm(
     char const *side, char const *uplo, char const *trans, char const *diag,
     blas_int const *m, blas_int const *n,
     float const *alpha,
     float const *A, blas_int const *lda,
     float       *B, blas_int const *ldb );
 
-#define f77_dtrsm FORTRAN_NAME( dtrsm, DTRSM )
-void f77_dtrsm(
+#define BLAS_dtrsm BLAS_FORTRAN_NAME( dtrsm, DTRSM )
+void BLAS_dtrsm(
     char const *side, char const *uplo, char const *trans, char const *diag,
     blas_int const *m, blas_int const *n,
     double const *alpha,
     double const *A, blas_int const *lda,
     double       *B, blas_int const *ldb );
 
-#define f77_ctrsm FORTRAN_NAME( ctrsm, CTRSM )
-void f77_ctrsm(
+#define BLAS_ctrsm BLAS_FORTRAN_NAME( ctrsm, CTRSM )
+void BLAS_ctrsm(
     char const *side, char const *uplo, char const *trans, char const *diag,
     blas_int const *m, blas_int const *n,
     std::complex<float> const *alpha,
     std::complex<float> const *A, blas_int const *lda,
     std::complex<float>       *B, blas_int const *ldb );
 
-#define f77_ztrsm FORTRAN_NAME( ztrsm, ZTRSM )
-void f77_ztrsm(
+#define BLAS_ztrsm BLAS_FORTRAN_NAME( ztrsm, ZTRSM )
+void BLAS_ztrsm(
     char const *side, char const *uplo, char const *trans, char const *diag,
     blas_int const *m, blas_int const *n,
     std::complex<double> const *alpha,

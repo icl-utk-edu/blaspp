@@ -7,13 +7,13 @@
 // define FORTRAN_LOWER for lowercase (IBM xlf),
 // else the default is lowercase with appended underscore
 // (GNU gcc, Intel icc, PGI pgfortan, Cray ftn).
-#ifndef FORTRAN_NAME
+#ifndef BLAS_FORTRAN_NAME
     #if defined(FORTRAN_UPPER)
-        #define FORTRAN_NAME( lower, UPPER ) UPPER
+        #define BLAS_FORTRAN_NAME( lower, UPPER ) UPPER
     #elif defined(FORTRAN_LOWER)
-        #define FORTRAN_NAME( lower, UPPER ) lower
+        #define BLAS_FORTRAN_NAME( lower, UPPER ) lower
     #else
-        #define FORTRAN_NAME( lower, UPPER ) lower ## _
+        #define BLAS_FORTRAN_NAME( lower, UPPER ) lower ## _
     #endif
 #endif
 

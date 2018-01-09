@@ -1,7 +1,8 @@
 #ifndef LAPACK_TMP_HH
 #define LAPACK_TMP_HH
 
-#include "blas_mangling.hh"
+// get BLAS_FORTRAN_NAME and blas_int
+#include "blas_fortran.hh"
 
 #include <complex>
 
@@ -9,10 +10,10 @@
 // until the real lapackpp wrappers are available.
 
 // -----------------------------------------------------------------------------
-#define lapack_slarnv FORTRAN_NAME( slarnv, SLARNV )
-#define lapack_dlarnv FORTRAN_NAME( dlarnv, DLARNV )
-#define lapack_clarnv FORTRAN_NAME( clarnv, CLARNV )
-#define lapack_zlarnv FORTRAN_NAME( zlarnv, ZLARNV )
+#define lapack_slarnv BLAS_FORTRAN_NAME( slarnv, SLARNV )
+#define lapack_dlarnv BLAS_FORTRAN_NAME( dlarnv, DLARNV )
+#define lapack_clarnv BLAS_FORTRAN_NAME( clarnv, CLARNV )
+#define lapack_zlarnv BLAS_FORTRAN_NAME( zlarnv, ZLARNV )
 
 extern "C"
 void lapack_slarnv( blas_int const* idist, blas_int iseed[4],
@@ -56,10 +57,10 @@ void lapack_larnv( blas_int idist, blas_int iseed[4], blas_int size, std::comple
 }
 
 // -----------------------------------------------------------------------------
-#define lapack_slange FORTRAN_NAME( slange, SLANGE )
-#define lapack_dlange FORTRAN_NAME( dlange, DLANGE )
-#define lapack_clange FORTRAN_NAME( clange, CLANGE )
-#define lapack_zlange FORTRAN_NAME( zlange, ZLANGE )
+#define lapack_slange BLAS_FORTRAN_NAME( slange, SLANGE )
+#define lapack_dlange BLAS_FORTRAN_NAME( dlange, DLANGE )
+#define lapack_clange BLAS_FORTRAN_NAME( clange, CLANGE )
+#define lapack_zlange BLAS_FORTRAN_NAME( zlange, ZLANGE )
 
 extern "C"
 blas_float_return
@@ -125,10 +126,10 @@ double lapack_lange( char const *norm,
 }
 
 // -----------------------------------------------------------------------------
-#define lapack_slansy FORTRAN_NAME( slansy, SLANSY )
-#define lapack_dlansy FORTRAN_NAME( dlansy, DLANSY )
-#define lapack_clansy FORTRAN_NAME( clansy, CLANSY )
-#define lapack_zlansy FORTRAN_NAME( zlansy, ZLANSY )
+#define lapack_slansy BLAS_FORTRAN_NAME( slansy, SLANSY )
+#define lapack_dlansy BLAS_FORTRAN_NAME( dlansy, DLANSY )
+#define lapack_clansy BLAS_FORTRAN_NAME( clansy, CLANSY )
+#define lapack_zlansy BLAS_FORTRAN_NAME( zlansy, ZLANSY )
 
 extern "C"
 blas_float_return
@@ -194,8 +195,8 @@ double lapack_lansy( char const *norm, char const *uplo,
 }
 
 // -----------------------------------------------------------------------------
-#define lapack_clanhe FORTRAN_NAME( clanhe, CLANHE )
-#define lapack_zlanhe FORTRAN_NAME( zlanhe, ZLANHE )
+#define lapack_clanhe BLAS_FORTRAN_NAME( clanhe, CLANHE )
+#define lapack_zlanhe BLAS_FORTRAN_NAME( zlanhe, ZLANHE )
 
 extern "C"
 blas_float_return
@@ -248,10 +249,10 @@ double lapack_lanhe( char const *norm, char const *uplo,
 }
 
 // -----------------------------------------------------------------------------
-#define lapack_slantr FORTRAN_NAME( slantr, SLANTR )
-#define lapack_dlantr FORTRAN_NAME( dlantr, DLANTR )
-#define lapack_clantr FORTRAN_NAME( clantr, CLANTR )
-#define lapack_zlantr FORTRAN_NAME( zlantr, ZLANTR )
+#define lapack_slantr BLAS_FORTRAN_NAME( slantr, SLANTR )
+#define lapack_dlantr BLAS_FORTRAN_NAME( dlantr, DLANTR )
+#define lapack_clantr BLAS_FORTRAN_NAME( clantr, CLANTR )
+#define lapack_zlantr BLAS_FORTRAN_NAME( zlantr, ZLANTR )
 
 extern "C"
 blas_float_return
@@ -317,10 +318,10 @@ double lapack_lantr( char const *norm, char const *uplo, char const *diag,
 }
 
 // -----------------------------------------------------------------------------
-#define lapack_slacpy FORTRAN_NAME( slacpy, SLACPY )
-#define lapack_dlacpy FORTRAN_NAME( dlacpy, DLACPY )
-#define lapack_clacpy FORTRAN_NAME( clacpy, CLACPY )
-#define lapack_zlacpy FORTRAN_NAME( zlacpy, ZLACPY )
+#define lapack_slacpy BLAS_FORTRAN_NAME( slacpy, SLACPY )
+#define lapack_dlacpy BLAS_FORTRAN_NAME( dlacpy, DLACPY )
+#define lapack_clacpy BLAS_FORTRAN_NAME( clacpy, CLACPY )
+#define lapack_zlacpy BLAS_FORTRAN_NAME( zlacpy, ZLACPY )
 
 extern "C"
 void lapack_slacpy( char const* uplo,
@@ -384,10 +385,10 @@ void lapack_lacpy( char const* uplo,
 }
 
 // -----------------------------------------------------------------------------
-#define lapack_sgetrf FORTRAN_NAME( sgetrf, SGETRF )
-#define lapack_dgetrf FORTRAN_NAME( dgetrf, DGETRF )
-#define lapack_cgetrf FORTRAN_NAME( cgetrf, CGETRF )
-#define lapack_zgetrf FORTRAN_NAME( zgetrf, ZGETRF )
+#define lapack_sgetrf BLAS_FORTRAN_NAME( sgetrf, SGETRF )
+#define lapack_dgetrf BLAS_FORTRAN_NAME( dgetrf, DGETRF )
+#define lapack_cgetrf BLAS_FORTRAN_NAME( cgetrf, CGETRF )
+#define lapack_zgetrf BLAS_FORTRAN_NAME( zgetrf, ZGETRF )
 
 extern "C"
 void lapack_sgetrf( blas_int const *m, blas_int const *n,

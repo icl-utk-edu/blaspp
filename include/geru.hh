@@ -52,25 +52,25 @@ void geru(
     std::complex<float>       *A, int64_t lda )
 {
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( m < 0 );
-    throw_if_( n < 0 );
-    throw_if_( incx == 0 );
-    throw_if_( incy == 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( m < 0 );
+    blas_error_if( n < 0 );
+    blas_error_if( incx == 0 );
+    blas_error_if( incy == 0 );
 
     if (layout == Layout::ColMajor)
-        throw_if_( lda < m );
+        blas_error_if( lda < m );
     else
-        throw_if_( lda < n );
+        blas_error_if( lda < n );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( m              > std::numeric_limits<blas_int>::max() );
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda            > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( m              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( lda            > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int m_    = (blas_int) m;
@@ -81,10 +81,10 @@ void geru(
 
     if (layout == Layout::RowMajor) {
         // swap m <=> n, x <=> y
-        f77_cgeru( &n_, &m_, &alpha, y, &incy_, x, &incx_, A, &lda_ );
+        BLAS_cgeru( &n_, &m_, &alpha, y, &incy_, x, &incx_, A, &lda_ );
     }
     else {
-        f77_cgeru( &m_, &n_, &alpha, x, &incx_, y, &incy_, A, &lda_ );
+        BLAS_cgeru( &m_, &n_, &alpha, x, &incx_, y, &incy_, A, &lda_ );
     }
 }
 
@@ -100,25 +100,25 @@ void geru(
     std::complex<double>       *A, int64_t lda )
 {
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( m < 0 );
-    throw_if_( n < 0 );
-    throw_if_( incx == 0 );
-    throw_if_( incy == 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( m < 0 );
+    blas_error_if( n < 0 );
+    blas_error_if( incx == 0 );
+    blas_error_if( incy == 0 );
 
     if (layout == Layout::ColMajor)
-        throw_if_( lda < m );
+        blas_error_if( lda < m );
     else
-        throw_if_( lda < n );
+        blas_error_if( lda < n );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( m              > std::numeric_limits<blas_int>::max() );
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda            > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( m              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( lda            > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int m_    = (blas_int) m;
@@ -129,10 +129,10 @@ void geru(
 
     if (layout == Layout::RowMajor) {
         // swap m <=> n, x <=> y
-        f77_zgeru( &n_, &m_, &alpha, y, &incy_, x, &incx_, A, &lda_ );
+        BLAS_zgeru( &n_, &m_, &alpha, y, &incy_, x, &incx_, A, &lda_ );
     }
     else {
-        f77_zgeru( &m_, &n_, &alpha, x, &incx_, y, &incy_, A, &lda_ );
+        BLAS_zgeru( &m_, &n_, &alpha, x, &incx_, y, &incy_, A, &lda_ );
     }
 }
 
@@ -195,17 +195,17 @@ void geru(
     const scalar_t zero = 0;
 
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( m < 0 );
-    throw_if_( n < 0 );
-    throw_if_( incx == 0 );
-    throw_if_( incy == 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( m < 0 );
+    blas_error_if( n < 0 );
+    blas_error_if( incx == 0 );
+    blas_error_if( incy == 0 );
 
     if (layout == Layout::ColMajor)
-        throw_if_( lda < m );
+        blas_error_if( lda < m );
     else
-        throw_if_( lda < n );
+        blas_error_if( lda < n );
 
     // quick return
     if (m == 0 || n == 0 || alpha == zero)

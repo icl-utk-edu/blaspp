@@ -118,10 +118,10 @@ public:
         std::exception()
     {}
 
-    /// Constructs BLAS error with message: "func: msg"
+    /// Constructs BLAS error with message: "msg, in function func"
     Error( const char* msg, const char* func ):
         std::exception(),
-        msg_( std::string(func) + ": " + msg )
+        msg_( std::string(msg) + ", in function " + func )
     {}
 
     /// Returns BLAS error message
@@ -338,7 +338,7 @@ namespace internal {
 
 // -----------------------------------------------------------------------------
 // internal helper function; throws Error if cond is true
-// called by throw_if_ macro
+// called by blas_error_if macro
 inline void throw_if( bool cond, const char* condstr, const char* func )
 {
     if (cond) {
@@ -349,7 +349,8 @@ inline void throw_if( bool cond, const char* condstr, const char* func )
 // -----------------------------------------------------------------------------
 // internal helper function; throws Error if cond is true
 // uses printf-style format for error message
-// called by throw_if_msg_ macro
+// called by blas_error_if_msg macro
+// condstr is ignored, but differentiates this from other version.
 inline void throw_if( bool cond, const char* condstr, const char* func, const char* format, ... )
 {
     if (cond) {
@@ -364,15 +365,15 @@ inline void throw_if( bool cond, const char* condstr, const char* func, const ch
 } // namespace internal
 
 // internal macro to get string #cond; throws Error if cond is true
-// ex: throw_if_( a < b );
-#define throw_if_( cond ) \
-    internal::throw_if( cond, #cond, __func__ )
+// ex: blas_error_if( a < b );
+#define blas_error_if( cond ) \
+    blas::internal::throw_if( cond, #cond, __func__ )
 
 // internal macro takes cond and printf-style format for error message.
 // throws Error if cond is true.
-// ex: throw_if_msg_( a < b, "a %d < b %d", a, b );
-#define throw_if_msg_( cond, ... ) \
-    internal::throw_if( cond, #cond, __func__, __VA_ARGS__ )
+// ex: blas_error_if_msg( a < b, "a %d < b %d", a, b );
+#define blas_error_if_msg( cond, ... ) \
+    blas::internal::throw_if( cond, #cond, __func__, __VA_ARGS__ )
 
 }  // namespace blas
 

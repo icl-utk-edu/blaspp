@@ -721,8 +721,8 @@ cblas_symv(
                  alpha, A, lda, x, incx, beta, y, incy );
 }
 
-#define lapack_csymv FORTRAN_NAME( csymv, CSYMV )
-#define lapack_zsymv FORTRAN_NAME( zsymv, ZSYMV )
+#define lapack_csymv BLAS_FORTRAN_NAME( csymv, CSYMV )
+#define lapack_zsymv BLAS_FORTRAN_NAME( zsymv, ZSYMV )
 
 extern "C"
 void   lapack_csymv(  const char *uplo,

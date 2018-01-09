@@ -25,29 +25,29 @@ void gemv(
     float       *y, int64_t incy )
 {
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( trans != Op::NoTrans &&
-               trans != Op::Trans &&
-               trans != Op::ConjTrans );
-    throw_if_( m < 0 );
-    throw_if_( n < 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( trans != Op::NoTrans &&
+                   trans != Op::Trans &&
+                   trans != Op::ConjTrans );
+    blas_error_if( m < 0 );
+    blas_error_if( n < 0 );
 
     if (layout == Layout::ColMajor)
-        throw_if_( lda < m );
+        blas_error_if( lda < m );
     else
-        throw_if_( lda < n );
+        blas_error_if( lda < n );
 
-    throw_if_( incx == 0 );
-    throw_if_( incy == 0 );
+    blas_error_if( incx == 0 );
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( m              > std::numeric_limits<blas_int>::max() );
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda            > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( m              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( lda            > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int m_    = (blas_int) m;
@@ -63,7 +63,7 @@ void gemv(
     }
 
     char trans_ = op2char( trans );
-    f77_sgemv( &trans_, &m_, &n_,
+    BLAS_sgemv( &trans_, &m_, &n_,
                &alpha, A, &lda_, x, &incx_, &beta, y, &incy_ );
 }
 
@@ -81,29 +81,29 @@ void gemv(
     double       *y, int64_t incy )
 {
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( trans != Op::NoTrans &&
-               trans != Op::Trans &&
-               trans != Op::ConjTrans );
-    throw_if_( m < 0 );
-    throw_if_( n < 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( trans != Op::NoTrans &&
+                   trans != Op::Trans &&
+                   trans != Op::ConjTrans );
+    blas_error_if( m < 0 );
+    blas_error_if( n < 0 );
 
     if (layout == Layout::ColMajor)
-        throw_if_( lda < m );
+        blas_error_if( lda < m );
     else
-        throw_if_( lda < n );
+        blas_error_if( lda < n );
 
-    throw_if_( incx == 0 );
-    throw_if_( incy == 0 );
+    blas_error_if( incx == 0 );
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( m              > std::numeric_limits<blas_int>::max() );
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda            > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( m              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( lda            > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int m_    = (blas_int) m;
@@ -119,7 +119,7 @@ void gemv(
     }
 
     char trans_ = op2char( trans );
-    f77_dgemv( &trans_, &m_, &n_,
+    BLAS_dgemv( &trans_, &m_, &n_,
                &alpha, A, &lda_, x, &incx_, &beta, y, &incy_ );
 }
 
@@ -137,29 +137,29 @@ void gemv(
     std::complex<float>       *y, int64_t incy )
 {
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( trans != Op::NoTrans &&
-               trans != Op::Trans &&
-               trans != Op::ConjTrans );
-    throw_if_( m < 0 );
-    throw_if_( n < 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( trans != Op::NoTrans &&
+                   trans != Op::Trans &&
+                   trans != Op::ConjTrans );
+    blas_error_if( m < 0 );
+    blas_error_if( n < 0 );
 
     if (layout == Layout::ColMajor)
-        throw_if_( lda < m );
+        blas_error_if( lda < m );
     else
-        throw_if_( lda < n );
+        blas_error_if( lda < n );
 
-    throw_if_( incx == 0 );
-    throw_if_( incy == 0 );
+    blas_error_if( incx == 0 );
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( m              > std::numeric_limits<blas_int>::max() );
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda            > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( m              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( lda            > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int m_    = (blas_int) m;
@@ -197,7 +197,7 @@ void gemv(
     }
 
     char trans_ = op2char( trans2 );
-    f77_cgemv( &trans_, &m_, &n_,
+    BLAS_cgemv( &trans_, &m_, &n_,
                &alpha, A, &lda_, x2, &incx_, &beta, y, &incy_ );
 
     if (layout == Layout::RowMajor && trans == Op::ConjTrans) {
@@ -225,29 +225,29 @@ void gemv(
     std::complex<double>       *y, int64_t incy )
 {
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( trans != Op::NoTrans &&
-               trans != Op::Trans &&
-               trans != Op::ConjTrans );
-    throw_if_( m < 0 );
-    throw_if_( n < 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( trans != Op::NoTrans &&
+                   trans != Op::Trans &&
+                   trans != Op::ConjTrans );
+    blas_error_if( m < 0 );
+    blas_error_if( n < 0 );
 
     if (layout == Layout::ColMajor)
-        throw_if_( lda < m );
+        blas_error_if( lda < m );
     else
-        throw_if_( lda < n );
+        blas_error_if( lda < n );
 
-    throw_if_( incx == 0 );
-    throw_if_( incy == 0 );
+    blas_error_if( incx == 0 );
+    blas_error_if( incy == 0 );
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(blas_int)) {
-        throw_if_( m              > std::numeric_limits<blas_int>::max() );
-        throw_if_( n              > std::numeric_limits<blas_int>::max() );
-        throw_if_( lda            > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        throw_if_( std::abs(incy) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( m              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
+        blas_error_if( lda            > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
+        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
     blas_int m_    = (blas_int) m;
@@ -285,7 +285,7 @@ void gemv(
     }
 
     char trans_ = op2char( trans2 );
-    f77_zgemv( &trans_, &m_, &n_,
+    BLAS_zgemv( &trans_, &m_, &n_,
                &alpha, A, &lda_, x2, &incx_, &beta, y, &incy_ );
 
     if (layout == Layout::RowMajor && trans == Op::ConjTrans) {
@@ -380,21 +380,21 @@ void gemv(
     const scalar_t one  = 1;
 
     // check arguments
-    throw_if_( layout != Layout::ColMajor &&
-               layout != Layout::RowMajor );
-    throw_if_( trans != Op::NoTrans &&
-               trans != Op::Trans &&
-               trans != Op::ConjTrans );
-    throw_if_( m < 0 );
-    throw_if_( n < 0 );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( trans != Op::NoTrans &&
+                   trans != Op::Trans &&
+                   trans != Op::ConjTrans );
+    blas_error_if( m < 0 );
+    blas_error_if( n < 0 );
 
     if (layout == Layout::ColMajor)
-        throw_if_( lda < m );
+        blas_error_if( lda < m );
     else
-        throw_if_( lda < n );
+        blas_error_if( lda < n );
 
-    throw_if_( incx == 0 );
-    throw_if_( incy == 0 );
+    blas_error_if( incx == 0 );
+    blas_error_if( incy == 0 );
 
     // quick return
     if (m == 0 || n == 0 || (alpha == zero && beta == one))
