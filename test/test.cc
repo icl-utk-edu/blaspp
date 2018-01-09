@@ -130,20 +130,15 @@ Params::Params():
 
     // ----- output parameters
     // min, max are ignored
-    //          name,                  w, p, type,              def, min, max, help
-    error     ( "BLAS++\nerror",       11, 4, ParamType::Output, nan,   0,   0, "numerical error" ),
-    ortho     ( "BLAS++\north. error", 11, 4, ParamType::Output, nan,   0,   0, "orthogonality error" ),
-    time      ( "BLAS++\ntime (s)",    11, 4, ParamType::Output, nan,   0,   0, "time to solution" ),
-    gflops    ( "BLAS++\nGflop/s",     11, 4, ParamType::Output, nan,   0,   0, "Gflop/s rate" ),
-    gbytes    ( "BLAS++\nGbyte/s",     11, 4, ParamType::Output, nan,   0,   0, "Gbyte/s rate" ),
-    iters     ( "BLAS++\niters",        6,    ParamType::Output,   0,   0,   0, "iterations to solution" ),
+    //          name,                w, p, type,              default,               min, max, help
+    error     ( "BLAS++\nerror",    11, 4, ParamType::Output, libtest::no_data_flag,   0,   0, "numerical error" ),
+    time      ( "BLAS++\ntime (s)", 11, 4, ParamType::Output, libtest::no_data_flag,   0,   0, "time to solution" ),
+    gflops    ( "BLAS++\nGflop/s",  11, 4, ParamType::Output, libtest::no_data_flag,   0,   0, "Gflop/s rate" ),
+    gbytes    ( "BLAS++\nGbyte/s",  11, 4, ParamType::Output, libtest::no_data_flag,   0,   0, "Gbyte/s rate" ),
 
-    ref_error ( "Ref.\nerror",        11, 4, ParamType::Output, nan,   0,   0, "reference numerical error" ),
-    ref_ortho ( "Ref.\north. error",  11, 4, ParamType::Output, nan,   0,   0, "reference orthogonality error" ),
-    ref_time  ( "Ref.\ntime (s)",     11, 4, ParamType::Output, nan,   0,   0, "reference time to solution" ),
-    ref_gflops( "Ref.\nGflop/s",      11, 4, ParamType::Output, nan,   0,   0, "reference Gflop/s rate" ),
-    ref_gbytes( "Ref.\nGbyte/s",      11, 4, ParamType::Output, nan,   0,   0, "reference Gbyte/s rate" ),
-    ref_iters ( "Ref.\niters",         6,    ParamType::Output,   0,   0,   0, "reference iterations to solution" ),
+    ref_time  ( "Ref.\ntime (s)",   11, 4, ParamType::Output, libtest::no_data_flag,   0,   0, "reference time to solution" ),
+    ref_gflops( "Ref.\nGflop/s",    11, 4, ParamType::Output, libtest::no_data_flag,   0,   0, "reference Gflop/s rate" ),
+    ref_gbytes( "Ref.\nGbyte/s",    11, 4, ParamType::Output, libtest::no_data_flag,   0,   0, "reference Gbyte/s rate" ),
 
     // default -1 means "no check"
     okay      ( "status",              6,    ParamType::Output,  -1,   0,   0, "success indicator" )

@@ -44,18 +44,13 @@ public:
 
     // ----- output parameters
     libtest::ParamScientific error;
-    libtest::ParamScientific ortho;
     libtest::ParamDouble     time;
     libtest::ParamDouble     gflops;
     libtest::ParamDouble     gbytes;
-    libtest::ParamInt        iters;
 
-    libtest::ParamScientific ref_error;
-    libtest::ParamScientific ref_ortho;
     libtest::ParamDouble     ref_time;
     libtest::ParamDouble     ref_gflops;
     libtest::ParamDouble     ref_gbytes;
-    libtest::ParamInt        ref_iters;
 
     libtest::ParamOkay       okay;
 };
