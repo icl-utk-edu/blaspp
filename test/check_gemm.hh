@@ -47,11 +47,11 @@ void check_gemm(
     real_t work[1], Cout_norm;
     Cout_norm = lapack_lange( "f", m, n, C, ldc, work );
     error[0] = Cout_norm
-             / (sqrt(real_t(k)+2)*fabs(alpha)*Anorm*Bnorm + 2*fabs(beta)*Cnorm);
+             / (sqrt(real_t(k)+2)*std::abs(alpha)*Anorm*Bnorm + 2*std::abs(beta)*Cnorm);
     if (verbose) {
         printf( "error: ||Cout||=%.2e / (sqrt(k=%lld + 2) * |alpha|=%.2e * ||A||=%.2e * ||B||=%.2e + 2 * |beta|=%.2e * ||C||=%.2e) = %.2e\n",
-                Cout_norm, (lld) k, fabs(alpha), Anorm, Bnorm,
-                fabs(beta), Cnorm, error[0] );
+                Cout_norm, (lld) k, std::abs(alpha), Anorm, Bnorm,
+                std::abs(beta), Cnorm, error[0] );
     }
 
     // Allow 3*eps; complex needs 2*sqrt(2) factor; see Higham, 2002, sec. 3.6.
@@ -118,11 +118,11 @@ void check_herk(
     real_t work[1], Cout_norm;
     Cout_norm = lapack_lanhe( "f", uplo2str(uplo), n, C, ldc, work );
     error[0] = Cout_norm
-             / (sqrt(real_t(k)+2)*fabs(alpha)*Anorm*Bnorm + 2*fabs(beta)*Cnorm);
+             / (sqrt(real_t(k)+2)*std::abs(alpha)*Anorm*Bnorm + 2*std::abs(beta)*Cnorm);
     if (verbose) {
         printf( "error: ||Cout||=%.2e / (sqrt(k=%lld + 2) * |alpha|=%.2e * ||A||=%.2e * ||B||=%.2e + 2 * |beta|=%.2e * ||C||=%.2e) = %.2e\n",
-                Cout_norm, (lld) k, fabs(alpha), Anorm, Bnorm,
-                fabs(beta), Cnorm, error[0] );
+                Cout_norm, (lld) k, std::abs(alpha), Anorm, Bnorm,
+                std::abs(beta), Cnorm, error[0] );
     }
 
     // Allow 3*eps; complex needs 2*sqrt(2) factor; see Higham, 2002, sec. 3.6.

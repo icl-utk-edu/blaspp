@@ -50,8 +50,8 @@ void test_gemv_work( Params& params, bool run )
     int64_t Xm = (trans == Op::NoTrans ? n : m);
     int64_t Ym = (trans == Op::NoTrans ? m : n);
     size_t size_A = size_t(lda)*An;
-    size_t size_x = (Xm - 1) * abs(incx) + 1;
-    size_t size_y = (Ym - 1) * abs(incy) + 1;
+    size_t size_x = (Xm - 1) * std::abs(incx) + 1;
+    size_t size_y = (Ym - 1) * std::abs(incy) + 1;
     TA* A    = new TA[ size_A ];
     TX* x    = new TX[ size_x ];
     TY* y    = new TY[ size_y ];
@@ -67,8 +67,8 @@ void test_gemv_work( Params& params, bool run )
     // norms for error check
     real_t work[1];
     real_t Anorm = lapack_lange( "f", Am, An, A, lda, work );
-    real_t Xnorm = cblas_nrm2( Xm, x, abs(incx) );
-    real_t Ynorm = cblas_nrm2( Ym, y, abs(incy) );
+    real_t Xnorm = cblas_nrm2( Xm, x, std::abs(incx) );
+    real_t Ynorm = cblas_nrm2( Ym, y, std::abs(incy) );
 
     // test error exits
     assert_throw( blas::gemv( Layout(0), trans,  m,  n, alpha, A, lda, x, incx, beta, y, incy ), blas::Error );
@@ -137,7 +137,7 @@ void test_gemv_work( Params& params, bool run )
         real_t error;
         bool okay;
         check_gemm( 1, Ym, Xm, alpha, beta, Anorm, Xnorm, Ynorm,
-                    yref, abs(incy), y, abs(incy), verbose, &error, &okay );
+                    yref, std::abs(incy), y, std::abs(incy), verbose, &error, &okay );
         params.error.value() = error;
         params.okay.value() = okay;
     }

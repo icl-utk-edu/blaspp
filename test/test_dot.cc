@@ -38,8 +38,8 @@ void test_dot_work( Params& params, bool run )
         return;
 
     // setup
-    size_t size_x = (n - 1) * abs(incx) + 1;
-    size_t size_y = (n - 1) * abs(incy) + 1;
+    size_t size_x = (n - 1) * std::abs(incx) + 1;
+    size_t size_y = (n - 1) * std::abs(incy) + 1;
     TX* x = new TX[ size_x ];
     TY* y = new TY[ size_y ];
 
@@ -49,8 +49,8 @@ void test_dot_work( Params& params, bool run )
     lapack_larnv( idist, iseed, size_y, y );
 
     // norms for error check
-    real_t Xnorm = cblas_nrm2( n, x, abs(incx) );
-    real_t Ynorm = cblas_nrm2( n, y, abs(incy) );
+    real_t Xnorm = cblas_nrm2( n, x, std::abs(incx) );
+    real_t Ynorm = cblas_nrm2( n, y, std::abs(incy) );
 
     // test error exits
     assert_throw( blas::dot( -1, x, incx, y, incy ), blas::Error );

@@ -35,7 +35,7 @@ void test_nrm2_work( Params& params, bool run )
         return;
 
     // setup
-    size_t size_x = (n - 1) * abs(incx) + 1;
+    size_t size_x = (n - 1) * std::abs(incx) + 1;
     T* x = new T[ size_x ];
 
     int64_t idist = 1;
@@ -76,7 +76,7 @@ void test_nrm2_work( Params& params, bool run )
         // run reference
         libtest::flush_cache( params.cache.value() );
         time = omp_get_wtime();
-        real_t ref = cblas_nrm2( n, x, abs(incx) );
+        real_t ref = cblas_nrm2( n, x, std::abs(incx) );
         time = omp_get_wtime() - time;
 
         params.ref_time.value()   = time * 1000;  // msec

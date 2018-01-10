@@ -43,7 +43,7 @@ void test_her_work( Params& params, bool run )
     // setup
     int64_t lda = roundup( n, align );
     size_t size_A = size_t(lda)*n;
-    size_t size_x = (n - 1) * abs(incx) + 1;
+    size_t size_x = (n - 1) * std::abs(incx) + 1;
     TA* A    = new TA[ size_A ];
     TA* Aref = new TA[ size_A ];
     TX* x    = new TX[ size_x ];
@@ -57,7 +57,7 @@ void test_her_work( Params& params, bool run )
     // norms for error check
     real_t work[1];
     real_t Anorm = lapack_lanhe( "f", uplo2str(uplo), n, A, lda, work );
-    real_t Xnorm = cblas_nrm2( n, x, abs(incx) );
+    real_t Xnorm = cblas_nrm2( n, x, std::abs(incx) );
 
     // test error exits
     assert_throw( blas::her( Layout(0), uplo,     n, alpha, x, incx, A, lda ), blas::Error );

@@ -36,7 +36,7 @@ void test_scal_work( Params& params, bool run )
         return;
 
     // setup
-    size_t size_x = (n - 1) * abs(incx) + 1;
+    size_t size_x = (n - 1) * std::abs(incx) + 1;
     T* x    = new T[ size_x ];
     T* xref = new T[ size_x ];
 
@@ -94,8 +94,8 @@ void test_scal_work( Params& params, bool run )
 
         // error = ||xref - x|| / ||x|| ... todo
         cblas_axpy( n, -1.0, x, incx, xref, incx );
-        real_t error = cblas_nrm2( n, xref, abs(incx) );
-        real_t xnorm = cblas_nrm2( n, x,    abs(incx) );
+        real_t error = cblas_nrm2( n, xref, std::abs(incx) );
+        real_t xnorm = cblas_nrm2( n, x,    std::abs(incx) );
         error /= xnorm;
         params.error.value() = error;
 

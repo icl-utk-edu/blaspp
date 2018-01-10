@@ -39,8 +39,8 @@ void test_axpy_work( Params& params, bool run )
         return;
 
     // setup
-    size_t size_x = (n - 1) * abs(incx) + 1;
-    size_t size_y = (n - 1) * abs(incy) + 1;
+    size_t size_x = (n - 1) * std::abs(incx) + 1;
+    size_t size_y = (n - 1) * std::abs(incy) + 1;
     TX* x    = new TX[ size_x ];
     TY* y    = new TY[ size_y ];
     TY* yref = new TY[ size_y ];
@@ -103,8 +103,8 @@ void test_axpy_work( Params& params, bool run )
 
         // error = ||yref - y|| / ||y|| ... todo
         cblas_axpy( n, -1.0, y, incy, yref, incy );
-        real_t error = cblas_nrm2( n, yref, abs(incy) );
-        real_t ynorm = cblas_nrm2( n, y,    abs(incy) );
+        real_t error = cblas_nrm2( n, yref, std::abs(incy) );
+        real_t ynorm = cblas_nrm2( n, y,    std::abs(incy) );
         error /= ynorm;
         params.error.value() = error;
 

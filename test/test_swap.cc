@@ -37,8 +37,8 @@ void test_swap_work( Params& params, bool run )
         return;
 
     // setup
-    size_t size_x = (n - 1) * abs(incx) + 1;
-    size_t size_y = (n - 1) * abs(incy) + 1;
+    size_t size_x = (n - 1) * std::abs(incx) + 1;
+    size_t size_y = (n - 1) * std::abs(incy) + 1;
     TX* x    = new TX[ size_x ];
     TX* xref = new TX[ size_x ];
     TY* y    = new TY[ size_y ];
@@ -103,8 +103,8 @@ void test_swap_work( Params& params, bool run )
         // error = ||xref - x|| + ||yref - y||
         cblas_axpy( n, -1.0, x, incx, xref, incx );
         cblas_axpy( n, -1.0, y, incy, yref, incy );
-        real_t error = cblas_nrm2( n, xref, abs(incx) )
-                     + cblas_nrm2( n, yref, abs(incy) );
+        real_t error = cblas_nrm2( n, xref, std::abs(incx) )
+                     + cblas_nrm2( n, yref, std::abs(incy) );
         params.error.value() = error;
 
         // swap must be exact!

@@ -45,8 +45,8 @@ void test_symv_work( Params& params, bool run )
     // setup
     int64_t lda = roundup( n, align );
     size_t size_A = size_t(lda)*n;
-    size_t size_x = (n - 1) * abs(incx) + 1;
-    size_t size_y = (n - 1) * abs(incy) + 1;
+    size_t size_x = (n - 1) * std::abs(incx) + 1;
+    size_t size_y = (n - 1) * std::abs(incy) + 1;
     TA* A    = new TA[ size_A ];
     TX* x    = new TX[ size_x ];
     TY* y    = new TY[ size_y ];
@@ -62,8 +62,8 @@ void test_symv_work( Params& params, bool run )
     // norms for error check
     real_t work[1];
     real_t Anorm = lapack_lansy( "f", uplo2str(uplo), n, A, lda, work );
-    real_t Xnorm = cblas_nrm2( n, x, abs(incx) );
-    real_t Ynorm = cblas_nrm2( n, y, abs(incy) );
+    real_t Xnorm = cblas_nrm2( n, x, std::abs(incx) );
+    real_t Ynorm = cblas_nrm2( n, y, std::abs(incy) );
 
     // test error exits
     assert_throw( blas::symv( Layout(0), uplo,     n, alpha, A, lda, x, incx, beta, y, incy ), blas::Error );
@@ -128,7 +128,7 @@ void test_symv_work( Params& params, bool run )
         real_t error;
         bool okay;
         check_gemm( 1, n, n, alpha, beta, Anorm, Xnorm, Ynorm,
-                    yref, abs(incy), y, abs(incy), verbose, &error, &okay );
+                    yref, std::abs(incy), y, std::abs(incy), verbose, &error, &okay );
         params.error.value() = error;
         params.okay.value() = okay;
     }

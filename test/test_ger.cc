@@ -46,8 +46,8 @@ void test_ger_work( Params& params, bool run )
     int64_t An = (layout == Layout::ColMajor ? n : m);
     int64_t lda = roundup( Am, align );
     size_t size_A = size_t(lda)*An;
-    size_t size_x = (m - 1) * abs(incx) + 1;
-    size_t size_y = (n - 1) * abs(incy) + 1;
+    size_t size_x = (m - 1) * std::abs(incx) + 1;
+    size_t size_y = (n - 1) * std::abs(incy) + 1;
     TA* A    = new TA[ size_A ];
     TA* Aref = new TA[ size_A ];
     TX* x    = new TX[ size_x ];
@@ -63,8 +63,8 @@ void test_ger_work( Params& params, bool run )
     // norms for error check
     real_t work[1];
     real_t Anorm = lapack_lange( "f", Am, An, A, lda, work );
-    real_t Xnorm = cblas_nrm2( m, x, abs(incx) );
-    real_t Ynorm = cblas_nrm2( n, y, abs(incy) );
+    real_t Xnorm = cblas_nrm2( m, x, std::abs(incx) );
+    real_t Ynorm = cblas_nrm2( n, y, std::abs(incy) );
 
     // test error exits
     assert_throw( blas::ger( Layout(0),  m,  n, alpha, A, lda, x, incx, y, incy ), blas::Error );

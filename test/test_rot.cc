@@ -41,8 +41,8 @@ void test_rot_work( Params& params, bool run )
         return;
 
     // setup
-    size_t size_x = (n - 1) * abs(incx) + 1;
-    size_t size_y = (n - 1) * abs(incy) + 1;
+    size_t size_x = (n - 1) * std::abs(incx) + 1;
+    size_t size_y = (n - 1) * std::abs(incy) + 1;
     TX* x    = new TX[ size_x ];
     TX* xref = new TX[ size_x ];
     TX* y    = new TX[ size_y ];
@@ -58,8 +58,8 @@ void test_rot_work( Params& params, bool run )
     cblas_copy( n, y, incy, yref, incy );
 
     // norms for error check
-    real_t Xnorm = cblas_nrm2( n, x, abs(incx) );
-    real_t Ynorm = cblas_nrm2( n, y, abs(incy) );
+    real_t Xnorm = cblas_nrm2( n, x, std::abs(incx) );
+    real_t Ynorm = cblas_nrm2( n, y, std::abs(incy) );
     real_t Anorm = sqrt( Xnorm*Xnorm + Ynorm*Ynorm ); // || [x y] ||_F
 
     // test error exits

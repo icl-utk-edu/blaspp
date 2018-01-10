@@ -35,7 +35,7 @@ void test_iamax_work( Params& params, bool run )
         return;
 
     // setup
-    size_t size_x = (n - 1) * abs(incx) + 1;
+    size_t size_x = (n - 1) * std::abs(incx) + 1;
     T* x = new T[ size_x ];
 
     int64_t idist = 1;
