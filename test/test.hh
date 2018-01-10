@@ -98,6 +98,10 @@ void test_trmm  ( Params& params, bool run );
 void test_trsm  ( Params& params, bool run );
 
 // -----------------------------------------------------------------------------
+// auxiliary
+void test_error ( Params& params, bool run );
+
+// -----------------------------------------------------------------------------
 template< typename T >
 inline T roundup( T x, T y )
 {

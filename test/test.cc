@@ -24,6 +24,7 @@ enum Section {
     blas1,
     blas2,
     blas3,
+    aux,
 };
 
 const char* section_names[] = {
@@ -31,6 +32,7 @@ const char* section_names[] = {
    "Level 1 BLAS",
    "Level 2 BLAS",
    "Level 3 BLAS",
+   "auxiliary",
 };
 
 // { "", nullptr, Section::newline } entries force newline in help
@@ -85,6 +87,9 @@ std::vector< libtest::routines_t > routines = {
 
     { "trmm",   test_trmm,   Section::blas3   },
     { "trsm",   test_trsm,   Section::blas3   },
+
+    // auxiliary
+    { "error",  test_error,  Section::aux     },
 };
 
 // -----------------------------------------------------------------------------
@@ -211,7 +216,7 @@ int main( int argc, char** argv )
             }
             catch (blas::Error& err) {
                 params.okay.value() = false;
-                printf( "BLAS error: %s\n", err.what() );
+                printf( "Caught BLAS error: %s\n", err.what() );
             }
             catch (...) {
                 // happens for assert_throw failures
