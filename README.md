@@ -34,15 +34,17 @@ BLAS++ is part of the project
 as part of its [Exascale Computing Initiative](https://exascaleproject.org)
 (ECP).
 
-Closely related to BLAS++ is the
-[LAPACK++ project](https://bitbucket.org/icl/lapackpp), which aims at providing
-a C++ API for the Linear Algebra PACKage (LAPACK).
+Closely related to BLAS++ are the
+[BBLAS++](https://bitbucket.org/icl/bblaspp) and
+[LAPACK++](https://bitbucket.org/icl/lapackpp) projects,
+which aim at providing C++ APIs for the batch BLAS and LAPACK, respectively.
 
 * * *
 
 Resources
 =========
 
+* Visit the [BBLAS++ repository](https://bitbucket.org/icl/bblaspp) for more information about the C++ API for the batch BLAS.
 * Visit the [LAPACK++ repository](https://bitbucket.org/icl/lapackpp) for more information about the C++ API for LAPACK.
 * Visit the [ECP website](https://exascaleproject.org) to find out more about the DOE Exascale Computing Initiative.
 * Visit the [SLATE website](http://icl.utk.edu/slate/) for more information about the SLATE project.
