@@ -167,13 +167,13 @@ void her2(
 ///     Stride between elements of y. incy must not be zero.
 ///     If incy < 0, uses elements of y in reverse order: y(n-1), ..., y(0).
 ///
-/// @param[in,out] A
+/// @param[in, out] A
 ///     The n-by-n matrix A, stored in an lda-by-n array [RowMajor: n-by-lda].
 ///     Imaginary parts of the diagonal elements need not be set,
 ///     are assumed to be zero on entry, and are set to zero on exit.
 ///
 /// @param[in] lda
-///     Leading dimension of A. lda >= max(1,n).
+///     Leading dimension of A. lda >= max(1, n).
 ///
 /// @ingroup her2
 
@@ -182,12 +182,12 @@ void her2(
     blas::Layout layout,
     blas::Uplo  uplo,
     int64_t n,
-    typename blas::traits3<TA, TX, TY>::scalar_t alpha,
+    blas::scalar_type<TA, TX, TY> alpha,
     TX const *x, int64_t incx,
     TY const *y, int64_t incy,
     TA *A, int64_t lda )
 {
-    typedef typename blas::traits3<TA, TX, TY>::scalar_t scalar_t;
+    typedef blas::scalar_type<TA, TX, TY> scalar_t;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]
 
@@ -223,9 +223,9 @@ void her2(
                 scalar_t tmp1 = alpha * conj( y[j] );
                 scalar_t tmp2 = conj( alpha * x[j] );
                 for (int64_t i = 0; i <= j-1; ++i) {
-                    A(i,j) += x[i]*tmp1 + y[i]*tmp2;
+                    A(i, j) += x[i]*tmp1 + y[i]*tmp2;
                 }
-                A(j,j) = real( A(j,j) ) + real( x[j]*tmp1 + y[j]*tmp2 );
+                A(j, j) = real( A(j, j) ) + real( x[j]*tmp1 + y[j]*tmp2 );
             }
         }
         else {
@@ -238,11 +238,11 @@ void her2(
                 int64_t ix = kx;
                 int64_t iy = ky;
                 for (int64_t i = 0; i <= j-1; ++i) {
-                    A(i,j) += x[ix]*tmp1 + y[iy]*tmp2;
+                    A(i, j) += x[ix]*tmp1 + y[iy]*tmp2;
                     ix += incx;
                     iy += incy;
                 }
-                A(j,j) = real( A(j,j) ) + real( x[jx]*tmp1 + y[jy]*tmp2 );
+                A(j, j) = real( A(j, j) ) + real( x[jx]*tmp1 + y[jy]*tmp2 );
                 jx += incx;
                 jy += incy;
             }
@@ -255,9 +255,9 @@ void her2(
             for (int64_t j = 0; j < n; ++j) {
                 scalar_t tmp1 = alpha * conj( y[j] );
                 scalar_t tmp2 = conj( alpha * x[j] );
-                A(j,j) = real( A(j,j) ) + real( x[j]*tmp1 + y[j]*tmp2 );
+                A(j, j) = real( A(j, j) ) + real( x[j]*tmp1 + y[j]*tmp2 );
                 for (int64_t i = j+1; i < n; ++i) {
-                    A(i,j) += x[i]*tmp1 + y[i]*tmp2;
+                    A(i, j) += x[i]*tmp1 + y[i]*tmp2;
                 }
             }
         }
@@ -268,13 +268,13 @@ void her2(
             for (int64_t j = 0; j < n; ++j) {
                 scalar_t tmp1 = alpha * conj( y[jy] );
                 scalar_t tmp2 = conj( alpha * x[jx] );
-                A(j,j) = real( A(j,j) ) + real( x[jx]*tmp1 + y[jy]*tmp2 );
+                A(j, j) = real( A(j, j) ) + real( x[jx]*tmp1 + y[jy]*tmp2 );
                 int64_t ix = jx;
                 int64_t iy = jy;
                 for (int64_t i = j+1; i < n; ++i) {
                     ix += incx;
                     iy += incy;
-                    A(i,j) += x[ix]*tmp1 + y[iy]*tmp2;
+                    A(i, j) += x[ix]*tmp1 + y[iy]*tmp2;
                 }
                 jx += incx;
                 jy += incy;

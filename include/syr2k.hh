@@ -306,8 +306,8 @@ void syr2k(
 ///
 /// @param[in] lda
 ///     Leading dimension of A.
-///     - If trans = NoTrans: lda >= max(1,n) [RowMajor: lda >= max(1,k)],
-///     - Otherwise:          lda >= max(1,k) [RowMajor: lda >= max(1,n)].
+///     - If trans = NoTrans: lda >= max(1, n) [RowMajor: lda >= max(1, k)],
+///     - Otherwise:          lda >= max(1, k) [RowMajor: lda >= max(1, n)].
 ///
 /// @param[in] B
 ///     - If trans = NoTrans:
@@ -317,8 +317,8 @@ void syr2k(
 ///
 /// @param[in] ldb
 ///     Leading dimension of B.
-///     - If trans = NoTrans: ldb >= max(1,n) [RowMajor: ldb >= max(1,k)],
-///     - Otherwise:          ldb >= max(1,k) [RowMajor: ldb >= max(1,n)].
+///     - If trans = NoTrans: ldb >= max(1, n) [RowMajor: ldb >= max(1, k)],
+///     - Otherwise:          ldb >= max(1, k) [RowMajor: ldb >= max(1, n)].
 ///
 /// @param[in] beta
 ///     Scalar beta. If beta is zero, C need not be set on input.
@@ -328,7 +328,7 @@ void syr2k(
 ///     stored in an lda-by-n array [RowMajor: n-by-lda].
 ///
 /// @param[in] ldc
-///     Leading dimension of C. ldc >= max(1,n).
+///     Leading dimension of C. ldc >= max(1, n).
 ///
 /// @ingroup syr2k
 
@@ -338,10 +338,10 @@ void syr2k(
     blas::Uplo uplo,
     blas::Op trans,
     int64_t n, int64_t k,
-    typename traits3<TA, TB, TC>::scalar_t alpha,
+    scalar_type<TA, TB, TC> alpha,
     TA const *A, int64_t lda,
     TB const *B, int64_t ldb,
-    typename traits3<TA, TB, TC>::scalar_t beta,
+    scalar_type<TA, TB, TC> beta,
     TC       *C, int64_t ldc )
 {
     throw std::exception();  // not yet implemented

@@ -84,14 +84,14 @@ void rotm(
 /// @param[in] n
 ///     Number of elements in x and y. n >= 0.
 ///
-/// @param[in,out] x
+/// @param[in, out] x
 ///     The n-element vector x, in an array of length (n-1)*abs(incx) + 1.
 ///
 /// @param[in] incx
 ///     Stride between elements of x. incx must not be zero.
 ///     If incx < 0, uses elements of x in reverse order: x(n-1), ..., x(0).
 ///
-/// @param[in,out] y
+/// @param[in, out] y
 ///     The n-element vector y, in an array of length (n-1)*abs(incy) + 1.
 ///
 /// @param[in] incy
@@ -108,7 +108,7 @@ void rotm(
     int64_t n,
     TX *x, int64_t incx,
     TY *y, int64_t incy,
-    typename blas::traits2<TX,TY>::scalar_t const param[5] )
+    blas::scalar_type<TX, TY> const param[5] )
 {
     throw std::exception();  // not yet implemented
 

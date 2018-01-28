@@ -263,11 +263,11 @@ void ger(
 ///     Stride between elements of y. incy must not be zero.
 ///     If incy < 0, uses elements of y in reverse order: y(n-1), ..., y(0).
 ///
-/// @param[in,out] A
+/// @param[in, out] A
 ///     The m-by-n matrix A, stored in an lda-by-n array [RowMajor: m-by-lda].
 ///
 /// @param[in] lda
-///     Leading dimension of A. lda >= max(1,m) [RowMajor: lda >= max(1,n)].
+///     Leading dimension of A. lda >= max(1, m) [RowMajor: lda >= max(1, n)].
 ///
 /// @ingroup ger
 
@@ -275,12 +275,12 @@ template< typename TA, typename TX, typename TY >
 void ger(
     blas::Layout layout,
     int64_t m, int64_t n,
-    typename blas::traits3<TA, TX, TY>::scalar_t alpha,
+    blas::scalar_type<TA, TX, TY> alpha,
     TX const *x, int64_t incx,
     TY const *y, int64_t incy,
     TA *A, int64_t lda )
 {
-    typedef typename blas::traits3<TA, TX, TY>::scalar_t scalar_t;
+    typedef blas::scalar_type<TA, TX, TY> scalar_t;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]
 
@@ -311,7 +311,7 @@ void ger(
                 // note: NOT skipping if y[j] is zero, for consistent NAN handling
                 scalar_t tmp = alpha * conj( y[j] );
                 for (int64_t i = 0; i < m; ++i) {
-                    A(i,j) += x[i] * tmp;
+                    A(i, j) += x[i] * tmp;
                 }
             }
         }
@@ -321,7 +321,7 @@ void ger(
             for (int64_t j = 0; j < n; ++j) {
                 scalar_t tmp = alpha * conj( y[jy] );
                 for (int64_t i = 0; i < m; ++i) {
-                    A(i,j) += x[i] * tmp;
+                    A(i, j) += x[i] * tmp;
                 }
                 jy += incy;
             }
@@ -334,7 +334,7 @@ void ger(
                 scalar_t tmp = alpha * conj( y[jy] );
                 int64_t ix = kx;
                 for (int64_t i = 0; i < m; ++i) {
-                    A(i,j) += x[ix] * tmp;
+                    A(i, j) += x[ix] * tmp;
                     ix += incx;
                 }
                 jy += incy;
@@ -349,7 +349,7 @@ void ger(
                 // note: NOT skipping if x[i] is zero, for consistent NAN handling
                 scalar_t tmp = alpha * x[i];
                 for (int64_t j = 0; j < n; ++j) {
-                    A(j,i) += tmp * conj( y[j] );
+                    A(j, i) += tmp * conj( y[j] );
                 }
             }
         }
@@ -359,7 +359,7 @@ void ger(
             for (int64_t i = 0; i < m; ++i) {
                 scalar_t tmp = alpha * x[ix];
                 for (int64_t j = 0; j < n; ++j) {
-                    A(j,i) += tmp * conj( y[j] );
+                    A(j, i) += tmp * conj( y[j] );
                 }
                 ix += incx;
             }
@@ -372,7 +372,7 @@ void ger(
                 scalar_t tmp = alpha * x[ix];
                 int64_t jy = ky;
                 for (int64_t j = 0; j < n; ++j) {
-                    A(j,i) += tmp * conj( y[jy] );
+                    A(j, i) += tmp * conj( y[jy] );
                     jy += incy;
                 }
                 ix += incx;

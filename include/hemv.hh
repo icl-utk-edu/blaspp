@@ -222,7 +222,7 @@ void hemv(
 ///     and are assumed to be zero.
 ///
 /// @param[in] lda
-///     Leading dimension of A. lda >= max(1,n).
+///     Leading dimension of A. lda >= max(1, n).
 ///
 /// @param[in] x
 ///     The n-element vector x, in an array of length (n-1)*abs(incx) + 1.
@@ -234,7 +234,7 @@ void hemv(
 /// @param[in] beta
 ///     Scalar beta. If beta is zero, y need not be set on input.
 ///
-/// @param[in,out] y
+/// @param[in, out] y
 ///     The n-element vector y, in an array of length (n-1)*abs(incy) + 1.
 ///
 /// @param[in] incy
@@ -248,13 +248,13 @@ void hemv(
     blas::Layout layout,
     blas::Uplo uplo,
     int64_t n,
-    typename blas::traits3<TA, TX, TY>::scalar_t alpha,
+    blas::scalar_type<TA, TX, TY> alpha,
     TA const *A, int64_t lda,
     TX const *x, int64_t incx,
-    typename blas::traits3<TA, TX, TY>::scalar_t beta,
+    blas::scalar_type<TA, TX, TY> beta,
     TY *y, int64_t incy )
 {
-    typedef typename blas::traits3<TA, TX, TY>::scalar_t scalar_t;
+    typedef blas::scalar_type<TA, TX, TY> scalar_t;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]
 

@@ -289,9 +289,9 @@ void trmv(
 ///     The n-by-n matrix A, stored in an lda-by-n array [RowMajor: n-by-lda].
 ///
 /// @param[in] lda
-///     Leading dimension of A. lda >= max(1,n).
+///     Leading dimension of A. lda >= max(1, n).
 ///
-/// @param[in,out] x
+/// @param[in, out] x
 ///     The n-element vector x, in an array of length (n-1)*abs(incx) + 1.
 ///
 /// @param[in] incx
@@ -310,7 +310,7 @@ void trmv(
     TA const *A, int64_t lda,
     TX       *x, int64_t incx )
 {
-    typedef typename blas::traits2<TA, TX>::scalar_t scalar_t;
+    typedef blas::scalar_type<TA, TX> scalar_t;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]
 

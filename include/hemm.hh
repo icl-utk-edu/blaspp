@@ -223,8 +223,8 @@ void hemm(
 ///
 /// @param[in] lda
 ///     Leading dimension of A.
-///     - If side = Left:  lda >= max(1,m).
-///     - If side = Right: lda >= max(1,n).
+///     - If side = Left:  lda >= max(1, m).
+///     - If side = Right: lda >= max(1, n).
 ///
 /// @param[in] B
 ///     The m-by-n matrix B,
@@ -232,7 +232,7 @@ void hemm(
 ///
 /// @param[in] ldb
 ///     Leading dimension of B.
-///     ldb >= max(1,m) [RowMajor: ldb >= max(1,n)].
+///     ldb >= max(1, m) [RowMajor: ldb >= max(1, n)].
 ///
 /// @param[in] beta
 ///     Scalar beta. If beta is zero, C need not be set on input.
@@ -243,7 +243,7 @@ void hemm(
 ///
 /// @param[in] ldc
 ///     Leading dimension of C.
-///     ldc >= max(1,m) [RowMajor: ldc >= max(1,n)].
+///     ldc >= max(1, m) [RowMajor: ldc >= max(1, n)].
 ///
 /// @ingroup hemm
 
@@ -253,10 +253,10 @@ void hemm(
     blas::Side side,
     blas::Uplo uplo,
     int64_t m, int64_t n,
-    typename traits3<TA, TB, TC>::scalar_t alpha,
+    scalar_type<TA, TB, TC> alpha,
     TA const *A, int64_t lda,
     TB const *B, int64_t ldb,
-    typename traits3<TA, TB, TC>::scalar_t beta,
+    scalar_type<TA, TB, TC> beta,
     TC       *C, int64_t ldc )
 {
     throw std::exception();  // not yet implemented

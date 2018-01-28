@@ -340,14 +340,14 @@ void trmm(
 ///
 /// @param[in] lda
 ///     Leading dimension of A.
-///     - If side = left:  lda >= max(1,m).
-///     - If side = right: lda >= max(1,n).
+///     - If side = left:  lda >= max(1, m).
+///     - If side = right: lda >= max(1, n).
 ///
-/// @param[in,out] B
+/// @param[in, out] B
 ///     The m-by-n matrix B, stored in an ldb-by-n array [RowMajor: m-by-ldb].
 ///
 /// @param[in] ldb
-///     Leading dimension of B. ldb >= max(1,m) [RowMajor: ldb >= max(1,n)].
+///     Leading dimension of B. ldb >= max(1, m) [RowMajor: ldb >= max(1, n)].
 ///
 /// @ingroup trmm
 
@@ -360,7 +360,7 @@ void trmm(
     blas::Diag diag,
     int64_t m,
     int64_t n,
-    typename blas::traits2<TA, TX>::scalar_t alpha,
+    blas::scalar_type<TA, TX> alpha,
     TA const *A, int64_t lda,
     TX       *B, int64_t ldb )
 {

@@ -14,8 +14,8 @@ template< typename TX, typename TY >
 void test_copy_work( Params& params, bool run )
 {
     using namespace blas;
-    typedef typename traits2< TX, TY >::scalar_t scalar_t;
-    typedef typename traits< scalar_t >::real_t real_t;
+    typedef scalar_type<TX, TY> scalar_t;
+    typedef real_type<scalar_t> real_t;
     typedef long long lld;
 
     // get & mark input values

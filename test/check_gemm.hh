@@ -15,13 +15,13 @@ void check_gemm(
     int64_t m, int64_t n, int64_t k,
     T alpha,
     T beta,
-    typename blas::traits<T>::real_t Anorm,
-    typename blas::traits<T>::real_t Bnorm,
-    typename blas::traits<T>::real_t Cnorm,
+    blas::real_type<T> Anorm,
+    blas::real_type<T> Bnorm,
+    blas::real_type<T> Cnorm,
     T const* Cref, int64_t ldcref,
     T* C, int64_t ldc,
     bool verbose,
-    typename blas::traits<T>::real_t error[1],
+    blas::real_type<T> error[1],
     bool* okay )
 {
     typedef long long int lld;
@@ -29,7 +29,7 @@ void check_gemm(
     #define    C(i_, j_)    C[ (i_) + (j_)*ldc ]
     #define Cref(i_, j_) Cref[ (i_) + (j_)*ldcref ]
 
-    typedef typename blas::traits<T>::real_t real_t;
+    typedef blas::real_type<T> real_t;
 
     assert( m >= 0 );
     assert( n >= 0 );
@@ -40,7 +40,7 @@ void check_gemm(
     // C -= Cref
     for (int64_t j = 0; j < n; ++j) {
         for (int64_t i = 0; i < m; ++i) {
-            C(i,j) -= Cref(i,j);
+            C(i, j) -= Cref(i, j);
         }
     }
 
@@ -78,13 +78,13 @@ void check_herk(
     int64_t n, int64_t k,
     TA alpha,
     TB beta,
-    typename blas::traits<T>::real_t Anorm,
-    typename blas::traits<T>::real_t Bnorm,
-    typename blas::traits<T>::real_t Cnorm,
+    blas::real_type<T> Anorm,
+    blas::real_type<T> Bnorm,
+    blas::real_type<T> Cnorm,
     T const* Cref, int64_t ldcref,
     T* C, int64_t ldc,
     bool verbose,
-    typename blas::traits<T>::real_t error[1],
+    blas::real_type<T> error[1],
     bool* okay )
 {
     typedef long long int lld;
@@ -92,7 +92,7 @@ void check_herk(
     #define    C(i_, j_)    C[ (i_) + (j_)*ldc ]
     #define Cref(i_, j_) Cref[ (i_) + (j_)*ldcref ]
 
-    typedef typename blas::traits<T>::real_t real_t;
+    typedef blas::real_type<T> real_t;
 
     assert( n >= 0 );
     assert( k >= 0 );
@@ -103,14 +103,14 @@ void check_herk(
     if (uplo == blas::Uplo::Lower) {
         for (int64_t j = 0; j < n; ++j) {
             for (int64_t i = j; i < n; ++i) {
-                C(i,j) -= Cref(i,j);
+                C(i, j) -= Cref(i, j);
             }
         }
     }
     else {
         for (int64_t j = 0; j < n; ++j) {
             for (int64_t i = 0; i <= j; ++i) {
-                C(i,j) -= Cref(i,j);
+                C(i, j) -= Cref(i, j);
             }
         }
     }
