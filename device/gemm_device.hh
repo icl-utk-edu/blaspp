@@ -104,7 +104,6 @@ void gemm(
     double       *dC, int64_t lddc, 
     blas::Queue &queue )
 {
-    /*
     // check arguments
     blas_error_if( layout != Layout::ColMajor &&
                    layout != Layout::RowMajor );
@@ -155,7 +154,6 @@ void gemm(
         blas_error_if( lddb > std::numeric_limits<device_blas_int>::max() );
         blas_error_if( lddc > std::numeric_limits<device_blas_int>::max() );
     }
-    */
 
     device_trans_t  transA_ = blas::device_trans_const( transA );
     device_trans_t  transB_ = blas::device_trans_const( transB );
