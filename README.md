@@ -34,10 +34,9 @@ BLAS++ is part of the project
 as part of its [Exascale Computing Initiative](https://exascaleproject.org)
 (ECP).
 
-Closely related to BLAS++ are the
-[BBLAS++](https://bitbucket.org/icl/bblaspp) and
-[LAPACK++](https://bitbucket.org/icl/lapackpp) projects,
-which aim at providing C++ APIs for the batch BLAS and LAPACK, respectively.
+Closely related to BLAS++ is the
+[LAPACK++](https://bitbucket.org/icl/lapackpp) project,
+which provides a C++ API for LAPACK.
 
 * * *
 
