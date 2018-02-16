@@ -10,8 +10,6 @@
 
 ![SLATE](http://icl.bitbucket.io/slate/artwork/SLATE-Architecture-Illustration.jpg)
 
-* * *
-
 [TOC]
 
 * * *
