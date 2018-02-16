@@ -41,6 +41,14 @@ which aim at providing C++ APIs for the batch BLAS and LAPACK, respectively.
 
 * * *
 
+Documentation
+=============
+
+* [BLAS++ Doxygen HTML](https://icl.bitbucket.io/blaspp/doxygen/html/)
+* [SLATE Working Note 2: C++ API for BLAS and LAPACK](http://www.icl.utk.edu/publications/swan-002).
+
+* * *
+
 Resources
 =========
 
