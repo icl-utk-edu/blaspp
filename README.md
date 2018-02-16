@@ -33,7 +33,6 @@ BLAS++ is part of the project
 (SLATE), which is funded by the [Department of Energy](https://energy.gov)
 as part of its [Exascale Computing Initiative](https://exascaleproject.org)
 (ECP).
-
 Closely related to BLAS++ is the
 [LAPACK++](https://bitbucket.org/icl/lapackpp) project,
 which provides a C++ API for LAPACK.
