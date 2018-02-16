@@ -49,16 +49,6 @@ Documentation
 
 * * *
 
-Resources
-=========
-
-* Visit the [LAPACK++ repository](https://bitbucket.org/icl/lapackpp) for more information about the C++ API for LAPACK.
-* Visit the [ECP website](https://exascaleproject.org) to find out more about the DOE Exascale Computing Initiative.
-* Visit the [SLATE website](http://icl.utk.edu/slate/) for more information about the SLATE project.
-* Visit the [SLATE Working Notes](http://www.icl.utk.edu/publications/series/swans) to find out more about ongoing SLATE developments.
-
-* * *
-
 Getting Help
 ============
 
@@ -67,6 +57,16 @@ Join the *SLATE User* Google group by going to
 https://groups.google.com/a/icl.utk.edu/forum/#!forum/slate-user
 and clicking `Apply to join group`.
 Upon acceptance, email your questions and comments to *slate-user@icl.utk.edu*.
+
+* * *
+
+Resources
+=========
+
+* Visit the [LAPACK++ repository](https://bitbucket.org/icl/lapackpp) for more information about the C++ API for LAPACK.
+* Visit the [ECP website](https://exascaleproject.org) to find out more about the DOE Exascale Computing Initiative.
+* Visit the [SLATE website](http://icl.utk.edu/slate/) for more information about the SLATE project.
+* Visit the [SLATE Working Notes](http://www.icl.utk.edu/publications/series/swans) to find out more about ongoing SLATE developments.
 
 * * *
 
