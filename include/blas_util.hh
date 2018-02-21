@@ -12,7 +12,7 @@ namespace blas {
 // -----------------------------------------------------------------------------
 enum class Layout : char { ColMajor = 'C', RowMajor = 'R' };
 enum class Op     : char { NoTrans  = 'N', Trans    = 'T', ConjTrans = 'C' };
-enum class Uplo   : char { Upper    = 'U', Lower    = 'L' };
+enum class Uplo   : char { Upper    = 'U', Lower    = 'L', General   = 'G' };
 enum class Diag   : char { NonUnit  = 'N', Unit     = 'U' };
 enum class Side   : char { Left     = 'L', Right    = 'R' };
 
@@ -48,8 +48,9 @@ inline const char* op2str( Op op )
 inline const char* uplo2str( Uplo uplo )
 {
     switch (uplo) {
-        case Uplo::Lower: return "lower";
-        case Uplo::Upper: return "upper";
+        case Uplo::Lower:   return "lower";
+        case Uplo::Upper:   return "upper";
+        case Uplo::General: return "general";
     }
     return "";
 }
@@ -91,7 +92,7 @@ inline Op char2op( char op )
 inline Uplo char2uplo( char uplo )
 {
     uplo = (char) toupper( uplo );
-    assert( uplo == 'L' || uplo == 'U' );
+    assert( uplo == 'L' || uplo == 'U' || uplo == 'G' );
     return Uplo( uplo );
 }
 
