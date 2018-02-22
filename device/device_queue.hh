@@ -24,9 +24,9 @@ public:
         device_error_check( cudaStreamCreate(&stream_) );
         device_blas_check( cublasCreate(&handle_) );
         device_blas_check( cublasSetStream( handle_, stream_ ) );
-        Aarray.resize(batch_size);
-        Barray.resize(batch_size);
-        Carray.resize(batch_size);
+        Aarray = blas::device_malloc<void*>( batch_size );
+        Barray = blas::device_malloc<void*>( batch_size );
+        Carray = blas::device_malloc<void*>( batch_size ); 
         #elif defined(HAVE_ROCBLAS)
         // TODO: rocBLAS queue init and vector resize
         #endif
@@ -59,9 +59,9 @@ public:
         #ifdef HAVE_CUBLAS
         device_blas_check( cublasDestroy(handle_) );
         device_error_check( cudaStreamDestroy(stream_) );
-        Aarray.clear();
-        Barray.clear();
-        Carray.clear();
+        blas::device_free( Aarray );
+        blas::device_free( Barray );
+        blas::device_free( Carray );
         #elif defined(HAVE_ROCBLAS)
         // TODO: rocBLAS equivalent
         #endif
@@ -77,9 +77,9 @@ private:
     cudaStream_t     stream_;      // associated CUDA stream; may be NULL
     // pointer arrays for batch routines
     // precision-independent
-    thrust::device_vector<void*> Aarray;
-    thrust::device_vector<void*> Barray;
-    thrust::device_vector<void*> Carray;
+    void* Aarray;
+    void* Barray;
+    void* Carray;
     #elif defined(HAVE_ROCBLAS)
     // TODO: stream and pointer arrays for rocBLAS
     #endif
