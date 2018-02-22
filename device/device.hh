@@ -6,8 +6,6 @@
 // cuda/cublas headers
 #include <cuda_runtime.h>
 #include <cublas_v2.h>
-#include <thrust/host_vector.h>
-#include <thrust/device_vector.h>
 
 #elif defined(HAVE_ROCBLAS)
 // -----------------------------------------------------------------------------
