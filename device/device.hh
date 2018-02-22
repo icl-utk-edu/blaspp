@@ -15,11 +15,12 @@
 
 #endif
 
-#include "../include/blas_util.hh"
+#include "blas_util.hh"
 #include "device_types.hh"
 #include "device_error.hh"
 #include "device_utils.hh"
 #include "device_queue.hh"
+#include "device_copy.hh"
 #include "device_blas_names.hh"
 
 #endif        //  #ifndef DEVICE_HH
