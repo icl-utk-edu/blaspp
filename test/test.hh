@@ -100,6 +100,7 @@ void test_trsm  ( Params& params, bool run );
 // -----------------------------------------------------------------------------
 // auxiliary
 void test_error ( Params& params, bool run );
+void test_max   ( Params& params, bool run );
 
 // -----------------------------------------------------------------------------
 template< typename T >
