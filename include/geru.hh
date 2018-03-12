@@ -170,11 +170,11 @@ void geru(
 ///     Stride between elements of y. incy must not be zero.
 ///     If incy < 0, uses elements of y in reverse order: y(n-1), ..., y(0).
 ///
-/// @param[in,out] A
+/// @param[in, out] A
 ///     The m-by-n matrix A, stored in an lda-by-n array [RowMajor: m-by-lda].
 ///
 /// @param[in] lda
-///     Leading dimension of A. lda >= max(1,m) [RowMajor: lda >= max(1,n)].
+///     Leading dimension of A. lda >= max(1, m) [RowMajor: lda >= max(1, n)].
 ///
 /// @ingroup geru
 
@@ -182,12 +182,12 @@ template< typename TA, typename TX, typename TY >
 void geru(
     blas::Layout layout,
     int64_t m, int64_t n,
-    typename blas::traits3<TA, TX, TY>::scalar_t alpha,
+    blas::scalar_type<TA, TX, TY> alpha,
     TX const *x, int64_t incx,
     TY const *y, int64_t incy,
     TA *A, int64_t lda )
 {
-    typedef typename blas::traits3<TA, TX, TY>::scalar_t scalar_t;
+    typedef blas::scalar_type<TA, TX, TY> scalar_t;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]
 
@@ -224,7 +224,7 @@ void geru(
             // note: NOT skipping if y[j] is zero, for consistent NAN handling
             scalar_t tmp = alpha * y[j];
             for (int64_t i = 0; i < m; ++i) {
-                A(i,j) += x[i] * tmp;
+                A(i, j) += x[i] * tmp;
             }
         }
     }
@@ -234,7 +234,7 @@ void geru(
         for (int64_t j = 0; j < n; ++j) {
             scalar_t tmp = alpha * y[jy];
             for (int64_t i = 0; i < m; ++i) {
-                A(i,j) += x[i] * tmp;
+                A(i, j) += x[i] * tmp;
             }
             jy += incy;
         }
@@ -247,7 +247,7 @@ void geru(
             scalar_t tmp = alpha * y[jy];
             int64_t ix = kx;
             for (int64_t i = 0; i < m; ++i) {
-                A(i,j) += x[ix] * tmp;
+                A(i, j) += x[ix] * tmp;
                 ix += incx;
             }
             jy += incy;

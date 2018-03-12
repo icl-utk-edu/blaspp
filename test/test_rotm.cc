@@ -16,7 +16,7 @@ template< typename TX >
 void test_rotm_work( Params& params, bool run )
 {
     using namespace blas;
-    typedef typename traits< TX >::real_t real_t;
+    typedef real_type<TX> real_t;
     typedef long long lld;
 
     // get & mark input values

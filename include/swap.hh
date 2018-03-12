@@ -130,7 +130,7 @@ void swap(
 ///     Stride between elements of x. incx must not be zero.
 ///     If incx < 0, uses elements of x in reverse order: x(n-1), ..., x(0).
 ///
-/// @param[in,out] y
+/// @param[in, out] y
 ///     The n-element vector y, in an array of length (n-1)*abs(incy) + 1.
 ///
 /// @param[in] incy

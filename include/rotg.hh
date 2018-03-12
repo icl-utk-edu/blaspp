@@ -74,10 +74,10 @@ void rotg(
 /// Generic implementation for arbitrary data types.
 /// TODO: generic version not yet implemented.
 ///
-/// @param[in,out] a
+/// @param[in, out] a
 ///     On entry, scalar a. On exit, set to z.
 ///
-/// @param[in,out] b
+/// @param[in, out] b
 ///     On entry, scalar b. On exit, set to s, 1/c, or 0.
 ///
 /// @param[out] c
@@ -92,8 +92,8 @@ template< typename TX, typename TY >
 void rotg(
     TX a,
     TY b,
-    typename blas::traits2<TX,TY>::real_t   c,
-    typename blas::traits2<TX,TY>::scalar_t s )
+    blas::real_type<TX, TY>   c,
+    blas::scalar_type<TX, TY> s )
 {
     throw std::exception();  // not yet implemented
 }

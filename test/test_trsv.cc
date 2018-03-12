@@ -16,8 +16,8 @@ void test_trsv_work( Params& params, bool run )
     #define A(i_, j_) (A + (i_) + (j_)*lda)
 
     using namespace blas;
-    typedef typename traits2< TA, TX >::scalar_t scalar_t;
-    typedef typename traits< scalar_t >::real_t real_t;
+    typedef scalar_type<TA, TX> scalar_t;
+    typedef real_type<scalar_t> real_t;
     typedef long long lld;
 
     // get & mark input values
@@ -65,7 +65,7 @@ void test_trsv_work( Params& params, bool run )
         // copy upper => lower
         for (int64_t j = 0; j < n; ++j) {
             for (int64_t i = 0; i < j; ++i) {
-                *A(j,i) = *A(i,j);
+                *A(j, i) = *A(i, j);
             }
         }
     }
@@ -73,7 +73,7 @@ void test_trsv_work( Params& params, bool run )
         // copy lower => upper
         for (int64_t j = 0; j < n; ++j) {
             for (int64_t i = 0; i < j; ++i) {
-                *A(i,j) = *A(j,i);
+                *A(i, j) = *A(j, i);
             }
         }
     }

@@ -255,12 +255,12 @@ std::complex<double> dotu(
 /// @ingroup dot
 
 template< typename TX, typename TY >
-typename traits2<TX,TY>::scalar_t dot(
+scalar_type<TX, TY> dot(
     int64_t n,
     TX const *x, int64_t incx,
     TY const *y, int64_t incy )
 {
-    typedef typename traits2<TX,TY>::scalar_t scalar_t;
+    typedef scalar_type<TX, TY> scalar_t;
 
     // check arguments
     blas_error_if( n < 0 );
@@ -313,12 +313,12 @@ typename traits2<TX,TY>::scalar_t dot(
 /// @ingroup dotu
 
 template< typename TX, typename TY >
-typename traits2<TX,TY>::scalar_t dotu(
+scalar_type<TX, TY> dotu(
     int64_t n,
     TX const *x, int64_t incx,
     TY const *y, int64_t incy )
 {
-    typedef typename traits2<TX,TY>::scalar_t scalar_t;
+    typedef scalar_type<TX, TY> scalar_t;
 
     // check arguments
     blas_error_if( n < 0 );

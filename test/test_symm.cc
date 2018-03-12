@@ -14,8 +14,8 @@ template< typename TA, typename TB, typename TC >
 void test_symm_work( Params& params, bool run )
 {
     using namespace blas;
-    typedef typename traits3< TA, TB, TC >::scalar_t scalar_t;
-    typedef typename traits< scalar_t >::real_t real_t;
+    typedef scalar_type<TA, TB, TC> scalar_t;
+    typedef real_type<scalar_t> real_t;
     typedef long long lld;
 
     // get & mark input values

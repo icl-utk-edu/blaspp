@@ -17,7 +17,7 @@ void print_matrix( int64_t m, int64_t n, T *A, int64_t lda )
     printf( "[\n" );
     for (int64_t i = 0; i < m; ++i) {
         for (int64_t j = 0; j < n; ++j) {
-            printf( " %9.4f", A(i,j) );
+            printf( " %9.4f", A(i, j) );
         }
         printf( "\n" );
     }
@@ -39,7 +39,7 @@ void print_matrix( int64_t m, int64_t n, std::complex<T>* A, int64_t lda )
     printf( "[\n" );
     for (int64_t i = 0; i < m; ++i) {
         for (int64_t j = 0; j < n; ++j) {
-            printf( " %9.4f + %9.4fi", real(A(i,j)), imag(A(i,j)) );
+            printf( " %9.4f + %9.4fi", real(A(i, j)), imag(A(i, j)) );
         }
         printf( "\n" );
     }

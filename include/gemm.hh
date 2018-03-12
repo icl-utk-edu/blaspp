@@ -383,8 +383,8 @@ void gemm(
 ///
 /// @param[in] lda
 ///     Leading dimension of A.
-///     - If transA = NoTrans: lda >= max(1,m) [RowMajor: lda >= max(1,k)].
-///     - Otherwise:           lda >= max(1,k) [RowMajor: lda >= max(1,m)].
+///     - If transA = NoTrans: lda >= max(1, m) [RowMajor: lda >= max(1, k)].
+///     - Otherwise:           lda >= max(1, k) [RowMajor: lda >= max(1, m)].
 ///
 /// @param[in] B
 ///     - If transB = NoTrans:
@@ -394,8 +394,8 @@ void gemm(
 ///
 /// @param[in] ldb
 ///     Leading dimension of B.
-///     - If transB = NoTrans: ldb >= max(1,k) [RowMajor: ldb >= max(1,n)].
-///     - Otherwise:           ldb >= max(1,n) [RowMajor: ldb >= max(1,k)].
+///     - If transB = NoTrans: ldb >= max(1, k) [RowMajor: ldb >= max(1, n)].
+///     - Otherwise:           ldb >= max(1, n) [RowMajor: ldb >= max(1, k)].
 ///
 /// @param[in] beta
 ///     Scalar beta. If beta is zero, C need not be set on input.
@@ -404,7 +404,7 @@ void gemm(
 ///     The m-by-n matrix C, stored in an ldc-by-n array [RowMajor: m-by-ldc].
 ///
 /// @param[in] ldc
-///     Leading dimension of C. ldc >= max(1,m) [RowMajor: ldc >= max(1,n)].
+///     Leading dimension of C. ldc >= max(1, m) [RowMajor: ldc >= max(1, n)].
 ///
 /// @ingroup gemm
 
@@ -414,10 +414,10 @@ void gemm(
     blas::Op transA,
     blas::Op transB,
     int64_t m, int64_t n, int64_t k,
-    typename traits3<TA, TB, TC>::scalar_t alpha,
+    scalar_type<TA, TB, TC> alpha,
     TA const *A, int64_t lda,
     TB const *B, int64_t ldb,
-    typename traits3<TA, TB, TC>::scalar_t beta,
+    scalar_type<TA, TB, TC> beta,
     TC       *C, int64_t ldc )
 {
     throw std::exception();  // not yet implemented

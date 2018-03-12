@@ -90,6 +90,7 @@ std::vector< libtest::routines_t > routines = {
 
     // auxiliary
     { "error",  test_error,  Section::aux     },
+    { "max",    test_max,    Section::aux     },
 };
 
 // -----------------------------------------------------------------------------
