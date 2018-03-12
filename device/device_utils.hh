@@ -20,6 +20,11 @@ inline device_uplo_t    device_uplo_const(blas::Uplo uplo);
 
 inline device_side_t    device_side_const(blas::Side side);
 
+template<typename T> 
+inline  T* device_malloc(int64_t nelements);
+
+inline void device_free(void* ptr);
+
 }        //  namespace blas
 
 
@@ -109,6 +114,29 @@ device_side_t    blas::device_side_const(blas::Side side){
         default:;
     }
     return side_;
+}
+
+/// @return a device pointer to an allocated memory space 
+template<typename T>
+inline 
+T* blas::device_malloc(int64_t nelements){
+    T* ptr = NULL;
+    #ifdef HAVE_CUBLAS
+    device_error_check( cudaMalloc((void**)&ptr, nelements * sizeof(T)) );
+    #elif defined(HAVE_ROCBLAS)
+    // TODO: allocation for AMD GPUs
+    #endif
+    return ptr;
+}
+
+/// @free a device pointer 
+inline 
+void blas::device_free(void* ptr){
+    #ifdef HAVE_CUBLAS
+    device_error_check( cudaFree( ptr ) );
+    #elif defined(HAVE_ROCBLAS)
+    // TODO: free memory for AMD GPUs
+    #endif
 }
 
 #endif        //  #ifndef DEVICE_UTILS_HH
