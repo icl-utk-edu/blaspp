@@ -1,4 +1,5 @@
 #include <omp.h>
+#include <math.h>
 
 #include "test.hh"
 #include "cblas.hh"
@@ -57,6 +58,28 @@ void test_trsm_work( Params& params, bool run )
     lapack_larnv( idist, iseed, size_A, A );  // TODO: generate
     lapack_larnv( idist, iseed, size_B, B );  // TODO
     lapack_lacpy( "g", Bm, Bn, B, ldb, Bref, ldb );
+
+    // set unused data to nan
+    if (uplo == Uplo::Lower) {
+        for (int j = 0; j < Am; ++j)
+            for (int i = 0; i < j; ++i)  // upper
+                A[ i + j*lda ] = nan("");
+    }
+    else {
+        for (int j = 0; j < Am; ++j)
+            for (int i = j+1; i < Am; ++i)  // lower
+                A[ i + j*lda ] = nan("");
+    }
+
+    // Factor A into L L^H or U U^H to get a well-conditioned triangular matrix.
+    // If diag == Unit, the diagonal is replaced; this is still well-conditioned.
+    // First, brute force positive definiteness.
+    for (int i = 0; i < Am; ++i) {
+        A[ i + i*lda ] += Am;
+    }
+    blas_int info = 0;
+    lapack_potrf( uplo2str(uplo), Am, A, lda, &info );
+    assert( info == 0 );
 
     // norms for error check
     real_t work[1];

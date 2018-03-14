@@ -1,4 +1,5 @@
 #include <omp.h>
+#include <math.h>
 
 #include "test.hh"
 #include "cblas.hh"
@@ -50,7 +51,6 @@ void test_trsv_work( Params& params, bool run )
     TA* A    = new TA[ size_A ];
     TX* x    = new TX[ size_x ];
     TX* xref = new TX[ size_x ];
-    int* ipiv = new int[ n ];
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
@@ -58,25 +58,26 @@ void test_trsv_work( Params& params, bool run )
     lapack_larnv( idist, iseed, size_x, x );
     cblas_copy( n, x, incx, xref, incx );
 
-    // make A a well-conditioned triangle
-    int info = 0;
-    lapack_getrf( n, n, A, lda, ipiv, &info );
-    if (diag == Diag::NonUnit) {
-        // copy upper => lower
-        for (int64_t j = 0; j < n; ++j) {
-            for (int64_t i = 0; i < j; ++i) {
-                *A(j, i) = *A(i, j);
-            }
-        }
+    // set unused data to nan
+    if (uplo == Uplo::Lower) {
+        for (int j = 0; j < n; ++j)
+            for (int i = 0; i < j; ++i)  // upper
+                A[ i + j*lda ] = nan("");
     }
     else {
-        // copy lower => upper
-        for (int64_t j = 0; j < n; ++j) {
-            for (int64_t i = 0; i < j; ++i) {
-                *A(i, j) = *A(j, i);
-            }
-        }
+        for (int j = 0; j < n; ++j)
+            for (int i = j+1; i < n; ++i)  // lower
+                A[ i + j*lda ] = nan("");
     }
+
+    // Factor A into L L^H or U U^H to get a well-conditioned triangular matrix.
+    // If diag == Unit, the diagonal is replaced; this is still well-conditioned.
+    // First, brute force positive definiteness.
+    for (int i = 0; i < n; ++i) {
+        A[ i + i*lda ] += n;
+    }
+    blas_int info = 0;
+    lapack_potrf( uplo2str(uplo), n, A, lda, &info );
     assert( info == 0 );
 
     // norms for error check
@@ -155,7 +156,6 @@ void test_trsv_work( Params& params, bool run )
     delete[] A;
     delete[] x;
     delete[] xref;
-    delete[] ipiv;
 
     #undef A
 }
