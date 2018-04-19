@@ -1,5 +1,3 @@
-#include <omp.h>
-
 #include "test.hh"
 #include "cblas.hh"
 #include "lapack_tmp.hh"
@@ -13,6 +11,7 @@
 template< typename TA, typename TB, typename TC >
 void test_syr2k_work( Params& params, bool run )
 {
+    using namespace libtest;
     using namespace blas;
     typedef typename traits2< TA, TC >::scalar_t scalar_t;
     typedef typename traits< scalar_t >::real_t real_t;
@@ -112,10 +111,10 @@ void test_syr2k_work( Params& params, bool run )
 
     // run test
     libtest::flush_cache( params.cache.value() );
-    double time = omp_get_wtime();
+    double time = get_wtime();
     blas::syr2k( layout, uplo, trans, n, k,
                  alpha, A, lda, B, ldb, beta, C, ldc );
-    time = omp_get_wtime() - time;
+    time = get_wtime() - time;
 
     double gflop = Gflop < scalar_t >::syr2k( n, k );
     params.time.value()   = time;
@@ -128,12 +127,12 @@ void test_syr2k_work( Params& params, bool run )
     if (params.ref.value() == 'y' || params.check.value() == 'y') {
         // run reference
         libtest::flush_cache( params.cache.value() );
-        time = omp_get_wtime();
+        time = get_wtime();
         cblas_syr2k( cblas_layout_const(layout),
                      cblas_uplo_const(uplo),
                      cblas_trans_const(trans),
                      n, k, alpha, A, lda, B, ldb, beta, Cref, ldc );
-        time = omp_get_wtime() - time;
+        time = get_wtime() - time;
 
         params.ref_time.value()   = time;
         params.ref_gflops.value() = gflop / time;

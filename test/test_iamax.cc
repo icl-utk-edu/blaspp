@@ -1,5 +1,3 @@
-#include <omp.h>
-
 #include "test.hh"
 #include "cblas.hh"
 #include "lapack_tmp.hh"
@@ -12,6 +10,7 @@
 template< typename T >
 void test_iamax_work( Params& params, bool run )
 {
+    using namespace libtest;
     using namespace blas;
     typedef typename traits< T >::real_t real_t;
     typedef long long lld;
@@ -58,9 +57,9 @@ void test_iamax_work( Params& params, bool run )
 
     // run test
     libtest::flush_cache( params.cache.value() );
-    double time = omp_get_wtime();
+    double time = get_wtime();
     int64_t result = blas::iamax( n, x, incx );
-    time = omp_get_wtime() - time;
+    time = get_wtime() - time;
 
     double gflop = Gflop < T >::iamax( n );
     double gbyte = Gbyte < T >::iamax( n );
@@ -75,9 +74,9 @@ void test_iamax_work( Params& params, bool run )
     if (params.check.value() == 'y') {
         // run reference
         libtest::flush_cache( params.cache.value() );
-        time = omp_get_wtime();
+        time = get_wtime();
         int64_t ref = cblas_iamax( n, x, incx );
-        time = omp_get_wtime() - time;
+        time = get_wtime() - time;
 
         params.ref_time.value()   = time * 1000;  // msec
         params.ref_gflops.value() = gflop / time;

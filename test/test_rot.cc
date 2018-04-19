@@ -1,5 +1,3 @@
-#include <omp.h>
-
 #include "test.hh"
 #include "cblas.hh"
 #include "lapack_tmp.hh"
@@ -17,6 +15,7 @@
 template< typename TX, typename TS >
 void test_rot_work( Params& params, bool run )
 {
+    using namespace libtest;
     using namespace blas;
     typedef typename traits< TX >::real_t real_t;
     typedef long long lld;
@@ -81,9 +80,9 @@ void test_rot_work( Params& params, bool run )
 
     // run test
     libtest::flush_cache( params.cache.value() );
-    double time = omp_get_wtime();
+    double time = get_wtime();
     blas::rot( n, x, incx, y, incy, c, s );
-    time = omp_get_wtime() - time;
+    time = get_wtime() - time;
 
     double gflop = Gflop < TX >::dot( n );
     double gbyte = Gbyte < TX >::dot( n );
@@ -99,9 +98,9 @@ void test_rot_work( Params& params, bool run )
     if (params.ref.value() == 'y' || params.check.value() == 'y') {
         // run reference
         libtest::flush_cache( params.cache.value() );
-        time = omp_get_wtime();
+        time = get_wtime();
         cblas_rot( n, xref, incx, yref, incy, c, s );
-        time = omp_get_wtime() - time;
+        time = get_wtime() - time;
 
         params.ref_time.value()   = time * 1000;  // msec
         params.ref_gflops.value() = gflop / time;

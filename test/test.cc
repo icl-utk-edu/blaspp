@@ -1,10 +1,9 @@
 #include <complex>
 
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
+//#include <stdio.h>
+#include <cstring>
+//#include <unistd.h>
 
-#include <omp.h>
 
 #include "test.hh"
 
@@ -202,7 +201,7 @@ int main( int argc, char** argv )
 
     // run tests
     int status = 0;
-    int repeat = params.repeat.value();
+    auto repeat = params.repeat.value();
     libtest::DataType last = params.datatype.value();
     params.header();
     do {

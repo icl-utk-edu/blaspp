@@ -1,5 +1,3 @@
-#include <omp.h>
-
 #include "test.hh"
 #include "cblas.hh"
 #include "lapack_tmp.hh"
@@ -12,6 +10,7 @@
 template< typename TX, typename TY >
 void test_swap_work( Params& params, bool run )
 {
+    using namespace libtest;
     using namespace blas;
     typedef typename traits2< TX, TY >::scalar_t scalar_t;
     typedef typename traits< scalar_t >::real_t real_t;
@@ -70,9 +69,9 @@ void test_swap_work( Params& params, bool run )
 
     // run test
     libtest::flush_cache( params.cache.value() );
-    double time = omp_get_wtime();
+    double time = get_wtime();
     blas::swap( n, x, incx, y, incy );
-    time = omp_get_wtime() - time;
+    time = get_wtime() - time;
 
     double gflop = Gflop < scalar_t >::swap( n );
     double gbyte = Gbyte < scalar_t >::swap( n );
@@ -88,9 +87,9 @@ void test_swap_work( Params& params, bool run )
     if (params.check.value() == 'y') {
         // run reference
         libtest::flush_cache( params.cache.value() );
-        time = omp_get_wtime();
+        time = get_wtime();
         cblas_swap( n, xref, incx, yref, incy );
-        time = omp_get_wtime() - time;
+        time = get_wtime() - time;
         if (verbose >= 2) {
             printf( "xref = " ); print_vector( n, xref, incx );
             printf( "yref = " ); print_vector( n, yref, incy );

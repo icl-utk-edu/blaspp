@@ -1,5 +1,3 @@
-#include <omp.h>
-
 #include "test.hh"
 #include "cblas.hh"
 #include "lapack_tmp.hh"
@@ -13,6 +11,7 @@
 template< typename TA, typename TB >
 void test_trmm_work( Params& params, bool run )
 {
+    using namespace libtest;
     using namespace blas;
     typedef typename traits2< TA, TB >::scalar_t scalar_t;
     typedef typename traits< scalar_t >::real_t real_t;
@@ -93,9 +92,9 @@ void test_trmm_work( Params& params, bool run )
 
     // run test
     libtest::flush_cache( params.cache.value() );
-    double time = omp_get_wtime();
+    double time = get_wtime();
     blas::trmm( layout, side, uplo, trans, diag, m, n, alpha, A, lda, B, ldb );
-    time = omp_get_wtime() - time;
+    time = get_wtime() - time;
 
     double gflop = Gflop < scalar_t >::trmm( side, m, n );
     params.time.value()   = time;
@@ -108,14 +107,14 @@ void test_trmm_work( Params& params, bool run )
     if (params.check.value() == 'y') {
         // run reference
         libtest::flush_cache( params.cache.value() );
-        time = omp_get_wtime();
+        time = get_wtime();
         cblas_trmm( cblas_layout_const(layout),
                     cblas_side_const(side),
                     cblas_uplo_const(uplo),
                     cblas_trans_const(trans),
                     cblas_diag_const(diag),
                     m, n, alpha, A, lda, Bref, ldb );
-        time = omp_get_wtime() - time;
+        time = get_wtime() - time;
 
         params.ref_time.value()   = time;
         params.ref_gflops.value() = gflop / time;

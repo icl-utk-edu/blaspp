@@ -1,5 +1,3 @@
-#include <omp.h>
-
 #include "test.hh"
 #include "cblas.hh"
 #include "lapack_tmp.hh"
@@ -13,6 +11,7 @@
 template< typename TX, typename TY >
 void test_axpy_work( Params& params, bool run )
 {
+    using namespace libtest;
     using namespace blas;
     typedef typename traits2< TX, TY >::scalar_t scalar_t;
     typedef typename traits< scalar_t >::real_t real_t;
@@ -72,9 +71,9 @@ void test_axpy_work( Params& params, bool run )
 
     // run test
     libtest::flush_cache( params.cache.value() );
-    double time = omp_get_wtime();
+    double time = get_wtime();
     blas::axpy( n, alpha, x, incx, y, incy );
-    time = omp_get_wtime() - time;
+    time = get_wtime() - time;
 
     double gflop = Gflop < scalar_t >::axpy( n );
     double gbyte = Gbyte< scalar_t >::axpy( n );
@@ -89,9 +88,9 @@ void test_axpy_work( Params& params, bool run )
     if (params.check.value() == 'y') {
         // run reference
         libtest::flush_cache( params.cache.value() );
-        time = omp_get_wtime();
+        time = get_wtime();
         cblas_axpy( n, alpha, x, incx, yref, incy );
-        time = omp_get_wtime() - time;
+        time = get_wtime() - time;
 
         params.ref_time.value()   = time * 1000;  // msec
         params.ref_gflops.value() = gflop / time;

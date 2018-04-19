@@ -1,5 +1,3 @@
-#include <omp.h>
-
 #include "test.hh"
 #include "cblas.hh"
 #include "lapack_tmp.hh"
@@ -13,6 +11,7 @@
 template< typename TA, typename TX, typename TY >
 void test_syr2_work( Params& params, bool run )
 {
+    using namespace libtest;
     using namespace blas;
     typedef typename traits3< TA, TX, TY >::scalar_t scalar_t;
     typedef typename traits< scalar_t >::real_t real_t;
@@ -94,9 +93,9 @@ void test_syr2_work( Params& params, bool run )
 
     // run test
     libtest::flush_cache( params.cache.value() );
-    double time = omp_get_wtime();
+    double time = get_wtime();
     blas::syr2( layout, uplo, n, alpha, x, incx, y, incy, A, lda );
-    time = omp_get_wtime() - time;
+    time = get_wtime() - time;
 
     double gflop = Gflop < scalar_t >::syr2( n );
     double gbyte = Gbyte < scalar_t >::syr2( n );
@@ -122,7 +121,7 @@ void test_syr2_work( Params& params, bool run )
 
         // run reference
         libtest::flush_cache( params.cache.value() );
-        time = omp_get_wtime();
+        time = get_wtime();
 
         // MacOS Cblas has bug with RowMajor [sd]syr2k???
         if (layout == Layout::RowMajor) {
@@ -131,7 +130,7 @@ void test_syr2_work( Params& params, bool run )
         }
         cblas_syr2k( cblas_layout_const(layout), cblas_uplo_const(uplo), CblasNoTrans,
                      n, 1, alpha, XX, lda, YY, lda, one, Aref, lda );
-        time = omp_get_wtime() - time;
+        time = get_wtime() - time;
 
         params.ref_time.value()   = time * 1000;  // msec
         params.ref_gflops.value() = gflop / time;

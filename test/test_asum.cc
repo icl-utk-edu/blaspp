@@ -1,5 +1,3 @@
-#include <omp.h>
-
 #include "test.hh"
 #include "cblas.hh"
 #include "lapack_tmp.hh"
@@ -13,6 +11,7 @@
 template< typename T >
 void test_asum_work( Params& params, bool run )
 {
+    using namespace libtest;
     using namespace blas;
     typedef typename traits<T>::real_t real_t;
     typedef long long lld;
@@ -59,9 +58,9 @@ void test_asum_work( Params& params, bool run )
 
     // run test
     libtest::flush_cache( params.cache.value() );
-    double time = omp_get_wtime();
+    double time = get_wtime();
     real_t result = blas::asum( n, x, incx );
-    time = omp_get_wtime() - time;
+    time = get_wtime() - time;
 
     double gflop = Gflop < T >::asum( n );
     double gbyte = Gbyte < T >::asum( n );
@@ -76,9 +75,9 @@ void test_asum_work( Params& params, bool run )
     if (params.check.value() == 'y') {
         // run reference
         libtest::flush_cache( params.cache.value() );
-        time = omp_get_wtime();
+        time = get_wtime();
         real_t ref = cblas_asum( n, x, incx );
-        time = omp_get_wtime() - time;
+        time = get_wtime() - time;
 
         params.ref_time.value()   = time * 1000;  // msec
         params.ref_gflops.value() = gflop / time;
