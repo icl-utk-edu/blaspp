@@ -333,7 +333,7 @@ void gemv(
 ///     The m-by-n matrix A, stored in an lda-by-n array [RowMajor: m-by-lda].
 ///
 /// @param[in] lda
-///     Leading dimension of A. lda >= max(1,m) [RowMajor: lda >= max(1,n)].
+///     Leading dimension of A. lda >= max(1, m) [RowMajor: lda >= max(1, n)].
 ///
 /// @param[in] x
 ///     - If trans = NoTrans:
@@ -348,7 +348,7 @@ void gemv(
 /// @param[in] beta
 ///     Scalar beta. If beta is zero, y need not be set on input.
 ///
-/// @param[in,out] y
+/// @param[in, out] y
 ///     - If trans = NoTrans:
 ///       the m-element vector y, in an array of length (m-1)*abs(incy) + 1.
 ///     - Otherwise:
@@ -365,13 +365,13 @@ void gemv(
     blas::Layout layout,
     blas::Op trans,
     int64_t m, int64_t n,
-    typename blas::traits3<TA, TX, TY>::scalar_t alpha,
+    blas::scalar_type<TA, TX, TY> alpha,
     TA const *A, int64_t lda,
     TX const *x, int64_t incx,
-    typename blas::traits3<TA, TX, TY>::scalar_t beta,
+    blas::scalar_type<TA, TX, TY> beta,
     TY *y, int64_t incy )
 {
-    typedef typename blas::traits3<TA, TX, TY>::scalar_t scalar_t;
+    typedef blas::scalar_type<TA, TX, TY> scalar_t;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]
 

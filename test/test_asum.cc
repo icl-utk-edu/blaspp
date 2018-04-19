@@ -13,7 +13,7 @@ void test_asum_work( Params& params, bool run )
 {
     using namespace libtest;
     using namespace blas;
-    typedef typename traits<T>::real_t real_t;
+    typedef real_type<T> real_t;
     typedef long long lld;
 
     // get & mark input values

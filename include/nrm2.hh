@@ -119,12 +119,12 @@ double nrm2(
 /// @ingroup nrm2
 
 template< typename T >
-typename traits<T>::real_t
+real_type<T>
 nrm2(
     int64_t n,
     T const * x, int64_t incx )
 {
-    typedef typename traits<T>::real_t real_t;
+    typedef real_type<T> real_t;
 
     // check arguments
     blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail

@@ -6,7 +6,7 @@ template< typename T >
 void test_rotg_work( Params& params, bool run )
 {
     T a=1, b=2, s;
-    typename blas::traits<T>::real_t c;
+    blas::real_type<T> c;
 
     blas::rotg( &a, &b, &c, &s );
 }

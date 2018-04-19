@@ -385,62 +385,62 @@ void lapack_lacpy( char const* uplo,
 }
 
 // -----------------------------------------------------------------------------
-#define lapack_sgetrf BLAS_FORTRAN_NAME( sgetrf, SGETRF )
-#define lapack_dgetrf BLAS_FORTRAN_NAME( dgetrf, DGETRF )
-#define lapack_cgetrf BLAS_FORTRAN_NAME( cgetrf, CGETRF )
-#define lapack_zgetrf BLAS_FORTRAN_NAME( zgetrf, ZGETRF )
+#define lapack_spotrf BLAS_FORTRAN_NAME( spotrf, SPOTRF )
+#define lapack_dpotrf BLAS_FORTRAN_NAME( dpotrf, DPOTRF )
+#define lapack_cpotrf BLAS_FORTRAN_NAME( cpotrf, CPOTRF )
+#define lapack_zpotrf BLAS_FORTRAN_NAME( zpotrf, ZPOTRF )
 
 extern "C"
-void lapack_sgetrf( blas_int const *m, blas_int const *n,
+void lapack_spotrf( char const *uplo, blas_int const *n,
                     float *A, blas_int const *lda,
-                    blas_int *ipiv, blas_int *info );
+                    blas_int *info );
 
 extern "C"
-void lapack_dgetrf( blas_int const *m, blas_int const *n,
+void lapack_dpotrf( char const *uplo, blas_int const *n,
                     double *A, blas_int const *lda,
-                    blas_int *ipiv, blas_int *info );
+                    blas_int *info );
 
 extern "C"
-void lapack_cgetrf( blas_int const *m, blas_int const *n,
+void lapack_cpotrf( char const *uplo, blas_int const *n,
                     std::complex<float> *A, blas_int const *lda,
-                    blas_int *ipiv, blas_int *info );
+                    blas_int *info );
 
 extern "C"
-void lapack_zgetrf( blas_int const *m, blas_int const *n,
+void lapack_zpotrf( char const *uplo, blas_int const *n,
                     std::complex<double> *A, blas_int const *lda,
-                    blas_int *ipiv, blas_int *info );
+                    blas_int *info );
 
 // -----------------------------------------------------------------------------
 inline
-void lapack_getrf(  blas_int m, blas_int n,
+void lapack_potrf(  char const *uplo, blas_int n,
                     float *A, blas_int lda,
-                    blas_int *ipiv, blas_int *info )
+                    blas_int *info )
 {
-    lapack_sgetrf( &m, &n, A, &lda, ipiv, info );
+    lapack_spotrf( uplo, &n, A, &lda, info );
 }
 
 inline
-void lapack_getrf(  blas_int m, blas_int n,
+void lapack_potrf(  char const *uplo, blas_int n,
                     double *A, blas_int lda,
-                    blas_int *ipiv, blas_int *info )
+                    blas_int *info )
 {
-    lapack_dgetrf( &m, &n, A, &lda, ipiv, info );
+    lapack_dpotrf( uplo, &n, A, &lda, info );
 }
 
 inline
-void lapack_getrf(  blas_int m, blas_int n,
+void lapack_potrf(  char const *uplo, blas_int n,
                     std::complex<float> *A, blas_int lda,
-                    blas_int *ipiv, blas_int *info )
+                    blas_int *info )
 {
-    lapack_cgetrf( &m, &n, A, &lda, ipiv, info );
+    lapack_cpotrf( uplo, &n, A, &lda, info );
 }
 
 inline
-void lapack_getrf(  blas_int m, blas_int n,
+void lapack_potrf(  char const *uplo, blas_int n,
                     std::complex<double> *A, blas_int lda,
-                    blas_int *ipiv, blas_int *info )
+                    blas_int *info )
 {
-    lapack_zgetrf( &m, &n, A, &lda, ipiv, info );
+    lapack_zpotrf( uplo, &n, A, &lda, info );
 }
 
 #endif        //  #ifndef LAPACK_TMP_HH

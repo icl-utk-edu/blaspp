@@ -8,7 +8,7 @@
 
 **University of Tennessee**
 
-![SLATE](http://icl.bitbucket.io/slate/artwork/ecp-slate.jpg)
+![SLATE](http://icl.bitbucket.io/slate/artwork/SLATE-Architecture-Illustration.jpg)
 
 [TOC]
 
@@ -33,21 +33,18 @@ BLAS++ is part of the project
 (SLATE), which is funded by the [Department of Energy](https://energy.gov)
 as part of its [Exascale Computing Initiative](https://exascaleproject.org)
 (ECP).
-
-Closely related to BLAS++ are the
-[BBLAS++](https://bitbucket.org/icl/bblaspp) and
-[LAPACK++](https://bitbucket.org/icl/lapackpp) projects,
-which aim at providing C++ APIs for the batch BLAS and LAPACK, respectively.
+Closely related to BLAS++ is the
+[LAPACK++](https://bitbucket.org/icl/lapackpp) project,
+which provides a C++ API for LAPACK.
 
 * * *
 
-Resources
-=========
+Documentation
+=============
 
-* Visit the [LAPACK++ repository](https://bitbucket.org/icl/lapackpp) for more information about the C++ API for LAPACK.
-* Visit the [ECP website](https://exascaleproject.org) to find out more about the DOE Exascale Computing Initiative.
-* Visit the [SLATE website](http://icl.utk.edu/slate/) for more information about the SLATE project.
-* Visit the [SLATE Working Notes](http://www.icl.utk.edu/publications/series/swans) to find out more about ongoing SLATE developments.
+* [BLAS++ Doxygen](https://icl.bitbucket.io/blaspp/doxygen/html/)
+* [SLATE Working Note 2: C++ API for BLAS and LAPACK](http://www.icl.utk.edu/publications/swan-002)
+* [SLATE Working Note 4: C++ API for Batch BLAS](http://www.icl.utk.edu/publications/swan-004)
 
 * * *
 
@@ -59,6 +56,16 @@ Join the *SLATE User* Google group by going to
 https://groups.google.com/a/icl.utk.edu/forum/#!forum/slate-user
 and clicking `Apply to join group`.
 Upon acceptance, email your questions and comments to *slate-user@icl.utk.edu*.
+
+* * *
+
+Resources
+=========
+
+* Visit the [LAPACK++ repository](https://bitbucket.org/icl/lapackpp) for more information about the C++ API for LAPACK.
+* Visit the [ECP website](https://exascaleproject.org) to find out more about the DOE Exascale Computing Initiative.
+* Visit the [SLATE website](http://icl.utk.edu/slate/) for more information about the SLATE project.
+* Visit the [SLATE Working Notes](http://www.icl.utk.edu/publications/series/swans) to find out more about ongoing SLATE developments.
 
 * * *
 
@@ -74,6 +81,8 @@ and early testbed platforms, in support of the nation's exascale computing imper
 
 This research uses resources of the Oak Ridge Leadership Computing Facility,
 which is a DOE Office of Science User Facility supported under Contract DE-AC05-00OR22725.
+This research also uses resources of the Argonne Leadership Computing Facility,
+which is a DOE Office of Science User Facility supported under Contract DE-AC02-06CH11357.
 
 * * *
 

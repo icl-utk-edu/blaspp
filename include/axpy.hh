@@ -140,7 +140,7 @@ void axpy(
 ///     Stride between elements of x. incx must not be zero.
 ///     If incx < 0, uses elements of x in reverse order: x(n-1), ..., x(0).
 ///
-/// @param[in,out] y
+/// @param[in, out] y
 ///     The n-element vector y, in an array of length (n-1)*abs(incy) + 1.
 ///
 /// @param[in] incy
@@ -152,11 +152,11 @@ void axpy(
 template< typename TX, typename TY >
 void axpy(
     int64_t n,
-    typename blas::traits2<TX,TY>::scalar_t alpha,
+    blas::scalar_type<TX, TY> alpha,
     TX const *x, int64_t incx,
     TY       *y, int64_t incy )
 {
-    typedef typename blas::traits2<TX,TY>::scalar_t scalar_t;
+    typedef blas::scalar_type<TX, TY> scalar_t;
 
     // check arguments
     blas_error_if( n < 0 );

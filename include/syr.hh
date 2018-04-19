@@ -123,11 +123,11 @@ void syr(
 ///     Stride between elements of x. incx must not be zero.
 ///     If incx < 0, uses elements of x in reverse order: x(n-1), ..., x(0).
 ///
-/// @param[in,out] A
+/// @param[in, out] A
 ///     The n-by-n matrix A, stored in an lda-by-n array [RowMajor: n-by-lda].
 ///
 /// @param[in] lda
-///     Leading dimension of A. lda >= max(1,n).
+///     Leading dimension of A. lda >= max(1, n).
 ///
 /// @ingroup syr
 
@@ -136,13 +136,13 @@ void syr(
     blas::Layout layout,
     blas::Uplo uplo,
     int64_t n,
-    typename blas::traits2<TA, TX>::scalar_t alpha,
+    blas::scalar_type<TA, TX> alpha,
     TX const *x, int64_t incx,
     TA       *A, int64_t lda )
 {
     printf( "template syr implementation\n" );
 
-    typedef typename blas::traits2<TA, TX>::scalar_t scalar_t;
+    typedef blas::scalar_type<TA, TX> scalar_t;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]
 
@@ -175,7 +175,7 @@ void syr(
                 // note: NOT skipping if x[j] is zero, for consistent NAN handling
                 scalar_t tmp = alpha * x[j];
                 for (int64_t i = 0; i <= j; ++i) {
-                    A(i,j) += x[i] * tmp;
+                    A(i, j) += x[i] * tmp;
                 }
             }
         }
@@ -186,7 +186,7 @@ void syr(
                 scalar_t tmp = alpha * x[jx];
                 int64_t ix = kx;
                 for (int64_t i = 0; i <= j; ++i) {
-                    A(i,j) += x[ix] * tmp;
+                    A(i, j) += x[ix] * tmp;
                     ix += incx;
                 }
                 jx += incx;
@@ -200,7 +200,7 @@ void syr(
             for (int64_t j = 0; j < n; ++j) {
                 scalar_t tmp = alpha * x[j];
                 for (int64_t i = j; i < n; ++i) {
-                    A(i,j) += x[i] * tmp;
+                    A(i, j) += x[i] * tmp;
                 }
             }
         }
@@ -211,7 +211,7 @@ void syr(
                 scalar_t tmp = alpha * x[jx];
                 int64_t ix = jx;
                 for (int64_t i = j; i < n; ++i) {
-                    A(i,j) += x[ix] * tmp;
+                    A(i, j) += x[ix] * tmp;
                     ix += incx;
                 }
                 jx += incx;

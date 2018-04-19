@@ -12,7 +12,7 @@ namespace blas {
 // -----------------------------------------------------------------------------
 enum class Layout : char { ColMajor = 'C', RowMajor = 'R' };
 enum class Op     : char { NoTrans  = 'N', Trans    = 'T', ConjTrans = 'C' };
-enum class Uplo   : char { Upper    = 'U', Lower    = 'L' };
+enum class Uplo   : char { Upper    = 'U', Lower    = 'L', General   = 'G' };
 enum class Diag   : char { NonUnit  = 'N', Unit     = 'U' };
 enum class Side   : char { Left     = 'L', Right    = 'R' };
 
@@ -48,8 +48,9 @@ inline const char* op2str( Op op )
 inline const char* uplo2str( Uplo uplo )
 {
     switch (uplo) {
-        case Uplo::Lower: return "lower";
-        case Uplo::Upper: return "upper";
+        case Uplo::Lower:   return "lower";
+        case Uplo::Upper:   return "upper";
+        case Uplo::General: return "general";
     }
     return "";
 }
@@ -91,7 +92,7 @@ inline Op char2op( char op )
 inline Uplo char2uplo( char uplo )
 {
     uplo = (char) toupper( uplo );
-    assert( uplo == 'L' || uplo == 'U' );
+    assert( uplo == 'L' || uplo == 'U' || uplo == 'G' );
     return Uplo( uplo );
 }
 
@@ -164,182 +165,182 @@ T abs1( std::complex<T> x )
 }
 
 // -----------------------------------------------------------------------------
-//  traits
-/// Given a type, defines corresponding real and complex types.
-/// E.g., for float,          real_t = float, complex_t = std::complex<float>,
-///       for complex<float>, real_t = float, complex_t = std::complex<float>.
+// common_type_t is defined in C++14; here's a C++11 definition
+#if __cplusplus >= 201402L
+    using std::common_type_t;
+    using std::decay_t;
+#else
+    template< typename... Ts >
+    using common_type_t = typename std::common_type< Ts... >::type;
 
+    template< typename... Ts >
+    using decay_t = typename std::decay< Ts... >::type;
+#endif
+
+// -----------------------------------------------------------------------------
+// Based on C++14 common_type implementation from
+// http://www.cplusplus.com/reference/type_traits/common_type/
+// Adds promotion of complex types based on the common type of the associated
+// real types. This fixes various cases:
+//
+// std::common_type_t< double, complex<float> > is complex<float>  (wrong)
+//        scalar_type< double, complex<float> > is complex<double> (right)
+//
+// std::common_type_t< int, complex<long> > is not defined (compile error)
+//        scalar_type< int, complex<long> > is complex<long> (right)
+
+// for zero types
+template< typename... Types >
+struct scalar_type_traits;
+
+// define scalar_type<> type alias
+template< typename... Types >
+using scalar_type = typename scalar_type_traits< Types... >::type;
+
+// for one type
 template< typename T >
-class traits
+struct scalar_type_traits< T >
 {
-public:
-    typedef T real_t;
-    typedef std::complex<T> complex_t;
+    using type = decay_t<T>;
 };
 
-// ----------------------------------------
+// for two types
+// relies on type of ?: operator being the common type of its two arguments
+template< typename T1, typename T2 >
+struct scalar_type_traits< T1, T2 >
+{
+    using type = decay_t< decltype( true ? std::declval<T1>() : std::declval<T2>() ) >;
+};
+
+// for either or both complex,
+// find common type of associated real types, then add complex
+template< typename T1, typename T2 >
+struct scalar_type_traits< std::complex<T1>, T2 >
+{
+    using type = std::complex< common_type_t< T1, T2 > >;
+};
+
+template< typename T1, typename T2 >
+struct scalar_type_traits< T1, std::complex<T2> >
+{
+    using type = std::complex< common_type_t< T1, T2 > >;
+};
+
+template< typename T1, typename T2 >
+struct scalar_type_traits< std::complex<T1>, std::complex<T2> >
+{
+    using type = std::complex< common_type_t< T1, T2 > >;
+};
+
+// for three or more types
+template< typename T1, typename T2, typename... Types >
+struct scalar_type_traits< T1, T2, Types... >
+{
+    using type = scalar_type< scalar_type< T1, T2 >, Types... >;
+};
+
+// -----------------------------------------------------------------------------
+// for any combination of types, determine associated real, scalar,
+// and complex types.
+//
+// real_type< float >                               is float
+// real_type< float, double, complex<float> >       is double
+//
+// scalar_type< float >                             is float
+// scalar_type< float, complex<float> >             is complex<float>
+// scalar_type< float, double, complex<float> >     is complex<double>
+//
+// complex_type< float >                            is complex<float>
+// complex_type< float, double >                    is complex<double>
+// complex_type< float, double, complex<float> >    is complex<double>
+
+// for zero types
+template< typename... Types >
+struct real_type_traits;
+
+// define real_type<> type alias
+template< typename... Types >
+using real_type = typename real_type_traits< Types... >::real_t;
+
+// define complex_type<> type alias
+template< typename... Types >
+using complex_type = std::complex< real_type< Types... > >;
+
+// for one type
 template< typename T >
-class traits< std::complex<T> >
+struct real_type_traits<T>
 {
-public:
-    typedef T real_t;
-    typedef std::complex<T> complex_t;
+    using real_t = T;
+};
+
+// for one complex type, strip complex
+template< typename T >
+struct real_type_traits< std::complex<T> >
+{
+    using real_t = T;
+};
+
+// for two or more types
+template< typename T1, typename... Types >
+struct real_type_traits< T1, Types... >
+{
+    using real_t = scalar_type< real_type<T1>, real_type< Types... > >;
 };
 
 // -----------------------------------------------------------------------------
-//  traits2
-/// Given two types, defines scalar and real types compatible with both types.
-/// E.g., for pair (float, complex<float>),
-/// scalar_t = complex<float>, real_t = float.
+// max that works with different data types: int64_t = max( int, int64_t )
+// and any number of arguments: max( a, b, c, d )
 
-// By default, scalars and reals are T1.
-// Later classes specialize if it should be T2 or something else
+// one argument
+template< typename T >
+T max( T x )
+{
+    return x;
+}
+
+// two arguments
 template< typename T1, typename T2 >
-class traits2
+scalar_type< T1, T2 >
+    max( T1 x, T2 y )
 {
-public:
-    typedef T1 scalar_t;
-    typedef T1 real_t;
-};
+    return (x >= y ? x : y);
+}
 
-// ----------------------------------------
-// int
-template<>
-class traits2< int, int64_t >
+// three or more arguments
+template< typename T1, typename... Types >
+scalar_type< T1, Types... >
+    max( T1 first, Types... args )
 {
-public:
-    typedef int64_t scalar_t;
-    typedef int64_t real_t;
-};
-
-// ---------------
-template<>
-class traits2< int, float >
-{
-public:
-    typedef float scalar_t;
-    typedef float real_t;
-};
-
-// ---------------
-template<>
-class traits2< int, double >
-{
-public:
-    typedef double scalar_t;
-    typedef double real_t;
-};
-
-// ----------------------------------------
-// float
-template<>
-class traits2< float, double >
-{
-public:
-    typedef double scalar_t;
-    typedef double real_t;
-};
-
-// ---------------
-template<>
-class traits2< float, std::complex<float> >
-{
-public:
-    typedef std::complex<float> scalar_t;
-    typedef float real_t;
-};
-
-// ---------------
-template<>
-class traits2< float, std::complex<double> >
-{
-public:
-    typedef std::complex<double> scalar_t;
-    typedef double real_t;
-};
-
-// ----------------------------------------
-// double
-template<>
-class traits2< double, std::complex<float> >
-{
-public:
-    typedef std::complex<double> scalar_t;
-    typedef double real_t;
-};
-
-// ---------------
-template<>
-class traits2< double, std::complex<double> >
-{
-public:
-    typedef std::complex<double> scalar_t;
-    typedef double real_t;
-};
-
-// ----------------------------------------
-// complex<float>
-template<>
-class traits2< std::complex<float>, std::complex<double> >
-{
-public:
-    typedef std::complex<double> scalar_t;
-    typedef double real_t;
-};
-
-template<>
-class traits2< std::complex<float>, std::complex<float> >
-{
-public:
-    typedef std::complex<float> scalar_t;
-    typedef float real_t;
-};
-
-// ----------------------------------------
-// complex<double>
-template<>
-class traits2< std::complex<double>, std::complex<double> >
-{
-public:
-    typedef std::complex<double> scalar_t;
-    typedef double real_t;
-};
-
-// -----------------------------------------------------------------------------
-// traits3
-/// Given three types, defines scalar and real types compatible with all types.
-/// E.g., for the triple (float, complex<float>, double),
-/// scalar_t = complex<double>, real_t = double.
-
-// ----------------------------------------
-template< typename T1, typename T2, typename T3 >
-class traits3
-{
-public:
-    typedef typename
-        traits2< typename traits2<T1,T2>::scalar_t, T3 >::scalar_t scalar_t;
-
-    typedef typename
-        traits2< typename traits2<T1,T2>::scalar_t, T3 >::real_t real_t;
-};
-
-// -----------------------------------------------------------------------------
-// max that works with different data types, e.g., max( int, int64_t )
-template< typename T1, typename T2 >
-typename blas::traits2< T1, T2 >::scalar_t
-max( T1 a, T2 b )
-{
-    return (a >= b ? a : b);
+    return max( first, max( args... ) );
 }
 
 // -----------------------------------------------------------------------------
-// min that works with different data types, e.g., min( int, int64_t )
-template< typename T1, typename T2 >
-typename blas::traits2< T1, T2 >::scalar_t
-min( T1 a, T2 b )
+// min that works with different data types: int64_t = min( int, int64_t )
+// and any number of arguments: min( a, b, c, d )
+
+// one argument
+template< typename T >
+T min( T x )
 {
-    return (a <= b ? a : b);
+    return x;
 }
+
+// two arguments
+template< typename T1, typename T2 >
+scalar_type< T1, T2 >
+    min( T1 x, T2 y )
+{
+    return (x <= y ? x : y);
+}
+
+// three or more arguments
+template< typename T1, typename... Types >
+scalar_type< T1, Types... >
+    min( T1 first, Types... args )
+{
+    return min( first, min( args... ) );
+}
+
 
 namespace internal {
 

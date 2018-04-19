@@ -27,7 +27,7 @@ BLASPP_LIBS  = -L../libtest -Wl,-rpath,${libtest_path} -ltest
 
 # ------------------------------------------------------------------------------
 # files
-test_src = ${wildcard test/*.cc}
+test_src = ${filter-out ${wildcard test/*_device.cc}, ${wildcard test/*.cc}}
 test_obj = ${addsuffix .o, ${basename ${test_src}}}
 test_dep = ${addsuffix .d, ${basename ${test_src}}}
 
