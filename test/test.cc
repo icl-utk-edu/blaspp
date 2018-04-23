@@ -1,9 +1,8 @@
 #include <complex>
 
-//#include <stdio.h>
-#include <cstring>
-//#include <unistd.h>
-
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
 
 #include "test.hh"
 
@@ -18,12 +17,14 @@ using libtest::ansi_red;
 using libtest::ansi_normal;
 
 // -----------------------------------------------------------------------------
+// each section must have a corresponding entry in section_names
 enum Section {
     newline = 0,  // zero flag forces newline
     blas1,
     blas2,
     blas3,
     aux,
+    num_sections,  // last
 };
 
 const char* section_names[] = {
@@ -125,13 +126,12 @@ Params::Params():
     diag      ( "diag",    7,    ParamType::List, blas::Diag::NonUnit,    blas::char2diag,   blas::diag2char,   blas::diag2str,   "diagonal: n=non-unit, u=unit" ),
 
     //          name,      w, p, type,            def,   min,     max, help
-    dim       ( "dim",     6,    ParamType::List,          0, 1000000, "m x n x k dimensions" ),
+    dim       ( "dim",     6,    ParamType::List,          0, 1000000, "m by n by k dimensions" ),
     alpha     ( "alpha",   9, 4, ParamType::List,  pi,  -inf,     inf, "scalar alpha" ),
     beta      ( "beta",    9, 4, ParamType::List,   e,  -inf,     inf, "scalar beta" ),
-    incx      ( "incx",    6,    ParamType::List,   1, -1000,    1000, "stride of x vector" ),
-    incy      ( "incy",    6,    ParamType::List,   1, -1000,    1000, "stride of y vector" ),
-    align     ( "align",   6,    ParamType::List,   1,     1,    1024, "column alignment (sets lda, ldb, etc. to multiple of align)" ),
-
+    incx      ( "incx",    4,    ParamType::List,   1, -1000,    1000, "stride of x vector" ),
+    incy      ( "incy",    4,    ParamType::List,   1, -1000,    1000, "stride of y vector" ),
+    align     ( "align",   0,    ParamType::List,   1,     1,    1024, "column alignment (sets lda, ldb, etc. to multiple of align)" ),
 
     // ----- output parameters
     // min, max are ignored
@@ -167,8 +167,10 @@ Params::Params():
 // -----------------------------------------------------------------------------
 int main( int argc, char** argv )
 {
+    // check that all sections have names
+    assert( sizeof(section_names)/sizeof(*section_names) == Section::num_sections );
+
     // Usage: test routine [params]
-    // find routine to test
     if (argc < 2 ||
         strcmp( argv[1], "-h" ) == 0 ||
         strcmp( argv[1], "--help" ) == 0)
@@ -176,6 +178,8 @@ int main( int argc, char** argv )
         usage( argc, argv, routines, section_names );
         return 0;
     }
+
+    // find routine to test
     const char* routine = argv[1];
     libtest::test_func_ptr test_routine = find_tester( routine, routines );
     if (test_routine == nullptr) {
@@ -191,6 +195,7 @@ int main( int argc, char** argv )
     test_routine( params, false );
 
     // parse parameters after routine name
+    // (prints routine's help and exits for arg = "-h")
     params.parse( routine, argc-2, argv+2 );
 
     // print input so running `test [input] > out.txt` documents input
@@ -199,6 +204,11 @@ int main( int argc, char** argv )
         printf( " %s", argv[i] );
     }
     printf( "\n" );
+
+    // show align column if it has non-default values
+    if (params.align.size() != 1 || params.align.value() != 1) {
+        params.align.width( 5 );
+    }
 
     // run tests
     int status = 0;
@@ -216,15 +226,16 @@ int main( int argc, char** argv )
             }
             catch (blas::Error& err) {
                 params.okay.value() = false;
-                printf( "Caught BLAS error: %s\n", err.what() );
+                printf( "BLAS error: %s\n", err.what() );
             }
             catch (...) {
                 // happens for assert_throw failures
                 params.okay.value() = false;
-                //printf( "Caught error\n" );
+                printf( "Caught error\n" );
             }
             params.print();
             status += ! params.okay.value();
+            params.reset_output();
         }
         if (repeat > 1) {
             printf( "\n" );
