@@ -721,27 +721,7 @@ cblas_symv(
                  alpha, A, lda, x, incx, beta, y, incy );
 }
 
-#define lapack_csymv BLAS_FORTRAN_NAME( csymv, CSYMV )
-#define lapack_zsymv BLAS_FORTRAN_NAME( zsymv, ZSYMV )
-
-extern "C"
-void   lapack_csymv(  const char *uplo,
-                      const int *n,
-                      const std::complex<float> *alpha,
-                      const std::complex<float> *A, const int *lda,
-                      const std::complex<float> *x, const int *incx,
-                      const std::complex<float> *beta,
-                            std::complex<float> *y, const int *incy );
-
-extern "C"
-void   lapack_zsymv(  const char *uplo,
-                      const int *n,
-                      const std::complex<double> *alpha,
-                      const std::complex<double> *A, const int *lda,
-                      const std::complex<double> *x, const int *incx,
-                      const std::complex<double> *beta,
-                            std::complex<double> *y, const int *incy );
-
+// LAPACK provides [cz]symv, CBLAS lacks them
 inline void
 cblas_symv(
     CBLAS_LAYOUT layout, CBLAS_UPLO uplo, int n,
@@ -755,7 +735,12 @@ cblas_symv(
     if (layout == CblasRowMajor) {
         uplo_ = (uplo == CblasUpper ? 'l' : 'u');  // switch upper <=> lower
     }
-    lapack_csymv( &uplo_, &n, &alpha, A, &lda, x, &incx, &beta, y, &incy );
+    BLAS_csymv( &uplo_, &n,
+                (blas_complex_float*) &alpha,
+                (blas_complex_float*) A, &lda,
+                (blas_complex_float*) x, &incx,
+                (blas_complex_float*) &beta,
+                (blas_complex_float*) y, &incy );
 }
 
 inline void
@@ -771,7 +756,12 @@ cblas_symv(
     if (layout == CblasRowMajor) {
         uplo_ = (uplo == CblasUpper ? 'l' : 'u');  // switch upper <=> lower
     }
-    lapack_zsymv( &uplo_, &n, &alpha, A, &lda, x, &incx, &beta, y, &incy );
+    BLAS_zsymv( &uplo_, &n,
+                (blas_complex_double*) &alpha,
+                (blas_complex_double*) A, &lda,
+                (blas_complex_double*) x, &incx,
+                (blas_complex_double*) &beta,
+                (blas_complex_double*) y, &incy );
 }
 
 

@@ -177,7 +177,11 @@ void syr2(
 
     char uplo_ = uplo2char( uplo );
     BLAS_csyr2k( &uplo_, &trans_, &n_, &k_,
-                &alpha, x2, &ldx_, y2, &ldy_, &beta, A, &lda_ );
+                 (blas_complex_float*) &alpha,
+                 (blas_complex_float*) x2, &ldx_,
+                 (blas_complex_float*) y2, &ldy_,
+                 (blas_complex_float*) &beta,
+                 (blas_complex_float*) A, &lda_ );
 
     if (x2 != x) {
         delete[] x2;
@@ -263,7 +267,11 @@ void syr2(
 
     char uplo_ = uplo2char( uplo );
     BLAS_zsyr2k( &uplo_, &trans_, &n_, &k_,
-                &alpha, x2, &ldx_, y2, &ldy_, &beta, A, &lda_ );
+                 (blas_complex_double*) &alpha,
+                 (blas_complex_double*) x2, &ldx_,
+                 (blas_complex_double*) y2, &ldy_,
+                 (blas_complex_double*) &beta,
+                 (blas_complex_double*) A, &lda_ );
 
     if (x2 != x) {
         delete[] x2;

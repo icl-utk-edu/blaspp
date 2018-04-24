@@ -74,7 +74,8 @@ float asum(
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
-    return BLAS_scasum( &n_, x, &incx_ );
+    return BLAS_scasum( &n_,
+                        (blas_complex_float*) x, &incx_ );
 }
 
 // -----------------------------------------------------------------------------
@@ -96,7 +97,8 @@ double asum(
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
-    return BLAS_dzasum( &n_, x, &incx_ );
+    return BLAS_dzasum( &n_,
+                        (blas_complex_double*) x, &incx_ );
 }
 
 // =============================================================================

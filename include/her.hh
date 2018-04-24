@@ -88,7 +88,10 @@ void her(
     }
 
     char uplo_ = uplo2char( uplo );
-    BLAS_cher( &uplo_, &n_, &alpha, x2, &incx_, A, &lda_ );
+    BLAS_cher( &uplo_, &n_,
+               &alpha,
+               (blas_complex_float*) x2, &incx_,
+               (blas_complex_float*) A, &lda_ );
 
     if (layout == Layout::RowMajor) {
         delete[] x2;
@@ -143,7 +146,10 @@ void her(
     }
 
     char uplo_ = uplo2char( uplo );
-    BLAS_zher( &uplo_, &n_, &alpha, x2, &incx_, A, &lda_ );
+    BLAS_zher( &uplo_, &n_,
+               &alpha,
+               (blas_complex_double*) x2, &incx_,
+               (blas_complex_double*) A, &lda_ );
 
     if (layout == Layout::RowMajor) {
         delete[] x2;

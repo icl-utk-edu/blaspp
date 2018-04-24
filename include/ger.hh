@@ -158,13 +158,19 @@ void ger(
 
         // swap m <=> n, x <=> y, call geru
         BLAS_cgeru( &n_, &m_,
-                   &alpha, y2, &incy_, x, &incx_, A, &lda_ );
+                    (blas_complex_float*) &alpha,
+                    (blas_complex_float*) y2, &incy_,
+                    (blas_complex_float*) x, &incx_,
+                    (blas_complex_float*) A, &lda_ );
 
         delete[] y2;
     }
     else {
         BLAS_cgerc( &m_, &n_,
-                   &alpha, x, &incx_, y, &incy_, A, &lda_ );
+                    (blas_complex_float*) &alpha,
+                    (blas_complex_float*) x, &incx_,
+                    (blas_complex_float*) y, &incy_,
+                    (blas_complex_float*) A, &lda_ );
     }
 }
 
@@ -219,13 +225,19 @@ void ger(
 
         // swap m <=> n, x <=> y, call geru
         BLAS_zgeru( &n_, &m_,
-                   &alpha, y2, &incy_, x, &incx_, A, &lda_ );
+                    (blas_complex_double*) &alpha,
+                    (blas_complex_double*) y2, &incy_,
+                    (blas_complex_double*) x, &incx_,
+                    (blas_complex_double*) A, &lda_ );
 
         delete[] y2;
     }
     else {
         BLAS_zgerc( &m_, &n_,
-                   &alpha, x, &incx_, y, &incy_, A, &lda_ );
+                    (blas_complex_double*) &alpha,
+                    (blas_complex_double*) x, &incx_,
+                    (blas_complex_double*) y, &incy_,
+                    (blas_complex_double*) A, &lda_ );
     }
 }
 

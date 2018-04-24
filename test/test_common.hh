@@ -1,6 +1,9 @@
 #ifndef TEST_COMMON_HH
 #define TEST_COMMON_HH
 
+#include "blas.hh"
+#include "libtest.hh"
+
 class Params: public libtest::ParamsBase
 {
 public:

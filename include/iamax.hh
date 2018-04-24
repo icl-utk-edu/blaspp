@@ -74,7 +74,8 @@ int64_t iamax(
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
-    return BLAS_icamax( &n_, x, &incx_ ) - 1;
+    return BLAS_icamax( &n_,
+                        (blas_complex_float*) x, &incx_ ) - 1;
 }
 
 // -----------------------------------------------------------------------------
@@ -96,7 +97,8 @@ int64_t iamax(
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
-    return BLAS_izamax( &n_, x, &incx_ ) - 1;
+    return BLAS_izamax( &n_,
+                        (blas_complex_double*) x, &incx_ ) - 1;
 }
 
 // =============================================================================

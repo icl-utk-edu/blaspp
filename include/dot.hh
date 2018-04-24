@@ -91,11 +91,15 @@ std::complex<float> dot(
     #ifdef BLAS_COMPLEX_RETURN_ARGUMENT
         // Intel icc convention
         std::complex<float> value;
-        BLAS_cdotc( &value, &n_, x, &incx_, y, &incy_ );
+        BLAS_cdotc( (blas_complex_float*) &value, &n_,
+                    (blas_complex_float*) x, &incx_,
+                    (blas_complex_float*) y, &incy_ );
         return value;
     #else
         // GNU gcc convention
-        return BLAS_cdotc( &n_, x, &incx_, y, &incy_ );
+        return BLAS_cdotc( &n_,
+                           (blas_complex_float*) x, &incx_,
+                           (blas_complex_float*) y, &incy_ );
     #endif
 }
 
@@ -126,11 +130,15 @@ std::complex<double> dot(
     #ifdef BLAS_COMPLEX_RETURN_ARGUMENT
         // Intel icc convention
         std::complex<double> value;
-        BLAS_zdotc( &value, &n_, x, &incx_, y, &incy_ );
+        BLAS_zdotc( (blas_complex_double*) &value, &n_,
+                    (blas_complex_double*) x, &incx_,
+                    (blas_complex_double*) y, &incy_ );
         return value;
     #else
         // GNU gcc convention
-        return BLAS_zdotc( &n_, x, &incx_, y, &incy_ );
+        return BLAS_zdotc( &n_,
+                           (blas_complex_double*) x, &incx_,
+                           (blas_complex_double*) y, &incy_ );
     #endif
 }
 
@@ -186,11 +194,15 @@ std::complex<float> dotu(
     #ifdef BLAS_COMPLEX_RETURN_ARGUMENT
         // Intel icc convention
         std::complex<float> value;
-        BLAS_cdotu( &value, &n_, x, &incx_, y, &incy_ );
+        BLAS_cdotu( (blas_complex_float*) &value, &n_,
+                    (blas_complex_float*) x, &incx_,
+                    (blas_complex_float*) y, &incy_ );
         return value;
     #else
         // GNU gcc convention
-        return BLAS_cdotu( &n_, x, &incx_, y, &incy_ );
+        return BLAS_cdotu( &n_,
+                           (blas_complex_float*) x, &incx_,
+                           (blas_complex_float*) y, &incy_ );
     #endif
 }
 
@@ -221,11 +233,15 @@ std::complex<double> dotu(
     #ifdef BLAS_COMPLEX_RETURN_ARGUMENT
         // Intel icc convention
         std::complex<double> value;
-        BLAS_zdotu( &value, &n_, x, &incx_, y, &incy_ );
+        BLAS_zdotu( (blas_complex_double*) &value, &n_,
+                    (blas_complex_double*) x, &incx_,
+                    (blas_complex_double*) y, &incy_ );
         return value;
     #else
         // GNU gcc convention
-        return BLAS_zdotu( &n_, x, &incx_, y, &incy_ );
+        return BLAS_zdotu( &n_,
+                           (blas_complex_double*) x, &incx_,
+                           (blas_complex_double*) y, &incy_ );
     #endif
 }
 

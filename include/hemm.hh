@@ -111,7 +111,11 @@ void hemm(
     char side_ = side2char( side );
     char uplo_ = uplo2char( uplo );
     BLAS_chemm( &side_, &uplo_, &m_, &n_,
-               &alpha, A, &lda_, B, &ldb_, &beta, C, &ldc_ );
+                (blas_complex_float*) &alpha,
+                (blas_complex_float*) A, &lda_,
+                (blas_complex_float*) B, &ldb_,
+                (blas_complex_float*) &beta,
+                (blas_complex_float*) C, &ldc_ );
 }
 
 // -----------------------------------------------------------------------------
@@ -179,7 +183,11 @@ void hemm(
     char side_ = side2char( side );
     char uplo_ = uplo2char( uplo );
     BLAS_zhemm( &side_, &uplo_, &m_, &n_,
-               &alpha, A, &lda_, B, &ldb_, &beta, C, &ldc_ );
+                (blas_complex_double*) &alpha,
+                (blas_complex_double*) A, &lda_,
+                (blas_complex_double*) B, &ldb_,
+                (blas_complex_double*) &beta,
+                (blas_complex_double*) C, &ldc_ );
 }
 
 // =============================================================================

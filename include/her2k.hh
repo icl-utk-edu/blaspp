@@ -105,7 +105,11 @@ void her2k(
     char uplo_ = uplo2char( uplo );
     char trans_ = op2char( trans );
     BLAS_cher2k( &uplo_, &trans_, &n_, &k_,
-                &alpha, A, &lda_, B, &ldb_, &beta, C, &ldc_ );
+                 (blas_complex_float*) &alpha,
+                 (blas_complex_float*) A, &lda_,
+                 (blas_complex_float*) B, &ldb_,
+                 &beta,
+                 (blas_complex_float*) C, &ldc_ );
 }
 
 // -----------------------------------------------------------------------------
@@ -167,7 +171,11 @@ void her2k(
     char uplo_ = uplo2char( uplo );
     char trans_ = op2char( trans );
     BLAS_zher2k( &uplo_, &trans_, &n_, &k_,
-                &alpha, A, &lda_, B, &ldb_, &beta, C, &ldc_ );
+                 (blas_complex_double*) &alpha,
+                 (blas_complex_double*) A, &lda_,
+                 (blas_complex_double*) B, &ldb_,
+                 &beta,
+                 (blas_complex_double*) C, &ldc_ );
 }
 
 // =============================================================================

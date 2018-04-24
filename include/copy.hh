@@ -86,7 +86,9 @@ void copy(
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
-    BLAS_ccopy( &n_, x, &incx_, y, &incy_ );
+    BLAS_ccopy( &n_,
+                (blas_complex_float*) x, &incx_,
+                (blas_complex_float*) y, &incy_ );
 }
 
 // -----------------------------------------------------------------------------
@@ -112,7 +114,9 @@ void copy(
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
-    BLAS_zcopy( &n_, x, &incx_, y, &incy_ );
+    BLAS_zcopy( &n_,
+                (blas_complex_double*) x, &incx_,
+                (blas_complex_double*) y, &incy_ );
 }
 
 // =============================================================================

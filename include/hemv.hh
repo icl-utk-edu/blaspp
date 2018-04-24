@@ -107,7 +107,11 @@ void hemv(
 
     char uplo_ = uplo2char( uplo );
     BLAS_chemv( &uplo_, &n_,
-               &alpha, A, &lda_, x2, &incx_, &beta, y, &incy_ );
+                (blas_complex_float*) &alpha,
+                (blas_complex_float*) A, &lda_,
+                (blas_complex_float*) x2, &incx_,
+                (blas_complex_float*) &beta,
+                (blas_complex_float*) y, &incy_ );
 
     if (layout == Layout::RowMajor) {
         // y = conj( y )
@@ -181,7 +185,11 @@ void hemv(
 
     char uplo_ = uplo2char( uplo );
     BLAS_zhemv( &uplo_, &n_,
-               &alpha, A, &lda_, x2, &incx_, &beta, y, &incy_ );
+                (blas_complex_double*) &alpha,
+                (blas_complex_double*) A, &lda_,
+                (blas_complex_double*) x2, &incx_,
+                (blas_complex_double*) &beta,
+                (blas_complex_double*) y, &incy_ );
 
     if (layout == Layout::RowMajor) {
         // y = conj( y )

@@ -196,7 +196,11 @@ void syr2k(
     char uplo_ = uplo2char( uplo );
     char trans_ = op2char( trans );
     BLAS_csyr2k( &uplo_, &trans_, &n_, &k_,
-                &alpha, A, &lda_, B, &ldb_, &beta, C, &ldc_ );
+                 (blas_complex_float*) &alpha,
+                 (blas_complex_float*) A, &lda_,
+                 (blas_complex_float*) B, &ldb_,
+                 (blas_complex_float*) &beta,
+                 (blas_complex_float*) C, &ldc_ );
 }
 
 // -----------------------------------------------------------------------------
@@ -258,7 +262,11 @@ void syr2k(
     char uplo_ = uplo2char( uplo );
     char trans_ = op2char( trans );
     BLAS_zsyr2k( &uplo_, &trans_, &n_, &k_,
-                &alpha, A, &lda_, B, &ldb_, &beta, C, &ldc_ );
+                 (blas_complex_double*) &alpha,
+                 (blas_complex_double*) A, &lda_,
+                 (blas_complex_double*) B, &ldb_,
+                 (blas_complex_double*) &beta,
+                 (blas_complex_double*) C, &ldc_ );
 }
 
 // =============================================================================

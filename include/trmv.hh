@@ -168,7 +168,9 @@ void trmv(
     char uplo_  = uplo2char( uplo );
     char trans_ = op2char( trans2 );
     char diag_  = diag2char( diag );
-    BLAS_ctrmv( &uplo_, &trans_, &diag_, &n_, A, &lda_, x, &incx_ );
+    BLAS_ctrmv( &uplo_, &trans_, &diag_, &n_,
+                (blas_complex_float*) A, &lda_,
+                (blas_complex_float*) x, &incx_ );
 
     if (layout == Layout::RowMajor && trans == Op::ConjTrans) {
         // conjugate x (in-place)
@@ -237,7 +239,9 @@ void trmv(
     char uplo_  = uplo2char( uplo );
     char trans_ = op2char( trans2 );
     char diag_  = diag2char( diag );
-    BLAS_ztrmv( &uplo_, &trans_, &diag_, &n_, A, &lda_, x, &incx_ );
+    BLAS_ztrmv( &uplo_, &trans_, &diag_, &n_,
+                (blas_complex_double*) A, &lda_,
+                (blas_complex_double*) x, &incx_ );
 
     if (layout == Layout::RowMajor && trans == Op::ConjTrans) {
         // conjugate x (in-place)

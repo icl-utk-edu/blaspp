@@ -83,7 +83,11 @@ void her2(
     }
 
     char uplo_ = uplo2char( uplo );
-    BLAS_cher2( &uplo_, &n_, &alpha, x, &incx_, y, &incy_, A, &lda_ );
+    BLAS_cher2( &uplo_, &n_,
+                (blas_complex_float*) &alpha,
+                (blas_complex_float*) x, &incx_,
+                (blas_complex_float*) y, &incy_,
+                (blas_complex_float*) A, &lda_ );
 }
 
 // -----------------------------------------------------------------------------
@@ -127,7 +131,11 @@ void her2(
     }
 
     char uplo_ = uplo2char( uplo );
-    BLAS_zher2( &uplo_, &n_, &alpha, x, &incx_, y, &incy_, A, &lda_ );
+    BLAS_zher2( &uplo_, &n_,
+                (blas_complex_double*) &alpha,
+                (blas_complex_double*) x, &incx_,
+                (blas_complex_double*) y, &incy_,
+                (blas_complex_double*) A, &lda_ );
 }
 
 // =============================================================================

@@ -146,7 +146,11 @@ void symv(
 
     char uplo_ = uplo2char( uplo );
     BLAS_csymv( &uplo_, &n_,
-               &alpha, A, &lda_, x, &incx_, &beta, y, &incy_ );
+                (blas_complex_float*) &alpha,
+                (blas_complex_float*) A, &lda_,
+                (blas_complex_float*) x, &incx_,
+                (blas_complex_float*) &beta,
+                (blas_complex_float*) y, &incy_ );
 }
 
 // -----------------------------------------------------------------------------
@@ -192,7 +196,11 @@ void symv(
 
     char uplo_ = uplo2char( uplo );
     BLAS_zsymv( &uplo_, &n_,
-               &alpha, A, &lda_, x, &incx_, &beta, y, &incy_ );
+                (blas_complex_double*) &alpha,
+                (blas_complex_double*) A, &lda_,
+                (blas_complex_double*) x, &incx_,
+                (blas_complex_double*) &beta,
+                (blas_complex_double*) y, &incy_ );
 }
 
 // =============================================================================

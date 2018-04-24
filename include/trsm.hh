@@ -211,8 +211,10 @@ void trsm(
     char uplo_  = uplo2char( uplo );
     char trans_ = op2char( trans );
     char diag_  = diag2char( diag );
-    BLAS_ctrsm( &side_, &uplo_, &trans_, &diag_, &m_, &n_, &alpha,
-               A, &lda_, B, &ldb_ );
+    BLAS_ctrsm( &side_, &uplo_, &trans_, &diag_, &m_, &n_,
+                (blas_complex_float*) &alpha,
+                (blas_complex_float*) A, &lda_,
+                (blas_complex_float*) B, &ldb_ );
 }
 
 // -----------------------------------------------------------------------------
@@ -279,8 +281,10 @@ void trsm(
     char uplo_  = uplo2char( uplo );
     char trans_ = op2char( trans );
     char diag_  = diag2char( diag );
-    BLAS_ztrsm( &side_, &uplo_, &trans_, &diag_, &m_, &n_, &alpha,
-               A, &lda_, B, &ldb_ );
+    BLAS_ztrsm( &side_, &uplo_, &trans_, &diag_, &m_, &n_,
+                (blas_complex_double*) &alpha,
+                (blas_complex_double*) A, &lda_,
+                (blas_complex_double*) B, &ldb_ );
 }
 
 // =============================================================================

@@ -77,7 +77,9 @@ void scal(
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
-    BLAS_cscal( &n_, &alpha, x, &incx_ );
+    BLAS_cscal( &n_,
+                (blas_complex_float*) &alpha,
+                (blas_complex_float*) x, &incx_ );
 }
 
 // -----------------------------------------------------------------------------
@@ -100,7 +102,9 @@ void scal(
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
-    BLAS_zscal( &n_, &alpha, x, &incx_ );
+    BLAS_zscal( &n_,
+                (blas_complex_double*) &alpha,
+                (blas_complex_double*) x, &incx_ );
 }
 
 // =============================================================================

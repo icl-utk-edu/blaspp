@@ -94,7 +94,10 @@ void rot(
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
-    BLAS_csrot( &n_, x, &incx_, y, &incy_, &c, &s );
+    BLAS_csrot( &n_,
+                (blas_complex_float*) x, &incx_,
+                (blas_complex_float*) y, &incy_,
+                &c, &s );
 }
 
 // -----------------------------------------------------------------------------
@@ -123,7 +126,10 @@ void rot(
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
-    BLAS_zdrot( &n_, x, &incx_, y, &incy_, &c, &s );
+    BLAS_zdrot( &n_,
+                (blas_complex_double*) x, &incx_,
+                (blas_complex_double*) y, &incy_,
+                &c, &s );
 }
 
 // -----------------------------------------------------------------------------
@@ -152,7 +158,11 @@ void rot(
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
-    BLAS_crot( &n_, x, &incx_, y, &incy_, &c, &s );
+    BLAS_crot( &n_,
+               (blas_complex_float*) x, &incx_,
+               (blas_complex_float*) y, &incy_,
+               &c,
+               (blas_complex_float*) &s );
 }
 
 // -----------------------------------------------------------------------------
@@ -181,7 +191,11 @@ void rot(
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
-    BLAS_zrot( &n_, x, &incx_, y, &incy_, &c, &s );
+    BLAS_zrot( &n_,
+               (blas_complex_double*) x, &incx_,
+               (blas_complex_double*) y, &incy_,
+               &c,
+               (blas_complex_double*) &s );
 }
 
 // =============================================================================

@@ -198,7 +198,11 @@ void gemv(
 
     char trans_ = op2char( trans2 );
     BLAS_cgemv( &trans_, &m_, &n_,
-               &alpha, A, &lda_, x2, &incx_, &beta, y, &incy_ );
+                (blas_complex_float*) &alpha,
+                (blas_complex_float*) A, &lda_,
+                (blas_complex_float*) x2, &incx_,
+                (blas_complex_float*) &beta,
+                (blas_complex_float*) y, &incy_ );
 
     if (layout == Layout::RowMajor && trans == Op::ConjTrans) {
         // y = conj( y )
@@ -286,7 +290,11 @@ void gemv(
 
     char trans_ = op2char( trans2 );
     BLAS_zgemv( &trans_, &m_, &n_,
-               &alpha, A, &lda_, x2, &incx_, &beta, y, &incy_ );
+                (blas_complex_double*) &alpha,
+                (blas_complex_double*) A, &lda_,
+                (blas_complex_double*) x2, &incx_,
+                (blas_complex_double*) &beta,
+                (blas_complex_double*) y, &incy_ );
 
     if (layout == Layout::RowMajor && trans == Op::ConjTrans) {
         // y = conj( y )

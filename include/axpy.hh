@@ -92,7 +92,10 @@ void axpy(
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
-    BLAS_caxpy( &n_, &alpha, x, &incx_, y, &incy_ );
+    BLAS_caxpy( &n_,
+                (blas_complex_float*) &alpha,
+                (blas_complex_float*) x, &incx_,
+                (blas_complex_float*) y, &incy_ );
 }
 
 // -----------------------------------------------------------------------------
@@ -119,7 +122,10 @@ void axpy(
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
-    BLAS_zaxpy( &n_, &alpha, x, &incx_, y, &incy_ );
+    BLAS_zaxpy( &n_,
+                (blas_complex_double*) &alpha,
+                (blas_complex_double*) x, &incx_,
+                (blas_complex_double*) y, &incy_ );
 }
 
 // =============================================================================

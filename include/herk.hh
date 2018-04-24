@@ -97,7 +97,10 @@ void herk(
     char uplo_ = uplo2char( uplo );
     char trans_ = op2char( trans );
     BLAS_cherk( &uplo_, &trans_, &n_, &k_,
-               &alpha, A, &lda_, &beta, C, &ldc_ );
+                &alpha,
+                (blas_complex_float*) A, &lda_,
+                &beta,
+                (blas_complex_float*) C, &ldc_ );
 }
 
 // -----------------------------------------------------------------------------
@@ -153,7 +156,10 @@ void herk(
     char uplo_ = uplo2char( uplo );
     char trans_ = op2char( trans );
     BLAS_zherk( &uplo_, &trans_, &n_, &k_,
-               &alpha, A, &lda_, &beta, C, &ldc_ );
+                &alpha,
+                (blas_complex_double*) A, &lda_,
+                &beta,
+                (blas_complex_double*) C, &ldc_ );
 }
 
 // =============================================================================
