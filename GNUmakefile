@@ -3,8 +3,8 @@ include make.inc
 # defaults if not defined in make.inc
 CXX      ?= g++
 
-LDFLAGS  ?= -fPIC -fopenmp
-CXXFLAGS ?= -fPIC -fopenmp -MMD -std=c++11 -pedantic \
+LDFLAGS  ?= -fPIC
+CXXFLAGS ?= -fPIC -MMD -std=c++11 -pedantic \
             -Wall -Wno-unused-local-typedefs -Wno-unused-but-set-variable \
             -I${CBLASDIR}
 #CXXFLAGS += -Werror

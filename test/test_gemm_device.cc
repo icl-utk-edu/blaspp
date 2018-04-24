@@ -1,5 +1,3 @@
-#include <omp.h>
-
 #include "libtest.hh"
 #include "test.hh"
 #include "cblas.hh"
@@ -14,6 +12,7 @@
 template< typename TA, typename TB, typename TC >
 void test_gemm_device_work( Params& params, bool run )
 {
+    using namespace libtest;
     using namespace blas;
     using scalar_t = blas::scalar_type< TA, TB, TC >;
     using real_t = blas::real_type< scalar_t >;
@@ -136,11 +135,11 @@ void test_gemm_device_work( Params& params, bool run )
 
     // run test
     libtest::flush_cache( params.cache.value() );
-    double time = omp_get_wtime();
+    double time = get_wtime();
     blas::gemm( layout, transA, transB, m, n, k,
                 alpha, dA, lda, dB, ldb, beta, dC, ldc, queue );
     queue.sync();
-    time = omp_get_wtime() - time;
+    time = get_wtime() - time;
 
     double gflop = Gflop < scalar_t >::gemm( m, n, k );
     params.time.value()   = time;
@@ -155,12 +154,12 @@ void test_gemm_device_work( Params& params, bool run )
     if (params.ref.value() == 'y' || params.check.value() == 'y') {
         // run reference
         libtest::flush_cache( params.cache.value() );
-        time = omp_get_wtime();
+        time = get_wtime();
         cblas_gemm( cblas_layout_const(layout),
                     cblas_trans_const(transA),
                     cblas_trans_const(transB),
                     m, n, k, alpha, A, lda, B, ldb, beta, Cref, ldc );
-        time = omp_get_wtime() - time;
+        time = get_wtime() - time;
 
         params.ref_time.value()   = time;
         params.ref_gflops.value() = gflop / time;

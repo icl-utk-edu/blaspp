@@ -1,5 +1,3 @@
-#include <omp.h>
-
 #include "libtest.hh"
 #include "test.hh"
 #include "cblas.hh"
