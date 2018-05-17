@@ -20,6 +20,11 @@
 #include "device_queue.hh"
 #include "device_copy.hh"
 #include "device_blas_names.hh"
+#include "device_blas_wrappers.hh"
+#include "batch_aux.hh"
+#include "batch_check.hh"
+#include "batch_support.hh"
+
 
 #endif        //  #ifndef DEVICE_HH
 
