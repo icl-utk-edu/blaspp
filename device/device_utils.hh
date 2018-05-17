@@ -25,6 +25,11 @@ inline  T* device_malloc(int64_t nelements);
 
 inline void device_free(void* ptr);
 
+template<typename T> 
+inline  T* device_malloc_pinned(int64_t nelements);
+
+inline void device_free_pinned(void* ptr);
+
 }        //  namespace blas
 
 
@@ -138,6 +143,31 @@ void blas::device_free(void* ptr){
     // TODO: free memory for AMD GPUs
     #endif
 }
+
+/// @return a host pointer to a pinned memory space 
+template<typename T> 
+inline  
+T* blas::device_malloc_pinned(int64_t nelements){
+    T* ptr = NULL;
+    #ifdef HAVE_CUBLAS
+    device_error_check( cudaMallocHost((void**)&ptr, nelements * sizeof(T)) );
+    #elif defined(HAVE_ROCBLAS)
+    // TODO: allocation using AMD driver API
+    #endif
+    return ptr;
+}
+
+/// @free a device pointer 
+inline 
+void blas::device_free_pinned(void* ptr){
+    #ifdef HAVE_CUBLAS
+    device_error_check( cudaFreeHost( ptr ) );
+    #elif defined(HAVE_ROCBLAS)
+    // TODO: free memory using AMD driver API
+    #endif
+}
+
+
 
 #endif        //  #ifndef DEVICE_UTILS_HH
 
