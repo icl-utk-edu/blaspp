@@ -6,6 +6,7 @@ namespace blas {
 class Queue
 {
 public:
+// -----------------------------------------------------------------------------
     Queue(){
         blas::get_device( &device_ );
         #ifdef HAVE_CUBLAS
@@ -17,27 +18,30 @@ public:
         #endif
     }
 
+// -----------------------------------------------------------------------------
     Queue(blas::Device device, int64_t batch_size){
         device_ = device;
         blas::set_device( device_ );
+        hostPtrArray = blas::device_malloc_pinned<void*>( 3 * batch_size );
+        devPtrArray  = blas::device_malloc<void*>( 3 * batch_size );
         #ifdef HAVE_CUBLAS
         device_error_check( cudaStreamCreate(&stream_) );
         device_blas_check( cublasCreate(&handle_) );
         device_blas_check( cublasSetStream( handle_, stream_ ) );
-        Aarray = blas::device_malloc<void*>( batch_size );
-        Barray = blas::device_malloc<void*>( batch_size );
-        Carray = blas::device_malloc<void*>( batch_size ); 
         #elif defined(HAVE_ROCBLAS)
         // TODO: rocBLAS queue init and vector resize
         #endif
     }
 
+// -----------------------------------------------------------------------------
     /// @return device associated with this queue
     blas::Device   device()          { return device_;   }
 
+// -----------------------------------------------------------------------------
     /// @return device blas handle associated with this queue
     device_blas_handle_t   handle()   { return handle_;   }
     
+// -----------------------------------------------------------------------------
     #ifdef HAVE_CUBLAS
     /// @return CUDA stream associated with this queue; requires CUDA.
     cudaStream_t     stream()     { return stream_;   }
@@ -46,6 +50,7 @@ public:
     #endif
 
     
+// -----------------------------------------------------------------------------
     /// synchronize with queue.
     void sync(){
         #ifdef HAVE_CUBLAS
@@ -55,33 +60,32 @@ public:
         #endif
     }
     
+// -----------------------------------------------------------------------------
     ~Queue(){
+        blas::device_free( devPtrArray );
+        blas::device_free_pinned( hostPtrArray );
         #ifdef HAVE_CUBLAS
         device_blas_check( cublasDestroy(handle_) );
         device_error_check( cudaStreamDestroy(stream_) );
-        blas::device_free( Aarray );
-        blas::device_free( Barray );
-        blas::device_free( Carray );
         #elif defined(HAVE_ROCBLAS)
         // TODO: rocBLAS equivalent
         #endif
     }
 
+// -----------------------------------------------------------------------------
+    // public data members for use in batch BLAS
+    void** devPtrArray;
+    void** hostPtrArray;
     
+// -----------------------------------------------------------------------------
 private:
-    blas::Device   device_;      // associated device ID
-
-    device_blas_handle_t   handle_;      // associated device blas handle
+    blas::Device          device_;      // associated device ID
+    device_blas_handle_t  handle_;      // associated device blas handle
 
     #ifdef HAVE_CUBLAS
     cudaStream_t     stream_;      // associated CUDA stream; may be NULL
-    // pointer arrays for batch routines
-    // precision-independent
-    void* Aarray;
-    void* Barray;
-    void* Carray;
     #elif defined(HAVE_ROCBLAS)
-    // TODO: stream and pointer arrays for rocBLAS
+    // TODO: stream for rocBLAS
     #endif
     
 };
