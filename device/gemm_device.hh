@@ -1,5 +1,5 @@
-#ifndef DEVICE_BLAS_GEMM_HH
-#define DEVICE_BLAS_GEMM_HH
+#ifndef DEVICE_GEMM_HH
+#define DEVICE_GEMM_HH
 
 #include "device.hh"
 #include <limits>
@@ -74,14 +74,14 @@ void gemm(
     blas::set_device( queue.device() );
     if (layout == Layout::RowMajor) {
         // swap transA <=> transB, m <=> n, B <=> A
-        DEVICE_BLAS_sgemm( 
+        DEVICE_sgemm( 
                 queue.handle(), transB_, transA_, 
                 n_, m_, k_, 
                 alpha, dB, lddb_, dA, ldda_, 
                 beta,  dC, lddc_);
     }
     else {
-        DEVICE_BLAS_sgemm( 
+        DEVICE_sgemm( 
                 queue.handle(), transA_, transB_, 
                 m_, n_, k_, 
                 alpha, dA, ldda_, dB, lddb_, 
@@ -167,14 +167,14 @@ void gemm(
     blas::set_device( queue.device() );
     if (layout == Layout::RowMajor) {
         // swap transA <=> transB, m <=> n, B <=> A
-        DEVICE_BLAS_dgemm( 
+        DEVICE_dgemm( 
                 queue.handle(), transB_, transA_, 
                 n_, m_, k_, 
                 alpha, dB, lddb_, dA, ldda_, 
                 beta,  dC, lddc_);
     }
     else {
-        DEVICE_BLAS_dgemm( 
+        DEVICE_dgemm( 
                 queue.handle(), transA_, transB_, 
                 m_, n_, k_, 
                 alpha, dA, ldda_, dB, lddb_, 
@@ -259,14 +259,14 @@ void gemm(
     blas::set_device( queue.device() );
     if (layout == Layout::RowMajor) {
         // swap transA <=> transB, m <=> n, B <=> A
-        DEVICE_BLAS_cgemm( 
+        DEVICE_cgemm( 
                 queue.handle(), transB_, transA_, 
                 n_, m_, k_, 
                 alpha, dB, lddb_, dA, ldda_, 
                 beta,  dC, lddc_);
     }
     else {
-        DEVICE_BLAS_cgemm( 
+        DEVICE_cgemm( 
                 queue.handle(), transA_, transB_, 
                 m_, n_, k_, 
                 alpha, dA, ldda_, dB, lddb_, 
@@ -351,14 +351,14 @@ void gemm(
     blas::set_device( queue.device() );
     if (layout == Layout::RowMajor) {
         // swap transA <=> transB, m <=> n, B <=> A
-        DEVICE_BLAS_zgemm( 
+        DEVICE_zgemm( 
                 queue.handle(), transB_, transA_, 
                 n_, m_, k_, 
                 alpha, dB, lddb_, dA, ldda_, 
                 beta,  dC, lddc_);
     }
     else {
-        DEVICE_BLAS_zgemm( 
+        DEVICE_zgemm( 
                 queue.handle(), transA_, transB_, 
                 m_, n_, k_, 
                 alpha, dA, ldda_, dB, lddb_, 
@@ -369,5 +369,5 @@ void gemm(
 
 }        //  namespace blas
 
-#endif        //  #ifndef DEVICE_BLAS_GEMM_HH
+#endif        //  #ifndef DEVICE_GEMM_HH
 
