@@ -40,6 +40,7 @@ public:
     libtest::ParamInt    incx;
     libtest::ParamInt    incy;
     libtest::ParamInt    align;
+    libtest::ParamInt    batch;
 
     // ----- output parameters
     libtest::ParamScientific error;
