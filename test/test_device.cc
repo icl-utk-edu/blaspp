@@ -4,6 +4,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <omp.h>
+
 #include "test_device.hh"
 
 // -----------------------------------------------------------------------------
@@ -40,8 +42,18 @@ std::vector< libtest::routines_t > routines = {
     // Level 2 BLAS
 
     // Level 3 BLAS
-    { "gemm",   test_gemm_device,   Section::blas3   },
-    { "",       nullptr,            Section::newline },
+    { "gemm"      ,   test_gemm_device      ,   Section::blas3   },
+    { "trsm"      ,   test_trsm_device      ,   Section::blas3   },
+    { "trmm"      ,   test_trmm_device      ,   Section::blas3   },
+    { "hemm"      ,   test_hemm_device      ,   Section::blas3   },
+    { "symm"      ,   test_symm_device      ,   Section::blas3   },
+    { "herk"      ,   test_herk_device      ,   Section::blas3   },
+    { "syrk"      ,   test_syrk_device      ,   Section::blas3   },
+    { "her2k"     ,   test_her2k_device     ,   Section::blas3   },
+    { "syr2k"     ,   test_syr2k_device     ,   Section::blas3   },
+    { "batch-gemm",   test_batch_gemm_device,   Section::blas3   },
+    { "batch-trsm",   test_batch_trsm_device,   Section::blas3   },
+    { ""          ,   nullptr               ,   Section::newline },
 };
 
 // -----------------------------------------------------------------------------
@@ -83,6 +95,7 @@ Params::Params():
     incx      ( "incx",    6,    ParamType::List,   1, -1000,    1000, "stride of x vector" ),
     incy      ( "incy",    6,    ParamType::List,   1, -1000,    1000, "stride of y vector" ),
     align     ( "align",   6,    ParamType::List,   1,     1,    1024, "column alignment (sets lda, ldb, etc. to multiple of align)" ),
+    batch     ( "batch",   6,    ParamType::List,   1,     0, 1000000, "batch size" ),
 
 
     // ----- output parameters
