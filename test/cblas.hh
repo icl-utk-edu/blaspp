@@ -16,17 +16,6 @@
 // =============================================================================
 // constants
 
-// MKL and Netlib LAPACK now use 'typedef enum { ... } CBLAS_ORDER;'
-// Original CBLAS used 'enum CBLAS_ORDER { ... };'
-// Add some typedefs to make original CBLAS consistent with MKL and LAPACK.
-#if ! (defined(HAVE_MKL) || defined(HAVE_NETLIB_LAPACK))
-typedef enum CBLAS_ORDER CBLAS_LAYOUT;
-typedef enum CBLAS_DIAG CBLAS_DIAG;
-typedef enum CBLAS_SIDE CBLAS_SIDE;
-typedef enum CBLAS_TRANSPOSE CBLAS_TRANSPOSE;
-typedef enum CBLAS_UPLO CBLAS_UPLO;
-#endif
-
 // -----------------------------------------------------------------------------
 inline CBLAS_LAYOUT cblas_layout_const( blas::Layout layout )
 {
