@@ -5,6 +5,10 @@
     #include <mkl_cblas.h>
 #else
     #include <cblas.h>
+
+    // Original cblas.h used CBLAS_ORDER; new uses CBLAS_LAYOUT and makes
+    // CBLAS_ORDER a typedef. Make sure CBLAS_LAYOUT is defined.
+    typedef CBLAS_ORDER CBLAS_LAYOUT;
 #endif
 
 #include <complex>
