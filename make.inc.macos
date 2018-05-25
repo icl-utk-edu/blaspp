@@ -1,18 +1,39 @@
-# MacOS Accelerate framework with GNU gcc/g++
+# MacOS Accelerate framework with GNU g++ or Apple's g++ wrapper of clang++.
 # Note that Apple's clang doesn't yet support OpenMP, as of version 8.0.0.
 # See http://hpc.sourceforge.net/ for GNU compilers for MacOS.
-# Assumes $CBLASDIR is set to where cblas.h exists, e.g., in ~/.bashrc:
-#     export CBLASDIR=/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers
+#
+# You can set $CBLASDIR to the location of CBLAS.
+# Otherwise, it uses the system CBLAS.
+#
+# Assumes $LAPACKDIR is set to where lapacke library exists, e.g., in ~/.bashrc:
+#     export LAPACKDIR=${HOME}/lapack
+
+CBLASDIR ?= ${wildcard /System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/Headers}
+
+ifeq (${CBLASDIR},)
+    $(warning $$CBLASDIR not set. See comments in make.inc.)
+endif
+ifeq (${LAPACKDIR},)
+    $(warning $$LAPACKDIR not set. See comments in make.inc.)
+endif
 
 CXX       = g++
 
-LDFLAGS   = -fPIC
-CXXFLAGS  = -fPIC -MMD -std=c++11 -pedantic \
-            -Wall -Wmissing-declarations \
-            -Wno-unused-local-typedefs
+CXXFLAGS  = -O2 -MMD -std=c++11 \
+            -Wall -pedantic \
+            -Wshadow \
+            -Wno-unused-local-typedefs \
+            -Wno-unused-function \
 
+#CXXFLAGS += -Wmissing-declarations
+#CXXFLAGS += -Wconversion
+#CXXFLAGS += -Werror
+
+# Accelerate-specific flags.
 CXXFLAGS += -I${CBLASDIR} \
             -DHAVE_MACOS_ACCELERATE \
             -DBLAS_COMPLEX_RETURN_ARGUMENT
+
+LDFLAGS   =
 
 LIBS      = -framework Accelerate
