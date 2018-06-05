@@ -56,27 +56,27 @@ void rot(
 {
     throw std::exception();  // not yet implemented
 
-    // check arguments
-    blas_error_if( n < 0 );
-    blas_error_if( incx == 0 );
-    blas_error_if( incy == 0 );
-
-    if (incx == 1 && incy == 1) {
-        // unit stride
-        for (int64_t i = 0; i < n; ++i) {
-            // TODO
-        }
-    }
-    else {
-        // non-unit stride
-        int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
-        int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
-        for (int64_t i = 0; i < n; ++i) {
-            // TODO
-            ix += incx;
-            iy += incy;
-        }
-    }
+    // // check arguments
+    // blas_error_if( n < 0 );
+    // blas_error_if( incx == 0 );
+    // blas_error_if( incy == 0 );
+    //
+    // if (incx == 1 && incy == 1) {
+    //     // unit stride
+    //     for (int64_t i = 0; i < n; ++i) {
+    //         // TODO
+    //     }
+    // }
+    // else {
+    //     // non-unit stride
+    //     int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
+    //     int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
+    //     for (int64_t i = 0; i < n; ++i) {
+    //         // TODO
+    //         ix += incx;
+    //         iy += incy;
+    //     }
+    // }
 }
 
 }  // namespace blas
