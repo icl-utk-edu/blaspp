@@ -5,8 +5,6 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-#include "copy.hh"
-
 // -----------------------------------------------------------------------------
 template< typename TX, typename TY >
 void test_copy_work( Params& params, bool run )

@@ -5,8 +5,6 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-#include "herk.hh"
-
 // -----------------------------------------------------------------------------
 template< typename TA, typename TC >
 void test_herk_work( Params& params, bool run )

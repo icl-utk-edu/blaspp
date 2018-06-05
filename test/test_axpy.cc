@@ -5,8 +5,6 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-#include "axpy.hh"
-
 // -----------------------------------------------------------------------------
 template< typename TX, typename TY >
 void test_axpy_work( Params& params, bool run )

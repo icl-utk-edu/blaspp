@@ -5,10 +5,6 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-#include "copy.hh"
-#include "rotm.hh"
-#include "rotmg.hh"
-
 // -----------------------------------------------------------------------------
 template< typename TX >
 void test_rotm_work( Params& params, bool run )

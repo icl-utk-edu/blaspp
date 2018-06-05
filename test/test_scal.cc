@@ -4,8 +4,6 @@
 #include "blas_flops.hh"
 #include "print_matrix.hh"
 
-#include "scal.hh"
-
 // -----------------------------------------------------------------------------
 template< typename T >
 void test_scal_work( Params& params, bool run )

@@ -5,8 +5,6 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-#include "hemv.hh"
-
 // -----------------------------------------------------------------------------
 template< typename TA, typename TX, typename TY >
 void test_hemv_work( Params& params, bool run )

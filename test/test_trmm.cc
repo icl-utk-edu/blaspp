@@ -5,8 +5,6 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-#include "trmm.hh"
-
 // -----------------------------------------------------------------------------
 template< typename TA, typename TB >
 void test_trmm_work( Params& params, bool run )

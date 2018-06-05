@@ -5,8 +5,6 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-#include "symv.hh"
-
 // -----------------------------------------------------------------------------
 template< typename TA, typename TX, typename TY >
 void test_symv_work( Params& params, bool run )

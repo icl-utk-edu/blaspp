@@ -1,10 +1,10 @@
 #ifndef BLAS_HH
 #define BLAS_HH
 
-#include "blas_fortran.hh"
+#include "blas_wrappers.hh"
 
 // =============================================================================
-// Level 1 BLAS
+// Level 1 BLAS template implementations
 
 #include "asum.hh"
 #include "axpy.hh"
@@ -20,7 +20,7 @@
 #include "swap.hh"
 
 // =============================================================================
-// Level 2 BLAS
+// Level 2 BLAS template implementations
 
 #include "gemv.hh"
 #include "ger.hh"
@@ -35,7 +35,7 @@
 #include "trsv.hh"
 
 // =============================================================================
-// Level 3 BLAS
+// Level 3 BLAS template implementations
 
 #include "gemm.hh"
 #include "hemm.hh"

@@ -5,8 +5,6 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-#include "ger.hh"
-
 // -----------------------------------------------------------------------------
 template< typename TA, typename TX, typename TY >
 void test_ger_work( Params& params, bool run )

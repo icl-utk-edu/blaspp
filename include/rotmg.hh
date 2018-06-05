@@ -1,43 +1,11 @@
 #ifndef BLAS_ROTMG_HH
 #define BLAS_ROTMG_HH
 
-#include "blas_fortran.hh"
 #include "blas_util.hh"
 
 #include <limits>
-#include <assert.h>
 
 namespace blas {
-
-// =============================================================================
-// Overloaded wrappers for s, d, c, z precisions.
-// Not available for complex.
-
-// -----------------------------------------------------------------------------
-/// @ingroup rotmg
-inline
-void rotmg(
-    float *d1,
-    float *d2,
-    float *a,
-    float  b,
-    float  param[5] )
-{
-    BLAS_srotmg( d1, d2, a, &b, param );
-}
-
-// -----------------------------------------------------------------------------
-/// @ingroup rotmg
-inline
-void rotmg(
-    double *d1,
-    double *d2,
-    double *a,
-    double  b,
-    double  param[5] )
-{
-    BLAS_drotmg( d1, d2, a, &b, param );
-}
 
 // =============================================================================
 /// Construct modified (fast) plane rotation, H, that eliminates b, such that

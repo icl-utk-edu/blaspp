@@ -4,8 +4,6 @@
 #include "blas_flops.hh"
 #include "print_matrix.hh"
 
-#include "swap.hh"
-
 // -----------------------------------------------------------------------------
 template< typename TX, typename TY >
 void test_swap_work( Params& params, bool run )

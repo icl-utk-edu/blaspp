@@ -5,8 +5,6 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-#include "syrk.hh"
-
 // -----------------------------------------------------------------------------
 template< typename TA, typename TC >
 void test_syrk_work( Params& params, bool run )

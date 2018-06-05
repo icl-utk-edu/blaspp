@@ -4,8 +4,6 @@
 #include "blas_flops.hh"
 #include "print_matrix.hh"
 
-#include "iamax.hh"
-
 // -----------------------------------------------------------------------------
 template< typename T >
 void test_iamax_work( Params& params, bool run )

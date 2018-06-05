@@ -1,71 +1,11 @@
 #ifndef BLAS_ROTM_HH
 #define BLAS_ROTM_HH
 
-#include "blas_fortran.hh"
 #include "blas_util.hh"
 
 #include <limits>
-#include <assert.h>
 
 namespace blas {
-
-// =============================================================================
-// Overloaded wrappers for s, d precisions.
-// Not available for complex.
-
-// -----------------------------------------------------------------------------
-/// @ingroup rotm
-inline
-void rotm(
-    int64_t n,
-    float *x, int64_t incx,
-    float *y, int64_t incy,
-    float const param[5] )
-{
-    // check arguments
-    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
-    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    blas_error_if( incy == 0 );
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(blas_int)) {
-        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
-        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
-    }
-
-    blas_int n_    = (blas_int) n;
-    blas_int incx_ = (blas_int) incx;
-    blas_int incy_ = (blas_int) incy;
-    BLAS_srotm( &n_, x, &incx_, y, &incy_, param );
-}
-
-// -----------------------------------------------------------------------------
-/// @ingroup rotm
-inline
-void rotm(
-    int64_t n,
-    double *x, int64_t incx,
-    double *y, int64_t incy,
-    double const param[5] )
-{
-    // check arguments
-    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
-    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    blas_error_if( incy == 0 );
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(blas_int)) {
-        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
-        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
-    }
-
-    blas_int n_    = (blas_int) n;
-    blas_int incx_ = (blas_int) incx;
-    blas_int incy_ = (blas_int) incy;
-    BLAS_drotm( &n_, x, &incx_, y, &incy_, param );
-}
 
 // =============================================================================
 /// Apply modified (fast) plane rotation, H:

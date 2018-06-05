@@ -5,8 +5,6 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-#include "asum.hh"
-
 // -----------------------------------------------------------------------------
 template< typename T >
 void test_asum_work( Params& params, bool run )

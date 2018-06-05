@@ -5,9 +5,6 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-#include "copy.hh"
-#include "rot.hh"
-
 // -----------------------------------------------------------------------------
 // TX is data [x, y]
 // TS is for sine, which can be real (zdrot) or complex (zrot)

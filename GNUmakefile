@@ -1,12 +1,14 @@
 # Usage:
 # make by default:
 #    - Runs configure.py to create make.inc, if it doesn't exist.
+#    - Compiles lib/libblaspp.so, or lib/libblaspp.a (if static=1).
 #    - Compiles the tester, test/test.
 #
 # make config    - Runs configure.py to create make.inc.
+# make lib       - Compiles lib/libblaspp.so, or libblaspp.a (if static=1).
 # make test      - Compiles the tester, test/test.
 # make docs      - Compiles Doxygen documentation.
-# make install   - Installs the headers to $prefix.
+# make install   - Installs the library and headers to $prefix.
 # make clean     - Deletes all objects, libraries, and the tester.
 # make distclean - Also deletes make.inc and dependency files (*.d).
 
@@ -16,7 +18,7 @@
 #   CXX, CXXFLAGS   -- C compiler and flags
 #   LDFLAGS, LIBS   -- Linker options, library paths, and libraries
 #   AR, RANLIB      -- Archiver, ranlib updates library TOC
-#   prefix          -- where to install LAPACK++
+#   prefix          -- where to install BLAS++
 
 include make.inc
 
@@ -45,7 +47,7 @@ CXXFLAGS ?= -O3 -std=c++11 -MMD \
 
 # GNU make doesn't have defaults for these
 RANLIB   ?= ranlib
-prefix   ?= /usr/local/lapackpp
+prefix   ?= /usr/local/blaspp
 
 # auto-detect OS
 # $OSTYPE may not be exported from the shell, so echo it
@@ -73,6 +75,10 @@ endif
 #-------------------------------------------------------------------------------
 # Files
 
+lib_src  = $(wildcard src/*.cc)
+lib_obj  = $(addsuffix .o, $(basename $(lib_src)))
+dep     += $(addsuffix .d, $(basename $(lib_src)))
+
 test_src = $(filter-out %_device.cc, $(wildcard test/*.cc))
 test_obj = $(addsuffix .o, $(basename $(test_src)))
 dep     += $(addsuffix .d, $(basename $(test_src)))
@@ -81,17 +87,31 @@ test     = test/test
 
 libtest_dir = ../libtest
 libtest_src = $(wildcard $(libtest_dir)/*.cc $(libtest_dir)/*.hh)
-libtest     = $(libtest_dir)/libtest.so
+ifeq ($(static),1)
+	libtest = $(libtest_dir)/libtest.a
+else
+	libtest = $(libtest_dir)/libtest.so
+endif
+
+lib_a  = ./lib/libblaspp.a
+lib_so = ./lib/libblaspp.so
+
+ifeq ($(static),1)
+	lib = $(lib_a)
+else
+	lib = $(lib_so)
+endif
 
 #-------------------------------------------------------------------------------
 # BLAS++ specific flags and libraries
+CXXFLAGS += -I./include
 
 # additional flags and libraries for testers
-$(test_obj): CXXFLAGS += -I./include
 $(test_obj): CXXFLAGS += -I$(libtest_dir)
 
+TEST_LDFLAGS += -L./lib -Wl,-rpath,$(abspath ./lib)
 TEST_LDFLAGS += -L$(libtest_dir) -Wl,-rpath,$(abspath $(libtest_dir))
-TEST_LIBS    += -ltest
+TEST_LIBS    += -lblaspp -ltest
 
 #-------------------------------------------------------------------------------
 # Rules
@@ -104,20 +124,42 @@ all: lib test
 
 install: lib
 	mkdir -p $(DESTDIR)$(prefix)/include
+	mkdir -p $(DESTDIR)$(prefix)/lib$(LIB_SUFFIX)
 	cp include/*.{h,hh} $(DESTDIR)$(prefix)/include
+	cp lib/libblaspp.* $(DESTDIR)$(prefix)/lib$(LIB_SUFFIX)
 
 uninstall:
 	$(RM) $(addprefix $(DESTDIR)$(prefix), $(headers))
+	$(RM) $(DESTDIR)$(prefix)/lib$(LIB_SUFFIX)/libblaspp.*
+
+#-------------------------------------------------------------------------------
+# BLAS++ library
+$(lib_so): $(lib_obj)
+	mkdir -p lib
+	$(CXX) $(LDFLAGS) -shared $(install_name) $(lib_obj) $(LIBS) -o $@
+
+$(lib_a): $(lib_obj)
+	mkdir -p lib
+	$(RM) $@
+	$(AR) cr $@ $(lib_obj)
+	$(RANLIB) $@
+
+# sub-directory rules
+lib src: $(lib)
+
+lib/clean src/clean:
+	$(RM) lib/*.{a,so} src/*.o
+
+#-------------------------------------------------------------------------------
+# libtest library
+$(libtest): $(libtest_src)
+	cd $(libtest_dir) && $(MAKE) lib
 
 #-------------------------------------------------------------------------------
 # tester
 $(test): $(test_obj) $(lib) $(libtest)
 	$(CXX) $(TEST_LDFLAGS) $(LDFLAGS) $(test_obj) \
 		$(TEST_LIBS) $(LIBS) -o $@
-
-# forward libtest to libtest directory
-$(libtest): $(libtest_src)
-	cd $(libtest_dir) && $(MAKE)
 
 # sub-directory rules
 test: $(test)
@@ -157,7 +199,7 @@ test/docs: docs
 
 #-------------------------------------------------------------------------------
 # general rules
-clean: test/clean headers/clean
+clean: lib/clean test/clean headers/clean
 
 distclean: clean
 	$(RM) make.inc src/*.d test/*.d
@@ -182,6 +224,14 @@ distclean: clean
 # debugging
 echo:
 	@echo "static        = '$(static)'"
+	@echo
+	@echo "lib_a         = $(lib_a)"
+	@echo "lib_so        = $(lib_so)"
+	@echo "lib           = $(lib)"
+	@echo
+	@echo "lib_src       = $(lib_src)"
+	@echo
+	@echo "lib_obj       = $(lib_obj)"
 	@echo
 	@echo "test_src      = $(test_src)"
 	@echo

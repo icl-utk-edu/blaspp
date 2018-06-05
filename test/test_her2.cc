@@ -5,8 +5,6 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-#include "her2.hh"
-
 // -----------------------------------------------------------------------------
 template< typename TA, typename TX, typename TY >
 void test_her2_work( Params& params, bool run )

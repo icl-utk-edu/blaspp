@@ -5,8 +5,6 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-#include "trsv.hh"
-
 // -----------------------------------------------------------------------------
 template< typename TA, typename TX >
 void test_trsv_work( Params& params, bool run )
