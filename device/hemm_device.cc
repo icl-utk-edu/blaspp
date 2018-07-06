@@ -1,19 +1,12 @@
-#ifndef DEVICE_HEMM_HH
-#define DEVICE_HEMM_HH
-
-#include "device.hh"
-#include "symm_device.hh"
+#include "device_blas.hh"
 #include <limits>
-
-namespace blas {
 
 // =============================================================================
 // Overloaded wrappers for s, d, c, z precisions.
 
 // -----------------------------------------------------------------------------
 /// @ingroup hemm
-inline
-void hemm(
+void blas::hemm(
     blas::Layout layout,
     blas::Side side,
     blas::Uplo uplo,
@@ -30,8 +23,7 @@ void hemm(
 
 // -----------------------------------------------------------------------------
 /// @ingroup hemm
-inline
-void hemm(
+void blas::hemm(
     blas::Layout layout,
     blas::Side side,
     blas::Uplo uplo,
@@ -48,8 +40,7 @@ void hemm(
 
 // -----------------------------------------------------------------------------
 /// @ingroup hemm
-inline
-void hemm(
+void blas::hemm(
     blas::Layout layout,
     blas::Side side,
     blas::Uplo uplo,
@@ -122,8 +113,7 @@ void hemm(
 
 // -----------------------------------------------------------------------------
 /// @ingroup hemm
-inline
-void hemm(
+void blas::hemm(
     blas::Layout layout,
     blas::Side side,
     blas::Uplo uplo,
@@ -193,7 +183,3 @@ void hemm(
                    dB, lddb_, 
             beta,  dC, lddc_ );
 }
-
-}  // namespace blas
-
-#endif        //  #ifndef DEVICE_HEMM_HH

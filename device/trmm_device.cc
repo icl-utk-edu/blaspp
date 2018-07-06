@@ -1,18 +1,12 @@
-#ifndef DEVICE_TRMM_HH
-#define DEVICE_TRMM_HH
-
-#include "device.hh"
+#include "device_blas.hh"
 #include <limits>
-
-namespace blas {
 
 // =============================================================================
 // Overloaded wrappers for s, d, c, z precisions.
 
 // -----------------------------------------------------------------------------
 /// @ingroup trmm
-inline
-void trmm(
+void blas::trmm(
     blas::Layout layout,
     blas::Side side,
     blas::Uplo uplo,
@@ -86,8 +80,7 @@ void trmm(
 
 // -----------------------------------------------------------------------------
 /// @ingroup trmm
-inline
-void trmm(
+void blas::trmm(
     blas::Layout layout,
     blas::Side side,
     blas::Uplo uplo,
@@ -161,8 +154,7 @@ void trmm(
 
 // -----------------------------------------------------------------------------
 /// @ingroup trmm
-inline
-void trmm(
+void blas::trmm(
     blas::Layout layout,
     blas::Side side,
     blas::Uplo uplo,
@@ -236,8 +228,7 @@ void trmm(
 
 // -----------------------------------------------------------------------------
 /// @ingroup trmm
-inline
-void trmm(
+void blas::trmm(
     blas::Layout layout,
     blas::Side side,
     blas::Uplo uplo,
@@ -308,8 +299,3 @@ void trmm(
             dA, ldda_, 
             dB, lddb_ );
 }
-
-
-}  // namespace blas
-
-#endif        //  #ifndef DEVICE_TRMM_HH

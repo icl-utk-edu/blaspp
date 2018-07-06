@@ -1,19 +1,12 @@
-#ifndef DEVICE_HER2K_HH
-#define DEVICE_HER2K_HH
-
-#include "device.hh"
-#include "syr2k_device.hh"
+#include "device_blas.hh"
 #include <limits>
-
-namespace blas {
 
 // =============================================================================
 // Overloaded wrappers for s, d, c, z precisions.
 
 // -----------------------------------------------------------------------------
 /// @ingroup her2k
-inline
-void her2k(
+void blas::her2k(
     blas::Layout layout,
     blas::Uplo uplo,
     blas::Op trans,
@@ -30,8 +23,7 @@ void her2k(
 
 // -----------------------------------------------------------------------------
 /// @ingroup her2k
-inline
-void her2k(
+void blas::her2k(
     blas::Layout layout,
     blas::Uplo uplo,
     blas::Op trans,
@@ -48,8 +40,7 @@ void her2k(
 
 // -----------------------------------------------------------------------------
 /// @ingroup her2k
-inline
-void her2k(
+void blas::her2k(
     blas::Layout layout,
     blas::Uplo uplo,
     blas::Op trans,
@@ -116,8 +107,7 @@ void her2k(
 
 // -----------------------------------------------------------------------------
 /// @ingroup her2k
-inline
-void her2k(
+void blas::her2k(
     blas::Layout layout,
     blas::Uplo uplo,
     blas::Op trans,
@@ -181,7 +171,3 @@ void her2k(
                    dB, lddb_, 
             beta,  dC, lddc_ );
 }
-
-}  // namespace blas
-
-#endif        //  #ifndef DEVICE_HER2K_HH

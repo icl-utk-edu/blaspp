@@ -1,17 +1,11 @@
-#ifndef DEVICE_BATCH_TRMM_HH
-#define DEVICE_BATCH_TRMM_HH
-
-#include "device.hh"
 #include <limits>
 #include <cstring>
+#include "batch_common.hh"
+#include "device_blas.hh"
 
-namespace blas {
-
-namespace batch{
 // -----------------------------------------------------------------------------
 /// @ingroup trmm
-inline
-void trmm(
+void blas::batch::trmm(
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
@@ -41,8 +35,7 @@ void trmm(
 
 // -----------------------------------------------------------------------------
 /// @ingroup trmm
-inline
-void trmm(
+void blas::batch::trmm(
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
@@ -72,8 +65,7 @@ void trmm(
 
 // -----------------------------------------------------------------------------
 /// @ingroup trmm
-inline
-void trmm(
+void blas::batch::trmm(
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
@@ -103,8 +95,7 @@ void trmm(
 
 // -----------------------------------------------------------------------------
 /// @ingroup trmm
-inline
-void trmm(
+void blas::batch::trmm(
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
@@ -130,10 +121,3 @@ void trmm(
 
     throw std::exception();  // not yet available by the vendor
 }
-
-
-}        //  namespace batch
-}        //  namespace blas
-
-#endif        //  #ifndef DEVICE_BATCH_TRMM_HH
-

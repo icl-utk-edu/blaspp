@@ -1,31 +1,24 @@
-#ifndef DEVICE_SYMM_HH
-#define DEVICE_SYMM_HH
-
-#include "device.hh"
+#include "device_blas.hh"
 #include <limits>
-
-namespace blas {
 
 // =============================================================================
 // Overloaded wrappers for s, d, c, z precisions.
 
 // -----------------------------------------------------------------------------
-/// @ingroup symm
-inline
-void symm(
+/// @ingroup trsm
+void blas::trsm(
     blas::Layout layout,
     blas::Side side,
     blas::Uplo uplo,
-    int64_t m, int64_t n,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t m,
+    int64_t n,
     float alpha,
     float const *dA, int64_t ldda,
-    float const *dB, int64_t lddb,
-    float beta,
-    float       *dC, int64_t lddc, 
+    float       *dB, int64_t lddb, 
     blas::Queue &queue )
 {
-    typedef long long lld;
-
     // check arguments
     blas_error_if( layout != Layout::ColMajor &&
                    layout != Layout::RowMajor );
@@ -33,73 +26,73 @@ void symm(
                    side != Side::Right );
     blas_error_if( uplo != Uplo::Lower &&
                    uplo != Uplo::Upper );
+    blas_error_if( trans != Op::NoTrans &&
+                   trans != Op::Trans &&
+                   trans != Op::ConjTrans );
+    blas_error_if( diag != Diag::NonUnit &&
+                   diag != Diag::Unit );
     blas_error_if( m < 0 );
     blas_error_if( n < 0 );
 
     if (side == Side::Left)
-        blas_error_if_msg( ldda < m, "ldda %lld < m %lld", (lld) ldda, (lld) m );
+        blas_error_if( ldda < m );
     else
-        blas_error_if_msg( ldda < n, "ldda %lld < n %lld", (lld) ldda, (lld) n );
+        blas_error_if( ldda < n );
 
-    if (layout == Layout::ColMajor) {
+    if (layout == Layout::ColMajor)
         blas_error_if( lddb < m );
-        blas_error_if( lddc < m );
-    }
-    else {
+    else
         blas_error_if( lddb < n );
-        blas_error_if( lddc < n );
-    }
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( m   > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( n   > std::numeric_limits<device_blas_int>::max() );
+        blas_error_if( m    > std::numeric_limits<device_blas_int>::max() );
+        blas_error_if( n    > std::numeric_limits<device_blas_int>::max() );
         blas_error_if( ldda > std::numeric_limits<device_blas_int>::max() );
         blas_error_if( lddb > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( lddc > std::numeric_limits<device_blas_int>::max() );
     }
 
-    device_blas_int m_   = (device_blas_int) m;
-    device_blas_int n_   = (device_blas_int) n;
+    device_blas_int m_    = (device_blas_int) m;
+    device_blas_int n_    = (device_blas_int) n;
     device_blas_int ldda_ = (device_blas_int) ldda;
     device_blas_int lddb_ = (device_blas_int) lddb;
-    device_blas_int lddc_ = (device_blas_int) lddc;
 
     if (layout == Layout::RowMajor) {
-        // swap left <=> right, lower <=> upper, m <=> n
-        side = (side == Side::Left  ? Side::Right : Side::Left);
+        // swap lower <=> upper, left <=> right, m <=> n
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
+        side = (side == Side::Left ? Side::Right : Side::Left);
         std::swap( m_, n_ );
     }
 
-    device_side_t side_ = device_side_const( side );
-    device_uplo_t uplo_ = device_uplo_const( uplo );
+    device_side_t side_   = blas::device_side_const( side );
+    device_uplo_t uplo_   = blas::device_uplo_const( uplo );
+    device_trans_t trans_ = blas::device_trans_const( trans );
+    device_diag_t diag_   = blas::device_diag_const( diag );
+    
     blas::set_device( queue.device() );
-    DEVICE_ssymm( 
+    DEVICE_strsm( 
             queue.handle(), 
-            side_, uplo_, m_, n_,
-            alpha, dA, ldda_, 
-                   dB, lddb_, 
-            beta,  dC, lddc_ );
+            side_, uplo_, trans_, diag_, 
+            m_, n_, alpha, 
+            dA, ldda_, 
+            dB, lddb_ );
 }
 
 // -----------------------------------------------------------------------------
-/// @ingroup symm
-inline
-void symm(
+/// @ingroup trsm
+void blas::trsm(
     blas::Layout layout,
     blas::Side side,
     blas::Uplo uplo,
-    int64_t m, int64_t n,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t m,
+    int64_t n,
     double alpha,
     double const *dA, int64_t ldda,
-    double const *dB, int64_t lddb,
-    double beta,
-    double       *dC, int64_t lddc, 
-    blas::Queue &queue )
+    double       *dB, int64_t lddb, 
+    blas::Queue  &queue )
 {
-    typedef long long lld;
-
     // check arguments
     blas_error_if( layout != Layout::ColMajor &&
                    layout != Layout::RowMajor );
@@ -107,73 +100,73 @@ void symm(
                    side != Side::Right );
     blas_error_if( uplo != Uplo::Lower &&
                    uplo != Uplo::Upper );
+    blas_error_if( trans != Op::NoTrans &&
+                   trans != Op::Trans &&
+                   trans != Op::ConjTrans );
+    blas_error_if( diag != Diag::NonUnit &&
+                   diag != Diag::Unit );
     blas_error_if( m < 0 );
     blas_error_if( n < 0 );
 
     if (side == Side::Left)
-        blas_error_if_msg( ldda < m, "ldda %lld < m %lld", (lld) ldda, (lld) m );
+        blas_error_if( ldda < m );
     else
-        blas_error_if_msg( ldda < n, "ldda %lld < n %lld", (lld) ldda, (lld) n );
+        blas_error_if( ldda < n );
 
-    if (layout == Layout::ColMajor) {
+    if (layout == Layout::ColMajor)
         blas_error_if( lddb < m );
-        blas_error_if( lddc < m );
-    }
-    else {
+    else
         blas_error_if( lddb < n );
-        blas_error_if( lddc < n );
-    }
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( m   > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( n   > std::numeric_limits<device_blas_int>::max() );
+        blas_error_if( m    > std::numeric_limits<device_blas_int>::max() );
+        blas_error_if( n    > std::numeric_limits<device_blas_int>::max() );
         blas_error_if( ldda > std::numeric_limits<device_blas_int>::max() );
         blas_error_if( lddb > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( lddc > std::numeric_limits<device_blas_int>::max() );
     }
 
-    device_blas_int m_   = (device_blas_int) m;
-    device_blas_int n_   = (device_blas_int) n;
+    device_blas_int m_    = (device_blas_int) m;
+    device_blas_int n_    = (device_blas_int) n;
     device_blas_int ldda_ = (device_blas_int) ldda;
     device_blas_int lddb_ = (device_blas_int) lddb;
-    device_blas_int lddc_ = (device_blas_int) lddc;
 
     if (layout == Layout::RowMajor) {
-        // swap left <=> right, lower <=> upper, m <=> n
-        side = (side == Side::Left  ? Side::Right : Side::Left);
+        // swap lower <=> upper, left <=> right, m <=> n
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
+        side = (side == Side::Left ? Side::Right : Side::Left);
         std::swap( m_, n_ );
     }
 
-    device_side_t side_ = device_side_const( side );
-    device_uplo_t uplo_ = device_uplo_const( uplo );
+    device_side_t side_   = blas::device_side_const( side );
+    device_uplo_t uplo_   = blas::device_uplo_const( uplo );
+    device_trans_t trans_ = blas::device_trans_const( trans );
+    device_diag_t diag_   = blas::device_diag_const( diag );
+    
     blas::set_device( queue.device() );
-    DEVICE_dsymm( 
+    DEVICE_dtrsm( 
             queue.handle(), 
-            side_, uplo_, m_, n_,
-            alpha, dA, ldda_, 
-                   dB, lddb_, 
-            beta,  dC, lddc_ );
+            side_, uplo_, trans_, diag_, 
+            m_, n_, alpha, 
+            dA, ldda_, 
+            dB, lddb_ );
 }
 
 // -----------------------------------------------------------------------------
-/// @ingroup symm
-inline
-void symm(
+/// @ingroup trsm
+void blas::trsm(
     blas::Layout layout,
     blas::Side side,
     blas::Uplo uplo,
-    int64_t m, int64_t n,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t m,
+    int64_t n,
     std::complex<float> alpha,
     std::complex<float> const *dA, int64_t ldda,
-    std::complex<float> const *dB, int64_t lddb,
-    std::complex<float> beta,
-    std::complex<float>       *dC, int64_t lddc, 
-    blas::Queue &queue )
+    std::complex<float>       *dB, int64_t lddb, 
+    blas::Queue  &queue )
 {
-    typedef long long lld;
-
     // check arguments
     blas_error_if( layout != Layout::ColMajor &&
                    layout != Layout::RowMajor );
@@ -181,22 +174,23 @@ void symm(
                    side != Side::Right );
     blas_error_if( uplo != Uplo::Lower &&
                    uplo != Uplo::Upper );
+    blas_error_if( trans != Op::NoTrans &&
+                   trans != Op::Trans &&
+                   trans != Op::ConjTrans );
+    blas_error_if( diag != Diag::NonUnit &&
+                   diag != Diag::Unit );
     blas_error_if( m < 0 );
     blas_error_if( n < 0 );
 
     if (side == Side::Left)
-        blas_error_if_msg( ldda < m, "ldda %lld < m %lld", (lld) ldda, (lld) m );
+        blas_error_if( ldda < m );
     else
-        blas_error_if_msg( ldda < n, "ldda %lld < n %lld", (lld) ldda, (lld) n );
+        blas_error_if( ldda < n );
 
-    if (layout == Layout::ColMajor) {
+    if (layout == Layout::ColMajor)
         blas_error_if( lddb < m );
-        blas_error_if( lddc < m );
-    }
-    else {
+    else
         blas_error_if( lddb < n );
-        blas_error_if( lddc < n );
-    }
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(device_blas_int)) {
@@ -204,50 +198,49 @@ void symm(
         blas_error_if( n   > std::numeric_limits<device_blas_int>::max() );
         blas_error_if( ldda > std::numeric_limits<device_blas_int>::max() );
         blas_error_if( lddb > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( lddc > std::numeric_limits<device_blas_int>::max() );
     }
 
-    device_blas_int m_   = (device_blas_int) m;
-    device_blas_int n_   = (device_blas_int) n;
+    device_blas_int m_    = (device_blas_int) m;
+    device_blas_int n_    = (device_blas_int) n;
     device_blas_int ldda_ = (device_blas_int) ldda;
     device_blas_int lddb_ = (device_blas_int) lddb;
-    device_blas_int lddc_ = (device_blas_int) lddc;
 
     if (layout == Layout::RowMajor) {
-        // swap left <=> right, lower <=> upper, m <=> n
-        side = (side == Side::Left  ? Side::Right : Side::Left);
+        // swap lower <=> upper, left <=> right, m <=> n
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
+        side = (side == Side::Left ? Side::Right : Side::Left);
         std::swap( m_, n_ );
     }
 
-    device_side_t side_ = device_side_const( side );
-    device_uplo_t uplo_ = device_uplo_const( uplo );
+    device_side_t side_   = blas::device_side_const( side );
+    device_uplo_t uplo_   = blas::device_uplo_const( uplo );
+    device_trans_t trans_ = blas::device_trans_const( trans );
+    device_diag_t diag_   = blas::device_diag_const( diag );
+    
     blas::set_device( queue.device() );
-    DEVICE_csymm( 
+    DEVICE_ctrsm( 
             queue.handle(), 
-            side_, uplo_, m_, n_,
-            alpha, dA, ldda_, 
-                   dB, lddb_, 
-            beta,  dC, lddc_ );
+            side_, uplo_, trans_, diag_, 
+            m_, n_, alpha, 
+            dA, ldda_, 
+            dB, lddb_ );
 }
 
 // -----------------------------------------------------------------------------
-/// @ingroup symm
-inline
-void symm(
+/// @ingroup trsm
+void blas::trsm(
     blas::Layout layout,
     blas::Side side,
     blas::Uplo uplo,
-    int64_t m, int64_t n,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t m,
+    int64_t n,
     std::complex<double> alpha,
     std::complex<double> const *dA, int64_t ldda,
-    std::complex<double> const *dB, int64_t lddb,
-    std::complex<double> beta,
-    std::complex<double>       *dC, int64_t lddc, 
-    blas::Queue &queue )
+    std::complex<double>       *dB, int64_t lddb, 
+    blas::Queue  &queue )
 {
-    typedef long long lld;
-
     // check arguments
     blas_error_if( layout != Layout::ColMajor &&
                    layout != Layout::RowMajor );
@@ -255,22 +248,23 @@ void symm(
                    side != Side::Right );
     blas_error_if( uplo != Uplo::Lower &&
                    uplo != Uplo::Upper );
+    blas_error_if( trans != Op::NoTrans &&
+                   trans != Op::Trans &&
+                   trans != Op::ConjTrans );
+    blas_error_if( diag != Diag::NonUnit &&
+                   diag != Diag::Unit );
     blas_error_if( m < 0 );
     blas_error_if( n < 0 );
 
     if (side == Side::Left)
-        blas_error_if_msg( ldda < m, "ldda %lld < m %lld", (lld) ldda, (lld) m );
+        blas_error_if( ldda < m );
     else
-        blas_error_if_msg( ldda < n, "ldda %lld < n %lld", (lld) ldda, (lld) n );
+        blas_error_if( ldda < n );
 
-    if (layout == Layout::ColMajor) {
+    if (layout == Layout::ColMajor)
         blas_error_if( lddb < m );
-        blas_error_if( lddc < m );
-    }
-    else {
+    else
         blas_error_if( lddb < n );
-        blas_error_if( lddc < n );
-    }
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(device_blas_int)) {
@@ -278,33 +272,30 @@ void symm(
         blas_error_if( n   > std::numeric_limits<device_blas_int>::max() );
         blas_error_if( ldda > std::numeric_limits<device_blas_int>::max() );
         blas_error_if( lddb > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( lddc > std::numeric_limits<device_blas_int>::max() );
     }
 
-    device_blas_int m_   = (device_blas_int) m;
-    device_blas_int n_   = (device_blas_int) n;
+    device_blas_int m_    = (device_blas_int) m;
+    device_blas_int n_    = (device_blas_int) n;
     device_blas_int ldda_ = (device_blas_int) ldda;
     device_blas_int lddb_ = (device_blas_int) lddb;
-    device_blas_int lddc_ = (device_blas_int) lddc;
 
     if (layout == Layout::RowMajor) {
-        // swap left <=> right, lower <=> upper, m <=> n
-        side = (side == Side::Left  ? Side::Right : Side::Left);
+        // swap lower <=> upper, left <=> right, m <=> n
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
+        side = (side == Side::Left ? Side::Right : Side::Left);
         std::swap( m_, n_ );
     }
 
-    device_side_t side_ = device_side_const( side );
-    device_uplo_t uplo_ = device_uplo_const( uplo );
+    device_side_t side_   = blas::device_side_const( side );
+    device_uplo_t uplo_   = blas::device_uplo_const( uplo );
+    device_trans_t trans_ = blas::device_trans_const( trans );
+    device_diag_t diag_   = blas::device_diag_const( diag );
+    
     blas::set_device( queue.device() );
-    DEVICE_zsymm( 
+    DEVICE_ztrsm( 
             queue.handle(), 
-            side_, uplo_, m_, n_,
-            alpha, dA, ldda_, 
-                   dB, lddb_, 
-            beta,  dC, lddc_ );
+            side_, uplo_, trans_, diag_, 
+            m_, n_, alpha, 
+            dA, ldda_, 
+            dB, lddb_ );
 }
-
-}  // namespace blas
-
-#endif        //  #ifndef DEVICE_SYMM_HH

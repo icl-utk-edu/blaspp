@@ -1,17 +1,11 @@
-#ifndef DEVICE_BATCH_GEMM_HH
-#define DEVICE_BATCH_GEMM_HH
-
-#include "device.hh"
 #include <limits>
 #include <cstring>
+#include "batch_common.hh"
+#include "device_blas.hh"
 
-namespace blas {
-
-namespace batch{
 // -----------------------------------------------------------------------------
 /// @ingroup gemm
-inline
-void gemm(
+void blas::batch::gemm(
     std::vector<blas::Op> const &transA,
     std::vector<blas::Op> const &transB,
     std::vector<int64_t>  const &m, 
@@ -104,8 +98,7 @@ void gemm(
 
 // -----------------------------------------------------------------------------
 /// @ingroup gemm
-inline
-void gemm(
+void blas::batch::gemm(
     std::vector<blas::Op> const &transA,
     std::vector<blas::Op> const &transB,
     std::vector<int64_t>  const &m, 
@@ -198,8 +191,7 @@ void gemm(
 
 // -----------------------------------------------------------------------------
 /// @ingroup gemm
-inline
-void gemm(
+void blas::batch::gemm(
     std::vector<blas::Op> const &transA,
     std::vector<blas::Op> const &transB,
     std::vector<int64_t>  const &m, 
@@ -293,8 +285,7 @@ void gemm(
 
 // -----------------------------------------------------------------------------
 /// @ingroup gemm
-inline
-void gemm(
+void blas::batch::gemm(
     std::vector<blas::Op> const &transA,
     std::vector<blas::Op> const &transB,
     std::vector<int64_t>  const &m, 
@@ -385,9 +376,3 @@ void gemm(
          }
     }
 }
-
-}        //  namespace batch
-}        //  namespace blas
-
-#endif        //  #ifndef DEVICE_BATCH_GEMM_HH
-

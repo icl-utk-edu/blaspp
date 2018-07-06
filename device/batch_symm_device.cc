@@ -1,17 +1,11 @@
-#ifndef DEVICE_BATCH_HEMM_HH
-#define DEVICE_BATCH_HEMM_HH
-
-#include "device.hh"
 #include <limits>
 #include <cstring>
+#include "batch_common.hh"
+#include "device_blas.hh"
 
-namespace blas {
-
-namespace batch{
 // -----------------------------------------------------------------------------
-/// @ingroup hemm
-inline
-void hemm(
+/// @ingroup symm
+void blas::batch::symm(
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<int64_t>    const &m, 
@@ -28,7 +22,7 @@ void hemm(
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if(info.size() > 0){
         // perform error checking
-        blas::batch::hemm_check<float>( 
+        blas::batch::symm_check<float>( 
                         side, uplo, 
                         m, n, 
                         alpha, Aarray, ldda, 
@@ -40,11 +34,9 @@ void hemm(
     throw std::exception();  // not yet available
 }
 
-
 // -----------------------------------------------------------------------------
-/// @ingroup hemm
-inline
-void hemm(
+/// @ingroup symm
+void blas::batch::symm(
     std::vector<blas::Side>  const &side,
     std::vector<blas::Uplo>  const &uplo,
     std::vector<int64_t>     const &m, 
@@ -61,7 +53,7 @@ void hemm(
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if(info.size() > 0){
         // perform error checking
-        blas::batch::hemm_check<double>( 
+        blas::batch::symm_check<double>( 
                         side, uplo, 
                         m, n, 
                         alpha, Aarray, ldda, 
@@ -74,9 +66,8 @@ void hemm(
 }
 
 // -----------------------------------------------------------------------------
-/// @ingroup hemm
-inline
-void hemm(
+/// @ingroup symm
+void blas::batch::symm(
     std::vector<blas::Side>  const &side,
     std::vector<blas::Uplo>  const &uplo,
     std::vector<int64_t>     const &m, 
@@ -93,7 +84,7 @@ void hemm(
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if(info.size() > 0){
         // perform error checking
-        blas::batch::hemm_check<std::complex<float>>( 
+        blas::batch::symm_check<std::complex<float>>( 
                         side, uplo, 
                         m, n, 
                         alpha, Aarray, ldda, 
@@ -106,9 +97,8 @@ void hemm(
 }
 
 // -----------------------------------------------------------------------------
-/// @ingroup hemm
-inline
-void hemm(
+/// @ingroup symm
+void blas::batch::symm(
     std::vector<blas::Side>  const &side,
     std::vector<blas::Uplo>  const &uplo,
     std::vector<int64_t>     const &m, 
@@ -125,7 +115,7 @@ void hemm(
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if(info.size() > 0){
         // perform error checking
-        blas::batch::hemm_check<std::complex<double>>( 
+        blas::batch::symm_check<std::complex<double>>( 
                         side, uplo, 
                         m, n, 
                         alpha, Aarray, ldda, 
@@ -136,11 +126,3 @@ void hemm(
 
     throw std::exception();  // not yet available by the vendor
 }
-
-
-
-}        //  namespace batch
-}        //  namespace blas
-
-#endif        //  #ifndef DEVICE_BATCH_HEMM_HH
-

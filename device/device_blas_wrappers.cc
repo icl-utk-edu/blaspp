@@ -1,9 +1,5 @@
-#ifndef DEVICE_BLAS_WRAPPERS_HH
-#define DEVICE_BLAS_WRAPPERS_HH
+#include "device.hh"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 // =============================================================================
 // Level 1 BLAS - Device Interfaces
 
@@ -892,9 +888,3 @@ void DEVICE_BATCH_ztrsm(
     // TODO: call rocBLAS
     #endif
 }
-
-#ifdef __cplusplus
-}  // extern "C"
-#endif
-
-#endif        //  #ifndef DEVICE_BLAS_WRAPPERS_HH

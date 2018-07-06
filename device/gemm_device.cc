@@ -1,18 +1,12 @@
-#ifndef DEVICE_GEMM_HH
-#define DEVICE_GEMM_HH
-
-#include "device.hh"
+#include "device_blas.hh"
 #include <limits>
-
-namespace blas {
 
 // =============================================================================
 // Overloaded wrappers for s, d, c, z precisions.
 
 // -----------------------------------------------------------------------------
 /// @ingroup gemm
-inline
-void gemm(
+void blas::gemm(
     blas::Layout layout,
     blas::Op transA,
     blas::Op transB,
@@ -91,8 +85,7 @@ void gemm(
 
 // -----------------------------------------------------------------------------
 /// @ingroup gemm
-inline
-void gemm(
+void blas::gemm(
     blas::Layout layout,
     blas::Op transA,
     blas::Op transB,
@@ -184,8 +177,7 @@ void gemm(
 
 // -----------------------------------------------------------------------------
 /// @ingroup gemm
-inline
-void gemm(
+void blas::gemm(
     blas::Layout layout,
     blas::Op transA,
     blas::Op transB,
@@ -276,8 +268,7 @@ void gemm(
 
 // -----------------------------------------------------------------------------
 /// @ingroup gemm
-inline
-void gemm(
+void blas::gemm(
     blas::Layout layout,
     blas::Op transA,
     blas::Op transB,
@@ -365,9 +356,3 @@ void gemm(
                 beta,  dC, lddc_);
     }
 }
-
-
-}        //  namespace blas
-
-#endif        //  #ifndef DEVICE_GEMM_HH
-

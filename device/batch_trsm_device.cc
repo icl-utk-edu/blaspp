@@ -1,17 +1,11 @@
-#ifndef DEVICE_BATCH_TRSM_HH
-#define DEVICE_BATCH_TRSM_HH
-
-#include "device.hh"
 #include <limits>
 #include <cstring>
+#include "batch_common.hh"
+#include "device_blas.hh"
 
-namespace blas {
-
-namespace batch{
 // -----------------------------------------------------------------------------
 /// @ingroup trsm
-inline
-void trsm(
+void blas::batch::trsm(
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
@@ -35,11 +29,20 @@ void trsm(
                                         batch, info );
     }
 
-
-    blas_error_if(false == is_supported("device", side, uplo, trans, diag, m, n, alpha, Aarray, ldda, Barray, lddb, batch));
+    bool fixed_size =   ( side.size()   == 1     && 
+                          uplo.size()   == 1     && 
+                          trans.size()  == 1     && 
+                          diag.size()   == 1     && 
+                          m.size()      == 1     && 
+                          n.size()      == 1     && 
+                          alpha.size()  == 1     && 
+                          Aarray.size() == batch && 
+                          ldda.size()   == 1     &&
+                          Barray.size() == batch && 
+                          lddb.size()   == 1  );
     
     blas::set_device( queue.device() );
-    if(is_vendor_supported("device", side, uplo, trans, diag, m, n, alpha, Aarray, ldda, Barray, lddb, batch)) {
+    if( fixed_size ) {
         // call the vendor routine
         device_side_t   side_   = blas::device_side_const( side[0] );
         device_uplo_t   uplo_   = blas::device_uplo_const( uplo[0] );
@@ -70,8 +73,7 @@ void trsm(
 
 // -----------------------------------------------------------------------------
 /// @ingroup trsm
-inline
-void trsm(
+void blas::batch::trsm(
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
@@ -95,12 +97,21 @@ void trsm(
                                         batch, info );
     }
 
-
-    blas_error_if(false == is_supported("device", side, uplo, trans, diag, m, n, alpha, Aarray, ldda, Barray, lddb, batch));
+    bool fixed_size =   ( side.size()   == 1     && 
+                          uplo.size()   == 1     && 
+                          trans.size()  == 1     && 
+                          diag.size()   == 1     && 
+                          m.size()      == 1     && 
+                          n.size()      == 1     && 
+                          alpha.size()  == 1     && 
+                          Aarray.size() == batch && 
+                          ldda.size()   == 1     &&
+                          Barray.size() == batch && 
+                          lddb.size()   == 1  );
     
     blas::set_device( queue.device() );
-    if(is_vendor_supported("device", side, uplo, trans, diag, m, n, alpha, Aarray, ldda, Barray, lddb, batch)) {
-        // call the vendor routine
+    if( fixed_size ) {
+            // call the vendor routine
         device_side_t   side_   = blas::device_side_const( side[0] );
         device_uplo_t   uplo_   = blas::device_uplo_const( uplo[0] );
         device_trans_t  trans_  = blas::device_trans_const( trans[0] );
@@ -130,8 +141,7 @@ void trsm(
 
 // -----------------------------------------------------------------------------
 /// @ingroup trsm
-inline
-void trsm(
+void blas::batch::trsm(
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
@@ -155,11 +165,20 @@ void trsm(
                                         batch, info );
     }
 
-
-    blas_error_if(false == is_supported("device", side, uplo, trans, diag, m, n, alpha, Aarray, ldda, Barray, lddb, batch));
+    bool fixed_size =   ( side.size()   == 1     && 
+                          uplo.size()   == 1     && 
+                          trans.size()  == 1     && 
+                          diag.size()   == 1     && 
+                          m.size()      == 1     && 
+                          n.size()      == 1     && 
+                          alpha.size()  == 1     && 
+                          Aarray.size() == batch && 
+                          ldda.size()   == 1     &&
+                          Barray.size() == batch && 
+                          lddb.size()   == 1  );
     
     blas::set_device( queue.device() );
-    if(is_vendor_supported("device", side, uplo, trans, diag, m, n, alpha, Aarray, ldda, Barray, lddb, batch)) {
+    if( fixed_size ) {
         // call the vendor routine
         device_side_t   side_   = blas::device_side_const( side[0] );
         device_uplo_t   uplo_   = blas::device_uplo_const( uplo[0] );
@@ -190,8 +209,7 @@ void trsm(
 
 // -----------------------------------------------------------------------------
 /// @ingroup trsm
-inline
-void trsm(
+void blas::batch::trsm(
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
@@ -215,11 +233,20 @@ void trsm(
                                         batch, info );
     }
 
-
-    blas_error_if(false == is_supported("device", side, uplo, trans, diag, m, n, alpha, Aarray, ldda, Barray, lddb, batch));
+    bool fixed_size =   ( side.size()   == 1     && 
+                          uplo.size()   == 1     && 
+                          trans.size()  == 1     && 
+                          diag.size()   == 1     && 
+                          m.size()      == 1     && 
+                          n.size()      == 1     && 
+                          alpha.size()  == 1     && 
+                          Aarray.size() == batch && 
+                          ldda.size()   == 1     &&
+                          Barray.size() == batch && 
+                          lddb.size()   == 1  );
     
     blas::set_device( queue.device() );
-    if(is_vendor_supported("device", side, uplo, trans, diag, m, n, alpha, Aarray, ldda, Barray, lddb, batch)) {
+    if( fixed_size ) {
         // call the vendor routine
         device_side_t   side_   = blas::device_side_const( side[0] );
         device_uplo_t   uplo_   = blas::device_uplo_const( uplo[0] );
@@ -246,10 +273,3 @@ void trsm(
          // TODO: provide a reference implementation using queues
     }
 }
-
-
-}        //  namespace batch
-}        //  namespace blas
-
-#endif        //  #ifndef DEVICE_BATCH_TRSM_HH
-

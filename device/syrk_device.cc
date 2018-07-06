@@ -1,25 +1,18 @@
-#ifndef DEVICE_SYR2K_HH
-#define DEVICE_SYR2K_HH
-
-#include "device.hh"
+#include "device_blas.hh"
 #include <limits>
-
-namespace blas {
 
 // =============================================================================
 // Overloaded wrappers for s, d, c, z precisions.
 
 // -----------------------------------------------------------------------------
-/// @ingroup syr2k
-inline
-void syr2k(
+/// @ingroup syrk
+void blas::syrk(
     blas::Layout layout,
     blas::Uplo uplo,
     blas::Op trans,
     int64_t n, int64_t k,
     float alpha,
     float const *dA, int64_t ldda,
-    float const *dB, int64_t lddb,
     float beta,
     float       *dC, int64_t lddc, 
     blas::Queue &queue )
@@ -35,14 +28,10 @@ void syr2k(
     blas_error_if( n < 0 );
     blas_error_if( k < 0 );
 
-    if ((trans == Op::NoTrans) ^ (layout == Layout::RowMajor)) {
+    if ((trans == Op::NoTrans) ^ (layout == Layout::RowMajor))
         blas_error_if( ldda < n );
-        blas_error_if( lddb < n );
-    }
-    else {
+    else
         blas_error_if( ldda < k );
-        blas_error_if( lddb < k );
-    }
 
     blas_error_if( lddc < n );
 
@@ -57,7 +46,6 @@ void syr2k(
     device_blas_int n_   = (device_blas_int) n;
     device_blas_int k_   = (device_blas_int) k;
     device_blas_int ldda_ = (device_blas_int) ldda;
-    device_blas_int lddb_ = (device_blas_int) lddb;
     device_blas_int lddc_ = (device_blas_int) lddc;
 
     if (layout == Layout::RowMajor) {
@@ -68,28 +56,25 @@ void syr2k(
     }
 
     device_uplo_t uplo_ = device_uplo_const( uplo );
-    device_trans_t trans_ = device_trans_const( trans);
+    device_trans_t trans_ = device_trans_const( trans );
     blas::set_device( queue.device() );
-    DEVICE_ssyr2k( 
+    DEVICE_ssyrk( 
             queue.handle(), 
             uplo_, trans_, 
             n_, k_, 
             alpha, dA, ldda_, 
-                   dB, lddb_, 
             beta,  dC, lddc_ );
 }
 
 // -----------------------------------------------------------------------------
-/// @ingroup syr2k
-inline
-void syr2k(
+/// @ingroup syrk
+void blas::syrk(
     blas::Layout layout,
     blas::Uplo uplo,
     blas::Op trans,
     int64_t n, int64_t k,
     double alpha,
     double const *dA, int64_t ldda,
-    double const *dB, int64_t lddb,
     double beta,
     double       *dC, int64_t lddc, 
     blas::Queue &queue )
@@ -105,14 +90,10 @@ void syr2k(
     blas_error_if( n < 0 );
     blas_error_if( k < 0 );
 
-    if ((trans == Op::NoTrans) ^ (layout == Layout::RowMajor)) {
+    if ((trans == Op::NoTrans) ^ (layout == Layout::RowMajor))
         blas_error_if( ldda < n );
-        blas_error_if( lddb < n );
-    }
-    else {
+    else
         blas_error_if( ldda < k );
-        blas_error_if( lddb < k );
-    }
 
     blas_error_if( lddc < n );
 
@@ -127,7 +108,6 @@ void syr2k(
     device_blas_int n_   = (device_blas_int) n;
     device_blas_int k_   = (device_blas_int) k;
     device_blas_int ldda_ = (device_blas_int) ldda;
-    device_blas_int lddb_ = (device_blas_int) lddb;
     device_blas_int lddc_ = (device_blas_int) lddc;
 
     if (layout == Layout::RowMajor) {
@@ -138,28 +118,25 @@ void syr2k(
     }
 
     device_uplo_t uplo_ = device_uplo_const( uplo );
-    device_trans_t trans_ = device_trans_const( trans);
+    device_trans_t trans_ = device_trans_const( trans );
     blas::set_device( queue.device() );
-    DEVICE_dsyr2k( 
+    DEVICE_dsyrk( 
             queue.handle(), 
             uplo_, trans_, 
             n_, k_, 
             alpha, dA, ldda_, 
-                   dB, lddb_, 
             beta,  dC, lddc_ );
 }
 
 // -----------------------------------------------------------------------------
-/// @ingroup syr2k
-inline
-void syr2k(
+/// @ingroup syrk
+void blas::syrk(
     blas::Layout layout,
     blas::Uplo uplo,
     blas::Op trans,
     int64_t n, int64_t k,
     std::complex<float> alpha,
     std::complex<float> const *dA, int64_t ldda,
-    std::complex<float> const *dB, int64_t lddb,
     std::complex<float> beta,
     std::complex<float>       *dC, int64_t lddc, 
     blas::Queue &queue )
@@ -174,14 +151,10 @@ void syr2k(
     blas_error_if( n < 0 );
     blas_error_if( k < 0 );
 
-    if ((trans == Op::NoTrans) ^ (layout == Layout::RowMajor)) {
+    if ((trans == Op::NoTrans) ^ (layout == Layout::RowMajor))
         blas_error_if( ldda < n );
-        blas_error_if( lddb < n );
-    }
-    else {
+    else
         blas_error_if( ldda < k );
-        blas_error_if( lddb < k );
-    }
 
     blas_error_if( lddc < n );
 
@@ -196,7 +169,6 @@ void syr2k(
     device_blas_int n_   = (device_blas_int) n;
     device_blas_int k_   = (device_blas_int) k;
     device_blas_int ldda_ = (device_blas_int) ldda;
-    device_blas_int lddb_ = (device_blas_int) lddb;
     device_blas_int lddc_ = (device_blas_int) lddc;
 
     if (layout == Layout::RowMajor) {
@@ -207,28 +179,25 @@ void syr2k(
     }
 
     device_uplo_t uplo_ = device_uplo_const( uplo );
-    device_trans_t trans_ = device_trans_const( trans);
+    device_trans_t trans_ = device_trans_const( trans );
     blas::set_device( queue.device() );
-    DEVICE_csyr2k( 
+    DEVICE_csyrk( 
             queue.handle(), 
             uplo_, trans_, 
             n_, k_, 
             alpha, dA, ldda_, 
-                   dB, lddb_, 
             beta,  dC, lddc_ );
 }
 
 // -----------------------------------------------------------------------------
-/// @ingroup syr2k
-inline
-void syr2k(
+/// @ingroup syrk
+void blas::syrk(
     blas::Layout layout,
     blas::Uplo uplo,
     blas::Op trans,
     int64_t n, int64_t k,
     std::complex<double> alpha,
     std::complex<double> const *dA, int64_t ldda,
-    std::complex<double> const *dB, int64_t lddb,
     std::complex<double> beta,
     std::complex<double>       *dC, int64_t lddc, 
     blas::Queue &queue )
@@ -243,14 +212,10 @@ void syr2k(
     blas_error_if( n < 0 );
     blas_error_if( k < 0 );
 
-    if ((trans == Op::NoTrans) ^ (layout == Layout::RowMajor)) {
+    if ((trans == Op::NoTrans) ^ (layout == Layout::RowMajor))
         blas_error_if( ldda < n );
-        blas_error_if( lddb < n );
-    }
-    else {
+    else
         blas_error_if( ldda < k );
-        blas_error_if( lddb < k );
-    }
 
     blas_error_if( lddc < n );
 
@@ -265,7 +230,6 @@ void syr2k(
     device_blas_int n_   = (device_blas_int) n;
     device_blas_int k_   = (device_blas_int) k;
     device_blas_int ldda_ = (device_blas_int) ldda;
-    device_blas_int lddb_ = (device_blas_int) lddb;
     device_blas_int lddc_ = (device_blas_int) lddc;
 
     if (layout == Layout::RowMajor) {
@@ -276,17 +240,12 @@ void syr2k(
     }
 
     device_uplo_t uplo_ = device_uplo_const( uplo );
-    device_trans_t trans_ = device_trans_const( trans);
+    device_trans_t trans_ = device_trans_const( trans );
     blas::set_device( queue.device() );
-    DEVICE_zsyr2k( 
+    DEVICE_zsyrk( 
             queue.handle(), 
             uplo_, trans_, 
             n_, k_, 
             alpha, dA, ldda_, 
-                   dB, lddb_, 
             beta,  dC, lddc_ );
 }
-
-}  // namespace blas
-
-#endif        //  #ifndef BLAS_SYMM_HH

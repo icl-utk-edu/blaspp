@@ -1,19 +1,12 @@
-#ifndef DEVICE_HERK_HH
-#define DEVICE_HERK_HH
-
-#include "device.hh"
-#include "syrk_device.hh"
+#include "device_blas.hh"
 #include <limits>
-
-namespace blas {
 
 // =============================================================================
 // Overloaded wrappers for s, d, c, z precisions.
 
 // -----------------------------------------------------------------------------
 /// @ingroup herk
-inline
-void herk(
+void blas::herk(
     blas::Layout layout,
     blas::Uplo uplo,
     blas::Op trans,
@@ -29,8 +22,7 @@ void herk(
 
 // -----------------------------------------------------------------------------
 /// @ingroup herk
-inline
-void herk(
+void blas::herk(
     blas::Layout layout,
     blas::Uplo uplo,
     blas::Op trans,
@@ -46,8 +38,7 @@ void herk(
 
 // -----------------------------------------------------------------------------
 /// @ingroup herk
-inline
-void herk(
+void blas::herk(
     blas::Layout layout,
     blas::Uplo uplo,
     blas::Op trans,
@@ -108,8 +99,7 @@ void herk(
 
 // -----------------------------------------------------------------------------
 /// @ingroup herk
-inline
-void herk(
+void blas::herk(
     blas::Layout layout,
     blas::Uplo uplo,
     blas::Op trans,
@@ -167,7 +157,3 @@ void herk(
             alpha, dA, ldda_,
             beta,  dC, lddc_ );
 }
-
-}  // namespace blas
-
-#endif        //  #ifndef DEVICE_HERK_HH

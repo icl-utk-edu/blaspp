@@ -1,39 +1,7 @@
-#ifndef DEVICE_UTILS_HH
-#define DEVICE_UTILS_HH
+#include "device.hh"
 
-namespace blas {
-
-typedef int64_t Device; 
-
-inline void set_device(blas::Device device);
-
-inline void get_device(blas::Device *device);
-
-// TODO: errors/exceptions
-
-// functions that converts blaspp constants to device-specific constants
-inline device_trans_t   device_trans_const(blas::Op trans);
-
-inline device_diag_t    device_diag_const(blas::Diag diag);
-
-inline device_uplo_t    device_uplo_const(blas::Uplo uplo);
-
-inline device_side_t    device_side_const(blas::Side side);
-
-template<typename T> 
-inline  T* device_malloc(int64_t nelements);
-
-inline void device_free(void* ptr);
-
-template<typename T> 
-inline  T* device_malloc_pinned(int64_t nelements);
-
-inline void device_free_pinned(void* ptr);
-
-}        //  namespace blas
-
-
-inline 
+// -----------------------------------------------------------------------------
+// set device 
 void blas::set_device(blas::Device device){
     #ifdef HAVE_CUBLAS
     device_error_check( cudaSetDevice((device_blas_int)device) );
@@ -42,7 +10,8 @@ void blas::set_device(blas::Device device){
     #endif
 }
 
-inline 
+// -----------------------------------------------------------------------------
+// get current device 
 void blas::get_device(blas::Device *device){
     device_blas_int dev; 
 
@@ -55,8 +24,8 @@ void blas::get_device(blas::Device *device){
     (*device) = (blas::Device)dev;
 }
 
-/// @return the corresponding device trans constant 
-inline 
+// -----------------------------------------------------------------------------
+/// @return the corresponding device trans constant  
 device_trans_t    blas::device_trans_const(blas::Op trans){    
     blas_error_if( trans != Op::NoTrans &&
                    trans != Op::Trans &&
@@ -73,8 +42,8 @@ device_trans_t    blas::device_trans_const(blas::Op trans){
     return trans_;
 }
 
-/// @return the corresponding device diag constant 
-inline 
+// -----------------------------------------------------------------------------
+/// @return the corresponding device diag constant  
 device_diag_t    blas::device_diag_const(blas::Diag diag){
     blas_error_if( diag != Diag::NonUnit &&
                    diag != Diag::Unit );
@@ -89,8 +58,8 @@ device_diag_t    blas::device_diag_const(blas::Diag diag){
     return diag_;
 }
 
-/// @return the corresponding device uplo constant 
-inline 
+// -----------------------------------------------------------------------------
+/// @return the corresponding device uplo constant  
 device_uplo_t    blas::device_uplo_const(blas::Uplo uplo){
     blas_error_if( uplo != Uplo::Lower &&
                    uplo != Uplo::Upper );
@@ -105,8 +74,8 @@ device_uplo_t    blas::device_uplo_const(blas::Uplo uplo){
     return uplo_;
 }
 
-/// @return the corresponding device side constant 
-inline 
+// -----------------------------------------------------------------------------
+/// @return the corresponding device side constant  
 device_side_t    blas::device_side_const(blas::Side side){
     blas_error_if( side != Side::Left &&
                    side != Side::Right );
@@ -121,21 +90,8 @@ device_side_t    blas::device_side_const(blas::Side side){
     return side_;
 }
 
-/// @return a device pointer to an allocated memory space 
-template<typename T>
-inline 
-T* blas::device_malloc(int64_t nelements){
-    T* ptr = NULL;
-    #ifdef HAVE_CUBLAS
-    device_error_check( cudaMalloc((void**)&ptr, nelements * sizeof(T)) );
-    #elif defined(HAVE_ROCBLAS)
-    // TODO: allocation for AMD GPUs
-    #endif
-    return ptr;
-}
-
-/// @free a device pointer 
-inline 
+// -----------------------------------------------------------------------------
+/// @free a device pointer  
 void blas::device_free(void* ptr){
     #ifdef HAVE_CUBLAS
     device_error_check( cudaFree( ptr ) );
@@ -144,21 +100,8 @@ void blas::device_free(void* ptr){
     #endif
 }
 
-/// @return a host pointer to a pinned memory space 
-template<typename T> 
-inline  
-T* blas::device_malloc_pinned(int64_t nelements){
-    T* ptr = NULL;
-    #ifdef HAVE_CUBLAS
-    device_error_check( cudaMallocHost((void**)&ptr, nelements * sizeof(T)) );
-    #elif defined(HAVE_ROCBLAS)
-    // TODO: allocation using AMD driver API
-    #endif
-    return ptr;
-}
-
-/// @free a device pointer 
-inline 
+// -----------------------------------------------------------------------------
+/// @free a pinned memory space  
 void blas::device_free_pinned(void* ptr){
     #ifdef HAVE_CUBLAS
     device_error_check( cudaFreeHost( ptr ) );
@@ -166,8 +109,4 @@ void blas::device_free_pinned(void* ptr){
     // TODO: free memory using AMD driver API
     #endif
 }
-
-
-
-#endif        //  #ifndef DEVICE_UTILS_HH
 
