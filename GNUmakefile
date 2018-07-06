@@ -75,7 +75,8 @@ endif
 #-------------------------------------------------------------------------------
 # Files
 
-lib_src  = $(wildcard src/*.cc)
+#lib_src  = $(wildcard src/*.cc)
+lib_src  = $(filter-out src/device_%.cc, $(wildcard src/*.cc))
 lib_obj  = $(addsuffix .o, $(basename $(lib_src)))
 dep     += $(addsuffix .d, $(basename $(lib_src)))
 
