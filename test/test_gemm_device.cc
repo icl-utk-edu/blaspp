@@ -5,16 +5,7 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-
-#include "gemm_device.hh"
-#include "trsm_device.hh"
-#include "trmm_device.hh"
-#include "symm_device.hh"
-#include "hemm_device.hh"
-#include "syrk_device.hh"
-#include "herk_device.hh"
-#include "syr2k_device.hh"
-#include "her2k_device.hh"
+#include "device_blas.hh"
 // -----------------------------------------------------------------------------
 template< typename TA, typename TB, typename TC >
 void test_gemm_device_work( Params& params, bool run )

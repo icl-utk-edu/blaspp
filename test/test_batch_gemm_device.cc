@@ -5,9 +5,7 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-
-#include "gemm_device.hh"
-#include "batch_gemm_device.hh"
+#include "device_blas.hh"
 // -----------------------------------------------------------------------------
 template< typename TA, typename TB, typename TC >
 void test_device_batch_gemm_work( Params& params, bool run )
@@ -126,71 +124,6 @@ void test_device_batch_gemm_work( Params& params, bool run )
         Cnorm[i] = lapack_lange( "f", Cm, Cn, Carray[i], ldc, work );
     }
 
-    // test error exits, need extra vectors
-    /*
-    std::vector<blas::Op> etransA(1);
-    std::vector<blas::Op> etransB(1);
-    std::vector<int64_t>  em(1);
-    std::vector<int64_t>  en(1);
-    std::vector<int64_t>  ek(1);
-    std::vector<int64_t>  eldda(1);
-    std::vector<int64_t>  elddb(1);
-    std::vector<int64_t>  elddc(1);
-
-    etransA[0] = Op(0);
-    assert_throw( blas::batch::gemm( etransA, vtransB, vm, vn, vk, valpha, dAarray, vldda, dBarray, vlddb, vbeta, dCarray, vlddc, batch, info, queue ), blas::Error );
-
-    etransB[0] = Op(0);
-    assert_throw( blas::batch::gemm( vtransA, etransB, vm, vn, vk, valpha, dAarray, vldda, dBarray, vlddb, vbeta, dCarray, vlddc, batch, info, queue ), blas::Error );
-    
-    em[0] = -1;
-    assert_throw( blas::batch::gemm( vtransA, vtransB, em, vn, vk, valpha, dAarray, vldda, dBarray, vlddb, vbeta, dCarray, vlddc, batch, info, queue ), blas::Error );
-    
-    en[0] = -1;
-    assert_throw( blas::batch::gemm( vtransA, vtransB, vm, en, vk, valpha, dAarray, vldda, dBarray, vlddb, vbeta, dCarray, vlddc, batch, info, queue ), blas::Error );
-    
-    ek[0] = -1;
-    assert_throw( blas::batch::gemm( vtransA, vtransB, vm, vn, ek, valpha, dAarray, vldda, dBarray, vlddb, vbeta, dCarray, vlddc, batch, info, queue ), blas::Error );
-    
-    etransA[0] = Op::NoTrans; 
-    etransB[0] = Op::NoTrans; 
-    eldda[0]   = m-1; 
-    assert_throw( blas::batch::gemm( etransA, etransB, vm, vn, vk, valpha, dAarray, eldda, dBarray, vlddb, vbeta, dCarray, vlddc, batch, info, queue ), blas::Error );
-
-    etransA[0] = Op::Trans; 
-    etransB[0] = Op::NoTrans;
-    eldda[0]   = k-1;
-    assert_throw( blas::batch::gemm( etransA, etransB, vm, vn, vk, valpha, dAarray, eldda, dBarray, vlddb, vbeta, dCarray, vlddc, batch, info, queue ), blas::Error );
-
-    etransA[0] = Op::ConjTrans;
-    etransB[0] = Op::NoTrans;
-    eldda[0]   = k-1;
-    assert_throw( blas::batch::gemm( etransA, etransB, vm, vn, vk, valpha, dAarray, eldda, dBarray, vlddb, vbeta, dCarray, vlddc, batch, info, queue ), blas::Error );
-    
-    etransA[0] = Op::NoTrans;
-    etransB[0] = Op::NoTrans;
-    elddb[0]   = k-1;
-    assert_throw( blas::batch::gemm( etransA, etransB, vm, vn, vk, valpha, dAarray, vldda, dBarray, elddb, vbeta, dCarray, vlddc, batch, info, queue ), blas::Error );
-
-    etransA[0] = Op::NoTrans;
-    etransB[0] = Op::Trans;
-    elddb[0]   = n-1;
-    assert_throw( blas::batch::gemm( etransA, etransB, vm, vn, vk, valpha, dAarray, vldda, dBarray, elddb, vbeta, dCarray, vlddc, batch, info, queue ), blas::Error );
-
-    etransA[0] = Op::NoTrans;
-    etransB[0] = Op::ConjTrans;
-    elddb[0]   = n-1;
-    assert_throw( blas::batch::gemm( etransA, etransB, vm, vn, vk, valpha, dAarray, vldda, dBarray, elddb, vbeta, dCarray, vlddc, batch, info, queue ), blas::Error );
-
-    elddc[0] = m-1;
-    assert_throw( blas::batch::gemm( vtransA, vtransB, vm, vn, vk, valpha, dAarray, vldda, dBarray, vlddb, vbeta, dCarray, elddc, batch, info, queue ), blas::Error );
-
-    info.resize(2);
-    assert_throw( blas::batch::gemm( vtransA, vtransB, vm, vn, vk, valpha, dAarray, vldda, dBarray, vlddb, vbeta, dCarray, vlddc, batch, info, queue ), blas::Error );
-    info.resize( batch );
-
-    assert_throw( blas::batch::gemm( vtransA, vtransB, vm, vn, vk, valpha, dAarray, vldda, dBarray, vlddb, vbeta, dCarray, vlddc,    -1, info, queue ), blas::Error );    
-*/
     // decide error checking mode
     info.resize( 0 );
     // run test

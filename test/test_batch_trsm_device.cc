@@ -5,8 +5,7 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-#include "batch_trsm_device.hh"
-
+#include "device_blas.hh"
 // -----------------------------------------------------------------------------
 template< typename TA, typename TB >
 void test_device_batch_trsm_work( Params& params, bool run )
@@ -131,23 +130,6 @@ void test_device_batch_trsm_work( Params& params, bool run )
         Anorm[ s ] = lapack_lantr( "f", uplo2str(uplo), diag2str(diag), Am, Am, Aarray[s], lda, work );
         Bnorm[ s ] = lapack_lange( "f", Bm, Bn, Barray[s], ldb, work );
     }
-
-    // test error exits
-    /*
-    assert_throw( blas::trsm( Layout(0), side,    uplo,    trans, diag,     m,  n, alpha, A, lda, B, ldb ), blas::Error );
-    assert_throw( blas::trsm( layout,    Side(0), uplo,    trans, diag,     m,  n, alpha, A, lda, B, ldb ), blas::Error );
-    assert_throw( blas::trsm( layout,    side,    Uplo(0), trans, diag,     m,  n, alpha, A, lda, B, ldb ), blas::Error );
-    assert_throw( blas::trsm( layout,    side,    uplo,    Op(0), diag,     m,  n, alpha, A, lda, B, ldb ), blas::Error );
-    assert_throw( blas::trsm( layout,    side,    uplo,    trans, Diag(0),  m,  n, alpha, A, lda, B, ldb ), blas::Error );
-    assert_throw( blas::trsm( layout,    side,    uplo,    trans, diag,    -1,  n, alpha, A, lda, B, ldb ), blas::Error );
-    assert_throw( blas::trsm( layout,    side,    uplo,    trans, diag,     m, -1, alpha, A, lda, B, ldb ), blas::Error );
-
-    assert_throw( blas::trsm( layout, Side::Left,  uplo,   trans, diag,     m,  n, alpha, A, m-1, B, ldb ), blas::Error );
-    assert_throw( blas::trsm( layout, Side::Right, uplo,   trans, diag,     m,  n, alpha, A, n-1, B, ldb ), blas::Error );
-
-    assert_throw( blas::trsm( Layout::ColMajor, side, uplo, trans, diag,    m,  n, alpha, A, lda, B, m-1 ), blas::Error );
-    assert_throw( blas::trsm( Layout::RowMajor, side, uplo, trans, diag,    m,  n, alpha, A, lda, B, n-1 ), blas::Error );
-    */
 
     // decide error checking mode
     info.resize( 0 );

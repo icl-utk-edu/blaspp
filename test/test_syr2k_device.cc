@@ -5,8 +5,7 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-#include "syr2k_device.hh"
-
+#include "device_blas.hh"
 // -----------------------------------------------------------------------------
 template< typename TA, typename TB, typename TC >
 void test_syr2k_device_work( Params& params, bool run )
