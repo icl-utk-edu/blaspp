@@ -1,11 +1,17 @@
-#ifndef BATCH_CHECK_HH
-#define BATCH_CHECK_HH
+#ifndef BATCH_COMMON_HH
+#define BATCH_COMMON_HH
 
-#include<limits>
+#include "blas_util.hh"
+#include <vector>
 
 namespace blas{
 
 namespace batch{
+
+template<typename T>
+T extract(std::vector<T> const &ivector, const int64_t index){
+    return (ivector.size() == 1) ? ivector[0] : ivector[index];
+}
 
 // -----------------------------------------------------------------------------
 // batch gemm check
@@ -21,7 +27,7 @@ void gemm_check(
         std::vector<T*>       const &B, std::vector<int64_t> const &ldb, 
         std::vector<T >       const &beta, 
         std::vector<T*>       const &C, std::vector<int64_t> const &ldc, 
-        const int64_t batchCount, std::vector<int64_t> &info)
+        const size_t batchCount, std::vector<int64_t> &info)
 {
     // size error checking
     blas_error_if( (transA.size() != 1 && transA.size() != batchCount) );
@@ -60,7 +66,7 @@ void gemm_check(
         // transA
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < transA.size(); i++){
+        for(size_t i = 0; i < transA.size(); i++){
             linfo += (transA[i] != Op::NoTrans && 
                       transA[i] != Op::Trans   && 
                       transA[i] != Op::ConjTrans
@@ -72,7 +78,7 @@ void gemm_check(
         // transB
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < transB.size(); i++){
+        for(size_t i = 0; i < transB.size(); i++){
             linfo += (transB[i] != Op::NoTrans && 
                       transB[i] != Op::Trans   && 
                       transB[i] != Op::ConjTrans
@@ -84,7 +90,7 @@ void gemm_check(
         // m
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < m.size(); i++){
+        for(size_t i = 0; i < m.size(); i++){
             linfo += (m[i] < 0) ? 1 : 0;
         }
         info[0] = (linfo > 0) ? -3 : 0;
@@ -93,7 +99,7 @@ void gemm_check(
         // n
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < n.size(); i++){
+        for(size_t i = 0; i < n.size(); i++){
             linfo += (n[i] < 0) ? 1 : 0;
         }
         info[0] = (linfo > 0) ? -4 : 0;
@@ -102,7 +108,7 @@ void gemm_check(
         // k
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < k.size(); i++){
+        for(size_t i = 0; i < k.size(); i++){
             linfo += (k[i] < 0) ? 1 : 0;
         }
         info[0] = (linfo > 0) ? -5 : 0;
@@ -111,7 +117,7 @@ void gemm_check(
         // lda
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < A.size(); i++){
+        for(size_t i = 0; i < A.size(); i++){
             Op trans_  = extract<Op>(transA, i);
             int64_t nrowA_ = (trans_ == Op::NoTrans) ? 
                              extract<int64_t>(m, i) : extract<int64_t>(k, i);
@@ -124,7 +130,7 @@ void gemm_check(
         // ldb
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < B.size(); i++){
+        for(size_t i = 0; i < B.size(); i++){
             Op trans_  = extract<Op>(transB, i);
             int64_t nrowB_ = (trans_ == Op::NoTrans) ? 
                              extract<int64_t>(k, i) : extract<int64_t>(n, i);
@@ -137,7 +143,7 @@ void gemm_check(
         // ldc
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < C.size(); i++){
+        for(size_t i = 0; i < C.size(); i++){
             int64_t m_   = extract<int64_t>(m, i);
             int64_t ldc_ = extract<int64_t>(ldc, i);
             linfo += (ldc_ < m_) ? 1 : 0;
@@ -148,7 +154,7 @@ void gemm_check(
     else{
         /* problem based eror reporting */
         #pragma omp parallel for schedule(dynamic)
-        for(int64_t i = 0; i < batchCount; i++){
+        for(size_t i = 0; i < batchCount; i++){
             Op transA_ = extract<Op>(transA, i);
             Op transB_ = extract<Op>(transB, i);
         
@@ -184,7 +190,7 @@ void gemm_check(
         
         int64_t info_ = 0;
         #pragma omp parallel for reduction(+:info_)
-        for(int64_t i = 0; i < batchCount; i++){
+        for(size_t i = 0; i < batchCount; i++){
             info_ += info[i];
         }
         blas_error_if( info_ != 0 );
@@ -204,7 +210,7 @@ void trsm_check(
         std::vector<T>          const &alpha, 
         std::vector<T*>         const &A, std::vector<int64_t> const &lda, 
         std::vector<T*>         const &B, std::vector<int64_t> const &ldb, 
-        const int64_t batchCount, std::vector<int64_t> &info)
+        const size_t batchCount, std::vector<int64_t> &info)
 {
     // size error checking
     blas_error_if( (side.size()  != 1 && side.size()  != batchCount) );
@@ -240,7 +246,7 @@ void trsm_check(
         // side
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < side.size(); i++){
+        for(size_t i = 0; i < side.size(); i++){
             linfo += (side[i] != Side::Left  && 
                       side[i] != Side::Right 
                       ) ? 1 : 0;
@@ -251,7 +257,7 @@ void trsm_check(
         // uplo
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < uplo.size(); i++){
+        for(size_t i = 0; i < uplo.size(); i++){
             linfo += (uplo[i] != Uplo::Lower  && 
                       uplo[i] != Uplo::Upper
                       ) ? 1 : 0;
@@ -262,7 +268,7 @@ void trsm_check(
         // trans
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < trans.size(); i++){
+        for(size_t i = 0; i < trans.size(); i++){
             linfo += (trans[i] != Op::NoTrans && 
                       trans[i] != Op::Trans   && 
                       trans[i] != Op::ConjTrans
@@ -274,7 +280,7 @@ void trsm_check(
         // diag
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < trans.size(); i++){
+        for(size_t i = 0; i < trans.size(); i++){
             linfo += (diag[i] != Diag::NonUnit && 
                       diag[i] != Diag::Unit  
                      ) ? 1 : 0;
@@ -285,7 +291,7 @@ void trsm_check(
         // m
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < m.size(); i++){
+        for(size_t i = 0; i < m.size(); i++){
             linfo += (m[i] < 0) ? 1 : 0;
         }
         info[0] = (linfo > 0) ? -5 : 0;
@@ -294,7 +300,7 @@ void trsm_check(
         // n
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < n.size(); i++){
+        for(size_t i = 0; i < n.size(); i++){
             linfo += (n[i] < 0) ? 1 : 0;
         }
         info[0] = (linfo > 0) ? -6 : 0;
@@ -303,7 +309,7 @@ void trsm_check(
         // lda
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < A.size(); i++){
+        for(size_t i = 0; i < A.size(); i++){
             Side    side_  = extract<Side>(side, i);
             int64_t lda_   = extract<int64_t>(lda, i);
             int64_t nrowA_ = (side_ == Side::Left) ? extract<int64_t>(m, i) : extract<int64_t>(n, i);
@@ -315,7 +321,7 @@ void trsm_check(
         // ldb
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < B.size(); i++){
+        for(size_t i = 0; i < B.size(); i++){
             int64_t m_   = extract<int64_t>(m, i);
             int64_t ldb_ = extract<int64_t>(ldb, i);
             linfo += (ldb_ < m_) ? 1 : 0;
@@ -326,7 +332,7 @@ void trsm_check(
     else{
         /* problem based eror reporting */
         #pragma omp parallel for schedule(dynamic)
-        for(int64_t i = 0; i < batchCount; i++){
+        for(size_t i = 0; i < batchCount; i++){
             Side  side_ = extract<Side>(side , i);
             Uplo  uplo_ = extract<Uplo>(uplo , i);
             Op   trans_ = extract<Op  >(trans, i);
@@ -361,7 +367,7 @@ void trsm_check(
         
         int64_t info_ = 0;
         #pragma omp parallel for reduction(+:info_)
-        for(int64_t i = 0; i < batchCount; i++){
+        for(size_t i = 0; i < batchCount; i++){
             info_ += info[i];
         }
         blas_error_if( info_ != 0 );
@@ -381,7 +387,7 @@ void trmm_check(
         std::vector<T>          const &alpha, 
         std::vector<T*>         const &A, std::vector<int64_t> const &lda, 
         std::vector<T*>         const &B, std::vector<int64_t> const &ldb, 
-        const int64_t batchCount, std::vector<int64_t> &info)
+        const size_t batchCount, std::vector<int64_t> &info)
 {
     // size error checking
     blas_error_if( (side.size()  != 1 && side.size()  != batchCount) );
@@ -417,7 +423,7 @@ void trmm_check(
         // side
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < side.size(); i++){
+        for(size_t i = 0; i < side.size(); i++){
             linfo += (side[i] != Side::Left  && 
                       side[i] != Side::Right 
                       ) ? 1 : 0;
@@ -428,7 +434,7 @@ void trmm_check(
         // uplo
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < uplo.size(); i++){
+        for(size_t i = 0; i < uplo.size(); i++){
             linfo += (uplo[i] != Uplo::Lower  && 
                       uplo[i] != Uplo::Upper
                       ) ? 1 : 0;
@@ -439,7 +445,7 @@ void trmm_check(
         // trans
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < trans.size(); i++){
+        for(size_t i = 0; i < trans.size(); i++){
             linfo += (trans[i] != Op::NoTrans && 
                       trans[i] != Op::Trans   && 
                       trans[i] != Op::ConjTrans
@@ -451,7 +457,7 @@ void trmm_check(
         // diag
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < trans.size(); i++){
+        for(size_t i = 0; i < trans.size(); i++){
             linfo += (diag[i] != Diag::NonUnit && 
                       diag[i] != Diag::Unit  
                      ) ? 1 : 0;
@@ -462,7 +468,7 @@ void trmm_check(
         // m
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < m.size(); i++){
+        for(size_t i = 0; i < m.size(); i++){
             linfo += (m[i] < 0) ? 1 : 0;
         }
         info[0] = (linfo > 0) ? -5 : 0;
@@ -471,7 +477,7 @@ void trmm_check(
         // n
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < n.size(); i++){
+        for(size_t i = 0; i < n.size(); i++){
             linfo += (n[i] < 0) ? 1 : 0;
         }
         info[0] = (linfo > 0) ? -6 : 0;
@@ -480,7 +486,7 @@ void trmm_check(
         // lda
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < A.size(); i++){
+        for(size_t i = 0; i < A.size(); i++){
             Side side_     = extract<Side>(side, i);
             int64_t lda_   = extract<int64_t>(lda, i);
             int64_t nrowA_ = (side_ == Side::Left) ? extract<int64_t>(m, i) : extract<int64_t>(n, i);
@@ -492,7 +498,7 @@ void trmm_check(
         // ldb
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < B.size(); i++){
+        for(size_t i = 0; i < B.size(); i++){
             int64_t m_   = extract<int64_t>(m, i);
             int64_t ldb_ = extract<int64_t>(ldb, i);
             linfo += (ldb_ < m_) ? 1 : 0;
@@ -504,7 +510,7 @@ void trmm_check(
     else{
         /* problem based eror reporting */
         #pragma omp parallel for schedule(dynamic)
-        for(int64_t i = 0; i < batchCount; i++){
+        for(size_t i = 0; i < batchCount; i++){
             Side  side_ = extract<Side>(side , i);
             Uplo  uplo_ = extract<Uplo>(uplo , i);
             Op   trans_ = extract<Op  >(trans, i);
@@ -539,7 +545,7 @@ void trmm_check(
 
         int64_t info_ = 0;
         #pragma omp parallel for reduction(+:info_)
-        for(int64_t i = 0; i < batchCount; i++){
+        for(size_t i = 0; i < batchCount; i++){
             info_ += info[i];
         }
         blas_error_if( info_ != 0 );
@@ -559,7 +565,7 @@ void hemm_check(
         std::vector<T*>         const &B, std::vector<int64_t> const &ldb, 
         std::vector<T>          const &beta, 
         std::vector<T*>         const &C, std::vector<int64_t> const &ldc, 
-        const int64_t batchCount, std::vector<int64_t> &info)
+        const size_t batchCount, std::vector<int64_t> &info)
 {
     // size error checking
     blas_error_if( (side.size()  != 1 && side.size()  != batchCount) );
@@ -610,7 +616,7 @@ void hemm_check(
         // side
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < side.size(); i++){
+        for(size_t i = 0; i < side.size(); i++){
             linfo += (side[i] != Side::Left  && 
                       side[i] != Side::Right 
                       ) ? 1 : 0;
@@ -621,7 +627,7 @@ void hemm_check(
         // uplo
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < uplo.size(); i++){
+        for(size_t i = 0; i < uplo.size(); i++){
             linfo += (uplo[i] != Uplo::Lower  && 
                       uplo[i] != Uplo::Upper
                       ) ? 1 : 0;
@@ -632,7 +638,7 @@ void hemm_check(
         // m
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < m.size(); i++){
+        for(size_t i = 0; i < m.size(); i++){
             linfo += (m[i] < 0) ? 1 : 0;
         }
         info[0] = (linfo > 0) ? -3 : 0;
@@ -641,7 +647,7 @@ void hemm_check(
         // n
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < n.size(); i++){
+        for(size_t i = 0; i < n.size(); i++){
             linfo += (n[i] < 0) ? 1 : 0;
         }
         info[0] = (linfo > 0) ? -4 : 0;
@@ -650,7 +656,7 @@ void hemm_check(
         // lda
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < A.size(); i++){
+        for(size_t i = 0; i < A.size(); i++){
             Side side_     = extract<Side>(side, i);
             int64_t lda_   = extract<int64_t>(lda, i);
             int64_t nrowA_ = (side_ == Side::Left) ? extract<int64_t>(m, i) : extract<int64_t>(n, i);
@@ -662,7 +668,7 @@ void hemm_check(
         // ldb
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < B.size(); i++){
+        for(size_t i = 0; i < B.size(); i++){
             int64_t m_   = extract<int64_t>(m, i);
             int64_t ldb_ = extract<int64_t>(ldb, i);
             linfo += (ldb_ < m_) ? 1 : 0;
@@ -673,7 +679,7 @@ void hemm_check(
         // ldc
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < C.size(); i++){
+        for(size_t i = 0; i < C.size(); i++){
             int64_t m_   = extract<int64_t>(m, i);
             int64_t ldc_ = extract<int64_t>(ldc, i);
             linfo += (ldc_ < m_) ? 1 : 0;
@@ -685,7 +691,7 @@ void hemm_check(
     else{
         /* problem based eror reporting */
         #pragma omp parallel for schedule(dynamic)
-        for(int64_t i = 0; i < batchCount; i++){
+        for(size_t i = 0; i < batchCount; i++){
             Side  side_ = extract<Side>(side , i);
             Uplo  uplo_ = extract<Uplo>(uplo , i);
 
@@ -714,7 +720,7 @@ void hemm_check(
 
         int64_t info_ = 0;
         #pragma omp parallel for reduction(+:info_)
-        for(int64_t i = 0; i < batchCount; i++){
+        for(size_t i = 0; i < batchCount; i++){
             info_ += info[i];
         }
         blas_error_if( info_ != 0 );
@@ -733,7 +739,7 @@ void herk_check(
         std::vector<T*>         const &A, std::vector<int64_t> const &lda, 
         std::vector<scalarT>    const &beta, 
         std::vector<T*>         const &C, std::vector<int64_t> const &ldc, 
-        const int64_t batchCount, std::vector<int64_t> &info)
+        const size_t batchCount, std::vector<int64_t> &info)
 {
     // size error checking
     blas_error_if( (uplo.size()  != 1 && uplo.size()  != batchCount) );
@@ -775,7 +781,7 @@ void herk_check(
         // uplo
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < uplo.size(); i++){
+        for(size_t i = 0; i < uplo.size(); i++){
             linfo += (uplo[i] != Uplo::Lower  && 
                       uplo[i] != Uplo::Upper
                       ) ? 1 : 0;
@@ -786,7 +792,7 @@ void herk_check(
         // trans
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < trans.size(); i++){
+        for(size_t i = 0; i < trans.size(); i++){
             linfo += (trans[i] != Op::NoTrans  && 
                       trans[i] != Op::ConjTrans 
                       ) ? 1 : 0;
@@ -797,7 +803,7 @@ void herk_check(
         // n
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < n.size(); i++){
+        for(size_t i = 0; i < n.size(); i++){
             linfo += (n[i] < 0) ? 1 : 0;
         }
         info[0] = (linfo > 0) ? -3 : 0;
@@ -806,7 +812,7 @@ void herk_check(
         // k
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < k.size(); i++){
+        for(size_t i = 0; i < k.size(); i++){
             linfo += (k[i] < 0) ? 1 : 0;
         }
         info[0] = (linfo > 0) ? -4 : 0;
@@ -815,7 +821,7 @@ void herk_check(
         // lda
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < A.size(); i++){
+        for(size_t i = 0; i < A.size(); i++){
             Op trans_      = extract<Op>(trans, i);
             int64_t lda_   = extract<int64_t>(lda, i);
             int64_t nrowA_ = (trans_ == Op::NoTrans) ? extract<int64_t>(n, i) : extract<int64_t>(k, i);
@@ -827,7 +833,7 @@ void herk_check(
         // ldc
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < C.size(); i++){
+        for(size_t i = 0; i < C.size(); i++){
             int64_t n_   = extract<int64_t>(n, i);
             int64_t ldc_ = extract<int64_t>(ldc, i);
             linfo += (ldc_ < n_) ? 1 : 0;
@@ -838,7 +844,7 @@ void herk_check(
     else{
         /* problem based eror reporting */
         #pragma omp parallel for schedule(dynamic)
-        for(int64_t i = 0; i < batchCount; i++){
+        for(size_t i = 0; i < batchCount; i++){
             Uplo  uplo_ = extract<Uplo>(uplo , i);
             Op   trans_ = extract<Op>(trans , i);
 
@@ -865,7 +871,7 @@ void herk_check(
 
         int64_t info_ = 0;
         #pragma omp parallel for reduction(+:info_)
-        for(int64_t i = 0; i < batchCount; i++){
+        for(size_t i = 0; i < batchCount; i++){
             info_ += info[i];
         }
         blas_error_if( info_ != 0 );
@@ -885,7 +891,7 @@ void symm_check(
         std::vector<T*>         const &B, std::vector<int64_t> const &ldb, 
         std::vector<T>          const &beta, 
         std::vector<T*>         const &C, std::vector<int64_t> const &ldc, 
-        const int64_t batchCount, std::vector<int64_t> &info)
+        const size_t batchCount, std::vector<int64_t> &info)
 {
     hemm_check(side, uplo, m, n, alpha, A, lda, B, ldb, beta, C, ldc, batchCount, info);
 }
@@ -902,7 +908,7 @@ void syrk_check(
         std::vector<T*>         const &A, std::vector<int64_t> const &lda, 
         std::vector<T>          const &beta, 
         std::vector<T*>         const &C, std::vector<int64_t> const &ldc, 
-        const int64_t batchCount, std::vector<int64_t> &info)
+        const size_t batchCount, std::vector<int64_t> &info)
 {
     // size error checking
     blas_error_if( (uplo.size()  != 1 && uplo.size()  != batchCount) );
@@ -944,7 +950,7 @@ void syrk_check(
         // uplo
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < uplo.size(); i++){
+        for(size_t i = 0; i < uplo.size(); i++){
             linfo += (uplo[i] != Uplo::Lower  && 
                       uplo[i] != Uplo::Upper
                       ) ? 1 : 0;
@@ -955,7 +961,7 @@ void syrk_check(
         // trans
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < trans.size(); i++){
+        for(size_t i = 0; i < trans.size(); i++){
             linfo += (trans[i] != Op::NoTrans  && 
                       trans[i] != Op::Trans 
                       ) ? 1 : 0;
@@ -966,7 +972,7 @@ void syrk_check(
         // n
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < n.size(); i++){
+        for(size_t i = 0; i < n.size(); i++){
             linfo += (n[i] < 0) ? 1 : 0;
         }
         info[0] = (linfo > 0) ? -3 : 0;
@@ -975,7 +981,7 @@ void syrk_check(
         // k
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < k.size(); i++){
+        for(size_t i = 0; i < k.size(); i++){
             linfo += (k[i] < 0) ? 1 : 0;
         }
         info[0] = (linfo > 0) ? -4 : 0;
@@ -984,7 +990,7 @@ void syrk_check(
         // lda
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < A.size(); i++){
+        for(size_t i = 0; i < A.size(); i++){
             Op trans_      = extract<Op>(trans, i);
             int64_t lda_   = extract<int64_t>(lda, i);
             int64_t nrowA_ = (trans_ == Op::NoTrans) ? extract<int64_t>(n, i) : extract<int64_t>(k, i);
@@ -996,7 +1002,7 @@ void syrk_check(
         // ldc
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < C.size(); i++){
+        for(size_t i = 0; i < C.size(); i++){
             int64_t n_   = extract<int64_t>(n, i);
             int64_t ldc_ = extract<int64_t>(ldc, i);
             linfo += (ldc_ < n_) ? 1 : 0;
@@ -1007,7 +1013,7 @@ void syrk_check(
     else{
         /* problem based eror reporting */
         #pragma omp parallel for schedule(dynamic)
-        for(int64_t i = 0; i < batchCount; i++){
+        for(size_t i = 0; i < batchCount; i++){
             Uplo  uplo_ = extract<Uplo>(uplo , i);
             Op   trans_ = extract<Op>(trans , i);
 
@@ -1034,7 +1040,7 @@ void syrk_check(
 
         int64_t info_ = 0;
         #pragma omp parallel for reduction(+:info_)
-        for(int64_t i = 0; i < batchCount; i++){
+        for(size_t i = 0; i < batchCount; i++){
             info_ += info[i];
         }
         blas_error_if( info_ != 0 );
@@ -1054,7 +1060,7 @@ void her2k_check(
         std::vector<T*>         const &B, std::vector<int64_t> const &ldb, 
         std::vector<scalarT>    const &beta, 
         std::vector<T*>         const &C, std::vector<int64_t> const &ldc, 
-        const int64_t batchCount, std::vector<int64_t> &info)
+        const size_t batchCount, std::vector<int64_t> &info)
 {
     // size error checking
     blas_error_if( (uplo.size()  != 1 && uplo.size()  != batchCount) );
@@ -1106,7 +1112,7 @@ void her2k_check(
         // uplo
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < uplo.size(); i++){
+        for(size_t i = 0; i < uplo.size(); i++){
             linfo += (uplo[i] != Uplo::Lower  && 
                       uplo[i] != Uplo::Upper
                       ) ? 1 : 0;
@@ -1117,7 +1123,7 @@ void her2k_check(
         // trans
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < trans.size(); i++){
+        for(size_t i = 0; i < trans.size(); i++){
             linfo += (trans[i] != Op::NoTrans  && 
                       trans[i] != Op::ConjTrans 
                       ) ? 1 : 0;
@@ -1128,7 +1134,7 @@ void her2k_check(
         // n
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < n.size(); i++){
+        for(size_t i = 0; i < n.size(); i++){
             linfo += (n[i] < 0) ? 1 : 0;
         }
         info[0] = (linfo > 0) ? -3 : 0;
@@ -1137,7 +1143,7 @@ void her2k_check(
         // k
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < k.size(); i++){
+        for(size_t i = 0; i < k.size(); i++){
             linfo += (k[i] < 0) ? 1 : 0;
         }
         info[0] = (linfo > 0) ? -4 : 0;
@@ -1146,7 +1152,7 @@ void her2k_check(
         // lda
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < A.size(); i++){
+        for(size_t i = 0; i < A.size(); i++){
             Op trans_      = extract<Op>(trans, i);
             int64_t lda_   = extract<int64_t>(lda, i);
             int64_t nrowA_ = (trans_ == Op::NoTrans) ? extract<int64_t>(n, i) : extract<int64_t>(k, i);
@@ -1158,7 +1164,7 @@ void her2k_check(
         // ldb
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < B.size(); i++){
+        for(size_t i = 0; i < B.size(); i++){
             Op trans_      = extract<Op>(trans, i);
             int64_t ldb_   = extract<int64_t>(ldb, i);
             int64_t nrowB_ = (trans_ == Op::NoTrans) ? extract<int64_t>(n, i) : extract<int64_t>(k, i);
@@ -1170,7 +1176,7 @@ void her2k_check(
         // ldc
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < C.size(); i++){
+        for(size_t i = 0; i < C.size(); i++){
             int64_t n_   = extract<int64_t>(n, i);
             int64_t ldc_ = extract<int64_t>(ldc, i);
             linfo += (ldc_ < n_) ? 1 : 0;
@@ -1181,7 +1187,7 @@ void her2k_check(
     else{
         /* problem based eror reporting */
         #pragma omp parallel for schedule(dynamic)
-        for(int64_t i = 0; i < batchCount; i++){
+        for(size_t i = 0; i < batchCount; i++){
             Uplo  uplo_ = extract<Uplo>(uplo , i);
             Op   trans_ = extract<Op>(trans , i);
 
@@ -1211,7 +1217,7 @@ void her2k_check(
 
         int64_t info_ = 0;
         #pragma omp parallel for reduction(+:info_)
-        for(int64_t i = 0; i < batchCount; i++){
+        for(size_t i = 0; i < batchCount; i++){
             info_ += info[i];
         }
         blas_error_if( info_ != 0 );
@@ -1231,7 +1237,7 @@ void syr2k_check(
         std::vector<T*>         const &B, std::vector<int64_t> const &ldb, 
         std::vector<T>          const &beta, 
         std::vector<T*>         const &C, std::vector<int64_t> const &ldc, 
-        const int64_t batchCount, std::vector<int64_t> &info)
+        const size_t batchCount, std::vector<int64_t> &info)
 {
     // size error checking
     blas_error_if( (uplo.size()  != 1 && uplo.size()  != batchCount) );
@@ -1283,7 +1289,7 @@ void syr2k_check(
         // uplo
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < uplo.size(); i++){
+        for(size_t i = 0; i < uplo.size(); i++){
             linfo += (uplo[i] != Uplo::Lower  && 
                       uplo[i] != Uplo::Upper
                       ) ? 1 : 0;
@@ -1294,7 +1300,7 @@ void syr2k_check(
         // trans
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < trans.size(); i++){
+        for(size_t i = 0; i < trans.size(); i++){
             linfo += (trans[i] != Op::NoTrans  && 
                       trans[i] != Op::Trans 
                       ) ? 1 : 0;
@@ -1305,7 +1311,7 @@ void syr2k_check(
         // n
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < n.size(); i++){
+        for(size_t i = 0; i < n.size(); i++){
             linfo += (n[i] < 0) ? 1 : 0;
         }
         info[0] = (linfo > 0) ? -3 : 0;
@@ -1314,7 +1320,7 @@ void syr2k_check(
         // k
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < k.size(); i++){
+        for(size_t i = 0; i < k.size(); i++){
             linfo += (k[i] < 0) ? 1 : 0;
         }
         info[0] = (linfo > 0) ? -4 : 0;
@@ -1323,7 +1329,7 @@ void syr2k_check(
         // lda
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < A.size(); i++){
+        for(size_t i = 0; i < A.size(); i++){
             Op trans_      = extract<Op>(trans, i);
             int64_t lda_   = extract<int64_t>(lda, i);
             int64_t nrowA_ = (trans_ == Op::NoTrans) ? extract<int64_t>(n, i) : extract<int64_t>(k, i);
@@ -1335,7 +1341,7 @@ void syr2k_check(
         // ldb
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < B.size(); i++){
+        for(size_t i = 0; i < B.size(); i++){
             Op trans_      = extract<Op>(trans, i);
             int64_t ldb_   = extract<int64_t>(ldb, i);
             int64_t nrowB_ = (trans_ == Op::NoTrans) ? extract<int64_t>(n, i) : extract<int64_t>(k, i);
@@ -1347,7 +1353,7 @@ void syr2k_check(
         // ldc
         linfo = 0;
         #pragma omp parallel for reduction(+:linfo)
-        for(int64_t i = 0; i < C.size(); i++){
+        for(size_t i = 0; i < C.size(); i++){
             int64_t n_   = extract<int64_t>(n, i);
             int64_t ldc_ = extract<int64_t>(ldc, i);
             linfo += (ldc_ < n_) ? 1 : 0;
@@ -1358,7 +1364,7 @@ void syr2k_check(
     else{
         /* problem based eror reporting */
         #pragma omp parallel for schedule(dynamic)
-        for(int64_t i = 0; i < batchCount; i++){
+        for(size_t i = 0; i < batchCount; i++){
             Uplo  uplo_ = extract<Uplo>(uplo , i);
             Op   trans_ = extract<Op>(trans , i);
 
@@ -1388,7 +1394,7 @@ void syr2k_check(
 
         int64_t info_ = 0;
         #pragma omp parallel for reduction(+:info_)
-        for(int64_t i = 0; i < batchCount; i++){
+        for(size_t i = 0; i < batchCount; i++){
             info_ += info[i];
         }
         blas_error_if( info_ != 0 );
@@ -1398,4 +1404,4 @@ void syr2k_check(
 }        // namespace batch
 }        // namespace blas
 
-#endif    // BATCH_CHECK_HH
+#endif    // BATCH_COMMON_HH
