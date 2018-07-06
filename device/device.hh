@@ -15,16 +15,8 @@
 
 #include "blas_util.hh"
 #include "device_types.hh"
-#include "device_error.hh"
-#include "device_utils.hh"
-#include "device_queue.hh"
-#include "device_copy.hh"
+#include "device_internals.hh"
 #include "device_blas_names.hh"
-#include "device_blas_wrappers.hh"
-#include "batch_aux.hh"
-#include "batch_check.hh"
-#include "batch_support.hh"
-
 
 #endif        //  #ifndef DEVICE_HH
 
