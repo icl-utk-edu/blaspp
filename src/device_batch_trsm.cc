@@ -66,7 +66,23 @@ void blas::batch::trsm(
                             dBarray, lddb_, batch);
     }
     else{
-         // TODO: provide a reference implementation using queues
+         for(size_t i = 0; i < batch; i++){ 
+            Side side_   = blas::batch::extract<Side>(side, i);
+            Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
+            Op   trans_  = blas::batch::extract<Op>(trans, i);
+            Diag diag_   = blas::batch::extract<Diag>(diag, i);
+            int64_t m_   = blas::batch::extract<int64_t>(m, i); 
+            int64_t n_   = blas::batch::extract<int64_t>(n, i);
+            int64_t lda_ = blas::batch::extract<int64_t>(ldda, i);
+            int64_t ldb_ = blas::batch::extract<int64_t>(lddb, i);
+            float alpha_ = blas::batch::extract<float>(alpha, i);
+            float* dA_   = blas::batch::extract<float*>(Aarray, i);
+            float* dB_   = blas::batch::extract<float*>(Barray, i);
+            blas::trsm(
+                Layout::ColMajor, side_, uplo_, trans_, diag_, m_, n_,  
+                alpha_, dA_, lda_, 
+                        dB_, ldb_, queue );
+         }
     }
 }
 
@@ -134,7 +150,23 @@ void blas::batch::trsm(
                             dBarray, lddb_, batch);
     }
     else{
-         // TODO: provide a reference implementation using queues
+         for(size_t i = 0; i < batch; i++){ 
+            Side side_   = blas::batch::extract<Side>(side, i);
+            Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
+            Op   trans_  = blas::batch::extract<Op>(trans, i);
+            Diag diag_   = blas::batch::extract<Diag>(diag, i);
+            int64_t m_   = blas::batch::extract<int64_t>(m, i); 
+            int64_t n_   = blas::batch::extract<int64_t>(n, i);
+            int64_t lda_ = blas::batch::extract<int64_t>(ldda, i);
+            int64_t ldb_ = blas::batch::extract<int64_t>(lddb, i);
+            double alpha_ = blas::batch::extract<double>(alpha, i);
+            double* dA_   = blas::batch::extract<double*>(Aarray, i);
+            double* dB_   = blas::batch::extract<double*>(Barray, i);
+            blas::trsm(
+                Layout::ColMajor, side_, uplo_, trans_, diag_, m_, n_,  
+                alpha_, dA_, lda_, 
+                        dB_, ldb_, queue );
+         }
     }
 }
 
@@ -202,7 +234,23 @@ void blas::batch::trsm(
                             dBarray, lddb_, batch);
     }
     else{
-         // TODO: provide a reference implementation using queues
+         for(size_t i = 0; i < batch; i++){ 
+            Side side_   = blas::batch::extract<Side>(side, i);
+            Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
+            Op   trans_  = blas::batch::extract<Op>(trans, i);
+            Diag diag_   = blas::batch::extract<Diag>(diag, i);
+            int64_t m_   = blas::batch::extract<int64_t>(m, i); 
+            int64_t n_   = blas::batch::extract<int64_t>(n, i);
+            int64_t lda_ = blas::batch::extract<int64_t>(ldda, i);
+            int64_t ldb_ = blas::batch::extract<int64_t>(lddb, i);
+            std::complex<float> alpha_ = blas::batch::extract<std::complex<float> >(alpha, i);
+            std::complex<float>* dA_   = blas::batch::extract<std::complex<float>*>(Aarray, i);
+            std::complex<float>* dB_   = blas::batch::extract<std::complex<float>*>(Barray, i);
+            blas::trsm(
+                Layout::ColMajor, side_, uplo_, trans_, diag_, m_, n_,  
+                alpha_, dA_, lda_, 
+                        dB_, ldb_, queue );
+         }
     }
 }
 
@@ -270,6 +318,22 @@ void blas::batch::trsm(
                             dBarray, lddb_, batch);
     }
     else{
-         // TODO: provide a reference implementation using queues
+         for(size_t i = 0; i < batch; i++){ 
+            Side side_   = blas::batch::extract<Side>(side, i);
+            Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
+            Op   trans_  = blas::batch::extract<Op>(trans, i);
+            Diag diag_   = blas::batch::extract<Diag>(diag, i);
+            int64_t m_   = blas::batch::extract<int64_t>(m, i); 
+            int64_t n_   = blas::batch::extract<int64_t>(n, i);
+            int64_t lda_ = blas::batch::extract<int64_t>(ldda, i);
+            int64_t ldb_ = blas::batch::extract<int64_t>(lddb, i);
+            std::complex<double> alpha_ = blas::batch::extract<std::complex<double> >(alpha, i);
+            std::complex<double>* dA_   = blas::batch::extract<std::complex<double>*>(Aarray, i);
+            std::complex<double>* dB_   = blas::batch::extract<std::complex<double>*>(Barray, i);
+            blas::trsm(
+                Layout::ColMajor, side_, uplo_, trans_, diag_, m_, n_,  
+                alpha_, dA_, lda_, 
+                        dB_, ldb_, queue );
+         }
     }
 }
