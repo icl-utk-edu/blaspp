@@ -88,6 +88,22 @@ std::vector< libtest::routines_t > routines = {
     { "trmm",   test_trmm,   Section::blas3   },
     { "trsm",   test_trsm,   Section::blas3   },
 
+    { "batch-gemm",   test_batch_gemm,   Section::blas3   },
+    { "",             nullptr,           Section::newline },
+
+    { "batch-hemm",   test_batch_hemm,   Section::blas3   },
+    { "batch-herk",   test_batch_herk,   Section::blas3   },
+    { "batch-her2k",  test_batch_her2k,  Section::blas3   },
+    //{ "",             nullptr,           Section::newline },
+
+    { "batch-symm",   test_batch_symm,   Section::blas3   },
+    { "batch-syrk",   test_batch_syrk,   Section::blas3   },
+    { "batch-syr2k",  test_batch_syr2k,  Section::blas3   },
+    //{ "",              nullptr,          Section::newline },
+
+    { "batch-trmm",   test_batch_trmm,   Section::blas3   },
+    { "batch-trsm",   test_batch_trsm,   Section::blas3   },
+
     // auxiliary
     { "error",  test_error,  Section::aux     },
     { "max",    test_max,    Section::aux     },
