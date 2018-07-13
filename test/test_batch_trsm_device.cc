@@ -19,16 +19,16 @@ void test_device_batch_trsm_work( Params& params, bool run )
 
     // get & mark input values
     blas::Layout layout = params.layout.value();
-    blas::Side side = params.side.value();
-    blas::Uplo uplo = params.uplo.value();
-    blas::Op trans  = params.trans.value();
-    blas::Diag diag = params.diag.value();
-    scalar_t alpha  = params.alpha.value();
-    int64_t m       = params.dim.m();
-    int64_t n       = params.dim.n();
-    int64_t align   = params.align.value();
-    int64_t batch   = params.batch.value();
-    int64_t verbose = params.verbose.value();
+    blas::Side side_ = params.side.value();
+    blas::Uplo uplo_ = params.uplo.value();
+    blas::Op trans_  = params.trans.value();
+    blas::Diag diag_ = params.diag.value();
+    scalar_t alpha_  = params.alpha.value();
+    int64_t m_       = params.dim.m();
+    int64_t n_       = params.dim.n();
+    int64_t align    = params.align.value();
+    int64_t batch    = params.batch.value();
+    int64_t verbose  = params.verbose.value();
 
     // mark non-standard output values
     params.ref_time.value();
@@ -39,16 +39,16 @@ void test_device_batch_trsm_work( Params& params, bool run )
 
     // ----------
     // setup
-    int64_t Am = (side == Side::Left ? m : n);
-    int64_t Bm = m;
-    int64_t Bn = n;
-    int64_t lda = roundup( Am, align );
-    int64_t ldb = roundup( Bm, align );
-    size_t size_A = size_t(lda)*Am;
-    size_t size_B = size_t(ldb)*Bn;
-    TA* A    = new TA[ batch * size_A ];
-    TB* B    = new TB[ batch * size_B ];
-    TB* Bref = new TB[ batch * size_B ];
+    int64_t Am    = (side_ == Side::Left ? m_ : n_);
+    int64_t Bm    = m_;
+    int64_t Bn    = n_;
+    int64_t lda_  = roundup( Am, align );
+    int64_t ldb_  = roundup( Bm, align );
+    size_t size_A = size_t(lda_)*Am;
+    size_t size_B = size_t(ldb_)*Bn;
+    TA* A         = new TA[ batch * size_A ];
+    TB* B         = new TB[ batch * size_B ];
+    TB* Bref      = new TB[ batch * size_B ];
 
     // device specifics 
     blas::Queue queue(0, batch);
@@ -77,49 +77,48 @@ void test_device_batch_trsm_work( Params& params, bool run )
     std::vector<int64_t> info( batch );
 
     // wrap scalar arguments in std::vector
-    std::vector<Side> vside(1, side);
-    std::vector<Uplo> vuplo(1, uplo);
-    std::vector<Op>   vtrans(1, trans);
-    std::vector<Diag> vdiag(1, diag);
-
-    std::vector<int64_t> vm(1, m);
-    std::vector<int64_t> vn(1, n);
-    std::vector<int64_t> vldda(1, lda);
-    std::vector<int64_t> vlddb(1, ldb);
-    std::vector<scalar_t> valpha(1, alpha);
+    std::vector<Side>     side(1, side_);
+    std::vector<Uplo>     uplo(1, uplo_);
+    std::vector<Op>       trans(1, trans_);
+    std::vector<Diag>     diag(1, diag_);
+    std::vector<int64_t>  m(1, m_);
+    std::vector<int64_t>  n(1, n_);
+    std::vector<int64_t>  ldda(1, lda_);
+    std::vector<int64_t>  lddb(1, ldb_);
+    std::vector<scalar_t> alpha(1, alpha_);
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
     lapack_larnv( idist, iseed, batch * size_A, A );  // TODO: generate
     lapack_larnv( idist, iseed, batch * size_B, B );  // TODO
-    lapack_lacpy( "g", Bm, batch * Bn, B, ldb, Bref, ldb );
+    lapack_lacpy( "g", Bm, batch * Bn, B, ldb_, Bref, ldb_ );
 
     // set unused data to nan
-    /*if (uplo == Uplo::Lower) {
+    /*if (uplo_ == Uplo::Lower) {
         for (int j = 0; j < Am; ++j)
             for (int i = 0; i < j; ++i)  // upper
-                A[ i + j*lda ] = nan("");
+                A[ i + j*lda_ ] = nan("");
     }
     else {
         for (int j = 0; j < Am; ++j)
             for (int i = j+1; i < Am; ++i)  // lower
-                A[ i + j*lda ] = nan("");
+                A[ i + j*lda_ ] = nan("");
     }*/
 
     // Factor A into L L^H or U U^H to get a well-conditioned triangular matrix.
-    // If diag == Unit, the diagonal is replaced; this is still well-conditioned.
+    // If diag_ == Unit, the diag_onal is replaced; this is still well-conditioned.
     for(int s = 0; s < batch; s++){
         TA* pA = Aarray[s];
         // First, brute force positive definiteness.
         for (int i = 0; i < Am; ++i) {
-            pA[ i + i*lda ] += Am;
+            pA[ i + i*lda_ ] += Am;
         }
         blas_int potrf_info = 0;
-        lapack_potrf( uplo2str(uplo), Am, pA, lda, &potrf_info );
+        lapack_potrf( uplo2str(uplo_), Am, pA, lda_, &potrf_info );
         assert( potrf_info == 0 );
     }
-    blas::device_setmatrix(Am, batch * Am, A, lda, dA, lda, queue);
-    blas::device_setmatrix(Bm, batch * Bn, B, ldb, dB, ldb, queue);
+    blas::device_setmatrix(Am, batch * Am, A, lda_, dA, lda_, queue);
+    blas::device_setmatrix(Bm, batch * Bn, B, ldb_, dB, ldb_, queue);
     queue.sync();
 
     // norms for error check
@@ -127,8 +126,8 @@ void test_device_batch_trsm_work( Params& params, bool run )
     real_t* Anorm = new real_t[ batch ];
     real_t* Bnorm = new real_t[ batch ];
     for(int s = 0; s < batch; s++){
-        Anorm[ s ] = lapack_lantr( "f", uplo2str(uplo), diag2str(diag), Am, Am, Aarray[s], lda, work );
-        Bnorm[ s ] = lapack_lange( "f", Bm, Bn, Barray[s], ldb, work );
+        Anorm[ s ] = lapack_lantr( "f", uplo2str(uplo_), diag2str(diag_), Am, Am, Aarray[s], lda_, work );
+        Bnorm[ s ] = lapack_lange( "f", Bm, Bn, Barray[s], ldb_, work );
     }
 
     // decide error checking mode
@@ -137,15 +136,16 @@ void test_device_batch_trsm_work( Params& params, bool run )
     // run test
     libtest::flush_cache( params.cache.value() );
     double time = get_wtime();
-    blas::batch::trsm( vside, vuplo, vtrans, vdiag, vm, vn, valpha, dAarray, vldda, dBarray, vlddb, batch, info, queue );
+    blas::batch::trsm( side, uplo, trans, diag, m, n, alpha, dAarray, ldda, dBarray, lddb, 
+                       batch, info, queue );
     queue.sync();
     time = get_wtime() - time;
 
-    double gflop = batch * Gflop < scalar_t >::trsm( side, m, n );
+    double gflop = batch * Gflop < scalar_t >::trsm( side_, m_, n_ );
     params.time.value()   = time;
     params.gflops.value() = gflop / time;
 
-    blas::device_getmatrix(Bm, batch * Bn, dB, ldb, B, ldb, queue);
+    blas::device_getmatrix(Bm, batch * Bn, dB, ldb_, B, ldb_, queue);
     queue.sync();
 
     if (params.check.value() == 'y') {
@@ -154,11 +154,11 @@ void test_device_batch_trsm_work( Params& params, bool run )
         time = get_wtime();
         for(int i = 0; i < batch; i++){
             cblas_trsm( cblas_layout_const(layout),
-                        cblas_side_const(side),
-                        cblas_uplo_const(uplo),
-                        cblas_trans_const(trans),
-                        cblas_diag_const(diag),
-                        m, n, alpha, Aarray[i], lda, Brefarray[i], ldb );
+                        cblas_side_const(side_),
+                        cblas_uplo_const(uplo_),
+                        cblas_trans_const(trans_),
+                        cblas_diag_const(diag_),
+                        m_, n_, alpha_, Aarray[i], lda_, Brefarray[i], ldb_ );
         }
         time = get_wtime() - time;
 
@@ -171,8 +171,8 @@ void test_device_batch_trsm_work( Params& params, bool run )
         real_t err, error = 0;
         bool ok, okay = true;
         for(int i = 0; i < batch; i++){
-            check_gemm( Bm, Bn, Am, alpha, scalar_t(0), Anorm[i], Bnorm[i], real_t(0),
-                        Brefarray[i], ldb, Barray[i], ldb, verbose, &err, &ok );
+            check_gemm( Bm, Bn, Am, alpha_, scalar_t(0), Anorm[i], Bnorm[i], real_t(0),
+                        Brefarray[i], ldb_, Barray[i], ldb_, verbose, &err, &ok );
             error = max(error, err);
             okay &= ok;
         }
