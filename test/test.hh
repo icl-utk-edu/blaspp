@@ -47,6 +47,15 @@ void test_syrk  ( Params& params, bool run );
 void test_trmm  ( Params& params, bool run );
 void test_trsm  ( Params& params, bool run );
 
+void test_batch_gemm  ( Params& params, bool run );
+void test_batch_hemm  ( Params& params, bool run );
+void test_batch_her2k ( Params& params, bool run );
+void test_batch_herk  ( Params& params, bool run );
+void test_batch_symm  ( Params& params, bool run );
+void test_batch_syr2k ( Params& params, bool run );
+void test_batch_syrk  ( Params& params, bool run );
+void test_batch_trmm  ( Params& params, bool run );
+void test_batch_trsm  ( Params& params, bool run );
 // -----------------------------------------------------------------------------
 // auxiliary
 void test_error ( Params& params, bool run );
