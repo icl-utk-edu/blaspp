@@ -25,6 +25,13 @@ void test_syr2k_device  ( Params& params, bool run );
 
 void test_batch_gemm_device( Params& params, bool run );
 void test_batch_trsm_device( Params& params, bool run );
+void test_batch_trmm_device( Params& params, bool run );
+void test_batch_hemm_device( Params& params, bool run );
+void test_batch_symm_device( Params& params, bool run );
+void test_batch_herk_device( Params& params, bool run );
+void test_batch_syrk_device( Params& params, bool run );
+void test_batch_her2k_device( Params& params, bool run );
+void test_batch_syr2k_device( Params& params, bool run );
 
 // -----------------------------------------------------------------------------
 
