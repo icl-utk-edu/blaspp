@@ -27,7 +27,7 @@ void DEVICE_sgemm(
     float beta,
     float       *dC, device_blas_int lddc)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasSgemm( handle, transA, transB, 
                  m, n, k, 
                  &alpha, dA, ldda, dB, lddb, 
@@ -49,7 +49,7 @@ void DEVICE_dgemm(
     double beta,
     double       *dC, device_blas_int lddc)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasDgemm( handle, transA, transB, 
                  m, n, k, 
                  &alpha, dA, ldda, dB, lddb, 
@@ -71,7 +71,7 @@ void DEVICE_cgemm(
     std::complex<float> beta,
     std::complex<float>       *dC, device_blas_int lddc)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasCgemm( handle, transA, transB, m, n, k, 
                 (cuComplex*)&alpha, (cuComplex*)dA, ldda, (cuComplex*)dB, lddb, 
                 (cuComplex*)&beta,  (cuComplex*)dC, lddc );
@@ -92,7 +92,7 @@ void DEVICE_zgemm(
     std::complex<double> beta,
     std::complex<double>       *dC, device_blas_int lddc)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasZgemm( handle, transA, transB, 
                  m, n, k, 
                  (cuDoubleComplex*)&alpha, (cuDoubleComplex*)dA, ldda, (cuDoubleComplex*)dB, lddb, 
@@ -114,7 +114,7 @@ void DEVICE_strsm(
     float const *dA, device_blas_int ldda, 
     float       *dB, device_blas_int lddb)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasStrsm( handle, side, uplo, trans, diag,  
                  m, n, &alpha, 
                  dA, ldda, 
@@ -135,7 +135,7 @@ void DEVICE_dtrsm(
     double const *dA, device_blas_int ldda, 
     double       *dB, device_blas_int lddb)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasDtrsm( handle, side, uplo, trans, diag,  
                  m, n, &alpha, 
                  dA, ldda, 
@@ -156,7 +156,7 @@ void DEVICE_ctrsm(
     std::complex<float> const *dA, device_blas_int ldda, 
     std::complex<float>       *dB, device_blas_int lddb)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasCtrsm( handle, side, uplo, trans, diag,  
                  m, n, (cuComplex*)&alpha, 
                  (cuComplex*)dA, ldda, 
@@ -177,7 +177,7 @@ void DEVICE_ztrsm(
     std::complex<double> const *dA, device_blas_int ldda, 
     std::complex<double>       *dB, device_blas_int lddb)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasZtrsm( handle, side, uplo, trans, diag,  
                  m, n, (cuDoubleComplex*)&alpha, 
                  (cuDoubleComplex*)dA, ldda, 
@@ -200,7 +200,7 @@ void DEVICE_strmm(
     float const *dA, device_blas_int ldda, 
     float       *dB, device_blas_int lddb)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasStrmm( handle, side, uplo, trans, diag,  
                  m, n, &alpha, 
                  dA, ldda, 
@@ -222,7 +222,7 @@ void DEVICE_dtrmm(
     double const *dA, device_blas_int ldda, 
     double       *dB, device_blas_int lddb)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasDtrmm( handle, side, uplo, trans, diag,  
                  m, n, &alpha, 
                  dA, ldda, 
@@ -244,7 +244,7 @@ void DEVICE_ctrmm(
     std::complex<float> const *dA, device_blas_int ldda, 
     std::complex<float>       *dB, device_blas_int lddb)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasCtrmm( handle, side, uplo, trans, diag,  
                  m, n, (cuComplex*)&alpha, 
                  (cuComplex*)dA, ldda, 
@@ -266,7 +266,7 @@ void DEVICE_ztrmm(
     std::complex<double> const *dA, device_blas_int ldda, 
     std::complex<double>       *dB, device_blas_int lddb)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasZtrmm( handle, side, uplo, trans, diag,  
                  m, n, (cuDoubleComplex*)&alpha, 
                  (cuDoubleComplex*)dA, ldda, 
@@ -292,7 +292,7 @@ void DEVICE_chemm(
     std::complex<float>  beta, 
     std::complex<float>* dC, device_blas_int lddc)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasChemm( handle, side, uplo,   
                  m, n, 
                  (cuComplex*)&alpha, (cuComplex*)dA, ldda, 
@@ -316,7 +316,7 @@ void DEVICE_zhemm(
     std::complex<double>  beta, 
     std::complex<double>* dC, device_blas_int lddc)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasZhemm( handle, side, uplo,   
                  m, n, 
                  (cuDoubleComplex*)&alpha, (cuDoubleComplex*)dA, ldda, 
@@ -342,7 +342,7 @@ void DEVICE_ssymm(
     float  beta, 
     float* dC, device_blas_int lddc)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasSsymm( handle, side, uplo,   
                  m, n, 
                  &alpha, dA, ldda, 
@@ -366,7 +366,7 @@ void DEVICE_dsymm(
     double  beta, 
     double* dC, device_blas_int lddc)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasDsymm( handle, side, uplo,   
                  m, n, 
                  &alpha, dA, ldda, 
@@ -390,7 +390,7 @@ void DEVICE_csymm(
     std::complex<float>  beta, 
     std::complex<float>* dC, device_blas_int lddc)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasCsymm( handle, side, uplo,   
                  m, n, 
                  (cuComplex*)&alpha, (cuComplex*)dA, ldda, 
@@ -414,7 +414,7 @@ void DEVICE_zsymm(
     std::complex<double>  beta, 
     std::complex<double>* dC, device_blas_int lddc)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasZsymm( handle, side, uplo,   
                  m, n, 
                  (cuDoubleComplex*)&alpha, (cuDoubleComplex*)dA, ldda, 
@@ -439,7 +439,7 @@ void DEVICE_cherk(
     float  beta, 
     std::complex<float>* dC, device_blas_int lddc)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasCherk( handle, uplo, trans,   
                  n, k, 
                  &alpha, (cuComplex*)dA, ldda, 
@@ -461,7 +461,7 @@ void DEVICE_zherk(
     double  beta, 
     std::complex<double>* dC, device_blas_int lddc)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasZherk( handle, uplo, trans,   
                  n, k, 
                  &alpha, (cuDoubleComplex*)dA, ldda, 
@@ -485,7 +485,7 @@ void DEVICE_ssyrk(
     float  beta, 
     float* dC, device_blas_int lddc)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasSsyrk( handle, uplo, trans,   
                  n, k, 
                  &alpha, dA, ldda, 
@@ -507,7 +507,7 @@ void DEVICE_dsyrk(
     double  beta, 
     double* dC, device_blas_int lddc)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasDsyrk( handle, uplo, trans,   
                  n, k, 
                  &alpha, dA, ldda, 
@@ -529,7 +529,7 @@ void DEVICE_csyrk(
     std::complex<float>  beta, 
     std::complex<float>* dC, device_blas_int lddc)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasCsyrk( handle, uplo, trans,   
                  n, k, 
                  (cuComplex*)&alpha, (cuComplex*)dA, ldda, 
@@ -551,7 +551,7 @@ void DEVICE_zsyrk(
     std::complex<double>  beta, 
     std::complex<double>* dC, device_blas_int lddc)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasZsyrk( handle, uplo, trans,   
                  n, k, 
                  (cuDoubleComplex*)&alpha, (cuDoubleComplex*)dA, ldda, 
@@ -576,7 +576,7 @@ void DEVICE_cher2k(
     float  beta, 
     std::complex<float>* dC, device_blas_int lddc)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasCher2k( handle, uplo, trans,   
                   n, k, 
                   (cuComplex*)&alpha, (cuComplex*)dA, ldda,
@@ -600,7 +600,7 @@ void DEVICE_zher2k(
     double  beta, 
     std::complex<double>* dC, device_blas_int lddc)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasZher2k( handle, uplo, trans,   
                   n, k,  
                   (cuDoubleComplex*)&alpha, (cuDoubleComplex*)dA, ldda,
@@ -626,7 +626,7 @@ void DEVICE_ssyr2k(
     float  beta, 
     float* dC, device_blas_int lddc)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasSsyr2k( handle, uplo, trans,   
                   n, k,  
                   &alpha, dA, ldda,
@@ -650,7 +650,7 @@ void DEVICE_dsyr2k(
     double  beta, 
     double* dC, device_blas_int lddc)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasDsyr2k( handle, uplo, trans,   
                   n, k,  
                   &alpha, dA, ldda,
@@ -674,7 +674,7 @@ void DEVICE_csyr2k(
     std::complex<float>  beta, 
     std::complex<float>* dC, device_blas_int lddc)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasCsyr2k( handle, uplo, trans,   
                   n, k,  
                   (cuComplex*)&alpha, (cuComplex*)dA, ldda,
@@ -698,7 +698,7 @@ void DEVICE_zsyr2k(
     std::complex<double>  beta, 
     std::complex<double>* dC, device_blas_int lddc)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasZsyr2k( handle, uplo, trans,   
                   n, k,  
                   (cuDoubleComplex*)&alpha, (cuDoubleComplex*)dA, ldda,
@@ -725,7 +725,7 @@ void DEVICE_BATCH_sgemm(
     float** dCarray, device_blas_int lddc, 
     device_blas_int batch_size)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasSgemmBatched( handle, transA, transB, 
                         m, n, k, 
                         &alpha, (const float**)dAarray, ldda, (const float**)dBarray, lddb, 
@@ -748,7 +748,7 @@ void DEVICE_BATCH_dgemm(
     double** dCarray, device_blas_int lddc, 
     device_blas_int batch_size)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasDgemmBatched( handle, transA, transB, 
                         m, n, k, 
                         &alpha, (const double**)dAarray, ldda, (const double**)dBarray, lddb, 
@@ -771,7 +771,7 @@ void DEVICE_BATCH_cgemm(
     std::complex<float>** dCarray, device_blas_int lddc, 
     device_blas_int batch_size)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasCgemmBatched( handle, transA, transB, 
                         m, n, k, 
                         (cuComplex*)&alpha, (const cuComplex**)dAarray, ldda, (const cuComplex**)dBarray, lddb, 
@@ -794,7 +794,7 @@ void DEVICE_BATCH_zgemm(
     std::complex<double>** dCarray, device_blas_int lddc, 
     device_blas_int batch_size)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasZgemmBatched( handle, transA, transB, 
                         m, n, k, 
                         (cuDoubleComplex*)&alpha, (const cuDoubleComplex**)dAarray, ldda, (const cuDoubleComplex**)dBarray, lddb, 
@@ -816,7 +816,7 @@ void DEVICE_BATCH_strsm(
     device_blas_int batch_size)
 
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasStrsmBatched( handle, side, uplo, trans, diag, 
                         m, n, &alpha, 
                         (const float**)dAarray, ldda, 
@@ -837,7 +837,7 @@ void DEVICE_BATCH_dtrsm(
     double const * const * dBarray, device_blas_int lddb,
     device_blas_int batch_size)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasDtrsmBatched( handle, side, uplo, trans, diag, 
                         m, n, &alpha, 
                         (const double**)dAarray, ldda, 
@@ -858,7 +858,7 @@ void DEVICE_BATCH_ctrsm(
     std::complex<float> const * const * dBarray, device_blas_int lddb,
     device_blas_int batch_size)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasCtrsmBatched( handle, side, uplo, trans, diag, 
                         m, n, (cuComplex*)&alpha, 
                         (const cuComplex**)dAarray, ldda, 
@@ -879,7 +879,7 @@ void DEVICE_BATCH_ztrsm(
     std::complex<double> const * const * dBarray, device_blas_int lddb,
     device_blas_int batch_size)
 {
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cublasZtrsmBatched( handle, side, uplo, trans, diag, 
                         m, n, (cuDoubleComplex*)&alpha, 
                         (const cuDoubleComplex**)dAarray, ldda, 

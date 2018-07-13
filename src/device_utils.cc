@@ -3,7 +3,7 @@
 // -----------------------------------------------------------------------------
 // set device 
 void blas::set_device(blas::Device device){
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     device_error_check( cudaSetDevice((device_blas_int)device) );
     #elif defined(HAVE_ROCBLAS)
     // TODO: rocBLAS equivalent
@@ -15,7 +15,7 @@ void blas::set_device(blas::Device device){
 void blas::get_device(blas::Device *device){
     device_blas_int dev; 
 
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     device_error_check( cudaGetDevice(&dev) );
     #elif defined(HAVE_ROCBLAS)
     // TODO: rocBLAS equivalent
@@ -93,7 +93,7 @@ device_side_t    blas::device_side_const(blas::Side side){
 // -----------------------------------------------------------------------------
 /// @free a device pointer  
 void blas::device_free(void* ptr){
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     device_error_check( cudaFree( ptr ) );
     #elif defined(HAVE_ROCBLAS)
     // TODO: free memory for AMD GPUs
@@ -103,7 +103,7 @@ void blas::device_free(void* ptr){
 // -----------------------------------------------------------------------------
 /// @free a pinned memory space  
 void blas::device_free_pinned(void* ptr){
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     device_error_check( cudaFreeHost( ptr ) );
     #elif defined(HAVE_ROCBLAS)
     // TODO: free memory using AMD driver API
