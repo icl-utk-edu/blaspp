@@ -53,6 +53,13 @@ std::vector< libtest::routines_t > routines = {
     { "syr2k"     ,   test_syr2k_device     ,   Section::blas3   },
     { "batch-gemm",   test_batch_gemm_device,   Section::blas3   },
     { "batch-trsm",   test_batch_trsm_device,   Section::blas3   },
+    { "batch-trmm",   test_batch_trmm_device,   Section::blas3   },
+    { "batch-hemm",   test_batch_hemm_device,   Section::blas3   },
+    { "batch-symm",   test_batch_symm_device,   Section::blas3   },
+    { "batch-herk",   test_batch_herk_device,   Section::blas3   },
+    { "batch-syrk",   test_batch_syrk_device,   Section::blas3   },
+    { "batch-her2k",  test_batch_her2k_device,  Section::blas3   },
+    { "batch-syr2k",  test_batch_syr2k_device,  Section::blas3   },
     { ""          ,   nullptr               ,   Section::newline },
 };
 
