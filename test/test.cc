@@ -23,6 +23,7 @@ enum Section {
     blas1,
     blas2,
     blas3,
+    device_blas3,
     aux,
     num_sections,  // last
 };
@@ -32,6 +33,7 @@ const char* section_names[] = {
    "Level 1 BLAS",
    "Level 2 BLAS",
    "Level 3 BLAS",
+   "Level 3 BLAS (Device)",
    "auxiliary",
 };
 
@@ -70,6 +72,7 @@ std::vector< libtest::routines_t > routines = {
 
     { "trmv",   test_trmv,   Section::blas2   },
     { "trsv",   test_trsv,   Section::blas2   },
+    { "",       nullptr,     Section::newline },
 
     // Level 3 BLAS
     { "gemm",   test_gemm,   Section::blas3   },
@@ -87,6 +90,7 @@ std::vector< libtest::routines_t > routines = {
 
     { "trmm",   test_trmm,   Section::blas3   },
     { "trsm",   test_trsm,   Section::blas3   },
+    { "",       nullptr,     Section::newline },
 
     { "batch-gemm",   test_batch_gemm,   Section::blas3   },
     { "",             nullptr,           Section::newline },
@@ -94,15 +98,52 @@ std::vector< libtest::routines_t > routines = {
     { "batch-hemm",   test_batch_hemm,   Section::blas3   },
     { "batch-herk",   test_batch_herk,   Section::blas3   },
     { "batch-her2k",  test_batch_her2k,  Section::blas3   },
-    //{ "",             nullptr,           Section::newline },
+    { "",             nullptr,           Section::newline },
 
     { "batch-symm",   test_batch_symm,   Section::blas3   },
     { "batch-syrk",   test_batch_syrk,   Section::blas3   },
     { "batch-syr2k",  test_batch_syr2k,  Section::blas3   },
-    //{ "",              nullptr,          Section::newline },
+    { "",              nullptr,          Section::newline },
 
     { "batch-trmm",   test_batch_trmm,   Section::blas3   },
     { "batch-trsm",   test_batch_trsm,   Section::blas3   },
+    { "",              nullptr,          Section::newline },
+
+#ifdef BLASPP_WITH_CUBLAS
+    { "dev-gemm"      ,   test_gemm_device      ,   Section::device_blas3   },
+    { "",                 nullptr,                  Section::newline },
+
+    { "dev-hemm"      ,   test_hemm_device      ,   Section::device_blas3   },
+    { "dev-herk"      ,   test_herk_device      ,   Section::device_blas3   },
+    { "dev-her2k"     ,   test_her2k_device     ,   Section::device_blas3   },
+    { "",                 nullptr,                  Section::newline },
+
+    { "dev-symm"      ,   test_symm_device      ,   Section::device_blas3   },
+    { "dev-syrk"      ,   test_syrk_device      ,   Section::device_blas3   },
+    { "dev-syr2k"     ,   test_syr2k_device     ,   Section::device_blas3   },
+    { "",                 nullptr,                  Section::newline },
+
+    { "dev-trmm"      ,   test_trmm_device      ,   Section::device_blas3   },
+    { "dev-trsm"      ,   test_trsm_device      ,   Section::device_blas3   },
+    { "",                 nullptr,                  Section::newline },
+
+    { "dev-batch-gemm",   test_batch_gemm_device,   Section::device_blas3   },
+    { "",                 nullptr,                  Section::newline },
+
+    { "dev-batch-hemm",   test_batch_hemm_device,   Section::device_blas3   },
+    { "dev-batch-herk",   test_batch_herk_device,   Section::device_blas3   },
+    { "dev-batch-her2k",  test_batch_her2k_device,  Section::device_blas3   },
+    { "",                 nullptr,                  Section::newline },
+
+    { "dev-batch-symm",   test_batch_symm_device,   Section::device_blas3   },
+    { "dev-batch-syrk",   test_batch_syrk_device,   Section::device_blas3   },
+    { "dev-batch-syr2k",  test_batch_syr2k_device,  Section::device_blas3   },
+    { "",                 nullptr,                  Section::newline },
+
+    { "dev-batch-trmm",   test_batch_trmm_device,   Section::device_blas3   },
+    { "dev-batch-trsm",   test_batch_trsm_device,   Section::device_blas3   },
+    { "",                 nullptr,                  Section::newline },
+#endif
 
     // auxiliary
     { "error",  test_error,  Section::aux     },
