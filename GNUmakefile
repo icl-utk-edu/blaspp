@@ -75,12 +75,19 @@ endif
 #-------------------------------------------------------------------------------
 # Files
 
-#lib_src  = $(wildcard src/*.cc)
-lib_src  = $(filter-out src/device_%.cc, $(wildcard src/*.cc))
+ifeq ($(devtarget),cuda)
+	lib_src  = $(wildcard src/*.cc)
+else
+	lib_src  = $(filter-out src/device_%.cc, $(wildcard src/*.cc))
+endif
 lib_obj  = $(addsuffix .o, $(basename $(lib_src)))
 dep     += $(addsuffix .d, $(basename $(lib_src)))
 
-test_src = $(filter-out %_device.cc, $(wildcard test/*.cc))
+ifeq ($(devtarget),cuda)
+	test_src = $(filter-out test/test_device.cc, $(wildcard test/*.cc))
+else
+	test_src = $(filter-out test/%_device.cc, $(wildcard test/*.cc))
+endif
 test_obj = $(addsuffix .o, $(basename $(test_src)))
 dep     += $(addsuffix .d, $(basename $(test_src)))
 
