@@ -56,6 +56,28 @@ void test_batch_syr2k ( Params& params, bool run );
 void test_batch_syrk  ( Params& params, bool run );
 void test_batch_trmm  ( Params& params, bool run );
 void test_batch_trsm  ( Params& params, bool run );
+
+#ifdef BLASPP_WITH_CUBLAS
+void test_gemm_device  ( Params& params, bool run );
+void test_trsm_device  ( Params& params, bool run );
+void test_trmm_device  ( Params& params, bool run );
+void test_hemm_device  ( Params& params, bool run );
+void test_symm_device  ( Params& params, bool run );
+void test_herk_device  ( Params& params, bool run );
+void test_syrk_device  ( Params& params, bool run );
+void test_her2k_device  ( Params& params, bool run );
+void test_syr2k_device  ( Params& params, bool run );
+
+void test_batch_gemm_device( Params& params, bool run );
+void test_batch_trsm_device( Params& params, bool run );
+void test_batch_trmm_device( Params& params, bool run );
+void test_batch_hemm_device( Params& params, bool run );
+void test_batch_symm_device( Params& params, bool run );
+void test_batch_herk_device( Params& params, bool run );
+void test_batch_syrk_device( Params& params, bool run );
+void test_batch_her2k_device( Params& params, bool run );
+void test_batch_syr2k_device( Params& params, bool run );
+#endif
 // -----------------------------------------------------------------------------
 // auxiliary
 void test_error ( Params& params, bool run );
