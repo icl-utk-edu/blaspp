@@ -1,7 +1,7 @@
 #ifndef DEVICE_HH
 #define DEVICE_HH
 
-#if defined(HAVE_CUBLAS)
+#if defined(BLASPP_WITH_CUBLAS)
 // -----------------------------------------------------------------------------
 // cuda/cublas headers
 #include <cuda_runtime.h>

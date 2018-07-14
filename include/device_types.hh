@@ -1,7 +1,7 @@
 #ifndef DEVICE_TYPES_HH
 #define DEVICE_TYPES_HH
 
-#ifdef HAVE_CUBLAS
+#ifdef BLASPP_WITH_CUBLAS
 // -----------------------------------------------------------------------------
 // types
 typedef    int                  device_blas_int;

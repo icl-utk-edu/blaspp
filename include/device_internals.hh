@@ -18,7 +18,7 @@ public:
     device_blas_handle_t   handle();
     void                   sync();
 
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cudaStream_t     stream();
     #elif defined(HAVE_ROCBLAS)
     // TODO: add similar functionality for rocBLAS, if required
@@ -31,7 +31,7 @@ private:
     blas::Device          device_;      // associated device ID
     device_blas_handle_t  handle_;      // associated device blas handle
 
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     cudaStream_t     stream_;      // associated CUDA stream; may be NULL
     #elif defined(HAVE_ROCBLAS)
     // TODO: stream for rocBLAS
@@ -108,7 +108,7 @@ void device_free_pinned(void* ptr);
 template<typename T> 
 T* device_malloc(int64_t nelements){
     T* ptr = NULL;
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     device_error_check( cudaMalloc((void**)&ptr, nelements * sizeof(T)) );
     #elif defined(HAVE_ROCBLAS)
     // TODO: allocation for AMD GPUs
@@ -120,7 +120,7 @@ T* device_malloc(int64_t nelements){
 template<typename T>   
 T* device_malloc_pinned(int64_t nelements){
     T* ptr = NULL;
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     device_error_check( cudaMallocHost((void**)&ptr, nelements * sizeof(T)) );
     #elif defined(HAVE_ROCBLAS)
     // TODO: allocation using AMD driver API
@@ -132,7 +132,7 @@ T* device_malloc_pinned(int64_t nelements){
 // device set matrix
 template<typename T>  
 void device_setmatrix(int64_t m, int64_t n, T* hostPtr, int64_t ldh, T* devPtr, int64_t ldd, Queue &queue){
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     device_blas_check( cublasSetMatrixAsync( 
                        (device_blas_int)m,    (device_blas_int)n, (device_blas_int)sizeof(T), 
                        (const void *)hostPtr, (device_blas_int)ldh, 
@@ -145,7 +145,7 @@ void device_setmatrix(int64_t m, int64_t n, T* hostPtr, int64_t ldh, T* devPtr, 
 // device get matrix
 template<typename T> 
 void device_getmatrix(int64_t m, int64_t n, T* devPtr, int64_t ldd, T* hostPtr, int64_t ldh, Queue &queue){
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     device_blas_check( cublasGetMatrixAsync( 
                        (device_blas_int)m,    (device_blas_int)n, (device_blas_int)sizeof(T), 
                        (const void *)devPtr,  (device_blas_int)ldd, 
@@ -158,7 +158,7 @@ void device_getmatrix(int64_t m, int64_t n, T* devPtr, int64_t ldd, T* hostPtr, 
 // device set vector
 template<typename T>  
 void device_setvector(int64_t n, T* hostPtr, int64_t inch, T* devPtr, int64_t incd, Queue &queue){
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     device_blas_check( cublasSetVectorAsync( 
                        (device_blas_int)n,    (device_blas_int)sizeof(T), 
                        (const void *)hostPtr, (device_blas_int)inch, 
@@ -171,7 +171,7 @@ void device_setvector(int64_t n, T* hostPtr, int64_t inch, T* devPtr, int64_t in
 // device get vector
 template<typename T>  
 void device_getvector(int64_t n, T* devPtr, int64_t incd, T* hostPtr, int64_t inch, Queue &queue){
-    #ifdef HAVE_CUBLAS
+    #ifdef BLASPP_WITH_CUBLAS
     device_blas_check( cublasGetVectorAsync(
                        (device_blas_int)n,    (device_blas_int)sizeof(T), 
                        (const void *)devPtr,  (device_blas_int)incd, 
