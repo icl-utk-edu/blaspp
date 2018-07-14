@@ -1,4 +1,4 @@
-#include "test_device.hh"
+#include "test.hh"
 #include "cblas.hh"
 #include "lapack_tmp.hh"
 #include "blas_flops.hh"
