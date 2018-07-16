@@ -25,6 +25,7 @@ void test_batch_symm_device_work( Params& params, bool run )
     int64_t m_           = params.dim.m();
     int64_t n_           = params.dim.n();
     size_t  batch       = params.batch.value();
+    int64_t device      = params.device.value();
     int64_t align       = params.align.value();
     int64_t verbose     = params.verbose.value();
 
@@ -56,7 +57,7 @@ void test_batch_symm_device_work( Params& params, bool run )
     TC* C    = new TC[ batch * size_C ];
     TC* Cref = new TC[ batch * size_C ];
     // device specifics 
-    blas::Queue queue(0, batch);
+    blas::Queue queue(device, batch);
     TA* dA = blas::device_malloc<TA>( batch * size_A );
     TB* dB = blas::device_malloc<TB>( batch * size_B );
     TC* dC = blas::device_malloc<TC>( batch * size_C );

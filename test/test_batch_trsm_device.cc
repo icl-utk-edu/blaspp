@@ -26,8 +26,9 @@ void test_device_batch_trsm_work( Params& params, bool run )
     scalar_t alpha_  = params.alpha.value();
     int64_t m_       = params.dim.m();
     int64_t n_       = params.dim.n();
-    int64_t align    = params.align.value();
     int64_t batch    = params.batch.value();
+    int64_t device  = params.device.value();
+    int64_t align    = params.align.value();
     int64_t verbose  = params.verbose.value();
 
     // mark non-standard output values
@@ -51,7 +52,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
     TB* Bref      = new TB[ batch * size_B ];
 
     // device specifics 
-    blas::Queue queue(0, batch);
+    blas::Queue queue(device, batch);
     TA* dA; 
     TB* dB; 
 

@@ -24,9 +24,10 @@ void test_batch_syrk_device_work( Params& params, bool run )
     scalar_t beta_      = params.beta.value();
     int64_t n_          = params.dim.n();
     int64_t k_          = params.dim.k();
-    size_t  batch      = params.batch.value();
-    int64_t align      = params.align.value();
-    int64_t verbose    = params.verbose.value();
+    size_t  batch       = params.batch.value();
+    int64_t device      = params.device.value();
+    int64_t align       = params.align.value();
+    int64_t verbose     = params.verbose.value();
 
     // mark non-standard output values
     params.ref_time.value();
@@ -49,7 +50,7 @@ void test_batch_syrk_device_work( Params& params, bool run )
     TC* Cref = new TC[ batch * size_C ];
 
     // device specifics 
-    blas::Queue queue(0, batch);
+    blas::Queue queue(device, batch);
     TA* dA = blas::device_malloc<TA>( batch * size_A );
     TC* dC = blas::device_malloc<TC>( batch * size_C );
 

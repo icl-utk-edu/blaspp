@@ -24,6 +24,7 @@ void test_symm_device_work( Params& params, bool run )
     scalar_t beta   = params.beta.value();
     int64_t m       = params.dim.m();
     int64_t n       = params.dim.n();
+    int64_t device  = params.device.value();
     int64_t align   = params.align.value();
     int64_t verbose = params.verbose.value();
 
@@ -56,7 +57,7 @@ void test_symm_device_work( Params& params, bool run )
     TC* Cref = new TC[ size_C ];
 
     // device specifics 
-    blas::Queue queue(0,0);
+    blas::Queue queue(device,0);
     TA* dA; 
     TB* dB; 
     TC* dC;
