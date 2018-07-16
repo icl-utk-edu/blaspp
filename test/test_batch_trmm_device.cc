@@ -5,7 +5,6 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-#include "device_blas.hh"
 // -----------------------------------------------------------------------------
 template< typename TA, typename TB >
 void test_batch_trmm_work_device( Params& params, bool run )
