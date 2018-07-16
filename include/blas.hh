@@ -47,4 +47,10 @@
 #include "trmm.hh"
 #include "trsm.hh"
 
+// =============================================================================
+// Device BLAS
+#ifdef BLASPP_WITH_CUBLAS
+#include "device_blas.hh"
+#endif
+
 #endif        //  #ifndef BLAS_HH
