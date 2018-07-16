@@ -190,6 +190,7 @@ Params::Params():
     incy      ( "incy",    4,    ParamType::List,   1, -1000,    1000, "stride of y vector" ),
     align     ( "align",   0,    ParamType::List,   1,     1,    1024, "column alignment (sets lda, ldb, etc. to multiple of align)" ),
     batch     ( "batch",   6,    ParamType::List,   1,     0, 1000000, "batch size" ),
+    device    ( "device",  6,    ParamType::List,   0,     0,     100, "device id" ),
 
     // ----- output parameters
     // min, max are ignored

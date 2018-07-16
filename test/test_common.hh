@@ -41,6 +41,7 @@ public:
     libtest::ParamInt    incy;
     libtest::ParamInt    align;
     libtest::ParamInt    batch;
+    libtest::ParamInt    device;
 
     // ----- output parameters
     libtest::ParamScientific error;
