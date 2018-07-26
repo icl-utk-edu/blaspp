@@ -283,7 +283,7 @@ for cmd in cmds:
 
 # print summary of failures
 nfailures = len( failures )
-if (nfailures > 0):
+if (ntests > 0):
     print( '\n' + str(nfailures) + ' routines FAILED:', ', '.join( failures ),
            file=sys.stderr )
     root = ET.Element("testsuites")
