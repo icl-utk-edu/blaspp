@@ -19,8 +19,9 @@ from __future__ import print_function
 
 import sys
 import os
-import re
+# import re
 import argparse
+import xml.etree.ElementTree as ET
 
 # ------------------------------------------------------------------------------
 # command line arguments
@@ -262,15 +263,50 @@ def run_test( cmd ):
 
 # ------------------------------------------------------------------------------
 failures = []
-run_all = (len(opts.tests) == 0)
+passed_tests = []
+error_list = []
+ntests = len(opts.tests)
+run_all = (ntests == 0)
+
 for cmd in cmds:
     if (run_all or cmd[0] in opts.tests):
         err = run_test( cmd )
         if (err != 0):
             failures.append( cmd[0] )
+            error_num = (err & 0xff00) >> 8
+            if error_num is None:
+                error_num = 0
+            error_list.append(error_num)
+        # TODO: add errors/skipped tests
+        else:
+            passed_tests.append(cmd[0])
 
 # print summary of failures
 nfailures = len( failures )
 if (nfailures > 0):
     print( '\n' + str(nfailures) + ' routines FAILED:', ', '.join( failures ),
            file=sys.stderr )
+    root = ET.Element("testsuites")
+    doc = ET.SubElement(root, "testsuite",
+                        name="blaspp_suite",
+                        tests=str(ntests),
+                        errors="0",
+                        failures=str(nfailures))
+
+    i = 0
+    for failure in failures:
+        f = ET.SubElement(doc, "testcase", name=failure)
+        ff = ET.SubElement(f, "failure")
+        ff.text = (str(error_list[i]) + " tests failed")
+        # ff.text = "failed"
+        ff.name = failure
+        i += 1
+        # ET.SubElement(doc, "testcase", name=failure, status='FAIL')
+
+    # ET.SubElement(doc, "field2", name="asdfasd").text = "some vlaue2"
+    for p in passed_tests:
+        passed_test = ET.SubElement(doc, 'testcase', name=p)
+        passed_test.text = 'PASSED'
+
+    tree = ET.ElementTree(root)
+    tree.write("report.xml")
