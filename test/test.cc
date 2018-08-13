@@ -211,7 +211,6 @@ Params::Params():
     okay  .value();
     error .value();
     time  .value();
-    gflops.value();
 
     // mark framework parameters as used, so they will be accepted on the command line
     check  .value();

@@ -27,6 +27,7 @@ void test_syrk_work( Params& params, bool run )
     int64_t verbose = params.verbose.value();
 
     // mark non-standard output values
+    params.gflops.value();
     params.ref_time.value();
     params.ref_gflops.value();
 
