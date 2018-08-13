@@ -177,6 +177,19 @@ T abs1( std::complex<T> x )
     using decay_t = typename std::decay< Ts... >::type;
 #endif
 
+//------------------------------------------------------------------------------
+/// True if T is std::complex<T2> for some type T2.
+template <typename T>
+struct is_complex:
+    std::integral_constant<bool, false>
+{};
+
+// specialize for std::complex
+template <typename T>
+struct is_complex< std::complex<T> >:
+    std::integral_constant<bool, true>
+{};
+
 // -----------------------------------------------------------------------------
 // Based on C++14 common_type implementation from
 // http://www.cplusplus.com/reference/type_traits/common_type/
