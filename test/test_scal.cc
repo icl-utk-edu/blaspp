@@ -89,16 +89,23 @@ void test_scal_work( Params& params, bool run )
             printf( "xref = " ); print_vector( n, xref, incx );
         }
 
-        // error = ||xref - x|| / ||x|| ... todo
-        cblas_axpy( n, -1.0, x, incx, xref, incx );
-        real_t error = cblas_nrm2( n, xref, std::abs(incx) );
-        real_t xnorm = cblas_nrm2( n, x,    std::abs(incx) );
-        error /= xnorm;
+        // maximum component-wise forward error:
+        // | fl(xi) - xi | / | xi |
+        real_t error = 0;
+        int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
+        for (int64_t i = 0; i < n; ++i) {
+            error = std::max( error, std::abs( (xref[ix] - x[ix]) / xref[ix] ));
+            ix += incx;
+        }
         params.error.value() = error;
 
-        real_t eps = std::numeric_limits< real_t >::epsilon();
-        real_t tol = params.tol.value() * eps;
-        params.okay.value() = (error < tol);
+        // complex needs extra factor; see Higham, 2002, sec. 3.6.
+        if (blas::is_complex<T>::value) {
+            error /= 2*sqrt(2);
+        }
+
+        real_t u = 0.5 * std::numeric_limits< real_t >::epsilon();
+        params.okay.value() = (error < u);
     }
 
     delete[] x;

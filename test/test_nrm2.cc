@@ -10,6 +10,7 @@ void test_nrm2_work( Params& params, bool run )
 {
     using namespace libtest;
     using namespace blas;
+    typedef T scalar_t;
     typedef real_type<T> real_t;
     typedef long long lld;
 
@@ -84,13 +85,17 @@ void test_nrm2_work( Params& params, bool run )
             printf( "ref    = %.4e\n", ref );
         }
 
-        // error = |ref - result| / |result|
-        real_t error = std::abs( ref - result ) / std::abs( result );
-        params.error.value() = error;
+        // relative forward error
+        real_t error = std::abs( (ref - result) / (sqrt(n+1) * ref) );
 
-        real_t eps = std::numeric_limits< real_t >::epsilon();
-        real_t tol = params.tol.value() * eps;
-        params.okay.value() = (error < tol);
+        // complex needs extra factor; see Higham, 2002, sec. 3.6.
+        if (blas::is_complex<scalar_t>::value) {
+            error /= 2*sqrt(2);
+        }
+
+        real_t u = 0.5 * std::numeric_limits< real_t >::epsilon();
+        params.error.value() = error;
+        params.okay.value() = (error < u);
     }
 
     delete[] x;

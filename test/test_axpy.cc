@@ -41,12 +41,14 @@ void test_axpy_work( Params& params, bool run )
     TX* x    = new TX[ size_x ];
     TY* y    = new TY[ size_y ];
     TY* yref = new TY[ size_y ];
+    TY* y0   = new TY[ size_y ];
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
     lapack_larnv( idist, iseed, size_x, x );
     lapack_larnv( idist, iseed, size_y, y );
     cblas_copy( n, y, incy, yref, incy );
+    cblas_copy( n, y, incy, y0,   incy );
 
     // test error exits
     assert_throw( blas::axpy( -1, alpha, x, incx, y, incy ), blas::Error );
@@ -98,16 +100,31 @@ void test_axpy_work( Params& params, bool run )
             printf( "yref = " ); print_vector( n, yref, incy );
         }
 
-        // error = ||yref - y|| / ||y|| ... todo
-        cblas_axpy( n, -1.0, y, incy, yref, incy );
-        real_t error = cblas_nrm2( n, yref, std::abs(incy) );
-        real_t ynorm = cblas_nrm2( n, y,    std::abs(incy) );
-        error /= ynorm;
-        params.error.value() = error;
+        // maximum component-wise forward error:
+        // | fl(yi) - yi | / (2 |alpha xi| + |y0_i|)
+        real_t error = 0;
+        int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
+        int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
+        for (int64_t i = 0; i < n; ++i) {
+            y[iy] = std::abs( y[iy] - yref[iy] )
+                  / (2*std::abs( alpha * x[ix] ) + std::abs( y0[iy] ));
+            error = std::max( error, real( y[iy] ) );
+            ix += incx;
+            iy += incy;
+        }
 
-        real_t eps = std::numeric_limits< real_t >::epsilon();
-        real_t tol = params.tol.value() * eps;
-        params.okay.value() = (error < tol);
+        if (verbose >= 2) {
+            printf( "err  = " ); print_vector( n, y, incy, "%9.2e" );
+        }
+
+        // complex needs extra factor; see Higham, 2002, sec. 3.6.
+        if (blas::is_complex<scalar_t>::value) {
+            error /= 2*sqrt(2);
+        }
+
+        real_t u = 0.5 * std::numeric_limits< real_t >::epsilon();
+        params.error.value() = error;
+        params.okay.value() = (error < u);
     }
 
     delete[] x;
