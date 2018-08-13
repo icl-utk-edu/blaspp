@@ -480,6 +480,50 @@ cblas_rot(
 
 // -----------------------------------------------------------------------------
 inline void
+cblas_rotg(
+    float *a, float *b,
+    float *c, float *s )
+{
+    cblas_srotg( a, b, c, s );
+}
+
+inline void
+cblas_rotg(
+    double *a, double *b,
+    double *c, double *s )
+{
+    cblas_drotg( a, b, c, s );
+}
+
+// CBLAS lacks [cz]rotg, but they're in Netlib BLAS.
+// Note c is real.
+inline void
+cblas_rotg(
+    std::complex<float> *a, std::complex<float> *b,
+    float *c, std::complex<float> *s )
+{
+    BLAS_crotg(
+        (blas_complex_float*) a,
+        (blas_complex_float*) b,
+        c,
+        (blas_complex_float*) s );
+}
+
+inline void
+cblas_rotg(
+    std::complex<double> *a, std::complex<double> *b,
+    double *c, std::complex<double> *s )
+{
+    BLAS_zrotg(
+        (blas_complex_double*) a,
+        (blas_complex_double*) b,
+        c,
+        (blas_complex_double*) s );
+}
+
+
+// -----------------------------------------------------------------------------
+inline void
 cblas_rotm(
     int n,
     float *x, int incx,
@@ -497,6 +541,22 @@ cblas_rotm(
     double  p[5] )
 {
     cblas_drotm( n, x, incx, y, incy, p );
+}
+
+
+// -----------------------------------------------------------------------------
+inline void
+cblas_rotmg(
+    float *d1, float *d2, float *x1, float y1, float param[5] )
+{
+    cblas_srotmg( d1, d2, x1, y1, param );
+}
+
+inline void
+cblas_rotmg(
+    double *d1, double *d2, double *x1, double y1, double param[5] )
+{
+    cblas_drotmg( d1, d2, x1, y1, param );
 }
 
 

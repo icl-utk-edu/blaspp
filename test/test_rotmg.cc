@@ -1,14 +1,93 @@
-#include "rotmg.hh"
 #include "test.hh"
+#include "cblas.hh"
+#include "lapack_tmp.hh"
+#include "print_matrix.hh"
 
 // -----------------------------------------------------------------------------
 template< typename T >
 void test_rotmg_work( Params& params, bool run )
 {
-    T d1=1, d2=2, x1=3, y1=4;
-    T ps[5] = { 0, 0, 0, 0, 0 };
+    using namespace libtest;
+    using blas::real;
+    using blas::imag;
+    typedef blas::real_type<T> real_t;
 
-    blas::rotmg( &d1, &d2, &x1, y1, ps );
+    // get & mark input values
+    int64_t n = params.dim.n();
+
+    // mark non-standard output values
+    params.ref_time.value();
+
+    // adjust header to msec
+    params.time.name( "BLAS++\ntime (ms)" );
+    params.ref_time.name( "Ref.\ntime (ms)" );
+
+    if (! run)
+        return;
+
+    // setup
+    std::vector<T> d1( n ), d1_ref( n );
+    std::vector<T> d2( n ), d2_ref( n );
+    std::vector<T> x1( n ), x1_ref( n );
+    std::vector<T> y1( n ), y1_ref( n );
+    std::vector<T> ps( 5*n ), ps_ref( 5*n );
+
+    int64_t idist = 3;
+    int iseed[4] = { 0, 0, 0, 1 };
+    lapack_larnv( idist, iseed, n, &d1[0] );
+    lapack_larnv( idist, iseed, n, &d2[0] );
+    lapack_larnv( idist, iseed, n, &x1[0] );
+    lapack_larnv( idist, iseed, n, &y1[0] );
+    lapack_larnv( idist, iseed, 5*n, &ps[0] );
+
+    d1_ref = d1;
+    d2_ref = d2;
+    x1_ref = x1;
+    y1_ref = y1;
+    ps_ref = ps;
+
+    // run test
+    libtest::flush_cache( params.cache.value() );
+    double time = get_wtime();
+    for (int64_t i = 0; i < n; ++i) {
+        blas::rotmg( &d1[i], &d2[i], &x1[i], y1[i], &ps[5*i] );
+    }
+    time = get_wtime() - time;
+    params.time.value() = time * 1000;  // msec
+
+    if (params.check.value() == 'y') {
+        // run reference
+        libtest::flush_cache( params.cache.value() );
+        time = get_wtime();
+        for (int64_t i = 0; i < n; ++i) {
+            cblas_rotmg( &d1_ref[i], &d2_ref[i], &x1_ref[i], y1_ref[i], &ps_ref[5*i] );
+        }
+        time = get_wtime() - time;
+        params.ref_time.value() = time * 1000;  // msec
+
+        // get max error of all outputs
+        cblas_axpy(   n, -1.0, &d1[0], 1, &d1_ref[0], 1 );
+        cblas_axpy(   n, -1.0, &d2[0], 1, &d2_ref[0], 1 );
+        cblas_axpy(   n, -1.0, &x1[0], 1, &x1_ref[0], 1 );
+        cblas_axpy( 5*n, -1.0, &ps[0], 1, &ps_ref[0], 1 );
+
+        int64_t id1 = cblas_iamax(   n, &d1_ref[0], 1 );
+        int64_t id2 = cblas_iamax(   n, &d2_ref[0], 1 );
+        int64_t ix1 = cblas_iamax(   n, &x1_ref[0], 1 );
+        int64_t ips = cblas_iamax( 5*n, &ps_ref[0], 1 );
+
+        real_t error = blas::max(
+            std::abs( d1_ref[ id1 ] ),
+            std::abs( d2_ref[ id2 ] ),
+            std::abs( x1_ref[ ix1 ] ),
+            std::abs( ps_ref[ ips ] )
+        );
+
+        // error is normally 0, but allow for some rounding just in case.
+        real_t u = 0.5 * std::numeric_limits< real_t >::epsilon();
+        params.error.value() = error;
+        params.okay.value() = (error < 10*u);
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -28,13 +107,12 @@ void test_rotmg( Params& params, bool run )
             test_rotmg_work< double >( params, run );
             break;
 
+        // modified Givens not available for complex
         case libtest::DataType::SingleComplex:
-            //test_rotmg_work< std::complex<float> >( params, run );  // not available for complex
             throw std::exception();
             break;
 
         case libtest::DataType::DoubleComplex:
-            //test_rotmg_work< std::complex<double> >( params, run );
             throw std::exception();
             break;
     }
