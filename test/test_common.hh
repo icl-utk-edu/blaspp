@@ -19,7 +19,7 @@ public:
     // ----- test framework parameters
     libtest::ParamChar   check;
     libtest::ParamChar   ref;
-    libtest::ParamDouble tol;
+    //libtest::ParamDouble tol;  // stricter bounds don't need arbitrary tol
     libtest::ParamInt    repeat;
     libtest::ParamInt    verbose;
     libtest::ParamInt    cache;

@@ -166,7 +166,7 @@ Params::Params():
     ref       ( "ref",     0,    ParamType::Value, 'n', "ny",  "run reference; sometimes check -> ref" ),
 
     //          name,      w, p, type,             def, min,  max, help
-    tol       ( "tol",     0, 0, ParamType::Value,  50,   1, 1000, "tolerance (e.g., error < tol*epsilon to pass)" ),
+    //tol     ( "tol",     0, 0, ParamType::Value,  50,   1, 1000, "tolerance (e.g., error < tol*epsilon to pass)" ),
     repeat    ( "repeat",  0,    ParamType::Value,   1,   1, 1000, "times to repeat each test" ),
     verbose   ( "verbose", 0,    ParamType::Value,   0,   0,   10, "verbose level" ),
     cache     ( "cache",   0,    ParamType::Value,  20,   1, 1024, "total cache size, in MiB" ),
@@ -214,7 +214,7 @@ Params::Params():
 
     // mark framework parameters as used, so they will be accepted on the command line
     check  .value();
-    tol    .value();
+    //tol  .value();
     repeat .value();
     verbose.value();
     cache  .value();
