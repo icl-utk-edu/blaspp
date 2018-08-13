@@ -47,16 +47,21 @@ void check_gemm(
     real_t work[1], Cout_norm;
     Cout_norm = lapack_lange( "f", m, n, C, ldc, work );
     error[0] = Cout_norm
-             / (sqrt(real_t(k)+2)*std::abs(alpha)*Anorm*Bnorm + 2*std::abs(beta)*Cnorm);
+             / (sqrt(real_t(k)+2)*std::abs(alpha)*Anorm*Bnorm
+                 + 2*std::abs(beta)*Cnorm);
     if (verbose) {
         printf( "error: ||Cout||=%.2e / (sqrt(k=%lld + 2) * |alpha|=%.2e * ||A||=%.2e * ||B||=%.2e + 2 * |beta|=%.2e * ||C||=%.2e) = %.2e\n",
                 Cout_norm, (lld) k, std::abs(alpha), Anorm, Bnorm,
                 std::abs(beta), Cnorm, error[0] );
     }
 
-    // Allow 3*eps; complex needs 2*sqrt(2) factor; see Higham, 2002, sec. 3.6.
-    real_t eps = std::numeric_limits< real_t >::epsilon();
-    *okay = (error[0] < 3*eps);
+    // complex needs extra factor; see Higham, 2002, sec. 3.6.
+    if (blas::is_complex<T>::value) {
+        error[0] /= 2*sqrt(2);
+    }
+
+    real_t u = 0.5 * std::numeric_limits< real_t >::epsilon();
+    *okay = (error[0] < u);
 
     #undef C
     #undef Cref
@@ -115,19 +120,28 @@ void check_herk(
         }
     }
 
+    // For a rank-2k update, this should be
+    // sqrt(k+3) |alpha| (norm(A)*norm(B^T) + norm(B)*norm(A^T))
+    //     + 3 |beta| norm(C)
+    // However, so far using the same bound as rank-k works fine.
     real_t work[1], Cout_norm;
     Cout_norm = lapack_lanhe( "f", uplo2str(uplo), n, C, ldc, work );
     error[0] = Cout_norm
-             / (sqrt(real_t(k)+2)*std::abs(alpha)*Anorm*Bnorm + 2*std::abs(beta)*Cnorm);
+             / (sqrt(real_t(k)+2)*std::abs(alpha)*Anorm*Bnorm
+                 + 2*std::abs(beta)*Cnorm);
     if (verbose) {
         printf( "error: ||Cout||=%.2e / (sqrt(k=%lld + 2) * |alpha|=%.2e * ||A||=%.2e * ||B||=%.2e + 2 * |beta|=%.2e * ||C||=%.2e) = %.2e\n",
                 Cout_norm, (lld) k, std::abs(alpha), Anorm, Bnorm,
                 std::abs(beta), Cnorm, error[0] );
     }
 
-    // Allow 3*eps; complex needs 2*sqrt(2) factor; see Higham, 2002, sec. 3.6.
-    real_t eps = std::numeric_limits< real_t >::epsilon();
-    *okay = (error[0] < 3*eps);
+    // complex needs extra factor; see Higham, 2002, sec. 3.6.
+    if (blas::is_complex<T>::value) {
+        error[0] /= 2*sqrt(2);
+    }
+
+    real_t u = 0.5 * std::numeric_limits< real_t >::epsilon();
+    *okay = (error[0] < u);
 
     #undef C
     #undef Cref
