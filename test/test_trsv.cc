@@ -57,20 +57,20 @@ void test_trsv_work( Params& params, bool run )
 
     // set unused data to nan
     if (uplo == Uplo::Lower) {
-        for (int j = 0; j < n; ++j)
-            for (int i = 0; i < j; ++i)  // upper
+        for (int64_t j = 0; j < n; ++j)
+            for (int64_t i = 0; i < j; ++i)  // upper
                 A[ i + j*lda ] = nan("");
     }
     else {
-        for (int j = 0; j < n; ++j)
-            for (int i = j+1; i < n; ++i)  // lower
+        for (int64_t j = 0; j < n; ++j)
+            for (int64_t i = j+1; i < n; ++i)  // lower
                 A[ i + j*lda ] = nan("");
     }
 
     // Factor A into L L^H or U U^H to get a well-conditioned triangular matrix.
     // If diag == Unit, the diagonal is replaced; this is still well-conditioned.
     // First, brute force positive definiteness.
-    for (int i = 0; i < n; ++i) {
+    for (int64_t i = 0; i < n; ++i) {
         A[ i + i*lda ] += n;
     }
     blas_int info = 0;
@@ -82,6 +82,15 @@ void test_trsv_work( Params& params, bool run )
     real_t Anorm = lapack_lantr( "f", uplo2str(uplo), diag2str(diag),
                                  n, n, A, lda, work );
     real_t Xnorm = cblas_nrm2( n, x, std::abs(incx) );
+
+    // if row-major, transpose A
+    if (layout == Layout::RowMajor) {
+        for (int64_t j = 0; j < n; ++j) {
+            for (int64_t i = 0; i < j; ++i) {
+                std::swap( A[ i + j*lda ], A[ j + i*lda ] );
+            }
+        }
+    }
 
     // test error exits
     assert_throw( blas::trsv( Layout(0), uplo,    trans, diag,     n, A, lda, x, incx ), blas::Error );
