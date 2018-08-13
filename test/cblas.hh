@@ -375,28 +375,28 @@ cblas_dotu(
 
 
 // -----------------------------------------------------------------------------
-inline float
+inline int
 cblas_iamax(
     int n, float const *x, int incx )
 {
     return cblas_isamax( n, x, incx );
 }
 
-inline double
+inline int
 cblas_iamax(
     int n, double const *x, int incx )
 {
     return cblas_idamax( n, x, incx );
 }
 
-inline float
+inline int
 cblas_iamax(
     int n, std::complex<float> const *x, int incx )
 {
     return cblas_icamax( n, x, incx );
 }
 
-inline double
+inline int
 cblas_iamax(
     int n, std::complex<double> const *x, int incx )
 {
