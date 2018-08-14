@@ -108,7 +108,7 @@ void test_axpy_work( Params& params, bool run )
         int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
         for (int64_t i = 0; i < n; ++i) {
             y[iy] = std::abs( y[iy] - yref[iy] )
-                  / (2*std::abs( alpha * x[ix] ) + std::abs( y0[iy] ));
+                  / (2*(std::abs( alpha * x[ix] ) + std::abs( y0[iy] )));
             error = std::max( error, real( y[iy] ) );
             ix += incx;
             iy += incy;
