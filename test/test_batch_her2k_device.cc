@@ -16,7 +16,6 @@ void test_batch_her2k_device_work( Params& params, bool run )
     typedef long long lld;
 
     // get & mark input values
-    blas::Layout layout = params.layout.value();
     blas::Op trans_     = params.trans.value();
     blas::Uplo uplo_    = params.uplo.value();
     scalar_t alpha_     = params.alpha.value();
@@ -38,8 +37,6 @@ void test_batch_her2k_device_work( Params& params, bool run )
     // setup
     int64_t Am = (trans_ == Op::NoTrans ? n_ : k_);
     int64_t An = (trans_ == Op::NoTrans ? k_ : n_);
-    if (layout == Layout::RowMajor)
-        std::swap( Am, An );
     int64_t lda_ = roundup( Am, align );
     int64_t ldb_ = roundup( Am, align );
     int64_t ldc_ = roundup(  n_, align );
@@ -136,7 +133,7 @@ void test_batch_her2k_device_work( Params& params, bool run )
         libtest::flush_cache( params.cache.value() );
         time = get_wtime();
         for(size_t s = 0; s < batch; s++){
-            cblas_her2k( cblas_layout_const(layout),
+            cblas_her2k( CblasColMajor,
                          cblas_uplo_const(uplo_),
                          cblas_trans_const(trans_),
                          n_, k_, alpha_, Aarray[s], lda_, Barray[s], ldb_, beta_, Crefarray[s], ldc_ );

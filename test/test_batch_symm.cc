@@ -16,7 +16,6 @@ void test_batch_symm_work( Params& params, bool run )
     typedef long long lld;
 
     // get & mark input values
-    blas::Layout layout = params.layout.value();
     blas::Side side_     = params.side.value();
     blas::Uplo uplo_     = params.uplo.value();
     scalar_t alpha_      = params.alpha.value();
@@ -42,8 +41,6 @@ void test_batch_symm_work( Params& params, bool run )
     int64_t An = (side_ == Side::Left ? m_ : n_);
     int64_t Cm = m_;
     int64_t Cn = n_;
-    if (layout == Layout::RowMajor)
-        std::swap( Cm, Cn );
     int64_t lda_ = roundup( An, align );
     int64_t ldb_ = roundup( Cm, align );
     int64_t ldc_ = roundup( Cm, align );
@@ -120,7 +117,7 @@ void test_batch_symm_work( Params& params, bool run )
         libtest::flush_cache( params.cache.value() );
         time = get_wtime();
         for(size_t s = 0; s < batch; s++){
-            cblas_symm( cblas_layout_const(layout),
+            cblas_symm( CblasColMajor,
                         cblas_side_const(side_),
                         cblas_uplo_const(uplo_),
                         m_, n_, alpha_, Aarray[s], lda_, Barray[s], ldb_, beta_, Crefarray[s], ldc_ );

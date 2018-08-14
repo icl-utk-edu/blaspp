@@ -17,7 +17,6 @@ void test_device_batch_trsm_work( Params& params, bool run )
     typedef long long lld;
 
     // get & mark input values
-    blas::Layout layout = params.layout.value();
     blas::Side side_ = params.side.value();
     blas::Uplo uplo_ = params.uplo.value();
     blas::Op trans_  = params.trans.value();
@@ -154,7 +153,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
         libtest::flush_cache( params.cache.value() );
         time = get_wtime();
         for(int i = 0; i < batch; i++){
-            cblas_trsm( cblas_layout_const(layout),
+            cblas_trsm( CblasColumnMajor,
                         cblas_side_const(side_),
                         cblas_uplo_const(uplo_),
                         cblas_trans_const(trans_),

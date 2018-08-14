@@ -16,7 +16,6 @@ void test_batch_trmm_work( Params& params, bool run )
     typedef long long lld;
 
     // get & mark input values
-    blas::Layout layout = params.layout.value();
     blas::Side side_    = params.side.value();
     blas::Uplo uplo_    = params.uplo.value();
     blas::Op trans_     = params.trans.value();
@@ -40,8 +39,6 @@ void test_batch_trmm_work( Params& params, bool run )
     int64_t Am = (side_ == Side::Left ? m_ : n_);
     int64_t Bm = m_;
     int64_t Bn = n_;
-    if (layout == Layout::RowMajor)
-        std::swap( Bm, Bn );
     int64_t lda_ = roundup( Am, align );
     int64_t ldb_ = roundup( Bm, align );
     size_t size_A = size_t(lda_)*Am;
@@ -110,7 +107,7 @@ void test_batch_trmm_work( Params& params, bool run )
         libtest::flush_cache( params.cache.value() );
         time = get_wtime();
         for(size_t s = 0; s < batch; s++){
-            cblas_trmm( cblas_layout_const(layout),
+            cblas_trmm( CblasColMajor,
                         cblas_side_const(side_),
                         cblas_uplo_const(uplo_),
                         cblas_trans_const(trans_),

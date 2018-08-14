@@ -17,7 +17,6 @@ void test_device_batch_gemm_work( Params& params, bool run )
     typedef long long lld;
 
     // get & mark input values
-    blas::Layout layout = params.layout.value();
     blas::Op transA_    = params.transA.value();
     blas::Op transB_    = params.transB.value();
     scalar_t alpha_     = params.alpha.value();
@@ -143,7 +142,7 @@ void test_device_batch_gemm_work( Params& params, bool run )
         libtest::flush_cache( params.cache.value() );
         time = get_wtime();
         for(size_t s = 0; s < batch; s++){
-            cblas_gemm( cblas_layout_const(layout),
+            cblas_gemm( CblasColMajor,
                         cblas_trans_const(transA_),
                         cblas_trans_const(transB_),
                         m_, n_, k_, alpha_, Aarray[s], lda_, Barray[s], ldb_, beta_, Crefarray[s], ldc_ );
