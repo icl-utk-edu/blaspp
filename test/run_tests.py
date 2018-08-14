@@ -38,8 +38,9 @@ categories = [
     group_cat.add_argument( '--blas1', action='store_true', help='run Level 1 BLAS tests' ),
     group_cat.add_argument( '--blas2', action='store_true', help='run Level 2 BLAS tests' ),
     group_cat.add_argument( '--blas3', action='store_true', help='run Level 3 BLAS tests' ),
+    group_cat.add_argument( '--batch-blas3', action='store_true', help='run Level 3 Batch BLAS tests' ),
 ]
-categories = map( lambda x: x.dest, categories ) # map to names: ['lu', 'chol', ...]
+categories = map( lambda x: x.dest, categories ) # map to names: ['blas1', ...]
 
 group_opt = parser.add_argument_group( 'options' )
 # BLAS and LAPACK
@@ -214,6 +215,25 @@ if (opts.blas3):
     [ 'her2k', dtype_complex + layout + align + uplo + trans_nc + mn ],
     [ 'syr2k', dtype_real    + layout + align + uplo + trans    + mn ],
     [ 'syr2k', dtype_complex + layout + align + uplo + trans_nt + mn ],
+    ]
+
+# Batch Level 3
+# don't currently take layout option
+if (opts.batch_blas3):
+    cmds += [
+    [ 'batch-gemm',  dtype         + align + transA + transB + mnk ],
+    [ 'batch-hemm',  dtype         + align + side + uplo + mn ],
+    [ 'batch-symm',  dtype         + align + side + uplo + mn ],
+    [ 'batch-trmm',  dtype         + align + side + uplo + trans + diag + mn ],
+    [ 'batch-trsm',  dtype         + align + side + uplo + trans + diag + mn ],
+    [ 'batch-herk',  dtype_real    + align + uplo + trans    + mn ],
+    [ 'batch-herk',  dtype_complex + align + uplo + trans_nc + mn ],
+    [ 'batch-syrk',  dtype_real    + align + uplo + trans    + mn ],
+    [ 'batch-syrk',  dtype_complex + align + uplo + trans_nt + mn ],
+    [ 'batch-her2k', dtype_real    + align + uplo + trans    + mn ],
+    [ 'batch-her2k', dtype_complex + align + uplo + trans_nc + mn ],
+    [ 'batch-syr2k', dtype_real    + align + uplo + trans    + mn ],
+    [ 'batch-syr2k', dtype_complex + align + uplo + trans_nt + mn ],
     ]
 
 # ------------------------------------------------------------------------------
