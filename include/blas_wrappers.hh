@@ -1,5 +1,5 @@
 #include <vector>
-#include "blas_config.h"
+
 #include "blas_util.hh"
 
 namespace blas {
