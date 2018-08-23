@@ -109,26 +109,25 @@ void test_syr2_work( Params& params, bool run )
     if (params.check.value() == 'y') {
         // there are no csyr2/zsyr2, so use csyr2k/zsyr2k
         // needs XX, YY as matrices instead of vectors with stride.
-        TX *XX = new TX[ lda ];
-        TY *YY = new TY[ lda ];
+        int64_t ldx = lda;
+        TX *XX = new TX[ ldx ];
+        TY *YY = new TY[ ldx ];
         cblas_copy( n, x, incx, XX, 1 );
         cblas_copy( n, y, incy, YY, 1 );
         if (verbose >= 2) {
-            printf( "XX = " ); print_matrix( n, 1, XX, lda );
-            printf( "YY = " ); print_matrix( n, 1, YY, lda );
+            printf( "XX = " ); print_matrix( n, 1, XX, ldx );
+            printf( "YY = " ); print_matrix( n, 1, YY, ldx );
+        }
+        if (layout == Layout::RowMajor) {
+            ldx = 1;
         }
 
         // run reference
         libtest::flush_cache( params.cache.value() );
         time = get_wtime();
 
-        // MacOS Cblas has bug with RowMajor [sd]syr2k???
-        if (layout == Layout::RowMajor) {
-            layout = Layout::ColMajor;
-            uplo = (uplo == Uplo::Upper ? Uplo::Lower : Uplo::Upper);
-        }
         cblas_syr2k( cblas_layout_const(layout), cblas_uplo_const(uplo), CblasNoTrans,
-                     n, 1, alpha, XX, lda, YY, lda, one, Aref, lda );
+                     n, 1, alpha, XX, ldx, YY, ldx, one, Aref, lda );
         time = get_wtime() - time;
 
         params.ref_time.value()   = time * 1000;  // msec
