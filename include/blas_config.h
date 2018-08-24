@@ -19,18 +19,19 @@
     typedef float blas_float_return;
 #endif
 
-#if defined(__cplusplus) && defined(BLAS_COMPLEX_CPP)
+#if ! defined(__cplusplus) || defined(BLAS_COMPLEX_C99)
 
-#include <complex>
-#define blas_complex_float std::complex<float>
-#define blas_complex_double std::complex<double>
-
-#else
-
-/* default is BLAS_COMPLEX_C99 */
+/* default in C */
 #include <complex.h>
-#define blas_complex_float    float _Complex
-#define blas_complex_double   double _Complex
+#define blas_complex_float   float _Complex
+#define blas_complex_double  double _Complex
+
+#elif defined(__cplusplus)
+
+/* default in C++ */
+#include <complex>
+#define blas_complex_float   std::complex<float>
+#define blas_complex_double  std::complex<double>
 
 #endif
 
