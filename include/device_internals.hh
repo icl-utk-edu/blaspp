@@ -163,7 +163,7 @@ void device_setvector(int64_t n, T* hostPtr, int64_t inch, T* devPtr, int64_t in
                        (device_blas_int)n,    (device_blas_int)sizeof(T), 
                        (const void *)hostPtr, (device_blas_int)inch, 
                        (      void *)devPtr,  (device_blas_int)incd, queue.stream() ) );
-    #elif defined(ROCBLAS)
+    #elif defined(HAVE_ROCBLAS)
     // TODO: call rocblas_set_vector
     #endif
 }
