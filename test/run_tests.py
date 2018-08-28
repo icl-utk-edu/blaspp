@@ -283,31 +283,30 @@ for cmd in cmds:
 
 # print summary of failures
 nfailures = len( failures )
-#if (ntests > 0):
-if True:
+if (ntests > 0):
     print( '\n' + str(nfailures) + ' routines FAILED:', ', '.join( failures ),
            file=sys.stderr )
-    root = ET.Element("testsuites")
-    doc = ET.SubElement(root, "testsuite",
+
+# generate jUnit compatible test report
+if True:
+    root = ET.Element( "testsuites" )
+    doc = ET.SubElement( root, "testsuite",
                         name="blaspp_suite",
                         tests=str(ntests),
                         errors="0",
-                        failures=str(nfailures))
+                        failures=str( nfailures ) )
 
     i = 0
     for failure in failures:
-        f = ET.SubElement(doc, "testcase", name=failure)
-        ff = ET.SubElement(f, "failure")
-        ff.text = (str(error_list[i]) + " tests failed")
-        # ff.text = "failed"
+        f = ET.SubElement( doc, "testcase", name=failure )
+        ff = ET.SubElement( f, "failure" )
+        ff.text = ( str( error_list[i] ) + " tests failed" )
         ff.name = failure
         i += 1
-        # ET.SubElement(doc, "testcase", name=failure, status='FAIL')
 
-    # ET.SubElement(doc, "field2", name="asdfasd").text = "some vlaue2"
     for p in passed_tests:
-        passed_test = ET.SubElement(doc, 'testcase', name=p)
+        passed_test = ET.SubElement( doc, 'testcase', name=p )
         passed_test.text = 'PASSED'
 
-    tree = ET.ElementTree(root)
-    tree.write("report.xml")
+    tree = ET.ElementTree( root )
+    tree.write( "report.xml" )
