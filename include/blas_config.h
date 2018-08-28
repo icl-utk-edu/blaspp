@@ -1,8 +1,6 @@
 #ifndef BLAS_CONFIG_H
 #define BLAS_CONFIG_H
 
-#include <stdlib.h>
-
 #ifndef blas_int
     #if defined(BLAS_ILP64)
         #define blas_int              long long  /* or int64_t */
@@ -13,7 +11,7 @@
 
 /* f2c, hence MacOS Accelerate, returns double instead of float
  * for sdot, slange, clange, etc. */
-#if defined(HAVE_MACOS_ACCELERATE) || defined(HAVE_F2C)
+#if defined(HAVE_F2C)
     typedef double blas_float_return;
 #else
     typedef float blas_float_return;

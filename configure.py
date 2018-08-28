@@ -59,13 +59,13 @@ def main():
         #'-Werror',
     ])
     config.openmp()
-    
+
     config.lapack.blas()
     print()
     config.lapack.blas_float_return()
     config.lapack.blas_complex_return()
     config.lapack.vendor_version()
-    
+
     # Must test mkl_version before cblas, to define HAVE_MKL.
     try:
         config.lapack.cblas()
@@ -76,7 +76,7 @@ def main():
         config.lapack.lapack()
     except Error:
         print( ansi_red + 'LAPACK++ needs LAPACKE only in testers.' + ansi_normal )
-    
+
     libtest = config.get_package(
         'libtest',
         ['../libtest', './libtest'],

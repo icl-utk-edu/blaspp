@@ -14,7 +14,7 @@
 #endif
 
 // -----------------------------------------------------------------------------
-#if defined(BLAS_ILP64)
+#if defined(BLAS_ILP64) || defined(LAPACK_ILP64)
     // long long is >= 64 bits
     typedef int64_t blas_int;
     typedef int64_t lapack_int;
