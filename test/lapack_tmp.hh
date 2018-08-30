@@ -33,27 +33,35 @@ void lapack_zlarnv( blas_int const* idist, blas_int iseed[4],
 
 // -----------------------------------------------------------------------------
 inline
-void lapack_larnv( blas_int idist, blas_int iseed[4], blas_int size, float *x )
+void lapack_larnv( blas_int idist, int iseed[4], blas_int size, float *x )
 {
-    lapack_slarnv( &idist, iseed, &size, x );
+    std::vector< blas_int > iseed_( 4 );
+    std::copy( iseed, iseed+4, iseed_.begin() );
+    lapack_slarnv( &idist, &iseed_[0], &size, x );
 }
 
 inline
-void lapack_larnv( blas_int idist, blas_int iseed[4], blas_int size, double *x )
+void lapack_larnv( blas_int idist, int iseed[4], blas_int size, double *x )
 {
-    lapack_dlarnv( &idist, iseed, &size, x );
+    std::vector< blas_int > iseed_( 4 );
+    std::copy( iseed, iseed+4, iseed_.begin() );
+    lapack_dlarnv( &idist, &iseed_[0], &size, x );
 }
 
 inline
-void lapack_larnv( blas_int idist, blas_int iseed[4], blas_int size, std::complex<float> *x )
+void lapack_larnv( blas_int idist, int iseed[4], blas_int size, std::complex<float> *x )
 {
-    lapack_clarnv( &idist, iseed, &size, x );
+    std::vector< blas_int > iseed_( 4 );
+    std::copy( iseed, iseed+4, iseed_.begin() );
+    lapack_clarnv( &idist, &iseed_[0], &size, x );
 }
 
 inline
-void lapack_larnv( blas_int idist, blas_int iseed[4], blas_int size, std::complex<double> *x )
+void lapack_larnv( blas_int idist, int iseed[4], blas_int size, std::complex<double> *x )
 {
-    lapack_zlarnv( &idist, iseed, &size, x );
+    std::vector< blas_int > iseed_( 4 );
+    std::copy( iseed, iseed+4, iseed_.begin() );
+    lapack_zlarnv( &idist, &iseed_[0], &size, x );
 }
 
 // -----------------------------------------------------------------------------

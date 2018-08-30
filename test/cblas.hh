@@ -788,12 +788,16 @@ cblas_symv(
     if (layout == CblasRowMajor) {
         uplo_ = (uplo == CblasUpper ? 'l' : 'u');  // switch upper <=> lower
     }
-    BLAS_csymv( &uplo_, &n,
+    blas_int n_    = n;
+    blas_int lda_  = lda;
+    blas_int incx_ = incx;
+    blas_int incy_ = incy;
+    BLAS_csymv( &uplo_, &n_,
                 (blas_complex_float*) &alpha,
-                (blas_complex_float*) A, &lda,
-                (blas_complex_float*) x, &incx,
+                (blas_complex_float*) A, &lda_,
+                (blas_complex_float*) x, &incx_,
                 (blas_complex_float*) &beta,
-                (blas_complex_float*) y, &incy );
+                (blas_complex_float*) y, &incy_ );
 }
 
 inline void
@@ -809,12 +813,16 @@ cblas_symv(
     if (layout == CblasRowMajor) {
         uplo_ = (uplo == CblasUpper ? 'l' : 'u');  // switch upper <=> lower
     }
-    BLAS_zsymv( &uplo_, &n,
+    blas_int n_    = n;
+    blas_int lda_  = lda;
+    blas_int incx_ = incx;
+    blas_int incy_ = incy;
+    BLAS_zsymv( &uplo_, &n_,
                 (blas_complex_double*) &alpha,
-                (blas_complex_double*) A, &lda,
-                (blas_complex_double*) x, &incx,
+                (blas_complex_double*) A, &lda_,
+                (blas_complex_double*) x, &incx_,
                 (blas_complex_double*) &beta,
-                (blas_complex_double*) y, &incy );
+                (blas_complex_double*) y, &incy_ );
 }
 
 
