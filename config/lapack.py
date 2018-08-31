@@ -228,7 +228,7 @@ def blas():
     # end
 
     labels = map( lambda c: c[0], passed )
-    i = config.choose( labels )
+    i = config.choose( 'Choose BLAS library:', labels )
     config.environ.merge( passed[i][1] )
     config.environ.append( 'CXXFLAGS', '-DHAVE_BLAS' )
 # end blas
@@ -254,7 +254,7 @@ def cblas():
     # end
 
     labels = map( lambda c: c[0], passed )
-    i = config.choose( labels )
+    i = config.choose( 'Choose CBLAS library:', labels )
     config.environ.merge( passed[i][1] )
     config.environ.append( 'CXXFLAGS', '-DHAVE_CBLAS' )
 # end cblas
@@ -396,7 +396,7 @@ def lapacke():
     # end
 
     labels = map( lambda c: c[0], passed )
-    i = config.choose( labels )
+    i = config.choose( 'Choose LAPACKE library:', labels )
     config.environ.merge( passed[i][1] )
     config.environ.append( 'CXXFLAGS', '-DHAVE_LAPACKE' )
 # end lapacke
@@ -424,7 +424,7 @@ def lapacke_uncommon():
     # end
 
     labels = map( lambda c: c[0], passed )
-    i = config.choose( labels )
+    i = config.choose( 'Choose LAPACKE library:', labels )
     config.environ.merge( passed[i][1] )
 # end lapacke_uncommon
 

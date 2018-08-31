@@ -278,7 +278,7 @@ class Environments( object ):
 # end
 
 #-------------------------------------------------------------------------------
-def choose( choices ):
+def choose( prompt, choices ):
     '''
     Asks the user to choose among the given choices.
     Returns the index of the chosen item in the range [0, len(choices)-1],
@@ -293,11 +293,11 @@ def choose( choices ):
         return 0
     else:
         width = int( math.log10( n ) + 1 )
-        print()
+        print( '\n' + prompt )
         for i in xrange( n ):
             print( '[%*d] %s' % (width, i+1, choices[i]) )
         while (True):
-            print( 'choose [1-%d] or quit: ' % (n), end='' )
+            print( 'Enter [1-%d] or quit: ' % (n), end='' )
             sys.stdout.flush()
             i = raw_input()
             if (i == 'q' or i == 'quit'):
@@ -504,7 +504,7 @@ def prog_cxx( choices=['g++', 'c++', 'CC', 'cxx', 'icpc', 'xlc++', 'clang++'] ):
             if (auto): break
         # end
     # end
-    i = choose( passed )
+    i = choose( 'Choose C++ compiler:', passed )
     environ['CXX'] = passed[i]
 # end
 
