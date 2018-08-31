@@ -86,7 +86,8 @@ def main():
     if (not libtest):
         print( ansi_red + 'BLAS++ needs libtest to compile testers.' + ansi_normal )
 
-    config.output_files( 'make.inc' )
+    config.extract_defines_from_flags( 'CXXFLAGS' )
+    config.output_files( ['make.inc', 'blas_defines.h'] )
 
     print( '-'*80 )
 # end

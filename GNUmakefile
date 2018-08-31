@@ -153,6 +153,10 @@ uninstall:
 	$(RM) $(DESTDIR)$(prefix)/lib$(LIB_SUFFIX)/libblaspp.*
 
 #-------------------------------------------------------------------------------
+# if re-configured, recompile everything
+$(lib_obj) $(test_obj): blas_defines.h
+
+#-------------------------------------------------------------------------------
 # BLAS++ library
 $(lib_so): $(lib_obj)
 	mkdir -p lib

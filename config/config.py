@@ -164,6 +164,17 @@ class Environments( object ):
             raise Error( "can't pop last 2 environments" )
         return self.stack.pop()
 
+    # ----------------------------------------
+    def __contains__( self, key ):
+        '''
+        Returns true if a key exists in the environment stack.
+        '''
+        for env in self.stack[::-1]:
+            if (key in env):
+                return True
+        return False
+
+    # ----------------------------------------
     def __getitem__( self, key ):
         for env in self.stack[::-1]:
             if (key in env):
@@ -490,8 +501,52 @@ def get_package( name, directories, repo_url, tar_url, tar_filename ):
 # end
 
 #-------------------------------------------------------------------------------
+def extract_defines_from_flags( flags='CXXFLAGS' ):
+    '''
+    Extracts all "-Dname[=value]" defines from the given flags.
+    Adds all "-Dname[=value]" defines to DEFINES.
+    Adds all "#define name [value]" defines to HEADER_DEFINES.
+    Stores all name=value defines for autoconf-like "#undef name" substitution
+    in output_files().
+    '''
+    global environ, defines
+    exp = r'(-D(\w+)(?:=(\S*))?) *'
+    defs = re.findall( exp, environ[ flags ] )
+    environ[ flags ] = re.sub( exp, '', environ[ flags ] ).strip()
+    header = ''
+    for (name_value, name, value) in defs:
+        environ.append( 'DEFINES', name_value )
+        defines[ name ] = value
+        if (value):
+            header += '#define '+ name +' '+ value + '\n'
+        else:
+            header += '#define '+ name + '\n'
+    # end
+    environ['HEADER_DEFINES'] = header
+# end
+
+#-------------------------------------------------------------------------------
 def sub_env( match ):
     return environ[ match.group(1) ]
+
+#-------------------------------------------------------------------------------
+def sub_define( match ):
+    '''
+    Given a re regexp match object,
+    returns "#define name [value]" or "// #undef name"
+    Used in output_files().
+    '''
+    global defines
+    name = match.group(1)
+    if (name in defines):
+        value = defines[ name ]
+        if (value):
+            return '#define '+ name +' '+ value
+        else:
+            return '#define '+ name
+    else:
+        return '// #undef '+ name
+# end
 
 #-------------------------------------------------------------------------------
 def read( filename ):
@@ -520,9 +575,10 @@ def output_files( files ):
         files = [ files ]
     for fname in files:
         txt = read( fname + '.in' )
-        out = re.sub( r'@(\w+)@', sub_env, txt )
+        txt = re.sub( r'@(\w+)@', sub_env, txt )
+        txt = re.sub( r'#undef (\w+)', sub_define, txt )
         exists = os.path.exists( fname )
-        if (exists and out == read( fname )):
+        if (exists and txt == read( fname )):
             print( fname, 'is unchanged' )
         else:
             if (exists):
@@ -531,7 +587,7 @@ def output_files( files ):
                 os.rename( fname, bak )
             # end
             print( 'creating', fname )
-            write( fname, out )
+            write( fname, txt )
         # end
     # end
 # end
@@ -599,5 +655,7 @@ python in /usr/bin), will allow $DYLD_LIBRARY_PATH to be inherited.'''
 environ = Environments()
 environ['argv'] = ' '.join( sys.argv )
 environ['datetime'] = time.ctime()
+
+defines = {}
 
 auto = True

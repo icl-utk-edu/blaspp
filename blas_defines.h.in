@@ -1,0 +1,10 @@
+#ifndef BLAS_DEFINES_H
+#define BLAS_DEFINES_H
+
+// Definitions for:
+// CXX  = @CXX@
+// LIBS = @LIBS@
+
+@HEADER_DEFINES@
+
+#endif /* BLAS_DEFINES_H */
