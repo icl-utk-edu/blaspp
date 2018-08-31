@@ -9,7 +9,16 @@ from   config import get
 from   config import Error
 
 #-------------------------------------------------------------------------------
-def get_manglings():
+def get_fortran_manglings():
+    '''
+    Returns list of flags to test different Fortran name manglings.
+    Setting one or more of:
+        fortran_add_=1, fortran_lower=1, fortran_upper=1
+    limits which manglings are returned.
+
+    Ex: get_fortran_manglings()
+    returns ['-DFORTRAN_ADD_', '-DFORTRAN_LOWER', '-DFORTRAN_UPPER']
+    '''
     # ADD_, NOCHANGE, UPCASE are traditional in lapack
     # FORTRAN_ADD_, FORTRAN_LOWER, DFORTRAN_UPPER are BLAS++/LAPACK++.
     manglings = []
@@ -27,22 +36,47 @@ def get_manglings():
 # end
 
 #-------------------------------------------------------------------------------
-def get_sizes():
-    sizes = []
+def get_int_sizes():
+    '''
+    Returns list of flags to test different integer sizes.
+    Setting one or more of:
+        lp64=1, ilp64=1
+    limits which sizes are returned.
+
+    Ex: get_int_sizes()
+    returns ['', '-DBLAS_ILP64']
+    where '' is compiler's default, usually 32-bit int in LP64.
+    '''
+    int_sizes = []
     if (config.environ['lp64'] == '1'):
-        sizes.append('') # i.e., default int
+        int_sizes.append('') # i.e., default int
     if (config.environ['ilp64'] == '1'):
-        sizes.append('-DBLAS_ILP64')
-    if (not sizes):
-        sizes = ['', '-DBLAS_ILP64']
-    return sizes
+        int_sizes.append('-DBLAS_ILP64')
+    if (not int_sizes):
+        int_sizes = ['', '-DBLAS_ILP64']
+    return int_sizes
 # end
 
 #-------------------------------------------------------------------------------
-def compile_with_manglings( src, env, manglings, sizes ):
+def compile_with_manglings( src, env, manglings, int_sizes ):
+    '''
+    Tries to compile, link, and run source file src with each of the given
+    manglings and integer sizes.
+    Returns (returncode, stdout, stderr, env_copy)
+    from either the successful run or the last unsuccessful run.
+
+    Ex: compile_with_manglings( 'test.cc', {'CXXFLAGS': '-Wall'},
+                                ['-DFORTRAN_ADD_', '-DFORTRAN_LOWER'],
+                                ['', '-DBLAS_ILP64'] )
+    tests:
+        CXX -Wall -DFORTRAN_ADD_               test.cc
+        CXX -Wall -DFORTRAN_ADD_ -DBLAS_ILP64  test.cc
+        CXX -Wall -DFORTRAN_LOWER              test.cc
+        CXX -Wall -DFORTRAN_LOWER -DBLAS_ILP64 test.cc
+    '''
     rc = -1
     for mangling in manglings:
-        for size in sizes:
+        for size in int_sizes:
             print_line( '    ' + mangling +' '+ size )
             # modify a copy to save in passed
             env2 = env.copy()
@@ -73,18 +107,18 @@ def compile_with_manglings( src, env, manglings, sizes ):
 # end
 
 #-------------------------------------------------------------------------------
-# todo mkl_threaded, mkl_intel, mkl_gnu.
+# todo mkl_threaded, mkl_intel, mkl_gnu command line options.
 def blas():
     '''
     Searches for BLAS in default libraries, MKL, ACML, ESSL, OpenBLAS,
     and Accelerate.
     Checks FORTRAN_ADD_, FORTRAN_LOWER, FORTRAN_UPPER.
     Checks int (LP64) and int64_t (ILP64).
-    Setting in environment or on command line one or more of:
+    Setting one or more of:
         mkl=1, acml=1, essl=1, openblas=1, accelerate=1;
         fortran_add_=1, fortran_lower=1, fortran_upper=1;
         lp64=1, ilp64=1
-    limits search space.
+    in the environment or on the command line, limits the search space.
     '''
     print_header( 'BLAS library' )
     print( 'Also detects Fortran name mangling and BLAS integer size.' )
@@ -177,8 +211,8 @@ def blas():
         ])
     # end
 
-    manglings = get_manglings()
-    sizes = get_sizes()
+    manglings = get_fortran_manglings()
+    int_sizes = get_int_sizes()
     passed = []
     for (label, env) in choices:
         title = label
@@ -186,7 +220,7 @@ def blas():
             title += '\n    ' + env['LIBS']
         print_subhead( title )
         (rc, out, err, env2) = compile_with_manglings(
-            'config/blas.cc', env, manglings, sizes )
+            'config/blas.cc', env, manglings, int_sizes )
         if (rc == 0):
             passed.append( (label, env2) )
             if (config.auto):
@@ -201,6 +235,10 @@ def blas():
 
 #-------------------------------------------------------------------------------
 def cblas():
+    '''
+    Searches for CBLAS library, first in already found BLAS library,
+    then in -lcblas. Use blas() first to find BLAS library.
+    '''
     print_header( 'CBLAS library' )
     choices = [
         ['CBLAS routines (cblas_ddot) available', {}],
@@ -271,17 +309,17 @@ def test_lapack( src, label, append=False ):
                 print_result( 'label', rc )
                 # -llapack exists but didn't link
                 print_subhead( '-llapack exists, but linking failed. Re-checking Fortran mangling.' )
-                # Get, then undef, original mangling & sizes.
+                # Get, then undef, original mangling & int_sizes.
                 cxxflags = config.environ['CXXFLAGS']
                 old_mangling_sizes = re.findall(
                     r'-D(FORTRAN_(?:ADD_|LOWER|UPPER)|\w*ILP64)\b', cxxflags )
                 config.environ['CXXFLAGS'] = re.sub(
                     r'-D(FORTRAN_(?:ADD_|LOWER|UPPER)|\w*ILP64|ADD_|NOCHANGE|UPCASE)\b',
                     r'', cxxflags )
-                manglings = get_manglings()
-                sizes = get_sizes()
+                manglings = get_fortran_manglings()
+                int_sizes = get_int_sizes()
                 (rc, out, err, env) = compile_with_manglings(
-                    src, env, manglings, sizes )
+                    src, env, manglings, int_sizes )
                 if (rc == 0):
                     (rc, out, err) = config.compile_run( 'config/blas.cc', env,
                         'Re-checking Fortran mangling for BLAS' )
@@ -340,7 +378,7 @@ def lapack_uncommon():
 def lapacke():
     '''
     Search for LAPACKE in existing BLAS/LAPACK libraries,
-    found with blas() and lapack()), then in -llapacke.
+    found with blas() and lapack(), then in -llapacke.
     '''
     print_header( 'LAPACKE library' )
     choices = [
@@ -551,15 +589,15 @@ def vendor_version():
     # If we can, be smart looking for MKL, ESSL, or OpenBLAS version;
     # otherwise, check them all.
     LIBS = config.environ['LIBS']
-    if (re.search( '-lmkl', LIBS )):
+    if ('-lmkl' in LIBS):
         mkl_version()
-    elif (re.search( '-lacml', LIBS )):
+    elif ('-lacml' in LIBS):
         acml_version()
-    elif (re.search( '-lessl', LIBS )):
+    elif ('-lessl' in LIBS):
         essl_version()
-    elif (re.search( '-lopenblas', LIBS )):
+    elif ('-lopenblas' in LIBS):
         openblas_version()
-    elif (re.search( '-framework Accelerate', LIBS )):
+    elif ('-framework Accelerate' in LIBS):
         pass
     else:
         mkl_version()

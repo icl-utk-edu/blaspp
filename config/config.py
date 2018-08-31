@@ -105,6 +105,9 @@ ansi_normal  = ansi_esc + '0m';
 
 #-------------------------------------------------------------------------------
 def print_header( header ):
+    '''
+    Prints a header, with bold font, both to console and the log.
+    '''
     print( '\n' + '-'*80 +
            '\n' + ansi_bold + header + ansi_normal, file=log )
     print( '\n' + ansi_bold + header + ansi_normal )
@@ -112,6 +115,9 @@ def print_header( header ):
 
 #-------------------------------------------------------------------------------
 def print_subhead( subhead ):
+    '''
+    Prints a subhead, both to console and the log.
+    '''
     print( '-'*40 + '\n' +
            subhead, file=log )
     print( subhead )
@@ -119,6 +125,13 @@ def print_subhead( subhead ):
 
 #-------------------------------------------------------------------------------
 def print_line( label ):
+    '''
+    If label is given, prints the label, both to console and the log.
+    On the console, it doesn't print the trailing newline; a subsequent
+    print_result() will print it.
+    If not label, does nothing. This simplifies functions like compile_obj
+    that take an optional label to print.
+    '''
     if (label):
         print( '-'*20 + '\n' + label, file=log )
         print( '%-72s' % label, end='' )
@@ -127,6 +140,11 @@ def print_line( label ):
 
 #-------------------------------------------------------------------------------
 def print_result( label, rc, extra='' ):
+    '''
+    If label is given, prints either "yes" (if rc == 0) or "no" (otherwise).
+    If not label, does nothing.
+    @see print_line().
+    '''
     if (label):
         if (rc == 0):
             print( ansi_blue + 'yes'  + ansi_normal, extra, file=log )
@@ -146,20 +164,41 @@ class Quit( Error ):
     pass
 
 #-------------------------------------------------------------------------------
-# Manages stack of environments, which are dictionaries of name=value pairs.
 class Environments( object ):
+    '''
+    Manages stack of environments, which are dictionaries of name=value pairs.
+    '''
+
+    # ----------------------------------------
     def __init__( self ):
+        '''
+        Initializes the environment stack.
+        The bottom is os.environ. The top is an empty environment.
+        '''
         self.stack = [ os.environ, {} ]
 
+    # ----------------------------------------
     def push( self, env=None ):
+        '''
+        Push an empty enviroment on the environment stack.
+        If env is given, also merge env into the environment stack.
+        '''
         self.stack.append( {} )
         if (env):
             self.merge( env )
 
+    # ----------------------------------------
     def top( self ):
+        '''
+        Return top-most environment in the environment stack.
+        '''
         return self.stack[-1]
 
+    # ----------------------------------------
     def pop( self ):
+        '''
+        Remove the top-most environment from the environment stack.
+        '''
         if (len(self.stack) == 2):
             raise Error( "can't pop last 2 environments" )
         return self.stack.pop()
@@ -176,15 +215,30 @@ class Environments( object ):
 
     # ----------------------------------------
     def __getitem__( self, key ):
+        '''
+        Returns the value of the key, searching from the top of the environment
+        stack down. As in a Makefile, unknown keys return empty string ('').
+        Use 'x in environ' to test whether a key exists.
+        '''
         for env in self.stack[::-1]:
             if (key in env):
                 return env[ key ]
         return ''
 
+    # ----------------------------------------
     def __setitem__( self, key, value ):
+        '''
+        Sets the key's value
+        in the top-most environment in the environment stack.
+        '''
         self.stack[ -1 ][ key ] = value
 
+    # ----------------------------------------
     def append( self, key, val ):
+        '''
+        Append val to key's value, saving the result
+        in the top-most environment in the enviornment stack.
+        '''
         orig = self[ key ]
         if (val):
             if (orig):
@@ -192,7 +246,12 @@ class Environments( object ):
             self[ key ] = val
         return orig
 
+    # ----------------------------------------
     def prepend( self, key, val ):
+        '''
+        Prepend val to key's value, saving the result
+        in the top-most environment in the enviornment stack.
+        '''
         orig = self[ key ]
         if (val):
             if (orig):
@@ -200,7 +259,15 @@ class Environments( object ):
             self[ key ] = val
         return orig
 
+    # ----------------------------------------
     def merge( self, env ):
+        '''
+        Merges env, a dictionary of environment variables, into the existing
+        environment stack. For most variables, the value in env is appended
+        to any existing value. For LIBS, the value is prepended.
+        For variables in config.replace_vars (like CXX), the value in env
+        replaces the existing value.
+        '''
         for key in env:
             if (key in replace_vars):
                 self[ key ] = env[ key ]
@@ -212,6 +279,11 @@ class Environments( object ):
 
 #-------------------------------------------------------------------------------
 def choose( choices ):
+    '''
+    Asks the user to choose among the given choices.
+    Returns the index of the chosen item in the range [0, len(choices)-1],
+    or raises Error or Quit exceptions.
+    '''
     n = len( choices )
     if (n == 0):
         print( ansi_bold + ansi_red + 'none found' + ansi_normal )
@@ -243,6 +315,16 @@ def choose( choices ):
 
 #-------------------------------------------------------------------------------
 def run( cmd, env=None ):
+    '''
+    Runs the command cmd.
+    cmd can be a string or a nested list.
+    Pushes env beforehand and pops afterward.
+    stdout and stderr are written to the log.
+    Returns (return_code, stdout, stderr) from the command.
+
+    Ex: run( ['gcc', '-c', 'file.c'], {'CPATH': '/opt/include'} )
+    runs: gcc -c file.c
+    '''
     environ.push( env )
 
     if (not isinstance( cmd, str )):
@@ -269,9 +351,16 @@ def run( cmd, env=None ):
 # end
 
 #-------------------------------------------------------------------------------
-# Ex:
-# compile_obj( 'foo.c', {'CC': 'gcc'}, 'Test foo' )
 def compile_obj( src, env=None, label=None ):
+    '''
+    Compiles source file src into an object (.o) file.
+    Pushes env beforehand and pops afterwards.
+    If label is given, prints label & result.
+    Returns (return_code, stdout, stderr) from the compiler.
+
+    Ex: compile_obj( 'foo.c', {'CC': 'gcc'}, 'Test foo' )
+    runs: gcc $CFLAGS -c foo.c -o foo.o
+    '''
     environ.push( env )
 
     print_line( label )
@@ -288,9 +377,17 @@ def compile_obj( src, env=None, label=None ):
 # end
 
 #-------------------------------------------------------------------------------
-# Ex:
-# link_exe( 'foo.c', {'CC': 'gcc'}, 'Test foo' )
 def link_exe( src, env=None, label=None ):
+    '''
+    Links the object file (.o) associated with the source file src into an executable.
+    Assumes compile_obj( src ) was called previously to generate the object file.
+    Pushes env beforehand and pops afterward.
+    If label is given, prints label & result.
+    Returns (return_code, stdout, stderr) from the compiler.
+
+    Ex: link_exe( 'foo.c', {'CC': 'gcc'}, 'Test foo' )
+    runs: gcc $LDFLAGS $LIBS foo.o -o foo
+    '''
     environ.push( env )
 
     print_line( label )
@@ -298,8 +395,8 @@ def link_exe( src, env=None, label=None ):
     obj      = base + '.o'
     lang     = lang_map[ ext ]
     compiler = environ[ lang ]
-    LDFLAGS  = environ[ 'LDFLAGS' ]
-    LIBS     = environ[ 'LIBS' ] or environ[ 'LDLIBS' ]
+    LDFLAGS  = environ['LDFLAGS']
+    LIBS     = environ['LIBS'] or environ['LDLIBS']
     (rc, stdout, stderr) = run([ compiler, obj, '-o', base, LDFLAGS, LIBS ])
     print_result( label, rc )
 
@@ -308,9 +405,15 @@ def link_exe( src, env=None, label=None ):
 # end
 
 #-------------------------------------------------------------------------------
-# Ex:
-# compile_exe( 'foo.c', {'CC': 'gcc'}, 'Test foo' )
 def compile_exe( src, env=None, label=None ):
+    '''
+    Compiles source file src into an object file via compile_obj(),
+    then links it into an exe.
+
+    Ex: compile_exe( 'foo.c', {'CC': 'gcc'}, 'Test foo' )
+    runs: gcc $CFLAGS -c foo.c -o foo.o
+          gcc $LDFLAGS $LIBS foo.o -o foo
+    '''
     environ.push( env )
 
     print_line( label )
@@ -318,8 +421,8 @@ def compile_exe( src, env=None, label=None ):
     obj      = base + '.o'
     lang     = lang_map[ ext ]
     compiler = environ[ lang ]
-    LDFLAGS  = environ[ 'LDFLAGS' ]
-    LIBS     = environ[ 'LIBS' ] or environ[ 'LDLIBS' ]
+    LDFLAGS  = environ['LDFLAGS']
+    LIBS     = environ['LIBS'] or environ['LDLIBS']
     (rc, stdout, stderr) = compile_obj( src )
     if (rc == 0):
         (rc, stdout, stderr) = run([ compiler, obj, '-o', base, LDFLAGS, LIBS ])
@@ -333,6 +436,15 @@ def compile_exe( src, env=None, label=None ):
 # Ex:
 # compile_run( 'foo.c', {'CC': 'gcc'}, 'Test foo' )
 def compile_run( src, env=None, label=None ):
+    '''
+    Compiles source file src into an object file and exe via compile_exe(),
+    then executes the exe.
+
+    Ex: compile_exe( 'foo.c', {'CC': 'gcc'}, 'Test foo' )
+    runs: gcc $CFLAGS -c foo.c -o foo.o
+          gcc $LDFLAGS $LIBS foo.o -o foo
+          ./foo
+    '''
     environ.push( env )
 
     print_line( label )
@@ -347,9 +459,14 @@ def compile_run( src, env=None, label=None ):
 # end
 
 #-------------------------------------------------------------------------------
-# Ex:
-# run_exe( 'foo.c', {'CC': 'gcc'}, 'Test foo' )
 def run_exe( src, env=None, label=None ):
+    '''
+    Runs the exe associated with src.
+    Assumes compile_exe( src ) was called previously to generate the exe.
+
+    Ex: run_exe( 'foo.c', {'CC': 'gcc'}, 'Test foo' )
+    runs: ./foo
+    '''
     environ.push( env )
 
     print_line( label )
@@ -363,6 +480,10 @@ def run_exe( src, env=None, label=None ):
 
 #-------------------------------------------------------------------------------
 def prog_cxx( choices=['g++', 'c++', 'CC', 'cxx', 'icpc', 'xlc++', 'clang++'] ):
+    '''
+    Searches for available C++ compilers from the list of choices.
+    Sets CXX to the chosen one.
+    '''
     print_header( 'C++ compiler' )
 
     cxx = environ['CXX']
@@ -409,6 +530,7 @@ def prog_cxx_flags( flags ):
 def openmp( flags=['-fopenmp', '-qopenmp', '-openmp', '-omp', ''] ):
     '''
     Tests for OpenMP support with one of the given flags.
+    If a flag works, it is added to both CXXFLAGS and LDFLAGS.
     '''
     print_header( 'OpenMP support' )
     src = 'config/openmp.cc'
@@ -527,6 +649,10 @@ def extract_defines_from_flags( flags='CXXFLAGS' ):
 
 #-------------------------------------------------------------------------------
 def sub_env( match ):
+    '''
+    Given a re (regular expression) match object, returns value of environment variable.
+    Used in output_files().
+    '''
     return environ[ match.group(1) ]
 
 #-------------------------------------------------------------------------------
@@ -550,6 +676,9 @@ def sub_define( match ):
 
 #-------------------------------------------------------------------------------
 def read( filename ):
+    '''
+    Reads and returns the entire contents of filename.
+    '''
     f = open( filename, 'r' )
     txt = f.read()
     f.close()
@@ -558,6 +687,9 @@ def read( filename ):
 
 #-------------------------------------------------------------------------------
 def write( filename, txt ):
+    '''
+    Writes txt to filename.
+    '''
     f = open( filename, 'w' )
     f.write( txt )
     f.close()
@@ -594,6 +726,11 @@ def output_files( files ):
 
 #-------------------------------------------------------------------------------
 def init( prefix='/usr/local' ):
+    '''
+    Initializes config.
+    Opens the logfile, deals with OS-specific issues, and parses command line
+    options.
+    '''
     global environ, log, auto
 
     environ['prefix'] = prefix
