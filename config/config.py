@@ -8,6 +8,20 @@ import math
 import sys
 import time
 import re
+import tarfile
+import urllib
+
+#-------------------------------------------------------------------------------
+def urlretrieve( url, filename ):
+    '''
+    Downloads url and saves to filename.
+    Works for both Python 2 and 3, which differ in where urlretrieve is located.
+    '''
+    if (sys.version_info.major >= 3):
+        urllib.requests.urlretrieve( url, filename )
+    else:
+        urllib.urlretrieve( url, filename )
+# end
 
 # ------------------------------------------------------------------------------
 # variables to replace instead of appending/prepending
@@ -396,6 +410,83 @@ def openmp( flags=['-fopenmp', '-qopenmp', '-openmp', '-omp', ''] ):
             environ.merge( env )
             break
     # end
+# end
+
+#-------------------------------------------------------------------------------
+def get_package( name, directories, repo_url, tar_url, tar_filename ):
+    '''
+    Searches for a package, generally used for internal packages.
+    Looks for a directory in directories; if found return directory.
+    If not found, tries to 'hg clone repo_url' to the last directory.
+    If that fails, tries to download tar_url and unpack it to the last directory.
+    '''
+    global log
+
+    print_header( name )
+
+    for directory in directories:
+        print_line( directory )
+        err = not os.path.exists( directory )
+        print_result( directory, err )
+        if (not err):
+            return directory
+    # end
+
+    if (repo_url):
+        if (not auto):
+            print( name +' not found; hg clone '+ repo_url +'? [Y/n] ', end='' )
+            sys.stdout.flush()
+            i = raw_input().lower()
+        if (auto or i in ('', 'y', 'yes')):
+            cmd = 'hg clone '+ repo_url +' '+ directory
+            print_line( 'download: ' + cmd )
+            (err, stdout, stderr) = run( cmd )
+            print_result( 'download', err )
+            if (not err):
+                return directory
+    # end
+
+    if (tar_url):
+        if (not auto):
+            print( name +' not found; download from '+ tar_url +'? [Y/n] ', end='' )
+            sys.stdout.flush()
+            i = raw_input().lower()
+        if (auto or i in ('', 'y', 'yes')):
+            try:
+                print_line( 'download: '+ tar_url +' as '+ tar_filename )
+                urlretrieve( tar_url, tar_filename )
+
+                print( 'untar', tar_filename, file=log )
+                tar = tarfile.open( tar_filename )
+                files = tar.getnames()
+                last = ''
+                for f in files:
+                    # sanitize file names: disallow beginning with / or having ../
+                    if (re.search( r'^/|\.\./', f )):
+                        print( 'skipping', f )
+                        continue
+                    tar.extract( f )
+                    lastfile = f
+                # end
+
+                # rename directory,
+                # e.g., from icl-libtest-dbd960ebf706 to libtest
+                # todo: os.path.sep intsead of '/'?
+                dirs = re.split( '/', lastfile )
+                print( 'rename', dirs[0], directory, file=log )
+                os.rename( dirs[0], directory )
+                err = 0
+            except Exception as err:
+                print( 'Exception:', str(err), file=log )
+            # end
+            print_result( 'download', err )
+            if (not err):
+                return directory
+        # end
+    # end
+
+    # otherwise, not found
+    return None
 # end
 
 #-------------------------------------------------------------------------------

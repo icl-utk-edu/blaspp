@@ -93,8 +93,17 @@ dep     += $(addsuffix .d, $(basename $(test_src)))
 
 test     = test/test
 
-libtest_dir = ../libtest
-libtest_src = $(wildcard $(libtest_dir)/*.cc $(libtest_dir)/*.hh)
+libtest_dir = $(wildcard ../libtest)
+ifeq ($(libtest_dir),)
+	libtest_dir = $(wildcard ./libtest)
+endif
+ifeq ($(libtest_dir),)
+    $(test_obj):
+		$(error Tester requires libtest, which was not found. Run 'make config' \
+		        or download manually from https://bitbucket.org/icl/libtest/)
+endif
+
+libtest_src = $(wildcard $(libtest_dir)/libtest.cc $(libtest_dir)/libtest.hh)
 ifeq ($(static),1)
 	libtest = $(libtest_dir)/libtest.a
 else
@@ -123,9 +132,12 @@ TEST_LIBS    += -lblaspp -ltest
 
 #-------------------------------------------------------------------------------
 # Rules
+
+targets = all lib src test headers include docs clean distclean
+
 .DELETE_ON_ERROR:
 .SUFFIXES:
-.PHONY: all lib src test headers include docs clean distclean
+.PHONY: $(targets)
 .DEFAULT_GOAL = all
 
 all: lib test
@@ -160,8 +172,10 @@ lib/clean src/clean:
 
 #-------------------------------------------------------------------------------
 # libtest library
-$(libtest): $(libtest_src)
-	cd $(libtest_dir) && $(MAKE) lib
+ifneq ($(libtest_dir),)
+    $(libtest): $(libtest_src)
+		cd $(libtest_dir) && $(MAKE) lib CXX=$(CXX)
+endif
 
 #-------------------------------------------------------------------------------
 # tester

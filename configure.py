@@ -10,6 +10,7 @@ import config
 from   config import ansi_bold, ansi_red, ansi_blue, ansi_normal
 from   config import Error
 import config.lapack
+import os
 
 #-------------------------------------------------------------------------------
 # header
@@ -76,8 +77,17 @@ def main():
     except Error:
         print( ansi_red + 'LAPACK++ needs LAPACKE only in testers.' + ansi_normal )
     
+    libtest = config.get_package(
+        'libtest',
+        ['../libtest', './libtest'],
+        'https://bitbucket.org/icl/libtest',
+        'https://bitbucket.org/icl/libtest/get/tip.tar.gz',
+        'libtest.tar.gz' )
+    if (not libtest):
+        print( ansi_red + 'BLAS++ needs libtest to compile testers.' + ansi_normal )
+
     config.output_files( 'make.inc' )
-    
+
     print( '-'*80 )
 # end
 
