@@ -21,10 +21,16 @@ import sys
 import os
 import re
 import argparse
+import xml.etree.ElementTree as ET
 
 # ------------------------------------------------------------------------------
 # command line arguments
 parser = argparse.ArgumentParser()
+
+group_test = parser.add_argument_group( 'test' )
+group_test.add_argument( '-t', '--test', action='store',
+    help='test command to run, e.g., --test "mpirun -np 4 ./test"; default "%(default)s"',
+    default='./test' )
 
 group_size = parser.add_argument_group( 'matrix dimensions (default is medium)' )
 group_size.add_argument( '-x', '--xsmall', action='store_true', help='run x-small tests' )
@@ -156,6 +162,7 @@ def filter_csv( values, csv ):
 # limit options to specific values
 dtype_real    = ' --type ' + filter_csv( ('s', 'd'), opts.type )
 dtype_complex = ' --type ' + filter_csv( ('c', 'z'), opts.type )
+dtype_double  = ' --type ' + filter_csv( ('d'), opts.type )
 
 trans_nt = ' --trans ' + filter_csv( ('n', 't'), opts.trans )
 trans_nc = ' --trans ' + filter_csv( ('n', 'c'), opts.trans )
@@ -242,8 +249,10 @@ if (opts.batch_blas3):
 output_redirected = not sys.stdout.isatty()
 
 # ------------------------------------------------------------------------------
+# cmd is a pair of strings: (function, args)
+
 def run_test( cmd ):
-    cmd = './test %-6s%s' % tuple(cmd)
+    cmd = opts.test +' '+ cmd[0] +' '+ cmd[1]
     print( cmd, file=sys.stderr )
     err = os.system( cmd )
     if (err):
@@ -262,15 +271,53 @@ def run_test( cmd ):
 
 # ------------------------------------------------------------------------------
 failures = []
-run_all = (len(opts.tests) == 0)
+passed_tests = []
+error_list = []
+ntests = len(opts.tests)
+run_all = (ntests == 0)
+
 for cmd in cmds:
     if (run_all or cmd[0] in opts.tests):
         err = run_test( cmd )
         if (err != 0):
             failures.append( cmd[0] )
+            error_num = (err & 0xff00) >> 8
+            if error_num is None:
+                error_num = 0
+            error_list.append(error_num)
+        # TODO: add errors/skipped tests
+        else:
+            passed_tests.append(cmd[0])
 
 # print summary of failures
 nfailures = len( failures )
 if (nfailures > 0):
     print( '\n' + str(nfailures) + ' routines FAILED:', ', '.join( failures ),
            file=sys.stderr )
+
+# generate jUnit compatible test report
+if True:
+    root = ET.Element("testsuites")
+    doc = ET.SubElement(root, "testsuite",
+                        name="blaspp_suite",
+                        tests=str(ntests),
+                        errors="0",
+                        failures=str(nfailures))
+
+    i = 0
+    for failure in failures:
+        f = ET.SubElement(doc, "testcase", name=failure)
+        ff = ET.SubElement(f, "failure")
+        ff.text = (str(error_list[i]) + " tests failed")
+        ff.name = failure
+        i += 1
+
+    for p in passed_tests:
+        passed_test = ET.SubElement( doc, 'testcase', name=p )
+        passed_test.text = 'PASSED'
+
+    tree = ET.ElementTree(root)
+    tree.write("report.xml")
+# end
+
+exit( nfailures )
