@@ -62,12 +62,12 @@ void gemm_check(
                 ) 
              );
 
-    std::vector<int64_t>* internal_info; 
+    int64_t* internal_info; 
     if(info.size() == 1){
-        internal_info = new std::vector<int64_t>(batchCount, 0);
+        internal_info = new int64_t[batchCount];
     }
     else{
-        internal_info = &info;
+        internal_info = &info[0];
     }
 
     #pragma omp parallel for schedule(dynamic)
@@ -116,7 +116,7 @@ void gemm_check(
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
 
         // delete the internal vector
-        delete internal_info; 
+        delete[] internal_info; 
 
         // throw an exception if needed
         blas_error_if( info[0] != 0);
@@ -174,12 +174,12 @@ void trsm_check(
                                       alpha.size() > 1 || A.size()    > 1 || 
                                       lda.size()   > 1 || ldb.size()  > 1 )); 
     
-    std::vector<int64_t>* internal_info; 
+    int64_t* internal_info; 
     if(info.size() == 1){
-        internal_info = new std::vector<int64_t>(batchCount, 0);
+        internal_info = new int64_t[batchCount];
     }
     else{
-        internal_info = &info;
+        internal_info = &info[0];
     }
 
     #pragma omp parallel for schedule(dynamic)
@@ -227,7 +227,7 @@ void trsm_check(
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
 
         // delete the internal vector
-        delete internal_info; 
+        delete[] internal_info; 
 
         // throw an exception if needed
         blas_error_if( info[0] != 0);
@@ -285,12 +285,12 @@ void trmm_check(
                                       alpha.size() > 1 || A.size()    > 1 || 
                                       lda.size()   > 1 || ldb.size()  > 1 )); 
     
-    std::vector<int64_t>* internal_info; 
+    int64_t* internal_info; 
     if(info.size() == 1){
-        internal_info = new std::vector<int64_t>(batchCount, 0);
+        internal_info = new int64_t[batchCount];
     }
     else{
-        internal_info = &info;
+        internal_info = &info[0];
     }
 
     #pragma omp parallel for schedule(dynamic)
@@ -338,7 +338,7 @@ void trmm_check(
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
 
         // delete the internal vector
-        delete internal_info; 
+        delete[] internal_info; 
 
         // throw an exception if needed
         blas_error_if( info[0] != 0);
@@ -411,12 +411,12 @@ void hemm_check(
                    beta.size()  > 1 || 
                    ldc.size()   > 1 ));
     
-    std::vector<int64_t>* internal_info; 
+    int64_t* internal_info; 
     if(info.size() == 1){
-        internal_info = new std::vector<int64_t>(batchCount, 0);
+        internal_info = new int64_t[batchCount];
     }
     else{
-        internal_info = &info;
+        internal_info = &info[0];
     }
 
     #pragma omp parallel for schedule(dynamic)
@@ -458,7 +458,7 @@ void hemm_check(
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
 
         // delete the internal vector
-        delete internal_info; 
+        delete[] internal_info; 
 
         // throw an exception if needed
         blas_error_if( info[0] != 0);
@@ -521,12 +521,12 @@ void herk_check(
                    beta.size()  > 1 || 
                    ldc.size()   > 1 ));
 
-    std::vector<int64_t>* internal_info; 
+    int64_t* internal_info; 
     if(info.size() == 1){
-        internal_info = new std::vector<int64_t>(batchCount, 0);
+        internal_info = new int64_t[batchCount];
     }
     else{
-        internal_info = &info;
+        internal_info = &info[0];
     }
 
     #pragma omp parallel for schedule(dynamic)
@@ -566,7 +566,7 @@ void herk_check(
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
 
         // delete the internal vector
-        delete internal_info; 
+        delete[] internal_info; 
 
         // throw an exception if needed
         blas_error_if( info[0] != 0);
@@ -648,12 +648,12 @@ void syrk_check(
                    beta.size()  > 1 || 
                    ldc.size()   > 1 ));
 
-    std::vector<int64_t>* internal_info; 
+    int64_t* internal_info; 
     if(info.size() == 1){
-        internal_info = new std::vector<int64_t>(batchCount, 0);
+        internal_info = new int64_t[batchCount];
     }
     else{
-        internal_info = &info;
+        internal_info = &info[0];
     }
 
     #pragma omp parallel for schedule(dynamic)
@@ -693,7 +693,7 @@ void syrk_check(
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
 
         // delete the internal vector
-        delete internal_info; 
+        delete[] internal_info; 
 
         // throw an exception if needed
         blas_error_if( info[0] != 0);
@@ -767,12 +767,12 @@ void her2k_check(
                    beta.size()  > 1 || 
                    ldc.size()   > 1 ));
 
-    std::vector<int64_t>* internal_info; 
+    int64_t* internal_info; 
     if(info.size() == 1){
-        internal_info = new std::vector<int64_t>(batchCount, 0);
+        internal_info = new int64_t[batchCount];
     }
     else{
-        internal_info = &info;
+        internal_info = &info[0];
     }
 
     #pragma omp parallel for schedule(dynamic)
@@ -815,7 +815,7 @@ void her2k_check(
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
 
         // delete the internal vector
-        delete internal_info; 
+        delete[] internal_info; 
 
         // throw an exception if needed
         blas_error_if( info[0] != 0);
@@ -889,12 +889,12 @@ void syr2k_check(
                    beta.size()  > 1 || 
                    ldc.size()   > 1 ));
 
-    std::vector<int64_t>* internal_info; 
+    int64_t* internal_info; 
     if(info.size() == 1){
-        internal_info = new std::vector<int64_t>(batchCount, 0);
+        internal_info = new int64_t[batchCount];
     }
     else{
-        internal_info = &info;
+        internal_info = &info[0];
     }
 
     #pragma omp parallel for schedule(dynamic)
@@ -937,7 +937,7 @@ void syr2k_check(
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
 
         // delete the internal vector
-        delete internal_info; 
+        delete[] internal_info; 
 
         // throw an exception if needed
         blas_error_if( info[0] != 0);
