@@ -83,8 +83,9 @@ void gemm_check(
         int64_t ldb_ = extract<int64_t>(ldb, i);
         int64_t ldc_ = extract<int64_t>(ldc, i);
         
-        int64_t nrowA_ = (transA_ == Op::NoTrans) ? m_ : k_;
-        int64_t nrowB_ = (transB_ == Op::NoTrans) ? k_ : n_;
+        int64_t nrowA_ = ((transA_ == Op::NoTrans) ^ (layout == Layout::RowMajor)) ? m_ : k_;
+        int64_t nrowB_ = ((transB_ == Op::NoTrans) ^ (layout == Layout::RowMajor)) ? k_ : n_;
+        int64_t nrowC_ = (layout == Layout::ColMajor) ? k_ : n_;
         
         internal_info[i] = 0;
         if(transA_ != Op::NoTrans && 
@@ -102,7 +103,7 @@ void gemm_check(
         else if(k_ < 0) internal_info[i] = -6;
         else if(lda_ < nrowA_) internal_info[i] = -8;
         else if(ldb_ < nrowB_) internal_info[i] = -11;
-        else if(ldc_ < m_    ) internal_info[i] = -14;
+        else if(ldc_ < nrowC_) internal_info[i] = -14;
     }
         
     if(info.size() == 1){
@@ -196,6 +197,7 @@ void trsm_check(
         int64_t ldb_ = extract<int64_t>(ldb, i);
 
         int64_t nrowA_ = (side_ == Side::Left) ? m_ : n_;
+        int64_t nrowB_ = (layout == Layout::ColMajor) ? m_ : n_;
 
         internal_info[i] = 0;
         if(side_ != Side::Left && side_ != Side::Right) {
@@ -213,7 +215,7 @@ void trsm_check(
         else if(m_ < 0) internal_info[i] = -6;
         else if(n_ < 0) internal_info[i] = -7;
         else if(lda_ < nrowA_) internal_info[i] = -10;
-        else if(ldb_ < m_ ) internal_info[i] = -12;
+        else if(ldb_ < nrowB_) internal_info[i] = -12;
     }
 
     if(info.size() == 1){
@@ -307,6 +309,7 @@ void trmm_check(
         int64_t ldb_ = extract<int64_t>(ldb, i);
 
         int64_t nrowA_ = (side_ == Side::Left) ? m_ : n_;
+        int64_t nrowB_ = (layout == Layout::ColMajor) ? m_ : n_;
 
         internal_info[i] = 0;
         if(side_ != Side::Left && side_ != Side::Right) {
@@ -324,7 +327,7 @@ void trmm_check(
         else if(m_ < 0) internal_info[i] = -6;
         else if(n_ < 0) internal_info[i] = -7;
         else if(lda_ < nrowA_) internal_info[i] = -10;
-        else if(ldb_ < m_ ) internal_info[i] = -12;
+        else if(ldb_ < nrowB_) internal_info[i] = -12;
     }
 
     if(info.size() == 1){
@@ -432,6 +435,8 @@ void hemm_check(
         int64_t ldc_ = extract<int64_t>(ldc, i);
 
         int64_t nrowA_ = (side_ == Side::Left) ? m_ : n_;
+        int64_t nrowB_ = (layout == Layout::ColMajor) ? m_ : n_;
+        int64_t nrowC_ = (layout == Layout::ColMajor) ? m_ : n_;
 
         internal_info[i] = 0;
         if(side_ != Side::Left && side_ != Side::Right) {
@@ -443,8 +448,8 @@ void hemm_check(
         else if(m_ < 0) internal_info[i] = -4;
         else if(n_ < 0) internal_info[i] = -5;
         else if(lda_ < nrowA_) internal_info[i] = -8;
-        else if(ldb_ < m_ ) internal_info[i] = -10;
-        else if(ldc_ < m_ ) internal_info[i] = -13;
+        else if(ldb_ < nrowB_) internal_info[i] = -10;
+        else if(ldc_ < nrowC_) internal_info[i] = -13;
     }
 
     if(info.size() == 1){
@@ -540,7 +545,7 @@ void herk_check(
         int64_t lda_ = extract<int64_t>(lda, i);
         int64_t ldc_ = extract<int64_t>(ldc, i);
 
-        int64_t nrowA_ = (trans_ == Op::NoTrans) ? n_ : k_;
+        int64_t nrowA_ = ((trans_ == Op::NoTrans) ^ (layout == Layout::RowMajor)) ? n_ : k_;
 
         internal_info[i] = 0;
         if(uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
@@ -667,7 +672,7 @@ void syrk_check(
         int64_t lda_ = extract<int64_t>(lda, i);
         int64_t ldc_ = extract<int64_t>(ldc, i);
 
-        int64_t nrowA_ = (trans_ == Op::NoTrans) ? n_ : k_;
+        int64_t nrowA_ = ((trans_ == Op::NoTrans) ^ (layout == Layout::RowMajor)) ? n_ : k_;
 
         internal_info[i] = 0;
         if(uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
@@ -787,8 +792,8 @@ void her2k_check(
         int64_t ldb_ = extract<int64_t>(ldb, i);
         int64_t ldc_ = extract<int64_t>(ldc, i);
 
-        int64_t nrowA_ = (trans_ == Op::NoTrans) ? n_ : k_;
-        int64_t nrowB_ = (trans_ == Op::NoTrans) ? n_ : k_;
+        int64_t nrowA_ = ((trans_ == Op::NoTrans) ^ (layout == Layout::RowMajor)) ? n_ : k_;
+        int64_t nrowB_ = ((trans_ == Op::NoTrans) ^ (layout == Layout::RowMajor)) ? n_ : k_;
 
         internal_info[i] = 0;
         if(uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
@@ -909,8 +914,8 @@ void syr2k_check(
         int64_t ldb_ = extract<int64_t>(ldb, i);
         int64_t ldc_ = extract<int64_t>(ldc, i);
 
-        int64_t nrowA_ = (trans_ == Op::NoTrans) ? n_ : k_;
-        int64_t nrowB_ = (trans_ == Op::NoTrans) ? n_ : k_;
+        int64_t nrowA_ = ((trans_ == Op::NoTrans) ^ (layout == Layout::RowMajor)) ? n_ : k_;
+        int64_t nrowB_ = ((trans_ == Op::NoTrans) ^ (layout == Layout::RowMajor)) ? n_ : k_;
 
         internal_info[i] = 0;
         if(uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
