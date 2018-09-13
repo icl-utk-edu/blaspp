@@ -8,6 +8,8 @@ namespace blas{
 
 namespace batch{
 
+#define INTERNAL_INFO_DEFAULT    (-1000)
+
 template<typename T>
 T extract(std::vector<T> const &ivector, const int64_t index){
     return (ivector.size() == 1) ? ivector[0] : ivector[index];
@@ -17,6 +19,7 @@ T extract(std::vector<T> const &ivector, const int64_t index){
 // batch gemm check
 template<typename T>
 void gemm_check(
+        blas::Layout                 layout, 
         std::vector<blas::Op> const &transA, 
         std::vector<blas::Op> const &transB, 
         std::vector<int64_t>  const &m, 
@@ -59,135 +62,66 @@ void gemm_check(
                 ) 
              );
 
+    std::vector<int64_t>* internal_info; 
     if(info.size() == 1){
-        /* argument based error reporting */
-        int64_t linfo;
-        
-        // transA
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < transA.size(); i++){
-            linfo += (transA[i] != Op::NoTrans && 
-                      transA[i] != Op::Trans   && 
-                      transA[i] != Op::ConjTrans
-                      ) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -1 : 0;
-        blas_error_if( linfo > 0 );
-        
-        // transB
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < transB.size(); i++){
-            linfo += (transB[i] != Op::NoTrans && 
-                      transB[i] != Op::Trans   && 
-                      transB[i] != Op::ConjTrans
-                     ) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -2 : 0;
-        blas_error_if( linfo > 0 );
-        
-        // m
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < m.size(); i++){
-            linfo += (m[i] < 0) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -3 : 0;
-        blas_error_if( linfo > 0 );
-        
-        // n
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < n.size(); i++){
-            linfo += (n[i] < 0) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -4 : 0;
-        blas_error_if( linfo > 0 );
-        
-        // k
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < k.size(); i++){
-            linfo += (k[i] < 0) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -5 : 0;
-        blas_error_if( linfo > 0 );
-
-        // lda
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < A.size(); i++){
-            Op trans_  = extract<Op>(transA, i);
-            int64_t nrowA_ = (trans_ == Op::NoTrans) ? 
-                             extract<int64_t>(m, i) : extract<int64_t>(k, i);
-            int64_t lda_   = extract<int64_t>(lda, i);
-            linfo += (lda_ < nrowA_) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -8 : 0;
-        blas_error_if( linfo > 0 );
-
-        // ldb
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < B.size(); i++){
-            Op trans_  = extract<Op>(transB, i);
-            int64_t nrowB_ = (trans_ == Op::NoTrans) ? 
-                             extract<int64_t>(k, i) : extract<int64_t>(n, i);
-            int64_t ldb_   = extract<int64_t>(ldb, i);
-            linfo += (ldb_ < nrowB_) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -10 : 0;
-        blas_error_if( linfo > 0 );
-        
-        // ldc
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < C.size(); i++){
-            int64_t m_   = extract<int64_t>(m, i);
-            int64_t ldc_ = extract<int64_t>(ldc, i);
-            linfo += (ldc_ < m_) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -13 : 0;
-        blas_error_if( linfo > 0 );
+        internal_info = new std::vector<int64_t>(batchCount, 0);
     }
     else{
-        /* problem based eror reporting */
-        #pragma omp parallel for schedule(dynamic)
-        for(size_t i = 0; i < batchCount; i++){
-            Op transA_ = extract<Op>(transA, i);
-            Op transB_ = extract<Op>(transB, i);
-        
-            int64_t m_ = extract<int64_t>(m, i); 
-            int64_t n_ = extract<int64_t>(n, i);
-            int64_t k_ = extract<int64_t>(k, i);
+        internal_info = &info;
+    }
 
-            int64_t lda_ = extract<int64_t>(lda, i);
-            int64_t ldb_ = extract<int64_t>(ldb, i);
-            int64_t ldc_ = extract<int64_t>(ldc, i);
-            
-            int64_t nrowA_ = (transA_ == Op::NoTrans) ? m_ : k_;
-            int64_t nrowB_ = (transB_ == Op::NoTrans) ? k_ : n_;
-            
-            info[i] = 0;
-            if(transA_ != Op::NoTrans && 
-               transA_ != Op::Trans   && 
-               transA_ != Op::ConjTrans) {
-                info[i] = -1;
-            }
-            else if(transB_ != Op::NoTrans && 
-                    transB_ != Op::Trans   && 
-                    transB_ != Op::ConjTrans) {
-                info[i] = -2;
-            }
-            else if(m_ < 0) info[i] = -3;
-            else if(n_ < 0) info[i] = -4;
-            else if(k_ < 0) info[i] = -5;
-            else if(lda_ < nrowA_) info[i] = -8;
-            else if(ldb_ < nrowB_) info[i] = -10;
-            else if(ldc_ < m_    ) info[i] = -13;
-        }
+    #pragma omp parallel for schedule(dynamic)
+    for(size_t i = 0; i < batchCount; i++){
+        Op transA_ = extract<Op>(transA, i);
+        Op transB_ = extract<Op>(transB, i);
         
+        int64_t m_ = extract<int64_t>(m, i); 
+        int64_t n_ = extract<int64_t>(n, i);
+        int64_t k_ = extract<int64_t>(k, i);
+
+        int64_t lda_ = extract<int64_t>(lda, i);
+        int64_t ldb_ = extract<int64_t>(ldb, i);
+        int64_t ldc_ = extract<int64_t>(ldc, i);
+        
+        int64_t nrowA_ = (transA_ == Op::NoTrans) ? m_ : k_;
+        int64_t nrowB_ = (transB_ == Op::NoTrans) ? k_ : n_;
+        
+        internal_info[i] = 0;
+        if(transA_ != Op::NoTrans && 
+           transA_ != Op::Trans   && 
+           transA_ != Op::ConjTrans) {
+            internal_info[i] = -2;
+        }
+        else if(transB_ != Op::NoTrans && 
+                transB_ != Op::Trans   && 
+                transB_ != Op::ConjTrans) {
+            internal_info[i] = -3;
+        }
+        else if(m_ < 0) internal_info[i] = -4;
+        else if(n_ < 0) internal_info[i] = -5;
+        else if(k_ < 0) internal_info[i] = -6;
+        else if(lda_ < nrowA_) internal_info[i] = -8;
+        else if(ldb_ < nrowB_) internal_info[i] = -11;
+        else if(ldc_ < m_    ) internal_info[i] = -14;
+    }
+        
+    if(info.size() == 1){
+        // do a reduction that finds the first argument to encounter an error
+        int64_t lerror = INTERNAL_INFO_DEFAULT; 
+        #pragma omp parallel for reduction(max:lerror)
+        for(int64_t i = 0; i < batchCount; i++){
+            if( internal_info[i] == 0) continue;    // skip problems that passed error checks
+            lerror = std::max(lerror, internal_info[i]);
+        }
+        info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
+
+        // delete the internal vector
+        delete internal_info; 
+
+        // throw an exception if needed
+        blas_error_if( info[0] != 0);
+    }
+    else{
         int64_t info_ = 0;
         #pragma omp parallel for reduction(+:info_)
         for(size_t i = 0; i < batchCount; i++){
@@ -201,6 +135,7 @@ void gemm_check(
 // batch trsm check
 template<typename T>
 void trsm_check(
+        blas::Layout                   layout, 
         std::vector<blas::Side> const &side, 
         std::vector<blas::Uplo> const &uplo, 
         std::vector<blas::Op>   const &trans, 
@@ -239,132 +174,65 @@ void trsm_check(
                                       alpha.size() > 1 || A.size()    > 1 || 
                                       lda.size()   > 1 || ldb.size()  > 1 )); 
     
+    std::vector<int64_t>* internal_info; 
     if(info.size() == 1){
-        /* argument based error reporting */
-        int64_t linfo;
-        
-        // side
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < side.size(); i++){
-            linfo += (side[i] != Side::Left  && 
-                      side[i] != Side::Right 
-                      ) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -1 : 0;
-        blas_error_if( linfo > 0 );
-        
-        // uplo
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < uplo.size(); i++){
-            linfo += (uplo[i] != Uplo::Lower  && 
-                      uplo[i] != Uplo::Upper
-                      ) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -2 : 0;
-        blas_error_if( linfo > 0 );
-
-        // trans
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < trans.size(); i++){
-            linfo += (trans[i] != Op::NoTrans && 
-                      trans[i] != Op::Trans   && 
-                      trans[i] != Op::ConjTrans
-                     ) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -3 : 0;
-        blas_error_if( linfo > 0 );
-        
-        // diag
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < trans.size(); i++){
-            linfo += (diag[i] != Diag::NonUnit && 
-                      diag[i] != Diag::Unit  
-                     ) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -4 : 0;
-        blas_error_if( linfo > 0 );
-
-        // m
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < m.size(); i++){
-            linfo += (m[i] < 0) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -5 : 0;
-        blas_error_if( linfo > 0 );
-
-        // n
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < n.size(); i++){
-            linfo += (n[i] < 0) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -6 : 0;
-        blas_error_if( linfo > 0 );
-        
-        // lda
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < A.size(); i++){
-            Side    side_  = extract<Side>(side, i);
-            int64_t lda_   = extract<int64_t>(lda, i);
-            int64_t nrowA_ = (side_ == Side::Left) ? extract<int64_t>(m, i) : extract<int64_t>(n, i);
-            linfo += (lda_ < nrowA_) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -9 : 0;
-        blas_error_if( linfo > 0 );
-
-        // ldb
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < B.size(); i++){
-            int64_t m_   = extract<int64_t>(m, i);
-            int64_t ldb_ = extract<int64_t>(ldb, i);
-            linfo += (ldb_ < m_) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -11 : 0;
-        blas_error_if( linfo > 0 );
+        internal_info = new std::vector<int64_t>(batchCount, 0);
     }
     else{
-        /* problem based eror reporting */
-        #pragma omp parallel for schedule(dynamic)
-        for(size_t i = 0; i < batchCount; i++){
-            Side  side_ = extract<Side>(side , i);
-            Uplo  uplo_ = extract<Uplo>(uplo , i);
-            Op   trans_ = extract<Op  >(trans, i);
-            Diag  diag_ = extract<Diag>(diag , i);
+        internal_info = &info;
+    }
 
-            int64_t m_ = extract<int64_t>(m, i); 
-            int64_t n_ = extract<int64_t>(n, i);
+    #pragma omp parallel for schedule(dynamic)
+    for(size_t i = 0; i < batchCount; i++){
+        Side  side_ = extract<Side>(side , i);
+        Uplo  uplo_ = extract<Uplo>(uplo , i);
+        Op   trans_ = extract<Op  >(trans, i);
+        Diag  diag_ = extract<Diag>(diag , i);
 
-            int64_t lda_ = extract<int64_t>(lda, i);
-            int64_t ldb_ = extract<int64_t>(ldb, i);
+        int64_t m_ = extract<int64_t>(m, i); 
+        int64_t n_ = extract<int64_t>(n, i);
 
-            int64_t nrowA_ = (side_ == Side::Left) ? m_ : n_;
+        int64_t lda_ = extract<int64_t>(lda, i);
+        int64_t ldb_ = extract<int64_t>(ldb, i);
 
-            info[i] = 0;
-            if(side_ != Side::Left && side_ != Side::Right) {
-                info[i] = -1;
-            }
-            else if(uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
-                info[i] = -2;
-            }
-            else if(trans_ != Op::NoTrans && trans_ != Op::Trans && trans_ != Op::ConjTrans){
-                info[i] = -3;
-            }
-            else if( diag_ != Diag::NonUnit && diag_ != Diag::Unit){
-                info[i] = -4;
-            }
-            else if(m_ < 0) info[i] = -5;
-            else if(n_ < 0) info[i] = -6;
-            else if(lda_ < nrowA_) info[i] = -9;
-            else if(ldb_ < m_ ) info[i] = -11;
+        int64_t nrowA_ = (side_ == Side::Left) ? m_ : n_;
+
+        internal_info[i] = 0;
+        if(side_ != Side::Left && side_ != Side::Right) {
+            internal_info[i] = -2;
         }
-        
+        else if(uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
+            internal_info[i] = -3;
+        }
+        else if(trans_ != Op::NoTrans && trans_ != Op::Trans && trans_ != Op::ConjTrans){
+            internal_info[i] = -4;
+        }
+        else if( diag_ != Diag::NonUnit && diag_ != Diag::Unit){
+            internal_info[i] = -5;
+        }
+        else if(m_ < 0) internal_info[i] = -6;
+        else if(n_ < 0) internal_info[i] = -7;
+        else if(lda_ < nrowA_) internal_info[i] = -10;
+        else if(ldb_ < m_ ) internal_info[i] = -12;
+    }
+
+    if(info.size() == 1){
+        // do a reduction that finds the first argument to encounter an error
+        int64_t lerror = INTERNAL_INFO_DEFAULT; 
+        #pragma omp parallel for reduction(max:lerror)
+        for(int64_t i = 0; i < batchCount; i++){
+            if( internal_info[i] == 0) continue;    // skip problems that passed error checks
+            lerror = std::max(lerror, internal_info[i]);
+        }
+        info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
+
+        // delete the internal vector
+        delete internal_info; 
+
+        // throw an exception if needed
+        blas_error_if( info[0] != 0);
+    }
+    else{
         int64_t info_ = 0;
         #pragma omp parallel for reduction(+:info_)
         for(size_t i = 0; i < batchCount; i++){
@@ -378,6 +246,7 @@ void trsm_check(
 // batch trmm check
 template<typename T>
 void trmm_check(
+        blas::Layout                   layout, 
         std::vector<blas::Side> const &side,
         std::vector<blas::Uplo> const &uplo, 
         std::vector<blas::Op>   const &trans, 
@@ -416,133 +285,65 @@ void trmm_check(
                                       alpha.size() > 1 || A.size()    > 1 || 
                                       lda.size()   > 1 || ldb.size()  > 1 )); 
     
+    std::vector<int64_t>* internal_info; 
     if(info.size() == 1){
-        /* argument based error reporting */
-        int64_t linfo;
-
-        // side
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < side.size(); i++){
-            linfo += (side[i] != Side::Left  && 
-                      side[i] != Side::Right 
-                      ) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -1 : 0;
-        blas_error_if( linfo > 0 );
-
-        // uplo
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < uplo.size(); i++){
-            linfo += (uplo[i] != Uplo::Lower  && 
-                      uplo[i] != Uplo::Upper
-                      ) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -2 : 0;
-        blas_error_if( linfo > 0 );
-
-        // trans
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < trans.size(); i++){
-            linfo += (trans[i] != Op::NoTrans && 
-                      trans[i] != Op::Trans   && 
-                      trans[i] != Op::ConjTrans
-                     ) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -3 : 0;
-        blas_error_if( linfo > 0 );
-
-        // diag
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < trans.size(); i++){
-            linfo += (diag[i] != Diag::NonUnit && 
-                      diag[i] != Diag::Unit  
-                     ) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -4 : 0;
-        blas_error_if( linfo > 0 );
-
-        // m
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < m.size(); i++){
-            linfo += (m[i] < 0) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -5 : 0;
-        blas_error_if( linfo > 0 );
-
-        // n
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < n.size(); i++){
-            linfo += (n[i] < 0) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -6 : 0;
-        blas_error_if( linfo > 0 );
-
-        // lda
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < A.size(); i++){
-            Side side_     = extract<Side>(side, i);
-            int64_t lda_   = extract<int64_t>(lda, i);
-            int64_t nrowA_ = (side_ == Side::Left) ? extract<int64_t>(m, i) : extract<int64_t>(n, i);
-            linfo += (lda_ < nrowA_) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -9 : 0;
-        blas_error_if( linfo > 0 );
-
-        // ldb
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < B.size(); i++){
-            int64_t m_   = extract<int64_t>(m, i);
-            int64_t ldb_ = extract<int64_t>(ldb, i);
-            linfo += (ldb_ < m_) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -11 : 0;
-        blas_error_if( linfo > 0 );
-        
+        internal_info = new std::vector<int64_t>(batchCount, 0);
     }
     else{
-        /* problem based eror reporting */
-        #pragma omp parallel for schedule(dynamic)
-        for(size_t i = 0; i < batchCount; i++){
-            Side  side_ = extract<Side>(side , i);
-            Uplo  uplo_ = extract<Uplo>(uplo , i);
-            Op   trans_ = extract<Op  >(trans, i);
-            Diag  diag_ = extract<Diag>(diag , i);
+        internal_info = &info;
+    }
 
-            int64_t m_ = extract<int64_t>(m, i); 
-            int64_t n_ = extract<int64_t>(n, i);
+    #pragma omp parallel for schedule(dynamic)
+    for(size_t i = 0; i < batchCount; i++){
+        Side  side_ = extract<Side>(side , i);
+        Uplo  uplo_ = extract<Uplo>(uplo , i);
+        Op   trans_ = extract<Op  >(trans, i);
+        Diag  diag_ = extract<Diag>(diag , i);
 
-            int64_t lda_ = extract<int64_t>(lda, i);
-            int64_t ldb_ = extract<int64_t>(ldb, i);
+        int64_t m_ = extract<int64_t>(m, i); 
+        int64_t n_ = extract<int64_t>(n, i);
 
-            int64_t nrowA_ = (side_ == Side::Left) ? m_ : n_;
+        int64_t lda_ = extract<int64_t>(lda, i);
+        int64_t ldb_ = extract<int64_t>(ldb, i);
 
-            info[i] = 0;
-            if(side_ != Side::Left && side_ != Side::Right) {
-                info[i] = -1;
-            }
-            else if(uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
-                info[i] = -2;
-            }
-            else if(trans_ != Op::NoTrans && trans_ != Op::Trans && trans_ != Op::ConjTrans){
-                info[i] = -3;
-            }
-            else if( diag_ != Diag::NonUnit && diag_ != Diag::Unit){
-                info[i] = -4;
-            }
-            else if(m_ < 0) info[i] = -5;
-            else if(n_ < 0) info[i] = -6;
-            else if(lda_ < nrowA_) info[i] = -9;
-            else if(ldb_ < m_ ) info[i] = -11;
+        int64_t nrowA_ = (side_ == Side::Left) ? m_ : n_;
+
+        internal_info[i] = 0;
+        if(side_ != Side::Left && side_ != Side::Right) {
+            internal_info[i] = -2;
         }
+        else if(uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
+            internal_info[i] = -3;
+        }
+        else if(trans_ != Op::NoTrans && trans_ != Op::Trans && trans_ != Op::ConjTrans){
+            internal_info[i] = -4;
+        }
+        else if( diag_ != Diag::NonUnit && diag_ != Diag::Unit){
+            internal_info[i] = -5;
+        }
+        else if(m_ < 0) internal_info[i] = -6;
+        else if(n_ < 0) internal_info[i] = -7;
+        else if(lda_ < nrowA_) internal_info[i] = -10;
+        else if(ldb_ < m_ ) internal_info[i] = -12;
+    }
 
+    if(info.size() == 1){
+        // do a reduction that finds the first argument to encounter an error
+        int64_t lerror = INTERNAL_INFO_DEFAULT; 
+        #pragma omp parallel for reduction(max:lerror)
+        for(int64_t i = 0; i < batchCount; i++){
+            if( internal_info[i] == 0) continue;    // skip problems that passed error checks
+            lerror = std::max(lerror, internal_info[i]);
+        }
+        info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
+
+        // delete the internal vector
+        delete internal_info; 
+
+        // throw an exception if needed
+        blas_error_if( info[0] != 0);
+    }
+    else{
         int64_t info_ = 0;
         #pragma omp parallel for reduction(+:info_)
         for(size_t i = 0; i < batchCount; i++){
@@ -556,6 +357,7 @@ void trmm_check(
 // batch hemm check
 template<typename T>
 void hemm_check(
+        blas::Layout                   layout, 
         std::vector<blas::Side> const &side,
         std::vector<blas::Uplo> const &uplo, 
         std::vector<int64_t>    const &m, 
@@ -609,115 +411,59 @@ void hemm_check(
                    beta.size()  > 1 || 
                    ldc.size()   > 1 ));
     
+    std::vector<int64_t>* internal_info; 
     if(info.size() == 1){
-        /* argument based error reporting */
-        int64_t linfo;
-
-        // side
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < side.size(); i++){
-            linfo += (side[i] != Side::Left  && 
-                      side[i] != Side::Right 
-                      ) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -1 : 0;
-        blas_error_if( linfo > 0 );
-
-        // uplo
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < uplo.size(); i++){
-            linfo += (uplo[i] != Uplo::Lower  && 
-                      uplo[i] != Uplo::Upper
-                      ) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -2 : 0;
-        blas_error_if( linfo > 0 );
-
-        // m
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < m.size(); i++){
-            linfo += (m[i] < 0) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -3 : 0;
-        blas_error_if( linfo > 0 );
-
-        // n
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < n.size(); i++){
-            linfo += (n[i] < 0) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -4 : 0;
-        blas_error_if( linfo > 0 );
-
-        // lda
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < A.size(); i++){
-            Side side_     = extract<Side>(side, i);
-            int64_t lda_   = extract<int64_t>(lda, i);
-            int64_t nrowA_ = (side_ == Side::Left) ? extract<int64_t>(m, i) : extract<int64_t>(n, i);
-            linfo += (lda_ < nrowA_) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -7 : 0;
-        blas_error_if( linfo > 0 );
-
-        // ldb
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < B.size(); i++){
-            int64_t m_   = extract<int64_t>(m, i);
-            int64_t ldb_ = extract<int64_t>(ldb, i);
-            linfo += (ldb_ < m_) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -9 : 0;
-        blas_error_if( linfo > 0 );
-        
-        // ldc
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < C.size(); i++){
-            int64_t m_   = extract<int64_t>(m, i);
-            int64_t ldc_ = extract<int64_t>(ldc, i);
-            linfo += (ldc_ < m_) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -12 : 0;
-        blas_error_if( linfo > 0 );
-        
+        internal_info = new std::vector<int64_t>(batchCount, 0);
     }
     else{
-        /* problem based eror reporting */
-        #pragma omp parallel for schedule(dynamic)
-        for(size_t i = 0; i < batchCount; i++){
-            Side  side_ = extract<Side>(side , i);
-            Uplo  uplo_ = extract<Uplo>(uplo , i);
+        internal_info = &info;
+    }
 
-            int64_t m_ = extract<int64_t>(m, i); 
-            int64_t n_ = extract<int64_t>(n, i);
+    #pragma omp parallel for schedule(dynamic)
+    for(size_t i = 0; i < batchCount; i++){
+        Side  side_ = extract<Side>(side , i);
+        Uplo  uplo_ = extract<Uplo>(uplo , i);
 
-            int64_t lda_ = extract<int64_t>(lda, i);
-            int64_t ldb_ = extract<int64_t>(ldb, i);
-            int64_t ldc_ = extract<int64_t>(ldc, i);
+        int64_t m_ = extract<int64_t>(m, i); 
+        int64_t n_ = extract<int64_t>(n, i);
 
-            int64_t nrowA_ = (side_ == Side::Left) ? m_ : n_;
+        int64_t lda_ = extract<int64_t>(lda, i);
+        int64_t ldb_ = extract<int64_t>(ldb, i);
+        int64_t ldc_ = extract<int64_t>(ldc, i);
 
-            info[i] = 0;
-            if(side_ != Side::Left && side_ != Side::Right) {
-                info[i] = -1;
-            }
-            else if(uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
-                info[i] = -2;
-            }
-            else if(m_ < 0) info[i] = -3;
-            else if(n_ < 0) info[i] = -4;
-            else if(lda_ < nrowA_) info[i] = -7;
-            else if(ldb_ < m_ ) info[i] = -9;
-            else if(ldc_ < m_ ) info[i] = -12;
+        int64_t nrowA_ = (side_ == Side::Left) ? m_ : n_;
+
+        internal_info[i] = 0;
+        if(side_ != Side::Left && side_ != Side::Right) {
+            internal_info[i] = -2;
         }
+        else if(uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
+            internal_info[i] = -3;
+        }
+        else if(m_ < 0) internal_info[i] = -4;
+        else if(n_ < 0) internal_info[i] = -5;
+        else if(lda_ < nrowA_) internal_info[i] = -8;
+        else if(ldb_ < m_ ) internal_info[i] = -10;
+        else if(ldc_ < m_ ) internal_info[i] = -13;
+    }
 
+    if(info.size() == 1){
+        // do a reduction that finds the first argument to encounter an error
+        int64_t lerror = INTERNAL_INFO_DEFAULT; 
+        #pragma omp parallel for reduction(max:lerror)
+        for(int64_t i = 0; i < batchCount; i++){
+            if( internal_info[i] == 0) continue;    // skip problems that passed error checks
+            lerror = std::max(lerror, internal_info[i]);
+        }
+        info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
+
+        // delete the internal vector
+        delete internal_info; 
+
+        // throw an exception if needed
+        blas_error_if( info[0] != 0);
+    }
+    else{
         int64_t info_ = 0;
         #pragma omp parallel for reduction(+:info_)
         for(size_t i = 0; i < batchCount; i++){
@@ -731,6 +477,7 @@ void hemm_check(
 // batch herk check
 template<typename T, typename scalarT>
 void herk_check(
+        blas::Layout                   layout, 
         std::vector<blas::Uplo> const &uplo, 
         std::vector<blas::Op>   const &trans, 
         std::vector<int64_t>    const &n, 
@@ -774,101 +521,57 @@ void herk_check(
                    beta.size()  > 1 || 
                    ldc.size()   > 1 ));
 
+    std::vector<int64_t>* internal_info; 
     if(info.size() == 1){
-        /* argument based error reporting */
-        int64_t linfo;
-
-        // uplo
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < uplo.size(); i++){
-            linfo += (uplo[i] != Uplo::Lower  && 
-                      uplo[i] != Uplo::Upper
-                      ) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -1 : 0;
-        blas_error_if( linfo > 0 );
-
-        // trans
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < trans.size(); i++){
-            linfo += (trans[i] != Op::NoTrans  && 
-                      trans[i] != Op::ConjTrans 
-                      ) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -2 : 0;
-        blas_error_if( linfo > 0 );
-
-        // n
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < n.size(); i++){
-            linfo += (n[i] < 0) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -3 : 0;
-        blas_error_if( linfo > 0 );
-
-        // k
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < k.size(); i++){
-            linfo += (k[i] < 0) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -4 : 0;
-        blas_error_if( linfo > 0 );
-
-        // lda
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < A.size(); i++){
-            Op trans_      = extract<Op>(trans, i);
-            int64_t lda_   = extract<int64_t>(lda, i);
-            int64_t nrowA_ = (trans_ == Op::NoTrans) ? extract<int64_t>(n, i) : extract<int64_t>(k, i);
-            linfo += (lda_ < nrowA_) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -7 : 0;
-        blas_error_if( linfo > 0 );
-
-        // ldc
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < C.size(); i++){
-            int64_t n_   = extract<int64_t>(n, i);
-            int64_t ldc_ = extract<int64_t>(ldc, i);
-            linfo += (ldc_ < n_) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -10 : 0;
-        blas_error_if( linfo > 0 );
+        internal_info = new std::vector<int64_t>(batchCount, 0);
     }
     else{
-        /* problem based eror reporting */
-        #pragma omp parallel for schedule(dynamic)
-        for(size_t i = 0; i < batchCount; i++){
-            Uplo  uplo_ = extract<Uplo>(uplo , i);
-            Op   trans_ = extract<Op>(trans , i);
+        internal_info = &info;
+    }
 
-            int64_t n_ = extract<int64_t>(n, i); 
-            int64_t k_ = extract<int64_t>(k, i);
+    #pragma omp parallel for schedule(dynamic)
+    for(size_t i = 0; i < batchCount; i++){
+        Uplo  uplo_ = extract<Uplo>(uplo , i);
+        Op   trans_ = extract<Op>(trans , i);
 
-            int64_t lda_ = extract<int64_t>(lda, i);
-            int64_t ldc_ = extract<int64_t>(ldc, i);
+        int64_t n_ = extract<int64_t>(n, i); 
+        int64_t k_ = extract<int64_t>(k, i);
 
-            int64_t nrowA_ = (trans_ == Op::NoTrans) ? n_ : k_;
+        int64_t lda_ = extract<int64_t>(lda, i);
+        int64_t ldc_ = extract<int64_t>(ldc, i);
 
-            info[i] = 0;
-            if(uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
-                info[i] = -1;
-            }
-            else if(trans_ != Op::NoTrans && trans_ != Op::ConjTrans) {
-                info[i] = -2;
-            }
-            else if(n_ < 0) info[i] = -3;
-            else if(k_ < 0) info[i] = -4;
-            else if(lda_ < nrowA_) info[i] = -7;
-            else if(ldc_ < n_ ) info[i] = -10;
+        int64_t nrowA_ = (trans_ == Op::NoTrans) ? n_ : k_;
+
+        internal_info[i] = 0;
+        if(uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
+            internal_info[i] = -2;
         }
+        else if(trans_ != Op::NoTrans && trans_ != Op::ConjTrans) {
+            internal_info[i] = -3;
+        }
+        else if(n_ < 0) internal_info[i] = -4;
+        else if(k_ < 0) internal_info[i] = -5;
+        else if(lda_ < nrowA_) internal_info[i] = -8;
+        else if(ldc_ < n_ ) internal_info[i] = -11;
+    }
 
+    if(info.size() == 1){
+        // do a reduction that finds the first argument to encounter an error
+        int64_t lerror = INTERNAL_INFO_DEFAULT; 
+        #pragma omp parallel for reduction(max:lerror)
+        for(int64_t i = 0; i < batchCount; i++){
+            if( internal_info[i] == 0) continue;    // skip problems that passed error checks
+            lerror = std::max(lerror, internal_info[i]);
+        }
+        info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
+
+        // delete the internal vector
+        delete internal_info; 
+
+        // throw an exception if needed
+        blas_error_if( info[0] != 0);
+    }
+    else{
         int64_t info_ = 0;
         #pragma omp parallel for reduction(+:info_)
         for(size_t i = 0; i < batchCount; i++){
@@ -882,6 +585,7 @@ void herk_check(
 // batch hemm check
 template<typename T>
 void symm_check(
+        blas::Layout                   layout, 
         std::vector<blas::Side> const &side,
         std::vector<blas::Uplo> const &uplo, 
         std::vector<int64_t>    const &m, 
@@ -900,6 +604,7 @@ void symm_check(
 // batch syrk check
 template<typename T>
 void syrk_check(
+        blas::Layout                   layout, 
         std::vector<blas::Uplo> const &uplo, 
         std::vector<blas::Op>   const &trans, 
         std::vector<int64_t>    const &n, 
@@ -943,101 +648,57 @@ void syrk_check(
                    beta.size()  > 1 || 
                    ldc.size()   > 1 ));
 
+    std::vector<int64_t>* internal_info; 
     if(info.size() == 1){
-        /* argument based error reporting */
-        int64_t linfo;
-
-        // uplo
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < uplo.size(); i++){
-            linfo += (uplo[i] != Uplo::Lower  && 
-                      uplo[i] != Uplo::Upper
-                      ) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -1 : 0;
-        blas_error_if( linfo > 0 );
-
-        // trans
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < trans.size(); i++){
-            linfo += (trans[i] != Op::NoTrans  && 
-                      trans[i] != Op::Trans 
-                      ) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -2 : 0;
-        blas_error_if( linfo > 0 );
-
-        // n
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < n.size(); i++){
-            linfo += (n[i] < 0) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -3 : 0;
-        blas_error_if( linfo > 0 );
-
-        // k
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < k.size(); i++){
-            linfo += (k[i] < 0) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -4 : 0;
-        blas_error_if( linfo > 0 );
-
-        // lda
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < A.size(); i++){
-            Op trans_      = extract<Op>(trans, i);
-            int64_t lda_   = extract<int64_t>(lda, i);
-            int64_t nrowA_ = (trans_ == Op::NoTrans) ? extract<int64_t>(n, i) : extract<int64_t>(k, i);
-            linfo += (lda_ < nrowA_) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -7 : 0;
-        blas_error_if( linfo > 0 );
-
-        // ldc
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < C.size(); i++){
-            int64_t n_   = extract<int64_t>(n, i);
-            int64_t ldc_ = extract<int64_t>(ldc, i);
-            linfo += (ldc_ < n_) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -10 : 0;
-        blas_error_if( linfo > 0 );
+        internal_info = new std::vector<int64_t>(batchCount, 0);
     }
     else{
-        /* problem based eror reporting */
-        #pragma omp parallel for schedule(dynamic)
-        for(size_t i = 0; i < batchCount; i++){
-            Uplo  uplo_ = extract<Uplo>(uplo , i);
-            Op   trans_ = extract<Op>(trans , i);
+        internal_info = &info;
+    }
 
-            int64_t n_ = extract<int64_t>(n, i); 
-            int64_t k_ = extract<int64_t>(k, i);
+    #pragma omp parallel for schedule(dynamic)
+    for(size_t i = 0; i < batchCount; i++){
+        Uplo  uplo_ = extract<Uplo>(uplo , i);
+        Op   trans_ = extract<Op>(trans , i);
 
-            int64_t lda_ = extract<int64_t>(lda, i);
-            int64_t ldc_ = extract<int64_t>(ldc, i);
+        int64_t n_ = extract<int64_t>(n, i); 
+        int64_t k_ = extract<int64_t>(k, i);
 
-            int64_t nrowA_ = (trans_ == Op::NoTrans) ? n_ : k_;
+        int64_t lda_ = extract<int64_t>(lda, i);
+        int64_t ldc_ = extract<int64_t>(ldc, i);
 
-            info[i] = 0;
-            if(uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
-                info[i] = -1;
-            }
-            else if(trans_ != Op::NoTrans && trans_ != Op::Trans) {
-                info[i] = -2;
-            }
-            else if(n_ < 0) info[i] = -3;
-            else if(k_ < 0) info[i] = -4;
-            else if(lda_ < nrowA_) info[i] = -7;
-            else if(ldc_ < n_ ) info[i] = -10;
+        int64_t nrowA_ = (trans_ == Op::NoTrans) ? n_ : k_;
+
+        internal_info[i] = 0;
+        if(uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
+            internal_info[i] = -2;
         }
+        else if(trans_ != Op::NoTrans && trans_ != Op::Trans) {
+            internal_info[i] = -3;
+        }
+        else if(n_ < 0) internal_info[i] = -4;
+        else if(k_ < 0) internal_info[i] = -5;
+        else if(lda_ < nrowA_) internal_info[i] = -8;
+        else if(ldc_ < n_ ) internal_info[i] = -11;
+    }
 
+    if(info.size() == 1){
+        // do a reduction that finds the first argument to encounter an error
+        int64_t lerror = INTERNAL_INFO_DEFAULT; 
+        #pragma omp parallel for reduction(max:lerror)
+        for(int64_t i = 0; i < batchCount; i++){
+            if( internal_info[i] == 0) continue;    // skip problems that passed error checks
+            lerror = std::max(lerror, internal_info[i]);
+        }
+        info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
+
+        // delete the internal vector
+        delete internal_info; 
+
+        // throw an exception if needed
+        blas_error_if( info[0] != 0);
+    }
+    else{
         int64_t info_ = 0;
         #pragma omp parallel for reduction(+:info_)
         for(size_t i = 0; i < batchCount; i++){
@@ -1051,6 +712,7 @@ void syrk_check(
 // batch her2k check
 template<typename T, typename scalarT>
 void her2k_check(
+        blas::Layout                   layout, 
         std::vector<blas::Uplo> const &uplo, 
         std::vector<blas::Op>   const &trans, 
         std::vector<int64_t>    const &n, 
@@ -1105,116 +767,60 @@ void her2k_check(
                    beta.size()  > 1 || 
                    ldc.size()   > 1 ));
 
+    std::vector<int64_t>* internal_info; 
     if(info.size() == 1){
-        /* argument based error reporting */
-        int64_t linfo;
-
-        // uplo
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < uplo.size(); i++){
-            linfo += (uplo[i] != Uplo::Lower  && 
-                      uplo[i] != Uplo::Upper
-                      ) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -1 : 0;
-        blas_error_if( linfo > 0 );
-
-        // trans
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < trans.size(); i++){
-            linfo += (trans[i] != Op::NoTrans  && 
-                      trans[i] != Op::ConjTrans 
-                      ) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -2 : 0;
-        blas_error_if( linfo > 0 );
-
-        // n
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < n.size(); i++){
-            linfo += (n[i] < 0) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -3 : 0;
-        blas_error_if( linfo > 0 );
-
-        // k
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < k.size(); i++){
-            linfo += (k[i] < 0) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -4 : 0;
-        blas_error_if( linfo > 0 );
-
-        // lda
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < A.size(); i++){
-            Op trans_      = extract<Op>(trans, i);
-            int64_t lda_   = extract<int64_t>(lda, i);
-            int64_t nrowA_ = (trans_ == Op::NoTrans) ? extract<int64_t>(n, i) : extract<int64_t>(k, i);
-            linfo += (lda_ < nrowA_) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -7 : 0;
-        blas_error_if( linfo > 0 );
-
-        // ldb
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < B.size(); i++){
-            Op trans_      = extract<Op>(trans, i);
-            int64_t ldb_   = extract<int64_t>(ldb, i);
-            int64_t nrowB_ = (trans_ == Op::NoTrans) ? extract<int64_t>(n, i) : extract<int64_t>(k, i);
-            linfo += (ldb_ < nrowB_) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -9 : 0;
-        blas_error_if( linfo > 0 );
-
-        // ldc
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < C.size(); i++){
-            int64_t n_   = extract<int64_t>(n, i);
-            int64_t ldc_ = extract<int64_t>(ldc, i);
-            linfo += (ldc_ < n_) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -12 : 0;
-        blas_error_if( linfo > 0 );
+        internal_info = new std::vector<int64_t>(batchCount, 0);
     }
     else{
-        /* problem based eror reporting */
-        #pragma omp parallel for schedule(dynamic)
-        for(size_t i = 0; i < batchCount; i++){
-            Uplo  uplo_ = extract<Uplo>(uplo , i);
-            Op   trans_ = extract<Op>(trans , i);
+        internal_info = &info;
+    }
 
-            int64_t n_ = extract<int64_t>(n, i); 
-            int64_t k_ = extract<int64_t>(k, i);
+    #pragma omp parallel for schedule(dynamic)
+    for(size_t i = 0; i < batchCount; i++){
+        Uplo  uplo_ = extract<Uplo>(uplo , i);
+        Op   trans_ = extract<Op>(trans , i);
 
-            int64_t lda_ = extract<int64_t>(lda, i);
-            int64_t ldb_ = extract<int64_t>(ldb, i);
-            int64_t ldc_ = extract<int64_t>(ldc, i);
+        int64_t n_ = extract<int64_t>(n, i); 
+        int64_t k_ = extract<int64_t>(k, i);
 
-            int64_t nrowA_ = (trans_ == Op::NoTrans) ? n_ : k_;
-            int64_t nrowB_ = (trans_ == Op::NoTrans) ? n_ : k_;
+        int64_t lda_ = extract<int64_t>(lda, i);
+        int64_t ldb_ = extract<int64_t>(ldb, i);
+        int64_t ldc_ = extract<int64_t>(ldc, i);
 
-            info[i] = 0;
-            if(uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
-                info[i] = -1;
-            }
-            else if(trans_ != Op::NoTrans && trans_ != Op::ConjTrans) {
-                info[i] = -2;
-            }
-            else if(n_ < 0) info[i] = -3;
-            else if(k_ < 0) info[i] = -4;
-            else if(lda_ < nrowA_) info[i] = -7;
-            else if(ldb_ < nrowB_) info[i] = -9;
-            else if(ldc_ < n_ ) info[i] = -12;
+        int64_t nrowA_ = (trans_ == Op::NoTrans) ? n_ : k_;
+        int64_t nrowB_ = (trans_ == Op::NoTrans) ? n_ : k_;
+
+        internal_info[i] = 0;
+        if(uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
+            internal_info[i] = -2;
         }
+        else if(trans_ != Op::NoTrans && trans_ != Op::ConjTrans) {
+            internal_info[i] = -3;
+        }
+        else if(n_ < 0) internal_info[i] = -4;
+        else if(k_ < 0) internal_info[i] = -5;
+        else if(lda_ < nrowA_) internal_info[i] = -8;
+        else if(ldb_ < nrowB_) internal_info[i] = -10;
+        else if(ldc_ < n_ ) internal_info[i] = -13;
+    }
 
+    if(info.size() == 1){
+        // do a reduction that finds the first argument to encounter an error
+        int64_t lerror = INTERNAL_INFO_DEFAULT; 
+        #pragma omp parallel for reduction(max:lerror)
+        for(int64_t i = 0; i < batchCount; i++){
+            if( internal_info[i] == 0) continue;    // skip problems that passed error checks
+            lerror = std::max(lerror, internal_info[i]);
+        }
+        info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
+
+        // delete the internal vector
+        delete internal_info; 
+
+        // throw an exception if needed
+        blas_error_if( info[0] != 0);
+    }
+    else{
         int64_t info_ = 0;
         #pragma omp parallel for reduction(+:info_)
         for(size_t i = 0; i < batchCount; i++){
@@ -1228,6 +834,7 @@ void her2k_check(
 // batch syr2k check
 template<typename T>
 void syr2k_check(
+        blas::Layout                   layout, 
         std::vector<blas::Uplo> const &uplo, 
         std::vector<blas::Op>   const &trans, 
         std::vector<int64_t>    const &n, 
@@ -1282,116 +889,60 @@ void syr2k_check(
                    beta.size()  > 1 || 
                    ldc.size()   > 1 ));
 
+    std::vector<int64_t>* internal_info; 
     if(info.size() == 1){
-        /* argument based error reporting */
-        int64_t linfo;
-
-        // uplo
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < uplo.size(); i++){
-            linfo += (uplo[i] != Uplo::Lower  && 
-                      uplo[i] != Uplo::Upper
-                      ) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -1 : 0;
-        blas_error_if( linfo > 0 );
-
-        // trans
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < trans.size(); i++){
-            linfo += (trans[i] != Op::NoTrans  && 
-                      trans[i] != Op::Trans 
-                      ) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -2 : 0;
-        blas_error_if( linfo > 0 );
-
-        // n
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < n.size(); i++){
-            linfo += (n[i] < 0) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -3 : 0;
-        blas_error_if( linfo > 0 );
-
-        // k
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < k.size(); i++){
-            linfo += (k[i] < 0) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -4 : 0;
-        blas_error_if( linfo > 0 );
-
-        // lda
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < A.size(); i++){
-            Op trans_      = extract<Op>(trans, i);
-            int64_t lda_   = extract<int64_t>(lda, i);
-            int64_t nrowA_ = (trans_ == Op::NoTrans) ? extract<int64_t>(n, i) : extract<int64_t>(k, i);
-            linfo += (lda_ < nrowA_) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -7 : 0;
-        blas_error_if( linfo > 0 );
-
-        // ldb
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < B.size(); i++){
-            Op trans_      = extract<Op>(trans, i);
-            int64_t ldb_   = extract<int64_t>(ldb, i);
-            int64_t nrowB_ = (trans_ == Op::NoTrans) ? extract<int64_t>(n, i) : extract<int64_t>(k, i);
-            linfo += (ldb_ < nrowB_) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -9 : 0;
-        blas_error_if( linfo > 0 );
-
-        // ldc
-        linfo = 0;
-        #pragma omp parallel for reduction(+:linfo)
-        for(size_t i = 0; i < C.size(); i++){
-            int64_t n_   = extract<int64_t>(n, i);
-            int64_t ldc_ = extract<int64_t>(ldc, i);
-            linfo += (ldc_ < n_) ? 1 : 0;
-        }
-        info[0] = (linfo > 0) ? -12 : 0;
-        blas_error_if( linfo > 0 );
+        internal_info = new std::vector<int64_t>(batchCount, 0);
     }
     else{
-        /* problem based eror reporting */
-        #pragma omp parallel for schedule(dynamic)
-        for(size_t i = 0; i < batchCount; i++){
-            Uplo  uplo_ = extract<Uplo>(uplo , i);
-            Op   trans_ = extract<Op>(trans , i);
+        internal_info = &info;
+    }
 
-            int64_t n_ = extract<int64_t>(n, i); 
-            int64_t k_ = extract<int64_t>(k, i);
+    #pragma omp parallel for schedule(dynamic)
+    for(size_t i = 0; i < batchCount; i++){
+        Uplo  uplo_ = extract<Uplo>(uplo , i);
+        Op   trans_ = extract<Op>(trans , i);
 
-            int64_t lda_ = extract<int64_t>(lda, i);
-            int64_t ldb_ = extract<int64_t>(ldb, i);
-            int64_t ldc_ = extract<int64_t>(ldc, i);
+        int64_t n_ = extract<int64_t>(n, i); 
+        int64_t k_ = extract<int64_t>(k, i);
 
-            int64_t nrowA_ = (trans_ == Op::NoTrans) ? n_ : k_;
-            int64_t nrowB_ = (trans_ == Op::NoTrans) ? n_ : k_;
+        int64_t lda_ = extract<int64_t>(lda, i);
+        int64_t ldb_ = extract<int64_t>(ldb, i);
+        int64_t ldc_ = extract<int64_t>(ldc, i);
 
-            info[i] = 0;
-            if(uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
-                info[i] = -1;
-            }
-            else if(trans_ != Op::NoTrans && trans_ != Op::Trans) {
-                info[i] = -2;
-            }
-            else if(n_ < 0) info[i] = -3;
-            else if(k_ < 0) info[i] = -4;
-            else if(lda_ < nrowA_) info[i] = -7;
-            else if(ldb_ < nrowB_) info[i] = -9;
-            else if(ldc_ < n_ ) info[i] = -12;
+        int64_t nrowA_ = (trans_ == Op::NoTrans) ? n_ : k_;
+        int64_t nrowB_ = (trans_ == Op::NoTrans) ? n_ : k_;
+
+        internal_info[i] = 0;
+        if(uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
+            internal_info[i] = -2;
         }
+        else if(trans_ != Op::NoTrans && trans_ != Op::Trans) {
+            internal_info[i] = -3;
+        }
+        else if(n_ < 0) internal_info[i] = -4;
+        else if(k_ < 0) internal_info[i] = -5;
+        else if(lda_ < nrowA_) internal_info[i] = -8;
+        else if(ldb_ < nrowB_) internal_info[i] = -10;
+        else if(ldc_ < n_ ) internal_info[i] = -13;
+    }
 
+    if(info.size() == 1){
+        // do a reduction that finds the first argument to encounter an error
+        int64_t lerror = INTERNAL_INFO_DEFAULT; 
+        #pragma omp parallel for reduction(max:lerror)
+        for(int64_t i = 0; i < batchCount; i++){
+            if( internal_info[i] == 0) continue;    // skip problems that passed error checks
+            lerror = std::max(lerror, internal_info[i]);
+        }
+        info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
+
+        // delete the internal vector
+        delete internal_info; 
+
+        // throw an exception if needed
+        blas_error_if( info[0] != 0);
+    }
+    else{
         int64_t info_ = 0;
         #pragma omp parallel for reduction(+:info_)
         for(size_t i = 0; i < batchCount; i++){
