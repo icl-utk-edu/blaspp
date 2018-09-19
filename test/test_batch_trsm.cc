@@ -16,6 +16,7 @@ void test_batch_trsm_work( Params& params, bool run )
     typedef long long lld;
 
     // get & mark input values
+    blas::Layout layout = params.layout.value();
     blas::Side side_    = params.side.value();
     blas::Uplo uplo_    = params.uplo.value();
     blas::Op trans_    = params.trans.value();
@@ -39,6 +40,8 @@ void test_batch_trsm_work( Params& params, bool run )
     int64_t Am = (side_ == Side::Left ? m_ : n_);
     int64_t Bm = m_;
     int64_t Bn = n_;
+    if (layout == Layout::RowMajor)
+        std::swap( Bm, Bn );
     int64_t lda_ = roundup( Am, align );
     int64_t ldb_ = roundup( Bm, align );
     size_t size_A = size_t(lda_)*Am;
@@ -114,13 +117,24 @@ void test_batch_trsm_work( Params& params, bool run )
         Bnorm[s] = lapack_lange( "f", Bm, Bn, Barray[s], ldb_, work );
     }
 
+    // if row-major, transpose A
+    if (layout == Layout::RowMajor) {
+        for(size_t s = 0; s < batch; s++){
+            for (int64_t j = 0; j < Am; ++j) {
+                for (int64_t i = 0; i < j; ++i) {
+                    std::swap( Aarray[s][ i + j*lda_ ], Aarray[s][ j + i*lda_ ] );
+                }
+            }
+        }
+    }
+
     // decide error checking mode
     info.resize( 0 );
 
     // run test
     libtest::flush_cache( params.cache.value() );
     double time = get_wtime();
-    blas::batch::trsm( side, uplo, trans, diag, m, n, alpha, Aarray, vlda_, Barray, vldb_, 
+    blas::batch::trsm( layout, side, uplo, trans, diag, m, n, alpha, Aarray, vlda_, Barray, vldb_, 
                        batch, info );
     time = get_wtime() - time;
 
@@ -133,7 +147,7 @@ void test_batch_trsm_work( Params& params, bool run )
         libtest::flush_cache( params.cache.value() );
         time = get_wtime();
         for(size_t s = 0; s < batch; s++){
-            cblas_trsm( CblasColMajor,
+            cblas_trsm( cblas_layout_const(layout),
                         cblas_side_const(side_),
                         cblas_uplo_const(uplo_),
                         cblas_trans_const(trans_),
