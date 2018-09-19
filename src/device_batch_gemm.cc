@@ -6,6 +6,7 @@
 // -----------------------------------------------------------------------------
 /// @ingroup gemm
 void blas::batch::gemm(
+    blas::Layout                 layout, 
     std::vector<blas::Op> const &transA,
     std::vector<blas::Op> const &transB,
     std::vector<int64_t>  const &m, 
@@ -19,11 +20,12 @@ void blas::batch::gemm(
     const size_t batch,                  std::vector<int64_t>       &info, 
     blas::Queue &queue )
 {
+    blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if(info.size() > 0){
         // perform error checking
-        blas::batch::gemm_check<float>( transA, transB, 
+        blas::batch::gemm_check<float>( layout, transA, transB, 
                                         m, n, k, 
                                         alpha, Aarray, ldda, 
                                                Barray, lddb, 
@@ -65,12 +67,24 @@ void blas::batch::gemm(
         device_setvector<float*>(batch, (float**)&Aarray[0], 1, dAarray, 1, queue);
         device_setvector<float*>(batch, (float**)&Barray[0], 1, dBarray, 1, queue);
         device_setvector<float*>(batch, (float**)&Carray[0], 1, dCarray, 1, queue);
-        DEVICE_BATCH_sgemm( queue.handle(), 
-                            transA_, transB_, 
-                            m_, n_, k_, 
-                            alpha[0], dAarray, ldda_, dBarray, lddb_, 
-                            beta[0],  dCarray, lddc_, 
-                            batch);
+
+        if (layout == Layout::RowMajor) {
+            // swap transA <=> transB, m <=> n, B <=> A
+            DEVICE_BATCH_sgemm( queue.handle(), 
+                                transB_, transA_, 
+                                n_, m_, k_, 
+                                alpha[0], dBarray, lddb_, dAarray, ldda_, 
+                                beta[0],  dCarray, lddc_, 
+                                batch);
+        }
+        else{
+            DEVICE_BATCH_sgemm( queue.handle(), 
+                                transA_, transB_, 
+                                m_, n_, k_, 
+                                alpha[0], dAarray, ldda_, dBarray, lddb_, 
+                                beta[0],  dCarray, lddc_, 
+                                batch);
+        }
     }
     else{
         for(size_t i = 0; i < batch; i++){
@@ -88,7 +102,7 @@ void blas::batch::gemm(
             float* dB_   = blas::batch::extract<float*>(Barray, i);
             float* dC_   = blas::batch::extract<float*>(Carray, i);
             blas::gemm(
-                Layout::ColMajor, transA_, transB_, m_, n_, k_, 
+                layout, transA_, transB_, m_, n_, k_, 
                 alpha_, dA_, lda_, 
                         dB_, ldb_, 
                 beta_,  dC_, ldc_, queue );
@@ -99,6 +113,7 @@ void blas::batch::gemm(
 // -----------------------------------------------------------------------------
 /// @ingroup gemm
 void blas::batch::gemm(
+    blas::Layout                 layout, 
     std::vector<blas::Op> const &transA,
     std::vector<blas::Op> const &transB,
     std::vector<int64_t>  const &m, 
@@ -112,12 +127,12 @@ void blas::batch::gemm(
     const size_t batch,                  std::vector<int64_t>       &info, 
     blas::Queue &queue )
 {
-
+    blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if(info.size() > 0){
         // perform error checking
-        blas::batch::gemm_check<double>( transA, transB, 
+        blas::batch::gemm_check<double>( layout, transA, transB, 
                                         m, n, k, 
                                         alpha, Aarray, ldda, 
                                                Barray, lddb, 
@@ -158,12 +173,23 @@ void blas::batch::gemm(
         device_setvector<double*>(batch, (double**)&Aarray[0], 1, dAarray, 1, queue);
         device_setvector<double*>(batch, (double**)&Barray[0], 1, dBarray, 1, queue);
         device_setvector<double*>(batch, (double**)&Carray[0], 1, dCarray, 1, queue);
-        DEVICE_BATCH_dgemm( queue.handle(), 
-                            transA_, transB_, 
-                            m_, n_, k_, 
-                            alpha[0], dAarray, ldda_, dBarray, lddb_, 
-                            beta[0],  dCarray, lddc_, 
-                            batch);
+        if (layout == Layout::RowMajor) {
+            // swap transA <=> transB, m <=> n, B <=> A
+            DEVICE_BATCH_dgemm( queue.handle(), 
+                                transB_, transA_, 
+                                n_, m_, k_, 
+                                alpha[0], dBarray, lddb_, dAarray, ldda_, 
+                                beta[0],  dCarray, lddc_, 
+                                batch);
+        }
+        else{
+            DEVICE_BATCH_dgemm( queue.handle(), 
+                                transA_, transB_, 
+                                m_, n_, k_, 
+                                alpha[0], dAarray, ldda_, dBarray, lddb_, 
+                                beta[0],  dCarray, lddc_, 
+                                batch);
+        }
     }
     else{
         for(size_t i = 0; i < batch; i++){
@@ -181,7 +207,7 @@ void blas::batch::gemm(
             double* dB_   = blas::batch::extract<double*>(Barray, i);
             double* dC_   = blas::batch::extract<double*>(Carray, i);
             blas::gemm(
-                Layout::ColMajor, transA_, transB_, m_, n_, k_, 
+                layout, transA_, transB_, m_, n_, k_, 
                 alpha_, dA_, lda_, 
                         dB_, ldb_, 
                 beta_,  dC_, ldc_, queue );
@@ -192,6 +218,7 @@ void blas::batch::gemm(
 // -----------------------------------------------------------------------------
 /// @ingroup gemm
 void blas::batch::gemm(
+    blas::Layout                 layout, 
     std::vector<blas::Op> const &transA,
     std::vector<blas::Op> const &transB,
     std::vector<int64_t>  const &m, 
@@ -205,12 +232,12 @@ void blas::batch::gemm(
     const size_t batch,                                  std::vector<int64_t>  &info, 
     blas::Queue &queue )
 {
-
+    blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if(info.size() > 0){
         // perform error checking
-        blas::batch::gemm_check< std::complex<float> >( transA, transB, 
+        blas::batch::gemm_check< std::complex<float> >( layout, transA, transB, 
                                         m, n, k, 
                                         alpha, Aarray, ldda, 
                                                Barray, lddb, 
@@ -252,12 +279,23 @@ void blas::batch::gemm(
         device_setvector< std::complex<float>* >(batch, (std::complex<float>**)&Aarray[0], 1, dAarray, 1, queue);
         device_setvector< std::complex<float>* >(batch, (std::complex<float>**)&Barray[0], 1, dBarray, 1, queue);
         device_setvector< std::complex<float>* >(batch, (std::complex<float>**)&Carray[0], 1, dCarray, 1, queue);
-        DEVICE_BATCH_cgemm( queue.handle(), 
-                            transA_, transB_, 
-                            m_, n_, k_, 
-                            alpha[0], dAarray, ldda_, dBarray, lddb_, 
-                            beta[0],  dCarray, lddc_, 
-                            batch);
+        if (layout == Layout::RowMajor) {
+            // swap transA <=> transB, m <=> n, B <=> A
+            DEVICE_BATCH_cgemm( queue.handle(), 
+                                transB_, transA_, 
+                                n_, m_, k_, 
+                                alpha[0], dBarray, lddb_, dAarray, ldda_, 
+                                beta[0],  dCarray, lddc_, 
+                                batch);
+        }
+        else{
+            DEVICE_BATCH_cgemm( queue.handle(), 
+                                transA_, transB_, 
+                                m_, n_, k_, 
+                                alpha[0], dAarray, ldda_, dBarray, lddb_, 
+                                beta[0],  dCarray, lddc_, 
+                                batch);
+        }
     }
     else{
         for(size_t i = 0; i < batch; i++){
@@ -275,7 +313,7 @@ void blas::batch::gemm(
             std::complex<float>* dB_   = blas::batch::extract<std::complex<float>*>(Barray, i);
             std::complex<float>* dC_   = blas::batch::extract<std::complex<float>*>(Carray, i);
             blas::gemm(
-                Layout::ColMajor, transA_, transB_, m_, n_, k_, 
+                layout, transA_, transB_, m_, n_, k_, 
                 alpha_, dA_, lda_, 
                         dB_, ldb_, 
                 beta_,  dC_, ldc_, queue );
@@ -286,6 +324,7 @@ void blas::batch::gemm(
 // -----------------------------------------------------------------------------
 /// @ingroup gemm
 void blas::batch::gemm(
+    blas::Layout                 layout, 
     std::vector<blas::Op> const &transA,
     std::vector<blas::Op> const &transB,
     std::vector<int64_t>  const &m, 
@@ -299,12 +338,12 @@ void blas::batch::gemm(
     const size_t batch,                                   std::vector<int64_t>       &info, 
     blas::Queue &queue )
 {
-
+    blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if(info.size() > 0){
         // perform error checking
-        blas::batch::gemm_check< std::complex<double> >( transA, transB, 
+        blas::batch::gemm_check< std::complex<double> >( layout, transA, transB, 
                                         m, n, k, 
                                         alpha, Aarray, ldda, 
                                                Barray, lddb, 
@@ -346,12 +385,23 @@ void blas::batch::gemm(
         device_setvector< std::complex<double>* >(batch, (std::complex<double>**)&Aarray[0], 1, dAarray, 1, queue);
         device_setvector< std::complex<double>* >(batch, (std::complex<double>**)&Barray[0], 1, dBarray, 1, queue);
         device_setvector< std::complex<double>* >(batch, (std::complex<double>**)&Carray[0], 1, dCarray, 1, queue);
-        DEVICE_BATCH_zgemm( queue.handle(), 
-                            transA_, transB_, 
-                            m_, n_, k_, 
-                            alpha[0], dAarray, ldda_, dBarray, lddb_, 
-                            beta[0],  dCarray, lddc_, 
-                            batch);
+        if (layout == Layout::RowMajor) {
+            // swap transA <=> transB, m <=> n, B <=> A
+            DEVICE_BATCH_zgemm( queue.handle(), 
+                                transB_, transA_, 
+                                n_, m_, k_, 
+                                alpha[0], dBarray, lddb_, dAarray, ldda_, 
+                                beta[0],  dCarray, lddc_, 
+                                batch);
+        }
+        else{
+            DEVICE_BATCH_zgemm( queue.handle(), 
+                                transA_, transB_, 
+                                m_, n_, k_, 
+                                alpha[0], dAarray, ldda_, dBarray, lddb_, 
+                                beta[0],  dCarray, lddc_, 
+                                batch);
+        }
     }
     else{
         for(size_t i = 0; i < batch; i++){
@@ -369,7 +419,7 @@ void blas::batch::gemm(
             std::complex<double>* dB_   = blas::batch::extract<std::complex<double>*>(Barray, i);
             std::complex<double>* dC_   = blas::batch::extract<std::complex<double>*>(Carray, i);
             blas::gemm(
-                Layout::ColMajor, transA_, transB_, m_, n_, k_, 
+                layout, transA_, transB_, m_, n_, k_, 
                 alpha_, dA_, lda_, 
                         dB_, ldb_, 
                 beta_,  dC_, ldc_, queue );

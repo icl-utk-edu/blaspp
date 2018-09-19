@@ -6,6 +6,7 @@
 // -----------------------------------------------------------------------------
 /// @ingroup trsm
 void blas::batch::trsm(
+    blas::Layout                   layout, 
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
@@ -18,11 +19,12 @@ void blas::batch::trsm(
     const size_t batch,                    std::vector<int64_t>       &info, 
     blas::Queue &queue )
 {
+    blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if(info.size() > 0){
         // perform error checking
-        blas::batch::trsm_check<float>( side, uplo, trans, diag,  
+        blas::batch::trsm_check<float>( layout, side, uplo, trans, diag,  
                                         m, n, 
                                         alpha, Aarray, ldda, 
                                                Barray, lddb, 
@@ -44,15 +46,25 @@ void blas::batch::trsm(
     blas::set_device( queue.device() );
     if( fixed_size ) {
         // call the vendor routine
-        device_side_t   side_   = blas::device_side_const( side[0] );
-        device_uplo_t   uplo_   = blas::device_uplo_const( uplo[0] );
-        device_trans_t  trans_  = blas::device_trans_const( trans[0] );
-        device_diag_t   diag_   = blas::device_diag_const( diag[0] );
         device_blas_int m_      = (device_blas_int) m[0];
         device_blas_int n_      = (device_blas_int) n[0];
         device_blas_int ldda_   = (device_blas_int) ldda[0];
         device_blas_int lddb_   = (device_blas_int) lddb[0];
 
+        blas::Uplo luplo = uplo[0]; // local value
+        blas::Side lside = side[0]; // local value
+        if (layout == Layout::RowMajor) {
+            // swap lower <=> upper, left <=> right, m <=> n
+            luplo = (luplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
+            lside = (lside == Side::Left ? Side::Right : Side::Left);
+            std::swap( m_, n_ );
+        }
+
+        device_side_t   side_   = blas::device_side_const( lside );
+        device_uplo_t   uplo_   = blas::device_uplo_const( luplo );
+        device_trans_t  trans_  = blas::device_trans_const( trans[0] );
+        device_diag_t   diag_   = blas::device_diag_const( diag[0] );
+        
         // copy Aarray, Barray, and Carray to device 
         float **dAarray, **dBarray;
         dAarray = (float**)queue.devPtrArray;
@@ -79,7 +91,7 @@ void blas::batch::trsm(
             float* dA_   = blas::batch::extract<float*>(Aarray, i);
             float* dB_   = blas::batch::extract<float*>(Barray, i);
             blas::trsm(
-                Layout::ColMajor, side_, uplo_, trans_, diag_, m_, n_,  
+                layout, side_, uplo_, trans_, diag_, m_, n_,  
                 alpha_, dA_, lda_, 
                         dB_, ldb_, queue );
          }
@@ -90,6 +102,7 @@ void blas::batch::trsm(
 // -----------------------------------------------------------------------------
 /// @ingroup trsm
 void blas::batch::trsm(
+    blas::Layout                   layout, 
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
@@ -102,11 +115,12 @@ void blas::batch::trsm(
     const size_t batch,                     std::vector<int64_t>       &info, 
     blas::Queue &queue )
 {
+    blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if(info.size() > 0){
         // perform error checking
-        blas::batch::trsm_check<double>( side, uplo, trans, diag,  
+        blas::batch::trsm_check<double>( layout, side, uplo, trans, diag,  
                                         m, n, 
                                         alpha, Aarray, ldda, 
                                                Barray, lddb, 
@@ -127,15 +141,25 @@ void blas::batch::trsm(
     
     blas::set_device( queue.device() );
     if( fixed_size ) {
-            // call the vendor routine
-        device_side_t   side_   = blas::device_side_const( side[0] );
-        device_uplo_t   uplo_   = blas::device_uplo_const( uplo[0] );
-        device_trans_t  trans_  = blas::device_trans_const( trans[0] );
-        device_diag_t   diag_   = blas::device_diag_const( diag[0] );
+        // call the vendor routine
         device_blas_int m_      = (device_blas_int) m[0];
         device_blas_int n_      = (device_blas_int) n[0];
         device_blas_int ldda_   = (device_blas_int) ldda[0];
         device_blas_int lddb_   = (device_blas_int) lddb[0];
+
+        blas::Uplo luplo = uplo[0]; // local value
+        blas::Side lside = side[0]; // local value
+        if (layout == Layout::RowMajor) {
+            // swap lower <=> upper, left <=> right, m <=> n
+            luplo = (luplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
+            lside = (lside == Side::Left ? Side::Right : Side::Left);
+            std::swap( m_, n_ );
+        }
+
+        device_side_t   side_   = blas::device_side_const( lside );
+        device_uplo_t   uplo_   = blas::device_uplo_const( luplo );
+        device_trans_t  trans_  = blas::device_trans_const( trans[0] );
+        device_diag_t   diag_   = blas::device_diag_const( diag[0] );
 
         // copy Aarray, Barray, and Carray to device 
         double **dAarray, **dBarray;
@@ -163,7 +187,7 @@ void blas::batch::trsm(
             double* dA_   = blas::batch::extract<double*>(Aarray, i);
             double* dB_   = blas::batch::extract<double*>(Barray, i);
             blas::trsm(
-                Layout::ColMajor, side_, uplo_, trans_, diag_, m_, n_,  
+                layout, side_, uplo_, trans_, diag_, m_, n_,  
                 alpha_, dA_, lda_, 
                         dB_, ldb_, queue );
          }
@@ -174,6 +198,7 @@ void blas::batch::trsm(
 // -----------------------------------------------------------------------------
 /// @ingroup trsm
 void blas::batch::trsm(
+    blas::Layout                   layout, 
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
@@ -186,11 +211,12 @@ void blas::batch::trsm(
     const size_t batch,                     std::vector<int64_t>       &info, 
     blas::Queue &queue )
 {
+    blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if(info.size() > 0){
         // perform error checking
-        blas::batch::trsm_check<std::complex<float>>( side, uplo, trans, diag,  
+        blas::batch::trsm_check<std::complex<float>>( layout, side, uplo, trans, diag,  
                                         m, n, 
                                         alpha, Aarray, ldda, 
                                                Barray, lddb, 
@@ -212,14 +238,24 @@ void blas::batch::trsm(
     blas::set_device( queue.device() );
     if( fixed_size ) {
         // call the vendor routine
-        device_side_t   side_   = blas::device_side_const( side[0] );
-        device_uplo_t   uplo_   = blas::device_uplo_const( uplo[0] );
-        device_trans_t  trans_  = blas::device_trans_const( trans[0] );
-        device_diag_t   diag_   = blas::device_diag_const( diag[0] );
         device_blas_int m_      = (device_blas_int) m[0];
         device_blas_int n_      = (device_blas_int) n[0];
         device_blas_int ldda_   = (device_blas_int) ldda[0];
         device_blas_int lddb_   = (device_blas_int) lddb[0];
+
+        blas::Uplo luplo = uplo[0]; // local value
+        blas::Side lside = side[0]; // local value
+        if (layout == Layout::RowMajor) {
+            // swap lower <=> upper, left <=> right, m <=> n
+            luplo = (luplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
+            lside = (lside == Side::Left ? Side::Right : Side::Left);
+            std::swap( m_, n_ );
+        }
+
+        device_side_t   side_   = blas::device_side_const( lside );
+        device_uplo_t   uplo_   = blas::device_uplo_const( luplo );
+        device_trans_t  trans_  = blas::device_trans_const( trans[0] );
+        device_diag_t   diag_   = blas::device_diag_const( diag[0] );
 
         // copy Aarray, Barray, and Carray to device 
         std::complex<float> **dAarray, **dBarray;
@@ -247,7 +283,7 @@ void blas::batch::trsm(
             std::complex<float>* dA_   = blas::batch::extract<std::complex<float>*>(Aarray, i);
             std::complex<float>* dB_   = blas::batch::extract<std::complex<float>*>(Barray, i);
             blas::trsm(
-                Layout::ColMajor, side_, uplo_, trans_, diag_, m_, n_,  
+                layout, side_, uplo_, trans_, diag_, m_, n_,  
                 alpha_, dA_, lda_, 
                         dB_, ldb_, queue );
          }
@@ -258,6 +294,7 @@ void blas::batch::trsm(
 // -----------------------------------------------------------------------------
 /// @ingroup trsm
 void blas::batch::trsm(
+    blas::Layout                   layout, 
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
@@ -270,11 +307,12 @@ void blas::batch::trsm(
     const size_t batch,                     std::vector<int64_t>       &info, 
     blas::Queue &queue )
 {
+    blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if(info.size() > 0){
         // perform error checking
-        blas::batch::trsm_check<std::complex<double>>( side, uplo, trans, diag,  
+        blas::batch::trsm_check<std::complex<double>>( layout, side, uplo, trans, diag,  
                                         m, n, 
                                         alpha, Aarray, ldda, 
                                                Barray, lddb, 
@@ -296,14 +334,24 @@ void blas::batch::trsm(
     blas::set_device( queue.device() );
     if( fixed_size ) {
         // call the vendor routine
-        device_side_t   side_   = blas::device_side_const( side[0] );
-        device_uplo_t   uplo_   = blas::device_uplo_const( uplo[0] );
-        device_trans_t  trans_  = blas::device_trans_const( trans[0] );
-        device_diag_t   diag_   = blas::device_diag_const( diag[0] );
         device_blas_int m_      = (device_blas_int) m[0];
         device_blas_int n_      = (device_blas_int) n[0];
         device_blas_int ldda_   = (device_blas_int) ldda[0];
         device_blas_int lddb_   = (device_blas_int) lddb[0];
+
+        blas::Uplo luplo = uplo[0]; // local value
+        blas::Side lside = side[0]; // local value
+        if (layout == Layout::RowMajor) {
+            // swap lower <=> upper, left <=> right, m <=> n
+            luplo = (luplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
+            lside = (lside == Side::Left ? Side::Right : Side::Left);
+            std::swap( m_, n_ );
+        }
+
+        device_side_t   side_   = blas::device_side_const( lside );
+        device_uplo_t   uplo_   = blas::device_uplo_const( luplo );
+        device_trans_t  trans_  = blas::device_trans_const( trans[0] );
+        device_diag_t   diag_   = blas::device_diag_const( diag[0] );
 
         // copy Aarray, Barray, and Carray to device 
         std::complex<double> **dAarray, **dBarray;
@@ -331,7 +379,7 @@ void blas::batch::trsm(
             std::complex<double>* dA_   = blas::batch::extract<std::complex<double>*>(Aarray, i);
             std::complex<double>* dB_   = blas::batch::extract<std::complex<double>*>(Barray, i);
             blas::trsm(
-                Layout::ColMajor, side_, uplo_, trans_, diag_, m_, n_,  
+                layout, side_, uplo_, trans_, diag_, m_, n_,  
                 alpha_, dA_, lda_, 
                         dB_, ldb_, queue );
          }

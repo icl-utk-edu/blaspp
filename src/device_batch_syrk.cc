@@ -6,6 +6,7 @@
 // -----------------------------------------------------------------------------
 /// @ingroup syrk
 void blas::batch::syrk(
+    blas::Layout                   layout, 
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
     std::vector<int64_t>    const &n, 
@@ -17,12 +18,13 @@ void blas::batch::syrk(
     const size_t batch,                    std::vector<int64_t>       &info, 
     blas::Queue &queue )
 {
+    blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if(info.size() > 0){
         // perform error checking
         blas::batch::syrk_check<float>( 
-                        uplo, trans, 
+                        layout, uplo, trans, 
                         n, k, 
                         alpha, Aarray, ldda, 
                         beta,  Carray, lddc, 
@@ -42,7 +44,7 @@ void blas::batch::syrk(
         float* dA_   = blas::batch::extract<float*>(Aarray, i);
         float* dC_   = blas::batch::extract<float*>(Carray, i);
         blas::syrk(
-            Layout::ColMajor, uplo_, trans_, n_, k_, 
+            layout, uplo_, trans_, n_, k_, 
             alpha_, dA_, lda_ , 
             beta_,  dC_, ldc_ , queue );
     }
@@ -51,6 +53,7 @@ void blas::batch::syrk(
 // -----------------------------------------------------------------------------
 /// @ingroup syrk
 void blas::batch::syrk(
+    blas::Layout                   layout, 
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
     std::vector<int64_t>     const &n, 
@@ -62,12 +65,13 @@ void blas::batch::syrk(
     const size_t batch,                     std::vector<int64_t>       &info, 
     blas::Queue &queue )
 {
+    blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if(info.size() > 0){
         // perform error checking
         blas::batch::syrk_check<double>( 
-                        uplo, trans, 
+                        layout, uplo, trans, 
                         n, k, 
                         alpha, Aarray, ldda, 
                         beta,  Carray, lddc, 
@@ -87,7 +91,7 @@ void blas::batch::syrk(
         double* dA_   = blas::batch::extract<double*>(Aarray, i);
         double* dC_   = blas::batch::extract<double*>(Carray, i);
         blas::syrk(
-            Layout::ColMajor, uplo_, trans_, n_, k_, 
+            layout, uplo_, trans_, n_, k_, 
             alpha_, dA_, lda_ , 
             beta_,  dC_, ldc_ , queue );
     }
@@ -96,6 +100,7 @@ void blas::batch::syrk(
 // -----------------------------------------------------------------------------
 /// @ingroup syrk
 void blas::batch::syrk(
+    blas::Layout                   layout, 
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
     std::vector<int64_t>     const &n, 
@@ -107,12 +112,13 @@ void blas::batch::syrk(
     const size_t batch, std::vector<int64_t>       &info, 
     blas::Queue &queue )
 {
+    blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if(info.size() > 0){
         // perform error checking
         blas::batch::syrk_check<std::complex<float>>( 
-                        uplo, trans, 
+                        layout, uplo, trans, 
                         n, k, 
                         alpha, Aarray, ldda, 
                         beta,  Carray, lddc, 
@@ -132,7 +138,7 @@ void blas::batch::syrk(
         std::complex<float>* dA_   = blas::batch::extract<std::complex<float>*>(Aarray, i);
         std::complex<float>* dC_   = blas::batch::extract<std::complex<float>*>(Carray, i);
         blas::syrk(
-            Layout::ColMajor, uplo_, trans_, n_, k_, 
+            layout, uplo_, trans_, n_, k_, 
             alpha_, dA_, lda_ , 
             beta_,  dC_, ldc_ , queue );
     }
@@ -141,6 +147,7 @@ void blas::batch::syrk(
 // -----------------------------------------------------------------------------
 /// @ingroup syrk
 void blas::batch::syrk(
+    blas::Layout                   layout, 
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
     std::vector<int64_t>     const &n, 
@@ -152,12 +159,13 @@ void blas::batch::syrk(
     const size_t batch, std::vector<int64_t>       &info, 
     blas::Queue &queue )
 {
+    blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if(info.size() > 0){
         // perform error checking
         blas::batch::syrk_check<std::complex<double>>( 
-                        uplo, trans, 
+                        layout, uplo, trans, 
                         n, k, 
                         alpha, Aarray, ldda, 
                         beta,  Carray, lddc, 
@@ -177,7 +185,7 @@ void blas::batch::syrk(
         std::complex<double>* dA_   = blas::batch::extract<std::complex<double>*>(Aarray, i);
         std::complex<double>* dC_   = blas::batch::extract<std::complex<double>*>(Carray, i);
         blas::syrk(
-            Layout::ColMajor, uplo_, trans_, n_, k_, 
+            layout, uplo_, trans_, n_, k_, 
             alpha_, dA_, lda_ , 
             beta_,  dC_, ldc_ , queue );
     }
