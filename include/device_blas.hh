@@ -475,6 +475,7 @@ namespace batch{
 // -----------------------------------------------------------------------------
 // batch gemm
 void gemm(
+    blas::Layout                layout, 
     std::vector<blas::Op> const &transA,
     std::vector<blas::Op> const &transB,
     std::vector<int64_t>  const &m, 
@@ -489,6 +490,7 @@ void gemm(
     blas::Queue &queue );
 
 void gemm(
+    blas::Layout                layout, 
     std::vector<blas::Op> const &transA,
     std::vector<blas::Op> const &transB,
     std::vector<int64_t>  const &m, 
@@ -503,6 +505,7 @@ void gemm(
     blas::Queue &queue );
 
 void gemm(
+    blas::Layout                layout, 
     std::vector<blas::Op> const &transA,
     std::vector<blas::Op> const &transB,
     std::vector<int64_t>  const &m, 
@@ -517,6 +520,7 @@ void gemm(
     blas::Queue &queue );
 
 void gemm(
+    blas::Layout                layout, 
     std::vector<blas::Op> const &transA,
     std::vector<blas::Op> const &transB,
     std::vector<int64_t>  const &m, 
@@ -533,6 +537,7 @@ void gemm(
 // -----------------------------------------------------------------------------
 // batch trsm
 void trsm(
+    blas::Layout                  layout, 
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
@@ -546,6 +551,7 @@ void trsm(
     blas::Queue &queue );
 
 void trsm(
+    blas::Layout                  layout, 
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
@@ -559,6 +565,7 @@ void trsm(
     blas::Queue &queue );
 
 void trsm(
+    blas::Layout                  layout, 
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
@@ -572,6 +579,7 @@ void trsm(
     blas::Queue &queue );
 
 void trsm(
+    blas::Layout                  layout, 
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
@@ -587,6 +595,7 @@ void trsm(
 // -----------------------------------------------------------------------------
 // batch trmm
 void trmm(
+    blas::Layout                  layout, 
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
@@ -600,6 +609,7 @@ void trmm(
     blas::Queue &queue );
 
 void trmm(
+    blas::Layout                  layout, 
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
@@ -613,6 +623,7 @@ void trmm(
     blas::Queue &queue );
 
 void trmm(
+    blas::Layout                  layout, 
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
@@ -626,6 +637,7 @@ void trmm(
     blas::Queue &queue );
 
 void trmm(
+    blas::Layout                  layout, 
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
@@ -641,6 +653,7 @@ void trmm(
 // -----------------------------------------------------------------------------
 // batch hemm
 void hemm(
+    blas::Layout                  layout, 
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<int64_t>    const &m, 
@@ -654,6 +667,7 @@ void hemm(
     blas::Queue &queue );
 
 void hemm(
+    blas::Layout                   layout, 
     std::vector<blas::Side>  const &side,
     std::vector<blas::Uplo>  const &uplo,
     std::vector<int64_t>     const &m, 
@@ -667,6 +681,7 @@ void hemm(
     blas::Queue &queue );
 
 void hemm(
+    blas::Layout                   layout, 
     std::vector<blas::Side>  const &side,
     std::vector<blas::Uplo>  const &uplo,
     std::vector<int64_t>     const &m, 
@@ -680,6 +695,7 @@ void hemm(
     blas::Queue &queue );
 
 void hemm(
+    blas::Layout                   layout, 
     std::vector<blas::Side>  const &side,
     std::vector<blas::Uplo>  const &uplo,
     std::vector<int64_t>     const &m, 
@@ -695,6 +711,7 @@ void hemm(
 // -----------------------------------------------------------------------------
 // batch symm
 void symm(
+    blas::Layout                  layout, 
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<int64_t>    const &m, 
@@ -708,6 +725,7 @@ void symm(
     blas::Queue &queue );
 
 void symm(
+    blas::Layout                   layout, 
     std::vector<blas::Side>  const &side,
     std::vector<blas::Uplo>  const &uplo,
     std::vector<int64_t>     const &m, 
@@ -721,6 +739,7 @@ void symm(
     blas::Queue &queue );
 
 void symm(
+    blas::Layout                   layout, 
     std::vector<blas::Side>  const &side,
     std::vector<blas::Uplo>  const &uplo,
     std::vector<int64_t>     const &m, 
@@ -734,6 +753,7 @@ void symm(
     blas::Queue &queue );
 
 void symm(
+    blas::Layout                   layout, 
     std::vector<blas::Side>  const &side,
     std::vector<blas::Uplo>  const &uplo,
     std::vector<int64_t>     const &m, 
@@ -749,6 +769,7 @@ void symm(
 // -----------------------------------------------------------------------------
 // batch herk
 void herk(
+    blas::Layout                  layout, 
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
     std::vector<int64_t>    const &n, 
@@ -761,6 +782,7 @@ void herk(
     blas::Queue &queue );
 
 void herk(
+    blas::Layout                   layout, 
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
     std::vector<int64_t>     const &n, 
@@ -773,6 +795,7 @@ void herk(
     blas::Queue &queue );
 
 void herk(
+    blas::Layout                   layout, 
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
     std::vector<int64_t>     const &n, 
@@ -785,6 +808,7 @@ void herk(
     blas::Queue &queue );
 
 void herk(
+    blas::Layout                   layout, 
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
     std::vector<int64_t>     const &n, 
@@ -799,6 +823,7 @@ void herk(
 // -----------------------------------------------------------------------------
 // batch syrk
 void syrk(
+    blas::Layout                  layout, 
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
     std::vector<int64_t>    const &n, 
@@ -811,6 +836,7 @@ void syrk(
     blas::Queue &queue );
 
 void syrk(
+    blas::Layout                   layout, 
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
     std::vector<int64_t>     const &n, 
@@ -823,6 +849,7 @@ void syrk(
     blas::Queue &queue );
 
 void syrk(
+    blas::Layout                   layout, 
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
     std::vector<int64_t>     const &n, 
@@ -835,6 +862,7 @@ void syrk(
     blas::Queue &queue );
 
 void syrk(
+    blas::Layout                   layout, 
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
     std::vector<int64_t>     const &n, 
@@ -849,6 +877,7 @@ void syrk(
 // -----------------------------------------------------------------------------
 // batch her2k
 void her2k(
+    blas::Layout                  layout, 
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
     std::vector<int64_t>    const &n, 
@@ -862,6 +891,7 @@ void her2k(
     blas::Queue &queue );
 
 void her2k(
+    blas::Layout                   layout, 
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
     std::vector<int64_t>     const &n, 
@@ -875,6 +905,7 @@ void her2k(
     blas::Queue &queue );
 
 void her2k(
+    blas::Layout                   layout, 
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
     std::vector<int64_t>     const &n, 
@@ -888,6 +919,7 @@ void her2k(
     blas::Queue &queue );
 
 void her2k(
+    blas::Layout                   layout, 
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
     std::vector<int64_t>     const &n, 
@@ -903,6 +935,7 @@ void her2k(
 // -----------------------------------------------------------------------------
 // batch syr2k
 void syr2k(
+    blas::Layout                  layout, 
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
     std::vector<int64_t>    const &n, 
@@ -916,6 +949,7 @@ void syr2k(
     blas::Queue &queue );
 
 void syr2k(
+    blas::Layout                   layout, 
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
     std::vector<int64_t>     const &n, 
@@ -929,6 +963,7 @@ void syr2k(
     blas::Queue &queue );
 
 void syr2k(
+    blas::Layout                   layout, 
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
     std::vector<int64_t>     const &n, 
@@ -942,6 +977,7 @@ void syr2k(
     blas::Queue &queue );
 
 void syr2k(
+    blas::Layout                   layout, 
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
     std::vector<int64_t>     const &n, 
