@@ -110,7 +110,7 @@ void gemm_check(
         // do a reduction that finds the first argument to encounter an error
         int64_t lerror = INTERNAL_INFO_DEFAULT; 
         #pragma omp parallel for reduction(max:lerror)
-        for(int64_t i = 0; i < batchCount; i++){
+        for(size_t i = 0; i < batchCount; i++){
             if( internal_info[i] == 0) continue;    // skip problems that passed error checks
             lerror = std::max(lerror, internal_info[i]);
         }
@@ -120,7 +120,7 @@ void gemm_check(
         delete[] internal_info; 
 
         // throw an exception if needed
-        blas_error_if( info[0] != 0);
+        blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
     else{
         int64_t info_ = 0;
@@ -128,7 +128,7 @@ void gemm_check(
         for(size_t i = 0; i < batchCount; i++){
             info_ += info[i];
         }
-        blas_error_if( info_ != 0 );
+        blas_error_if_msg( info_ != 0, "One or more non-zero entry in vector info");
     }
 }
 
@@ -222,7 +222,7 @@ void trsm_check(
         // do a reduction that finds the first argument to encounter an error
         int64_t lerror = INTERNAL_INFO_DEFAULT; 
         #pragma omp parallel for reduction(max:lerror)
-        for(int64_t i = 0; i < batchCount; i++){
+        for(size_t i = 0; i < batchCount; i++){
             if( internal_info[i] == 0) continue;    // skip problems that passed error checks
             lerror = std::max(lerror, internal_info[i]);
         }
@@ -232,7 +232,7 @@ void trsm_check(
         delete[] internal_info; 
 
         // throw an exception if needed
-        blas_error_if( info[0] != 0);
+         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
     else{
         int64_t info_ = 0;
@@ -240,7 +240,7 @@ void trsm_check(
         for(size_t i = 0; i < batchCount; i++){
             info_ += info[i];
         }
-        blas_error_if( info_ != 0 );
+         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
 }
 
@@ -334,7 +334,7 @@ void trmm_check(
         // do a reduction that finds the first argument to encounter an error
         int64_t lerror = INTERNAL_INFO_DEFAULT; 
         #pragma omp parallel for reduction(max:lerror)
-        for(int64_t i = 0; i < batchCount; i++){
+        for(size_t i = 0; i < batchCount; i++){
             if( internal_info[i] == 0) continue;    // skip problems that passed error checks
             lerror = std::max(lerror, internal_info[i]);
         }
@@ -344,7 +344,7 @@ void trmm_check(
         delete[] internal_info; 
 
         // throw an exception if needed
-        blas_error_if( info[0] != 0);
+         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
     else{
         int64_t info_ = 0;
@@ -352,7 +352,7 @@ void trmm_check(
         for(size_t i = 0; i < batchCount; i++){
             info_ += info[i];
         }
-        blas_error_if( info_ != 0 );
+         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
 }
 
@@ -456,7 +456,7 @@ void hemm_check(
         // do a reduction that finds the first argument to encounter an error
         int64_t lerror = INTERNAL_INFO_DEFAULT; 
         #pragma omp parallel for reduction(max:lerror)
-        for(int64_t i = 0; i < batchCount; i++){
+        for(size_t i = 0; i < batchCount; i++){
             if( internal_info[i] == 0) continue;    // skip problems that passed error checks
             lerror = std::max(lerror, internal_info[i]);
         }
@@ -466,7 +466,7 @@ void hemm_check(
         delete[] internal_info; 
 
         // throw an exception if needed
-        blas_error_if( info[0] != 0);
+         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
     else{
         int64_t info_ = 0;
@@ -474,7 +474,7 @@ void hemm_check(
         for(size_t i = 0; i < batchCount; i++){
             info_ += info[i];
         }
-        blas_error_if( info_ != 0 );
+         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
 }
 
@@ -564,7 +564,7 @@ void herk_check(
         // do a reduction that finds the first argument to encounter an error
         int64_t lerror = INTERNAL_INFO_DEFAULT; 
         #pragma omp parallel for reduction(max:lerror)
-        for(int64_t i = 0; i < batchCount; i++){
+        for(size_t i = 0; i < batchCount; i++){
             if( internal_info[i] == 0) continue;    // skip problems that passed error checks
             lerror = std::max(lerror, internal_info[i]);
         }
@@ -574,7 +574,7 @@ void herk_check(
         delete[] internal_info; 
 
         // throw an exception if needed
-        blas_error_if( info[0] != 0);
+         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
     else{
         int64_t info_ = 0;
@@ -582,7 +582,7 @@ void herk_check(
         for(size_t i = 0; i < batchCount; i++){
             info_ += info[i];
         }
-        blas_error_if( info_ != 0 );
+         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
 }
 
@@ -602,7 +602,7 @@ void symm_check(
         std::vector<T*>         const &C, std::vector<int64_t> const &ldc, 
         const size_t batchCount, std::vector<int64_t> &info)
 {
-    hemm_check(side, uplo, m, n, alpha, A, lda, B, ldb, beta, C, ldc, batchCount, info);
+    hemm_check(layout, side, uplo, m, n, alpha, A, lda, B, ldb, beta, C, ldc, batchCount, info);
 }
 
 // -----------------------------------------------------------------------------
@@ -691,7 +691,7 @@ void syrk_check(
         // do a reduction that finds the first argument to encounter an error
         int64_t lerror = INTERNAL_INFO_DEFAULT; 
         #pragma omp parallel for reduction(max:lerror)
-        for(int64_t i = 0; i < batchCount; i++){
+        for(size_t i = 0; i < batchCount; i++){
             if( internal_info[i] == 0) continue;    // skip problems that passed error checks
             lerror = std::max(lerror, internal_info[i]);
         }
@@ -701,7 +701,7 @@ void syrk_check(
         delete[] internal_info; 
 
         // throw an exception if needed
-        blas_error_if( info[0] != 0);
+         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
     else{
         int64_t info_ = 0;
@@ -709,7 +709,7 @@ void syrk_check(
         for(size_t i = 0; i < batchCount; i++){
             info_ += info[i];
         }
-        blas_error_if( info_ != 0 );
+         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
 }
 
@@ -813,7 +813,7 @@ void her2k_check(
         // do a reduction that finds the first argument to encounter an error
         int64_t lerror = INTERNAL_INFO_DEFAULT; 
         #pragma omp parallel for reduction(max:lerror)
-        for(int64_t i = 0; i < batchCount; i++){
+        for(size_t i = 0; i < batchCount; i++){
             if( internal_info[i] == 0) continue;    // skip problems that passed error checks
             lerror = std::max(lerror, internal_info[i]);
         }
@@ -823,7 +823,7 @@ void her2k_check(
         delete[] internal_info; 
 
         // throw an exception if needed
-        blas_error_if( info[0] != 0);
+         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
     else{
         int64_t info_ = 0;
@@ -831,7 +831,7 @@ void her2k_check(
         for(size_t i = 0; i < batchCount; i++){
             info_ += info[i];
         }
-        blas_error_if( info_ != 0 );
+         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
 }
 
@@ -935,7 +935,7 @@ void syr2k_check(
         // do a reduction that finds the first argument to encounter an error
         int64_t lerror = INTERNAL_INFO_DEFAULT; 
         #pragma omp parallel for reduction(max:lerror)
-        for(int64_t i = 0; i < batchCount; i++){
+        for(size_t i = 0; i < batchCount; i++){
             if( internal_info[i] == 0) continue;    // skip problems that passed error checks
             lerror = std::max(lerror, internal_info[i]);
         }
@@ -945,7 +945,7 @@ void syr2k_check(
         delete[] internal_info; 
 
         // throw an exception if needed
-        blas_error_if( info[0] != 0);
+         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
     else{
         int64_t info_ = 0;
@@ -953,7 +953,7 @@ void syr2k_check(
         for(size_t i = 0; i < batchCount; i++){
             info_ += info[i];
         }
-        blas_error_if( info_ != 0 );
+         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
 }
 
