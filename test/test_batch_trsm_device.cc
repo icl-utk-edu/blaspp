@@ -17,6 +17,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
     typedef long long lld;
 
     // get & mark input values
+    blas::Layout layout = params.layout.value();
     blas::Side side_ = params.side.value();
     blas::Uplo uplo_ = params.uplo.value();
     blas::Op trans_  = params.trans.value();
@@ -24,7 +25,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
     scalar_t alpha_  = params.alpha.value();
     int64_t m_       = params.dim.m();
     int64_t n_       = params.dim.n();
-    int64_t batch    = params.batch.value();
+    size_t batch     = params.batch.value();
     int64_t device  = params.device.value();
     int64_t align    = params.align.value();
     int64_t verbose  = params.verbose.value();
@@ -42,6 +43,8 @@ void test_device_batch_trsm_work( Params& params, bool run )
     int64_t Am    = (side_ == Side::Left ? m_ : n_);
     int64_t Bm    = m_;
     int64_t Bn    = n_;
+    if (layout == Layout::RowMajor)
+        std::swap( Bm, Bn );
     int64_t lda_  = roundup( Am, align );
     int64_t ldb_  = roundup( Bm, align );
     size_t size_A = size_t(lda_)*Am;
@@ -65,7 +68,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
     std::vector<TB*>   dBarray( batch );
     std::vector<TB*> Brefarray( batch );
 
-    for(int i = 0; i < batch; i++){
+    for(size_t i = 0; i < batch; i++){
          Aarray[i]   =  A   + i * size_A;
          Barray[i]   =  B   + i * size_B;
         dAarray[i]   = dA   + i * size_A;
@@ -107,7 +110,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
 
     // Factor A into L L^H or U U^H to get a well-conditioned triangular matrix.
     // If diag_ == Unit, the diag_onal is replaced; this is still well-conditioned.
-    for(int s = 0; s < batch; s++){
+    for(size_t s = 0; s < batch; s++){
         TA* pA = Aarray[s];
         // First, brute force positive definiteness.
         for (int i = 0; i < Am; ++i) {
@@ -117,6 +120,18 @@ void test_device_batch_trsm_work( Params& params, bool run )
         lapack_potrf( uplo2str(uplo_), Am, pA, lda_, &potrf_info );
         assert( potrf_info == 0 );
     }
+
+    // if row-major, transpose A
+    if (layout == Layout::RowMajor) {
+        for(size_t s = 0; s < batch; s++){
+            for (int64_t j = 0; j < Am; ++j) {
+                for (int64_t i = 0; i < j; ++i) {
+                    std::swap( Aarray[s][ i + j*lda_ ], Aarray[s][ j + i*lda_ ] );
+                }
+            }
+        }
+    }
+
     blas::device_setmatrix(Am, batch * Am, A, lda_, dA, lda_, queue);
     blas::device_setmatrix(Bm, batch * Bn, B, ldb_, dB, ldb_, queue);
     queue.sync();
@@ -125,7 +140,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
     real_t work[1];
     real_t* Anorm = new real_t[ batch ];
     real_t* Bnorm = new real_t[ batch ];
-    for(int s = 0; s < batch; s++){
+    for(size_t s = 0; s < batch; s++){
         Anorm[ s ] = lapack_lantr( "f", uplo2str(uplo_), diag2str(diag_), Am, Am, Aarray[s], lda_, work );
         Bnorm[ s ] = lapack_lange( "f", Bm, Bn, Barray[s], ldb_, work );
     }
@@ -136,7 +151,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
     // run test
     libtest::flush_cache( params.cache.value() );
     double time = get_wtime();
-    blas::batch::trsm( side, uplo, trans, diag, m, n, alpha, dAarray, ldda, dBarray, lddb, 
+    blas::batch::trsm( layout, side, uplo, trans, diag, m, n, alpha, dAarray, ldda, dBarray, lddb, 
                        batch, info, queue );
     queue.sync();
     time = get_wtime() - time;
@@ -152,8 +167,8 @@ void test_device_batch_trsm_work( Params& params, bool run )
         // run reference
         libtest::flush_cache( params.cache.value() );
         time = get_wtime();
-        for(int i = 0; i < batch; i++){
-            cblas_trsm( CblasColumnMajor,
+        for(size_t i = 0; i < batch; i++){
+            cblas_trsm( cblas_layout_const(layout),
                         cblas_side_const(side_),
                         cblas_uplo_const(uplo_),
                         cblas_trans_const(trans_),
@@ -170,7 +185,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
         // beta = 0, Cnorm = 0 (initial).
         real_t err, error = 0;
         bool ok, okay = true;
-        for(int i = 0; i < batch; i++){
+        for(size_t i = 0; i < batch; i++){
             check_gemm( Bm, Bn, Am, alpha_, scalar_t(0), Anorm[i], Bnorm[i], real_t(0),
                         Brefarray[i], ldb_, Barray[i], ldb_, verbose, &err, &ok );
             error = max(error, err);

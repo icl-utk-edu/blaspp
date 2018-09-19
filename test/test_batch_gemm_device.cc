@@ -17,6 +17,7 @@ void test_device_batch_gemm_work( Params& params, bool run )
     typedef long long lld;
 
     // get & mark input values
+    blas::Layout layout = params.layout.value();
     blas::Op transA_    = params.transA.value();
     blas::Op transB_    = params.transB.value();
     scalar_t alpha_     = params.alpha.value();
@@ -44,6 +45,11 @@ void test_device_batch_gemm_work( Params& params, bool run )
     int64_t Bn = (transB_ == Op::NoTrans ? n_ : k_);
     int64_t Cm = m_;
     int64_t Cn = n_;
+    if (layout == Layout::RowMajor) {
+        std::swap( Am, An );
+        std::swap( Bm, Bn );
+        std::swap( Cm, Cn );
+    }
     
     int64_t lda_ = roundup( Am, align );
     int64_t ldb_ = roundup( Bm, align );
@@ -125,7 +131,7 @@ void test_device_batch_gemm_work( Params& params, bool run )
     // run test
     libtest::flush_cache( params.cache.value() );
     double time = get_wtime();
-    blas::batch::gemm( transA, transB, m, n, k, 
+    blas::batch::gemm( layout, transA, transB, m, n, k, 
                        alpha, dAarray, ldda, dBarray, lddb, beta, dCarray, lddc, 
                        batch, info, queue );
     queue.sync();
@@ -142,7 +148,7 @@ void test_device_batch_gemm_work( Params& params, bool run )
         libtest::flush_cache( params.cache.value() );
         time = get_wtime();
         for(size_t s = 0; s < batch; s++){
-            cblas_gemm( CblasColMajor,
+            cblas_gemm( cblas_layout_const(layout),
                         cblas_trans_const(transA_),
                         cblas_trans_const(transB_),
                         m_, n_, k_, alpha_, Aarray[s], lda_, Barray[s], ldb_, beta_, Crefarray[s], ldc_ );
