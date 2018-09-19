@@ -6,6 +6,7 @@
 // -----------------------------------------------------------------------------
 /// @ingroup trsm
 void blas::batch::trsm(
+    blas::Layout                layout, 
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
@@ -21,7 +22,7 @@ void blas::batch::trsm(
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if(info.size() > 0){
         // perform error checking
-        blas::batch::trsm_check<float>( side, uplo, trans, diag,  
+        blas::batch::trsm_check<float>( layout, side, uplo, trans, diag,  
                                         m, n, 
                                         alpha, Aarray, ldda, 
                                                Barray, lddb, 
@@ -42,7 +43,7 @@ void blas::batch::trsm(
        float* dA_   = blas::batch::extract<float*>(Aarray, i);
        float* dB_   = blas::batch::extract<float*>(Barray, i);
        blas::trsm(
-           Layout::ColMajor, side_, uplo_, trans_, diag_, m_, n_,  
+           layout, side_, uplo_, trans_, diag_, m_, n_,  
            alpha_, dA_, lda_, 
                    dB_, ldb_ );
     }
@@ -52,6 +53,7 @@ void blas::batch::trsm(
 // -----------------------------------------------------------------------------
 /// @ingroup trsm
 void blas::batch::trsm(
+    blas::Layout                layout, 
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
@@ -67,11 +69,11 @@ void blas::batch::trsm(
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if(info.size() > 0){
         // perform error checking
-        blas::batch::trsm_check<double>( side, uplo, trans, diag,  
-                                        m, n, 
-                                        alpha, Aarray, ldda, 
-                                               Barray, lddb, 
-                                        batch, info );
+        blas::batch::trsm_check<double>( layout, side, uplo, trans, diag,  
+                                         m, n, 
+                                         alpha, Aarray, ldda, 
+                                                Barray, lddb, 
+                                         batch, info );
     }
 
     #pragma omp parallel for schedule(dynamic)
@@ -88,7 +90,7 @@ void blas::batch::trsm(
        double* dA_   = blas::batch::extract<double*>(Aarray, i);
        double* dB_   = blas::batch::extract<double*>(Barray, i);
        blas::trsm(
-           Layout::ColMajor, side_, uplo_, trans_, diag_, m_, n_,  
+           layout, side_, uplo_, trans_, diag_, m_, n_,  
            alpha_, dA_, lda_, 
                    dB_, ldb_ );
     }
@@ -98,6 +100,7 @@ void blas::batch::trsm(
 // -----------------------------------------------------------------------------
 /// @ingroup trsm
 void blas::batch::trsm(
+    blas::Layout                layout, 
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
@@ -113,7 +116,8 @@ void blas::batch::trsm(
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if(info.size() > 0){
         // perform error checking
-        blas::batch::trsm_check<std::complex<float>>( side, uplo, trans, diag,  
+        blas::batch::trsm_check<std::complex<float>>( 
+                                        layout, side, uplo, trans, diag,  
                                         m, n, 
                                         alpha, Aarray, ldda, 
                                                Barray, lddb, 
@@ -134,7 +138,7 @@ void blas::batch::trsm(
        std::complex<float>* dA_   = blas::batch::extract<std::complex<float>*>(Aarray, i);
        std::complex<float>* dB_   = blas::batch::extract<std::complex<float>*>(Barray, i);
        blas::trsm(
-           Layout::ColMajor, side_, uplo_, trans_, diag_, m_, n_,  
+           layout, side_, uplo_, trans_, diag_, m_, n_,  
            alpha_, dA_, lda_, 
                    dB_, ldb_ );
     }
@@ -144,6 +148,7 @@ void blas::batch::trsm(
 // -----------------------------------------------------------------------------
 /// @ingroup trsm
 void blas::batch::trsm(
+    blas::Layout                layout, 
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
@@ -159,7 +164,8 @@ void blas::batch::trsm(
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if(info.size() > 0){
         // perform error checking
-        blas::batch::trsm_check<std::complex<double>>( side, uplo, trans, diag,  
+        blas::batch::trsm_check<std::complex<double>>( 
+                                        layout, side, uplo, trans, diag,  
                                         m, n, 
                                         alpha, Aarray, ldda, 
                                                Barray, lddb, 
@@ -180,7 +186,7 @@ void blas::batch::trsm(
        std::complex<double>* dA_   = blas::batch::extract<std::complex<double>*>(Aarray, i);
        std::complex<double>* dB_   = blas::batch::extract<std::complex<double>*>(Barray, i);
        blas::trsm(
-           Layout::ColMajor, side_, uplo_, trans_, diag_, m_, n_,  
+           layout, side_, uplo_, trans_, diag_, m_, n_,  
            alpha_, dA_, lda_, 
                    dB_, ldb_ );
     }

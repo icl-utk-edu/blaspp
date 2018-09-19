@@ -6,6 +6,7 @@
 // -----------------------------------------------------------------------------
 /// @ingroup symm
 void blas::batch::symm(
+    blas::Layout                layout, 
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<int64_t>    const &m, 
@@ -22,7 +23,7 @@ void blas::batch::symm(
     if(info.size() > 0){
         // perform error checking
         blas::batch::symm_check<float>( 
-                        side, uplo, 
+                        layout, side, uplo, 
                         m, n, 
                         alpha, Aarray, ldda, 
                                Barray, lddb, 
@@ -45,7 +46,7 @@ void blas::batch::symm(
         float* dB_   = blas::batch::extract<float*>(Barray, i);
         float* dC_   = blas::batch::extract<float*>(Carray, i);
         blas::symm(
-            Layout::ColMajor, side_, uplo_, m_, n_, 
+            layout, side_, uplo_, m_, n_, 
             alpha_, dA_, lda_ , 
                     dB_, ldb_ , 
             beta_,  dC_, ldc_ );
@@ -55,6 +56,7 @@ void blas::batch::symm(
 // -----------------------------------------------------------------------------
 /// @ingroup symm
 void blas::batch::symm(
+    blas::Layout                layout, 
     std::vector<blas::Side>  const &side,
     std::vector<blas::Uplo>  const &uplo,
     std::vector<int64_t>     const &m, 
@@ -71,7 +73,7 @@ void blas::batch::symm(
     if(info.size() > 0){
         // perform error checking
         blas::batch::symm_check<double>( 
-                        side, uplo, 
+                        layout, side, uplo, 
                         m, n, 
                         alpha, Aarray, ldda, 
                                Barray, lddb, 
@@ -94,7 +96,7 @@ void blas::batch::symm(
         double* dB_   = blas::batch::extract<double*>(Barray, i);
         double* dC_   = blas::batch::extract<double*>(Carray, i);
         blas::symm(
-            Layout::ColMajor, side_, uplo_, m_, n_, 
+            layout, side_, uplo_, m_, n_, 
             alpha_, dA_, lda_ , 
                     dB_, ldb_ , 
             beta_,  dC_, ldc_ );
@@ -104,6 +106,7 @@ void blas::batch::symm(
 // -----------------------------------------------------------------------------
 /// @ingroup symm
 void blas::batch::symm(
+    blas::Layout                layout, 
     std::vector<blas::Side>  const &side,
     std::vector<blas::Uplo>  const &uplo,
     std::vector<int64_t>     const &m, 
@@ -120,7 +123,7 @@ void blas::batch::symm(
     if(info.size() > 0){
         // perform error checking
         blas::batch::symm_check<std::complex<float>>( 
-                        side, uplo, 
+                        layout, side, uplo, 
                         m, n, 
                         alpha, Aarray, ldda, 
                                Barray, lddb, 
@@ -143,7 +146,7 @@ void blas::batch::symm(
         std::complex<float>* dB_   = blas::batch::extract<std::complex<float>*>(Barray, i);
         std::complex<float>* dC_   = blas::batch::extract<std::complex<float>*>(Carray, i);
         blas::symm(
-            Layout::ColMajor, side_, uplo_, m_, n_, 
+            layout, side_, uplo_, m_, n_, 
             alpha_, dA_, lda_ , 
                     dB_, ldb_ , 
             beta_,  dC_, ldc_ );
@@ -153,6 +156,7 @@ void blas::batch::symm(
 // -----------------------------------------------------------------------------
 /// @ingroup symm
 void blas::batch::symm(
+    blas::Layout                layout, 
     std::vector<blas::Side>  const &side,
     std::vector<blas::Uplo>  const &uplo,
     std::vector<int64_t>     const &m, 
@@ -169,7 +173,7 @@ void blas::batch::symm(
     if(info.size() > 0){
         // perform error checking
         blas::batch::symm_check<std::complex<double>>( 
-                        side, uplo, 
+                        layout, side, uplo, 
                         m, n, 
                         alpha, Aarray, ldda, 
                                Barray, lddb, 
@@ -192,7 +196,7 @@ void blas::batch::symm(
         std::complex<double>* dB_   = blas::batch::extract<std::complex<double>*>(Barray, i);
         std::complex<double>* dC_   = blas::batch::extract<std::complex<double>*>(Carray, i);
         blas::symm(
-            Layout::ColMajor, side_, uplo_, m_, n_, 
+            layout, side_, uplo_, m_, n_, 
             alpha_, dA_, lda_ , 
                     dB_, ldb_ , 
             beta_,  dC_, ldc_ );

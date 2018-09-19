@@ -6,6 +6,7 @@
 // -----------------------------------------------------------------------------
 /// @ingroup syr2k
 void blas::batch::syr2k(
+    blas::Layout                layout, 
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
     std::vector<int64_t>    const &n, 
@@ -22,7 +23,7 @@ void blas::batch::syr2k(
     if(info.size() > 0){
         // perform error checking
         blas::batch::syr2k_check<float>( 
-                        uplo, trans, 
+                        layout, uplo, trans, 
                         n, k, 
                         alpha, Aarray, ldda, 
                                Barray, lddb, 
@@ -45,7 +46,7 @@ void blas::batch::syr2k(
         float* dB_   = blas::batch::extract<float*>(Barray, i);
         float* dC_   = blas::batch::extract<float*>(Carray, i);
         blas::syr2k(
-            Layout::ColMajor, uplo_, trans_, n_, k_, 
+            layout, uplo_, trans_, n_, k_, 
             alpha_, dA_, lda_ , 
                     dB_, ldb_ , 
             beta_,  dC_, ldc_ );
@@ -55,6 +56,7 @@ void blas::batch::syr2k(
 // -----------------------------------------------------------------------------
 /// @ingroup syr2k
 void blas::batch::syr2k(
+    blas::Layout                layout, 
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
     std::vector<int64_t>     const &n, 
@@ -71,7 +73,7 @@ void blas::batch::syr2k(
     if(info.size() > 0){
         // perform error checking
         blas::batch::syr2k_check<double>( 
-                        uplo, trans, 
+                        layout, uplo, trans, 
                         n, k, 
                         alpha, Aarray, ldda, 
                                Barray, lddb, 
@@ -94,7 +96,7 @@ void blas::batch::syr2k(
         double* dB_   = blas::batch::extract<double*>(Barray, i);
         double* dC_   = blas::batch::extract<double*>(Carray, i);
         blas::syr2k(
-            Layout::ColMajor, uplo_, trans_, n_, k_, 
+            layout, uplo_, trans_, n_, k_, 
             alpha_, dA_, lda_ , 
                     dB_, ldb_ , 
             beta_,  dC_, ldc_ );
@@ -104,6 +106,7 @@ void blas::batch::syr2k(
 // -----------------------------------------------------------------------------
 /// @ingroup syr2k
 void blas::batch::syr2k(
+    blas::Layout                layout, 
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
     std::vector<int64_t>     const &n, 
@@ -120,7 +123,7 @@ void blas::batch::syr2k(
     if(info.size() > 0){
         // perform error checking
         blas::batch::syr2k_check<std::complex<float>>( 
-                        uplo, trans, 
+                        layout, uplo, trans, 
                         n, k, 
                         alpha, Aarray, ldda, 
                                Barray, lddb, 
@@ -143,7 +146,7 @@ void blas::batch::syr2k(
         std::complex<float>* dB_   = blas::batch::extract<std::complex<float>*>(Barray, i);
         std::complex<float>* dC_   = blas::batch::extract<std::complex<float>*>(Carray, i);
         blas::syr2k(
-            Layout::ColMajor, uplo_, trans_, n_, k_, 
+            layout, uplo_, trans_, n_, k_, 
             alpha_, dA_, lda_ , 
                     dB_, ldb_ , 
             beta_,  dC_, ldc_ );
@@ -153,6 +156,7 @@ void blas::batch::syr2k(
 // -----------------------------------------------------------------------------
 /// @ingroup syr2k
 void blas::batch::syr2k(
+    blas::Layout                layout, 
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
     std::vector<int64_t>     const &n, 
@@ -169,7 +173,7 @@ void blas::batch::syr2k(
     if(info.size() > 0){
         // perform error checking
         blas::batch::syr2k_check<std::complex<double>>( 
-                        uplo, trans, 
+                        layout, uplo, trans, 
                         n, k, 
                         alpha, Aarray, ldda, 
                                Barray, lddb, 
@@ -192,7 +196,7 @@ void blas::batch::syr2k(
         std::complex<double>* dB_   = blas::batch::extract<std::complex<double>*>(Barray, i);
         std::complex<double>* dC_   = blas::batch::extract<std::complex<double>*>(Carray, i);
         blas::syr2k(
-            Layout::ColMajor, uplo_, trans_, n_, k_, 
+            layout, uplo_, trans_, n_, k_, 
             alpha_, dA_, lda_ , 
                     dB_, ldb_ , 
             beta_,  dC_, ldc_ );

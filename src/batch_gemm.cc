@@ -6,6 +6,7 @@
 // -----------------------------------------------------------------------------
 /// @ingroup gemm
 void blas::batch::gemm(
+    blas::Layout                layout, 
     std::vector<blas::Op> const &transA,
     std::vector<blas::Op> const &transB,
     std::vector<int64_t>  const &m, 
@@ -22,7 +23,7 @@ void blas::batch::gemm(
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if(info.size() > 0){
         // perform error checking
-        blas::batch::gemm_check<float>( transA, transB, 
+        blas::batch::gemm_check<float>( layout, transA, transB, 
                                         m, n, k, 
                                         alpha, Aarray, ldda, 
                                                Barray, lddb, 
@@ -46,7 +47,7 @@ void blas::batch::gemm(
         float* dB_   = blas::batch::extract<float*>(Barray, i);
         float* dC_   = blas::batch::extract<float*>(Carray, i);
         blas::gemm(
-            Layout::ColMajor, transA_, transB_, m_, n_, k_, 
+            layout, transA_, transB_, m_, n_, k_, 
             alpha_, dA_, lda_, 
                     dB_, ldb_, 
             beta_,  dC_, ldc_ );
@@ -56,6 +57,7 @@ void blas::batch::gemm(
 // -----------------------------------------------------------------------------
 /// @ingroup gemm
 void blas::batch::gemm(
+    blas::Layout                layout, 
     std::vector<blas::Op> const &transA,
     std::vector<blas::Op> const &transB,
     std::vector<int64_t>  const &m, 
@@ -73,7 +75,7 @@ void blas::batch::gemm(
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if(info.size() > 0){
         // perform error checking
-        blas::batch::gemm_check<double>( transA, transB, 
+        blas::batch::gemm_check<double>( layout, transA, transB, 
                                         m, n, k, 
                                         alpha, Aarray, ldda, 
                                                Barray, lddb, 
@@ -97,7 +99,7 @@ void blas::batch::gemm(
         double* dB_   = blas::batch::extract<double*>(Barray, i);
         double* dC_   = blas::batch::extract<double*>(Carray, i);
         blas::gemm(
-            Layout::ColMajor, transA_, transB_, m_, n_, k_, 
+            layout, transA_, transB_, m_, n_, k_, 
             alpha_, dA_, lda_, 
                     dB_, ldb_, 
             beta_,  dC_, ldc_ );
@@ -107,6 +109,7 @@ void blas::batch::gemm(
 // -----------------------------------------------------------------------------
 /// @ingroup gemm
 void blas::batch::gemm(
+    blas::Layout                layout, 
     std::vector<blas::Op> const &transA,
     std::vector<blas::Op> const &transB,
     std::vector<int64_t>  const &m, 
@@ -124,7 +127,7 @@ void blas::batch::gemm(
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if(info.size() > 0){
         // perform error checking
-        blas::batch::gemm_check< std::complex<float> >( transA, transB, 
+        blas::batch::gemm_check< std::complex<float> >( layout, transA, transB, 
                                         m, n, k, 
                                         alpha, Aarray, ldda, 
                                                Barray, lddb, 
@@ -148,7 +151,7 @@ void blas::batch::gemm(
         std::complex<float>* dB_   = blas::batch::extract<std::complex<float>*>(Barray, i);
         std::complex<float>* dC_   = blas::batch::extract<std::complex<float>*>(Carray, i);
         blas::gemm(
-            Layout::ColMajor, transA_, transB_, m_, n_, k_, 
+            layout, transA_, transB_, m_, n_, k_, 
             alpha_, dA_, lda_, 
                     dB_, ldb_, 
             beta_,  dC_, ldc_ );
@@ -158,6 +161,7 @@ void blas::batch::gemm(
 // -----------------------------------------------------------------------------
 /// @ingroup gemm
 void blas::batch::gemm(
+    blas::Layout                layout, 
     std::vector<blas::Op> const &transA,
     std::vector<blas::Op> const &transB,
     std::vector<int64_t>  const &m, 
@@ -175,7 +179,7 @@ void blas::batch::gemm(
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if(info.size() > 0){
         // perform error checking
-        blas::batch::gemm_check< std::complex<double> >( transA, transB, 
+        blas::batch::gemm_check< std::complex<double> >( layout, transA, transB, 
                                         m, n, k, 
                                         alpha, Aarray, ldda, 
                                                Barray, lddb, 
@@ -199,7 +203,7 @@ void blas::batch::gemm(
         std::complex<double>* dB_   = blas::batch::extract<std::complex<double>*>(Barray, i);
         std::complex<double>* dC_   = blas::batch::extract<std::complex<double>*>(Carray, i);
         blas::gemm(
-            Layout::ColMajor, transA_, transB_, m_, n_, k_, 
+            layout, transA_, transB_, m_, n_, k_, 
             alpha_, dA_, lda_, 
                     dB_, ldb_, 
             beta_,  dC_, ldc_ );
