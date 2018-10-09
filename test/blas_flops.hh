@@ -372,6 +372,27 @@ public:
 };
 
 //==============================================================================
+// Traits to lookup number of operations per multiply and add.
+template <typename T>
+class FlopTraits
+{
+public:
+    static constexpr double mul_ops = 1;
+    static constexpr double add_ops = 1;
+};
+
+//------------------------------------------------------------------------------
+// specialization for complex
+// flops = 6*muls + 2*adds
+template <typename T>
+class FlopTraits< std::complex<T> >
+{
+public:
+    static constexpr double mul_ops = 6;
+    static constexpr double add_ops = 2;
+};
+
+//==============================================================================
 // template class. Example:
 // gflop< float >::gemm( m, n, k ) yields flops for sgemm.
 // gflop< std::complex<float> >::gemm( m, n, k ) yields flops for cgemm.
@@ -380,28 +401,31 @@ template< typename T >
 class Gflop
 {
 public:
+    static constexpr double mul_ops = FlopTraits<T>::mul_ops;
+    static constexpr double add_ops = FlopTraits<T>::add_ops;
+
     // ----------------------------------------
     // Level 1 BLAS
     static double asum( double n )
-        { return 1e-9 * (fmuls_asum(n) + fadds_asum(n)); }
+        { return 1e-9 * (mul_ops*fmuls_asum(n) + add_ops*fadds_asum(n)); }
 
     static double axpy( double n )
-        { return (fmuls_axpy(n) + fadds_axpy(n)) / 1e9; }
+        { return (mul_ops*fmuls_axpy(n) + add_ops*fadds_axpy(n)) / 1e9; }
 
     static double copy( double n )
         { return 0; }
 
     static double iamax( double n )
-        { return (fmuls_iamax(n) + fadds_iamax(n)) / 1e9; }
+        { return (mul_ops*fmuls_iamax(n) + add_ops*fadds_iamax(n)) / 1e9; }
 
     static double nrm2( double n )
-        { return (fmuls_nrm2(n) + fadds_nrm2(n)) / 1e9; }
+        { return (mul_ops*fmuls_nrm2(n) + add_ops*fadds_nrm2(n)) / 1e9; }
 
     static double dot( double n )
-        { return (fmuls_dot(n) + fadds_dot(n)) / 1e9; }
+        { return (mul_ops*fmuls_dot(n) + add_ops*fadds_dot(n)) / 1e9; }
 
     static double scal( double n )
-        { return (fmuls_scal(n) + fadds_scal(n)) / 1e9; }
+        { return (mul_ops*fmuls_scal(n) + add_ops*fadds_scal(n)) / 1e9; }
 
     static double swap( double n )
         { return 0; }
@@ -409,7 +433,7 @@ public:
     // ----------------------------------------
     // Level 2 BLAS
     static double gemv(double m, double n)
-        { return 1e-9 * (fmuls_gemv(m, n) + fadds_gemv(m, n)); }
+        { return 1e-9 * (mul_ops*fmuls_gemv(m, n) + add_ops*fadds_gemv(m, n)); }
 
     static double symv(double n)
         { return gemv( n, n ); }
@@ -418,7 +442,7 @@ public:
         { return symv( n ); }
 
     static double trmv( double n )
-        { return (fmuls_trmv(n) + fadds_trmv(n)) / 1e9; }
+        { return (mul_ops*fmuls_trmv(n) + add_ops*fadds_trmv(n)) / 1e9; }
 
     static double trsv( double n )
         { return trmv( n ); }
@@ -430,7 +454,7 @@ public:
         { return her( n ); }
 
     static double ger( double m, double n )
-        { return (fmuls_ger(m, n) + fadds_ger(m, n)) / 1e9; }
+        { return (mul_ops*fmuls_ger(m, n) + add_ops*fadds_ger(m, n)) / 1e9; }
 
     static double her2( double n )
         { return 2*ger( n, n ); }
@@ -441,132 +465,32 @@ public:
     // ----------------------------------------
     // Level 3 BLAS
     static double gemm(double m, double n, double k)
-        { return 1e-9 * (fmuls_gemm(m, n, k) + fadds_gemm(m, n, k)); }
+        { return 1e-9 * (mul_ops*fmuls_gemm(m, n, k) + add_ops*fadds_gemm(m, n, k)); }
 
     static double hemm(blas::Side side, double m, double n)
-        { return 1e-9 * (fmuls_hemm(side, m, n) + fadds_hemm(side, m, n)); }
+        { return 1e-9 * (mul_ops*fmuls_hemm(side, m, n) + add_ops*fadds_hemm(side, m, n)); }
 
     static double symm(blas::Side side, double m, double n)
         { return hemm( side, m, n ); }
 
     static double herk(double n, double k)
-        { return 1e-9 * (fmuls_herk(n, k) + fadds_herk(n, k)); }
+        { return 1e-9 * (mul_ops*fmuls_herk(n, k) + add_ops*fadds_herk(n, k)); }
 
     static double syrk(double n, double k)
         { return herk( n, k ); }
 
     static double her2k(double n, double k)
-        { return 1e-9 * (fmuls_her2k(n, k) + fadds_her2k(n, k)); }
+        { return 1e-9 * (mul_ops*fmuls_her2k(n, k) + add_ops*fadds_her2k(n, k)); }
 
     static double syr2k(double n, double k)
         { return her2k( n, k ); }
 
     static double trmm(blas::Side side, double m, double n)
-        { return 1e-9 * (fmuls_trmm(side, m, n) + fadds_trmm(side, m, n)); }
+        { return 1e-9 * (mul_ops*fmuls_trmm(side, m, n) + add_ops*fadds_trmm(side, m, n)); }
 
     static double trsm(blas::Side side, double m, double n)
         { return trmm( side, m, n ); }
 
-};
-
-//==============================================================================
-// specialization for complex
-// flops = 6*muls + 2*adds
-//==============================================================================
-template< typename T >
-class Gflop< std::complex<T> >
-{
-public:
-    // ----------------------------------------
-    // Level 1 BLAS
-
-    // todo: abs1 incurs adds, too
-    static double asum( double n )
-        { return (6*fmuls_asum(n) + 2*fadds_asum(n)) / 1e9; }
-
-    static double axpy( double n )
-        { return (6*fmuls_axpy(n) + 2*fadds_axpy(n)) / 1e9; }
-
-    static double copy( double n )
-        { return 0; }
-
-    // todo: abs1 incurs adds, too
-    static double iamax( double n )
-        { return (6*fmuls_iamax(n) + 2*fadds_iamax(n)) / 1e9; }
-
-    // todo: r*r + i*i, the r*i terms cancel
-    static double nrm2( double n )
-        { return (6*fmuls_nrm2(n) + 2*fadds_nrm2(n)) / 1e9; }
-
-    static double dot( double n )
-        { return (6*fmuls_dot(n) + 2*fadds_dot(n)) / 1e9; }
-
-    static double scal( double n )
-        { return (6*fmuls_scal(n) + 2*fadds_scal(n)) / 1e9; }
-
-    static double swap( double n )
-        { return 0; }
-
-    // ----------------------------------------
-    // Level 2 BLAS
-    static double gemv(double m, double n)
-        { return 1e-9 * (6*fmuls_gemv(m, n) + 2*fadds_gemv(m, n)); }
-
-    static double hemv(double n)
-        { return gemv( n, n ); }
-
-    static double symv(double n)
-        { return hemv( n ); }
-
-    static double trmv( double n )
-        { return (6*fmuls_trmv(n) + 2*fadds_trmv(n)) / 1e9; }
-
-    static double trsv( double n )
-        { return trmv( n ); }
-
-    static double her( double n )
-        { return ger( n, n ); }
-
-    static double syr( double n )
-        { return her( n ); }
-
-    static double ger( double m, double n )
-        { return (6*fmuls_ger(m, n) + 2*fadds_ger(m, n)) / 1e9; }
-
-    static double her2( double n )
-        { return 2*ger( n, n ); }
-
-    static double syr2( double n )
-        { return her2( n ); }
-
-    // ----------------------------------------
-    // Level 3 BLAS
-    static double gemm(double m, double n, double k)
-        { return 1e-9 * (6*fmuls_gemm(m, n, k) + 2*fadds_gemm(m, n, k)); }
-
-    static double hemm(blas::Side side, double m, double n)
-        { return 1e-9 * (6*fmuls_hemm(side, m, n) + 2*fadds_hemm(side, m, n)); }
-
-    static double symm(blas::Side side, double m, double n)
-        { return hemm( side, m, n ); }
-
-    static double herk(double n, double k)
-        { return 1e-9 * (6*fmuls_herk(n, k) + 2*fadds_herk(n, k)); }
-
-    static double syrk(double n, double k)
-        { return herk( n, k ); }
-
-    static double her2k(double n, double k)
-        { return 1e-9 * (6*fmuls_her2k(n, k) + 2*fadds_her2k(n, k)); }
-
-    static double syr2k(double n, double k)
-        { return her2k( n, k ); }
-
-    static double trmm(blas::Side side, double m, double n)
-        { return 1e-9 * (6*fmuls_trmm(side, m, n) + 2*fadds_trmm(side, m, n)); }
-
-    static double trsm(blas::Side side, double m, double n)
-        { return trmm( side, m, n ); }
 };
 
 }  // namespace blas
