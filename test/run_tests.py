@@ -21,6 +21,7 @@ import sys
 import os
 import re
 import argparse
+import subprocess
 import xml.etree.ElementTree as ET
 
 # ------------------------------------------------------------------------------
@@ -31,12 +32,17 @@ group_test = parser.add_argument_group( 'test' )
 group_test.add_argument( '-t', '--test', action='store',
     help='test command to run, e.g., --test "mpirun -np 4 ./test"; default "%(default)s"',
     default='./test' )
+group_test.add_argument( '--xml', action='store_true', help='generate report.xml for jenkins' )
 
 group_size = parser.add_argument_group( 'matrix dimensions (default is medium)' )
 group_size.add_argument( '-x', '--xsmall', action='store_true', help='run x-small tests' )
 group_size.add_argument( '-s', '--small',  action='store_true', help='run small tests' )
 group_size.add_argument( '-m', '--medium', action='store_true', help='run medium tests' )
 group_size.add_argument( '-l', '--large',  action='store_true', help='run large tests' )
+group_size.add_argument(       '--square', action='store_true', help='run square (m = n = k) tests', default=False )
+group_size.add_argument(       '--tall',   action='store_true', help='run tall (m > n) tests', default=False )
+group_size.add_argument(       '--wide',   action='store_true', help='run wide (m < n) tests', default=False )
+group_size.add_argument(       '--mnk',    action='store_true', help='run tests with m, n, k all different', default=False )
 group_size.add_argument(       '--dim',    action='store',      help='explicitly specify size', default='' )
 
 group_cat = parser.add_argument_group( 'category (default is all)' )
@@ -50,24 +56,42 @@ categories = map( lambda x: x.dest, categories ) # map to names: ['blas1', ...]
 
 group_opt = parser.add_argument_group( 'options' )
 # BLAS and LAPACK
-group_opt.add_argument( '--type',   action='store', help='default=s,d,c,z',   default='s,d,c,z' )
-group_opt.add_argument( '--layout', action='store', help='default=c,r',       default='c,r' )
-group_opt.add_argument( '--transA', action='store', help='default=n,t,c',     default='n,t,c' )
-group_opt.add_argument( '--transB', action='store', help='default=n,t,c',     default='n,t,c' )
-group_opt.add_argument( '--trans',  action='store', help='default=n,t,c',     default='n,t,c' )
-group_opt.add_argument( '--uplo',   action='store', help='default=l,u',       default='l,u' )
-group_opt.add_argument( '--diag',   action='store', help='default=n,u',       default='n,u' )
-group_opt.add_argument( '--side',   action='store', help='default=l,r',       default='l,r' )
-group_opt.add_argument( '--incx',   action='store', help='default=1,2,-1,-2', default='1,2,-1,-2' )
-group_opt.add_argument( '--incy',   action='store', help='default=1,2,-1,-2', default='1,2,-1,-2' )
-group_opt.add_argument( '--align',  action='store', help='default=32',        default='32' )
+group_opt.add_argument( '--type',   action='store', help='default=%(default)s', default='s,d,c,z' )
+group_opt.add_argument( '--layout', action='store', help='default=%(default)s', default='c,r' )
+group_opt.add_argument( '--transA', action='store', help='default=%(default)s', default='n,t,c' )
+group_opt.add_argument( '--transB', action='store', help='default=%(default)s', default='n,t,c' )
+group_opt.add_argument( '--trans',  action='store', help='default=%(default)s', default='n,t,c' )
+group_opt.add_argument( '--uplo',   action='store', help='default=%(default)s', default='l,u' )
+group_opt.add_argument( '--diag',   action='store', help='default=%(default)s', default='n,u' )
+group_opt.add_argument( '--side',   action='store', help='default=%(default)s', default='l,r' )
+group_opt.add_argument( '--alpha',  action='store', help='default=%(default)s', default='' )
+group_opt.add_argument( '--beta',   action='store', help='default=%(default)s', default='' )
+group_opt.add_argument( '--incx',   action='store', help='default=%(default)s', default='1,2,-1,-2' )
+group_opt.add_argument( '--incy',   action='store', help='default=%(default)s', default='1,2,-1,-2' )
+group_opt.add_argument( '--align',  action='store', help='default=%(default)s', default='32' )
+group_opt.add_argument( '--check',  action='store', help='default=y', default='' )  # default in test.cc
+group_opt.add_argument( '--ref',    action='store', help='default=y', default='' )  # default in test.cc
 
 parser.add_argument( 'tests', nargs=argparse.REMAINDER )
 opts = parser.parse_args()
 
+for t in opts.tests:
+    if (t.startswith('--')):
+        print( 'Error: option', t, 'must come before any routine names' )
+        print( 'usage:', sys.argv[0], '[options]', '[routines]' )
+        print( '      ', sys.argv[0], '--help' )
+        exit(1)
+
 # by default, run medium sizes
 if (not (opts.xsmall or opts.small or opts.medium or opts.large)):
     opts.medium = True
+
+# by default, run all shapes
+if (not (opts.square or opts.tall or opts.wide or opts.mnk)):
+    opts.square = True
+    opts.tall   = True
+    opts.wide   = True
+    opts.mnk    = True
 
 # by default, run all categories
 if (opts.tests or not any( map( lambda c: opts.__dict__[ c ], categories ))):
@@ -130,9 +154,21 @@ if (not opts.dim):
         nk_tall += ' --dim 1x2000:10000:2000x1000:5000:1000'
         nk_wide += ' --dim 1x1000:5000:1000x2000:10000:2000'
 
-    mn  = n + tall + wide
-    mnk = mn + mnk
-    nk  = n + nk_tall + nk_wide
+    mn  = ''
+    nk  = ''
+    if (opts.square):
+        mn = n
+        nk = n
+    if (opts.tall):
+        mn += tall
+        nk += nk_tall
+    if (opts.wide):
+        mn += wide
+        nk += nk_wide
+    if (opts.mnk):
+        mnk = mn + mnk
+    else:
+        mnk = mn
 # end
 
 # BLAS and LAPACK
@@ -144,9 +180,13 @@ trans  = ' --trans '  + opts.trans  if (opts.trans)  else ''
 uplo   = ' --uplo '   + opts.uplo   if (opts.uplo)   else ''
 diag   = ' --diag '   + opts.diag   if (opts.diag)   else ''
 side   = ' --side '   + opts.side   if (opts.side)   else ''
+a      = ' --alpha '  + opts.alpha  if (opts.alpha)  else ''
+ab     = a+' --beta ' + opts.beta   if (opts.beta)   else a
 incx   = ' --incx '   + opts.incx   if (opts.incx)   else ''
 incy   = ' --incy '   + opts.incy   if (opts.incy)   else ''
 align  = ' --align '  + opts.align  if (opts.align)  else ''
+check  = ' --check '  + opts.check  if (opts.check)  else ''
+ref    = ' --ref '    + opts.ref    if (opts.ref)    else ''
 
 # ------------------------------------------------------------------------------
 # filters a comma separated list csv based on items in list values.
@@ -162,7 +202,6 @@ def filter_csv( values, csv ):
 # limit options to specific values
 dtype_real    = ' --type ' + filter_csv( ('s', 'd'), opts.type )
 dtype_complex = ' --type ' + filter_csv( ('c', 'z'), opts.type )
-dtype_double  = ' --type ' + filter_csv( ('d'), opts.type )
 
 trans_nt = ' --trans ' + filter_csv( ('n', 't'), opts.trans )
 trans_nc = ' --trans ' + filter_csv( ('n', 'c'), opts.trans )
@@ -253,70 +292,72 @@ output_redirected = not sys.stdout.isatty()
 def run_test( cmd ):
     cmd = opts.test +' '+ cmd[0] +' '+ cmd[1]
     print( cmd, file=sys.stderr )
-    err = os.system( cmd )
-    if (err):
-        hi = (err & 0xff00) >> 8
-        lo = (err & 0x00ff)
-        if (lo == 2):
-            print( '\nCancelled', file=sys.stderr )
-            exit(1)
-        elif (lo != 0):
-            print( 'FAILED: abnormal exit, signal =', lo, file=sys.stderr )
-        elif (output_redirected):
-            print( hi, 'tests FAILED.', file=sys.stderr )
-    # end
-    return err
+    output = ''
+    p = subprocess.Popen( cmd.split(), stdout=subprocess.PIPE,
+                                       stderr=subprocess.STDOUT )
+    # Read unbuffered ("for line in p.stdout" will buffer).
+    for line in iter(p.stdout.readline, b''):
+        print( line, end='' )
+        output += line
+    err = p.wait()
+    if (err < 0):
+        print( 'FAILED: exit with signal', -err )
+    return (err, output)
 # end
 
 # ------------------------------------------------------------------------------
-failures = []
+failed_tests = []
 passed_tests = []
-error_list = []
 ntests = len(opts.tests)
 run_all = (ntests == 0)
 
 for cmd in cmds:
     if (run_all or cmd[0] in opts.tests):
-        err = run_test( cmd )
-        if (err != 0):
-            failures.append( cmd[0] )
-            error_num = (err & 0xff00) >> 8
-            if error_num is None:
-                error_num = 0
-            error_list.append(error_num)
-        # TODO: add errors/skipped tests
+        if (not run_all):
+            opts.tests.remove( cmd[0] )
+        (err, output) = run_test( cmd )
+        if (err):
+            failed_tests.append( (cmd[0], err, output) )
         else:
-            passed_tests.append(cmd[0])
+            passed_tests.append( cmd[0] )
+if (opts.tests):
+    print( 'Warning: unknown routines:', ' '.join( opts.tests ))
 
 # print summary of failures
-nfailures = len( failures )
-if (nfailures > 0):
-    print( '\n' + str(nfailures) + ' routines FAILED:', ', '.join( failures ),
+nfailed = len( failed_tests )
+if (nfailed > 0):
+    print( '\n' + str(nfailed) + ' routines FAILED:',
+           ', '.join( [x[0] for x in failed_tests] ),
            file=sys.stderr )
 
 # generate jUnit compatible test report
-if True:
+if opts.xml:
     root = ET.Element("testsuites")
     doc = ET.SubElement(root, "testsuite",
                         name="blaspp_suite",
                         tests=str(ntests),
                         errors="0",
-                        failures=str(nfailures))
+                        failures=str(nfailed))
 
-    i = 0
-    for failure in failures:
-        f = ET.SubElement(doc, "testcase", name=failure)
-        ff = ET.SubElement(f, "failure")
-        ff.text = (str(error_list[i]) + " tests failed")
-        ff.name = failure
-        i += 1
+    for (test, err, output) in failed_tests:
+        testcase = ET.SubElement(doc, "testcase", name=test)
 
-    for p in passed_tests:
-        passed_test = ET.SubElement( doc, 'testcase', name=p )
-        passed_test.text = 'PASSED'
+        failure = ET.SubElement(testcase, "failure")
+        if (err < 0):
+            failure.text = "exit with signal " + str(-err)
+        else:
+            failure.text = str(err) + " tests failed"
+
+        system_out = ET.SubElement(testcase, "system-out")
+        system_out.text = output
+    # end
+
+    for test in passed_tests:
+        testcase = ET.SubElement(doc, 'testcase', name=test)
+        testcase.text = 'PASSED'
 
     tree = ET.ElementTree(root)
     tree.write("report.xml")
 # end
 
-exit( nfailures )
+exit( nfailed )

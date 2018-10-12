@@ -295,6 +295,7 @@ int main( int argc, char** argv )
                 }
 
                 params.print();
+                fflush( stdout );
                 status += ! params.okay.value();
                 params.reset_output();
             }
