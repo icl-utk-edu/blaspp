@@ -18,22 +18,22 @@ void test_batch_gemm_work( Params& params, bool run )
     typedef long long lld;
 
     // get & mark input values
-    blas::Layout layout = params.layout.value();
-    blas::Op transA_ = params.transA.value();
-    blas::Op transB_ = params.transB.value();
-    scalar_t alpha_  = params.alpha.value();
-    scalar_t beta_   = params.beta.value();
+    blas::Layout layout = params.layout();
+    blas::Op transA_ = params.transA();
+    blas::Op transB_ = params.transB();
+    scalar_t alpha_  = params.alpha();
+    scalar_t beta_   = params.beta();
     int64_t m_       = params.dim.m();
     int64_t n_       = params.dim.n();
     int64_t k_       = params.dim.k();
-    size_t  batch   = params.batch.value();
-    int64_t align   = params.align.value();
-    int64_t verbose = params.verbose.value();
+    size_t  batch   = params.batch();
+    int64_t align   = params.align();
+    int64_t verbose = params.verbose();
 
     // mark non-standard output values
-    params.gflops.value();
-    params.ref_time.value();
-    params.ref_gflops.value();
+    params.gflops();
+    params.ref_time();
+    params.ref_gflops();
 
     if ( ! run)
         return;
@@ -113,7 +113,7 @@ void test_batch_gemm_work( Params& params, bool run )
     info.resize( 0 );
 
     // run test
-    libtest::flush_cache( params.cache.value() );
+    libtest::flush_cache( params.cache() );
     double time = get_wtime();
     blas::batch::gemm( layout, transA, transB, m, n, k, 
                        alpha, Aarray, lda, Barray, ldb, beta, Carray, ldc, 
@@ -121,12 +121,12 @@ void test_batch_gemm_work( Params& params, bool run )
     time = get_wtime() - time;
 
     double gflop = batch * Gflop < scalar_t >::gemm( m_, n_, k_ );
-    params.time.value()   = time;
-    params.gflops.value() = gflop / time;
+    params.time()   = time;
+    params.gflops() = gflop / time;
 
-    if (params.ref.value() == 'y' || params.check.value() == 'y') {
+    if (params.ref() == 'y' || params.check() == 'y') {
         // run reference
-        libtest::flush_cache( params.cache.value() );
+        libtest::flush_cache( params.cache() );
         time = get_wtime();
         for(size_t i = 0; i < batch; i++){
             cblas_gemm( cblas_layout_const(layout),
@@ -136,8 +136,8 @@ void test_batch_gemm_work( Params& params, bool run )
         }
         time = get_wtime() - time;
 
-        params.ref_time.value()   = time;
-        params.ref_gflops.value() = gflop / time;
+        params.ref_time()   = time;
+        params.ref_gflops() = gflop / time;
 
         // check error compared to reference
         real_t err, error = 0;
@@ -148,8 +148,8 @@ void test_batch_gemm_work( Params& params, bool run )
             error = max(error, err);
             okay &= ok;
         }
-        params.error.value() = error;
-        params.okay.value() = okay;
+        params.error() = error;
+        params.okay() = okay;
     }
 
     delete[] A;
@@ -164,7 +164,7 @@ void test_batch_gemm_work( Params& params, bool run )
 // -----------------------------------------------------------------------------
 void test_batch_gemm( Params& params, bool run )
 {
-    switch (params.datatype.value()) {
+    switch (params.datatype()) {
         case libtest::DataType::Integer:
             //test_batch_gemm_work< int64_t >( params, run );
             throw std::exception();

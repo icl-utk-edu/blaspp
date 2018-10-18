@@ -15,15 +15,15 @@ void test_iamax_work( Params& params, bool run )
 
     // get & mark input values
     int64_t n       = params.dim.n();
-    int64_t incx    = params.incx.value();
-    int64_t verbose = params.verbose.value();
+    int64_t incx    = params.incx();
+    int64_t verbose = params.verbose();
 
     // mark non-standard output values
-    params.gflops.value();
-    params.gbytes.value();
-    params.ref_time.value();
-    params.ref_gflops.value();
-    params.ref_gbytes.value();
+    params.gflops();
+    params.gbytes();
+    params.ref_time();
+    params.ref_gflops();
+    params.ref_gbytes();
 
     // adjust header to msec
     params.time.name( "BLAS++\ntime (ms)" );
@@ -55,31 +55,31 @@ void test_iamax_work( Params& params, bool run )
     }
 
     // run test
-    libtest::flush_cache( params.cache.value() );
+    libtest::flush_cache( params.cache() );
     double time = get_wtime();
     int64_t result = blas::iamax( n, x, incx );
     time = get_wtime() - time;
 
     double gflop = Gflop < T >::iamax( n );
     double gbyte = Gbyte < T >::iamax( n );
-    params.time.value()   = time * 1000;  // msec
-    params.gflops.value() = gflop / time;
-    params.gbytes.value() = gbyte / time;
+    params.time()   = time * 1000;  // msec
+    params.gflops() = gflop / time;
+    params.gbytes() = gbyte / time;
 
     if (verbose >= 1) {
         printf( "result = %5lld\n", (lld) result );
     }
 
-    if (params.check.value() == 'y') {
+    if (params.check() == 'y') {
         // run reference
-        libtest::flush_cache( params.cache.value() );
+        libtest::flush_cache( params.cache() );
         time = get_wtime();
         int64_t ref = cblas_iamax( n, x, incx );
         time = get_wtime() - time;
 
-        params.ref_time.value()   = time * 1000;  // msec
-        params.ref_gflops.value() = gflop / time;
-        params.ref_gbytes.value() = gbyte / time;
+        params.ref_time()   = time * 1000;  // msec
+        params.ref_gflops() = gflop / time;
+        params.ref_gbytes() = gbyte / time;
 
         if (verbose >= 1) {
             printf( "ref    = %5lld\n", (lld) ref );
@@ -87,10 +87,10 @@ void test_iamax_work( Params& params, bool run )
 
         // error = |ref - result|
         real_t error = std::abs( ref - result );
-        params.error.value() = error;
+        params.error() = error;
 
         // iamax must be exact!
-        params.okay.value() = (error == 0);
+        params.okay() = (error == 0);
     }
 
     delete[] x;
@@ -99,7 +99,7 @@ void test_iamax_work( Params& params, bool run )
 // -----------------------------------------------------------------------------
 void test_iamax( Params& params, bool run )
 {
-    switch (params.datatype.value()) {
+    switch (params.datatype()) {
         case libtest::DataType::Integer:
             //test_iamax_work< int64_t >( params, run );
             throw std::exception();

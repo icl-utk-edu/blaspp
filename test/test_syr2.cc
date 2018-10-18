@@ -16,21 +16,21 @@ void test_syr2_work( Params& params, bool run )
     typedef long long lld;
 
     // get & mark input values
-    blas::Layout layout = params.layout.value();
-    blas::Uplo uplo = params.uplo.value();
-    scalar_t alpha  = params.alpha.value();
+    blas::Layout layout = params.layout();
+    blas::Uplo uplo = params.uplo();
+    scalar_t alpha  = params.alpha();
     int64_t n       = params.dim.n();
-    int64_t incx    = params.incx.value();
-    int64_t incy    = params.incy.value();
-    int64_t align   = params.align.value();
-    int64_t verbose = params.verbose.value();
+    int64_t incx    = params.incx();
+    int64_t incy    = params.incy();
+    int64_t align   = params.align();
+    int64_t verbose = params.verbose();
 
     // mark non-standard output values
-    params.gflops.value();
-    params.gbytes.value();
-    params.ref_time.value();
-    params.ref_gflops.value();
-    params.ref_gbytes.value();
+    params.gflops();
+    params.gbytes();
+    params.ref_time();
+    params.ref_gflops();
+    params.ref_gbytes();
 
     // adjust header to msec
     params.time.name( "BLAS++\ntime (ms)" );
@@ -91,22 +91,22 @@ void test_syr2_work( Params& params, bool run )
     }
 
     // run test
-    libtest::flush_cache( params.cache.value() );
+    libtest::flush_cache( params.cache() );
     double time = get_wtime();
     blas::syr2( layout, uplo, n, alpha, x, incx, y, incy, A, lda );
     time = get_wtime() - time;
 
     double gflop = Gflop < scalar_t >::syr2( n );
     double gbyte = Gbyte < scalar_t >::syr2( n );
-    params.time.value()   = time * 1000;  // msec
-    params.gflops.value() = gflop / time;
-    params.gbytes.value() = gbyte / time;
+    params.time()   = time * 1000;  // msec
+    params.gflops() = gflop / time;
+    params.gbytes() = gbyte / time;
 
     if (verbose >= 2) {
         printf( "A2 = " ); print_matrix( n, n, A, lda );
     }
 
-    if (params.check.value() == 'y') {
+    if (params.check() == 'y') {
         // there are no csyr2/zsyr2, so use csyr2k/zsyr2k
         // needs XX, YY as matrices instead of vectors with stride.
         int64_t ldx = lda;
@@ -123,16 +123,16 @@ void test_syr2_work( Params& params, bool run )
         }
 
         // run reference
-        libtest::flush_cache( params.cache.value() );
+        libtest::flush_cache( params.cache() );
         time = get_wtime();
 
         cblas_syr2k( cblas_layout_const(layout), cblas_uplo_const(uplo), CblasNoTrans,
                      n, 1, alpha, XX, ldx, YY, ldx, one, Aref, lda );
         time = get_wtime() - time;
 
-        params.ref_time.value()   = time * 1000;  // msec
-        params.ref_gflops.value() = gflop / time;
-        params.ref_gbytes.value() = gbyte / time;
+        params.ref_time()   = time * 1000;  // msec
+        params.ref_gflops() = gflop / time;
+        params.ref_gbytes() = gbyte / time;
 
         if (verbose >= 2) {
             printf( "Aref = " ); print_matrix( n, n, Aref, lda );
@@ -144,8 +144,8 @@ void test_syr2_work( Params& params, bool run )
         bool okay;
         check_herk( uplo, n, 2, alpha, scalar_t(1), Xnorm, Ynorm, Anorm,
                     Aref, lda, A, lda, verbose, &error, &okay );
-        params.error.value() = error;
-        params.okay.value() = okay;
+        params.error() = error;
+        params.okay() = okay;
 
         delete[] XX;
         delete[] YY;
@@ -160,7 +160,7 @@ void test_syr2_work( Params& params, bool run )
 // -----------------------------------------------------------------------------
 void test_syr2( Params& params, bool run )
 {
-    switch (params.datatype.value()) {
+    switch (params.datatype()) {
         case libtest::DataType::Integer:
             //test_syr2_work< int64_t >( params, run );
             throw std::exception();

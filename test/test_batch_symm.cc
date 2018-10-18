@@ -16,20 +16,20 @@ void test_batch_symm_work( Params& params, bool run )
     typedef long long lld;
 
     // get & mark input values
-    blas::Layout layout = params.layout.value();
-    blas::Side side_     = params.side.value();
-    blas::Uplo uplo_     = params.uplo.value();
-    scalar_t alpha_      = params.alpha.value();
-    scalar_t beta_       = params.beta.value();
+    blas::Layout layout = params.layout();
+    blas::Side side_     = params.side();
+    blas::Uplo uplo_     = params.uplo();
+    scalar_t alpha_      = params.alpha();
+    scalar_t beta_       = params.beta();
     int64_t m_           = params.dim.m();
     int64_t n_           = params.dim.n();
-    size_t  batch       = params.batch.value();
-    int64_t align       = params.align.value();
-    int64_t verbose     = params.verbose.value();
+    size_t  batch       = params.batch();
+    int64_t align       = params.align();
+    int64_t verbose     = params.verbose();
 
     // mark non-standard output values
-    params.ref_time.value();
-    params.ref_gflops.value();
+    params.ref_time();
+    params.ref_gflops();
 
     // adjust header to msec
     params.time.name( "BLAS++\ntime (ms)" );
@@ -105,19 +105,19 @@ void test_batch_symm_work( Params& params, bool run )
     info.resize( 0 );
 
     // run test
-    libtest::flush_cache( params.cache.value() );
+    libtest::flush_cache( params.cache() );
     double time = get_wtime();
     blas::batch::symm( layout, side, uplo, m, n, alpha, Aarray, lda, Barray, ldb, beta, Carray, ldc, 
                        batch, info );
     time = get_wtime() - time;
 
     double gflop = batch * Gflop < scalar_t >::symm( side_, m_, n_ );
-    params.time.value()   = time * 1000;  // msec
-    params.gflops.value() = gflop / time;
+    params.time()   = time * 1000;  // msec
+    params.gflops() = gflop / time;
 
-    if (params.ref.value() == 'y' || params.check.value() == 'y') {
+    if (params.ref() == 'y' || params.check() == 'y') {
         // run reference
-        libtest::flush_cache( params.cache.value() );
+        libtest::flush_cache( params.cache() );
         time = get_wtime();
         for(size_t s = 0; s < batch; s++){
             cblas_symm( cblas_layout_const(layout),
@@ -127,8 +127,8 @@ void test_batch_symm_work( Params& params, bool run )
         }
         time = get_wtime() - time;
 
-        params.ref_time.value()   = time * 1000;  // msec
-        params.ref_gflops.value() = gflop / time;
+        params.ref_time()   = time * 1000;  // msec
+        params.ref_gflops() = gflop / time;
 
         // check error compared to reference
         real_t err, error = 0;
@@ -139,8 +139,8 @@ void test_batch_symm_work( Params& params, bool run )
             error = max( error, err );
             okay &= ok;
         }
-        params.error.value() = error;
-        params.okay.value() = okay;
+        params.error() = error;
+        params.okay() = okay;
     }
 
     delete[] A;
@@ -156,7 +156,7 @@ void test_batch_symm_work( Params& params, bool run )
 // -----------------------------------------------------------------------------
 void test_batch_symm( Params& params, bool run )
 {
-    switch (params.datatype.value()) {
+    switch (params.datatype()) {
         case libtest::DataType::Integer:
             //test_batch_symm_work< int64_t >( params, run );
             throw std::exception();

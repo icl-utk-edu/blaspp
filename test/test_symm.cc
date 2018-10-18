@@ -16,20 +16,20 @@ void test_symm_work( Params& params, bool run )
     typedef long long lld;
 
     // get & mark input values
-    blas::Layout layout = params.layout.value();
-    blas::Side side = params.side.value();
-    blas::Uplo uplo = params.uplo.value();
-    scalar_t alpha  = params.alpha.value();
-    scalar_t beta   = params.beta.value();
+    blas::Layout layout = params.layout();
+    blas::Side side = params.side();
+    blas::Uplo uplo = params.uplo();
+    scalar_t alpha  = params.alpha();
+    scalar_t beta   = params.beta();
     int64_t m       = params.dim.m();
     int64_t n       = params.dim.n();
-    int64_t align   = params.align.value();
-    int64_t verbose = params.verbose.value();
+    int64_t align   = params.align();
+    int64_t verbose = params.verbose();
 
     // mark non-standard output values
-    params.gflops.value();
-    params.ref_time.value();
-    params.ref_gflops.value();
+    params.gflops();
+    params.ref_time();
+    params.ref_gflops();
 
     // adjust header to msec
     params.time.name( "BLAS++\ntime (ms)" );
@@ -105,23 +105,23 @@ void test_symm_work( Params& params, bool run )
     }
 
     // run test
-    libtest::flush_cache( params.cache.value() );
+    libtest::flush_cache( params.cache() );
     double time = get_wtime();
     blas::symm( layout, side, uplo, m, n,
                 alpha, A, lda, B, ldb, beta, C, ldc );
     time = get_wtime() - time;
 
     double gflop = Gflop < scalar_t >::symm( side, m, n );
-    params.time.value()   = time * 1000;  // msec
-    params.gflops.value() = gflop / time;
+    params.time()   = time * 1000;  // msec
+    params.gflops() = gflop / time;
 
     if (verbose >= 2) {
         printf( "C2 = " ); print_matrix( Cm, Cn, C, ldc );
     }
 
-    if (params.ref.value() == 'y' || params.check.value() == 'y') {
+    if (params.ref() == 'y' || params.check() == 'y') {
         // run reference
-        libtest::flush_cache( params.cache.value() );
+        libtest::flush_cache( params.cache() );
         time = get_wtime();
         cblas_symm( cblas_layout_const(layout),
                     cblas_side_const(side),
@@ -129,8 +129,8 @@ void test_symm_work( Params& params, bool run )
                     m, n, alpha, A, lda, B, ldb, beta, Cref, ldc );
         time = get_wtime() - time;
 
-        params.ref_time.value()   = time * 1000;  // msec
-        params.ref_gflops.value() = gflop / time;
+        params.ref_time()   = time * 1000;  // msec
+        params.ref_gflops() = gflop / time;
 
         if (verbose >= 2) {
             printf( "Cref = " ); print_matrix( Cm, Cn, Cref, ldc );
@@ -141,8 +141,8 @@ void test_symm_work( Params& params, bool run )
         bool okay;
         check_gemm( Cm, Cn, An, alpha, beta, Anorm, Bnorm, Cnorm,
                     Cref, ldc, C, ldc, verbose, &error, &okay );
-        params.error.value() = error;
-        params.okay.value() = okay;
+        params.error() = error;
+        params.okay() = okay;
     }
 
     delete[] A;
@@ -154,7 +154,7 @@ void test_symm_work( Params& params, bool run )
 // -----------------------------------------------------------------------------
 void test_symm( Params& params, bool run )
 {
-    switch (params.datatype.value()) {
+    switch (params.datatype()) {
         case libtest::DataType::Integer:
             //test_symm_work< int64_t >( params, run );
             throw std::exception();

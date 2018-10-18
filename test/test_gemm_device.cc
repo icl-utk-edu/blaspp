@@ -16,22 +16,22 @@ void test_gemm_device_work( Params& params, bool run )
     typedef long long lld;
 
     // get & mark input values
-    blas::Layout layout = params.layout.value();
-    blas::Op transA = params.transA.value();
-    blas::Op transB = params.transB.value();
-    scalar_t alpha  = params.alpha.value();
-    scalar_t beta   = params.beta.value();
+    blas::Layout layout = params.layout();
+    blas::Op transA = params.transA();
+    blas::Op transB = params.transB();
+    scalar_t alpha  = params.alpha();
+    scalar_t beta   = params.beta();
     int64_t m       = params.dim.m();
     int64_t n       = params.dim.n();
     int64_t k       = params.dim.k();
-    int64_t device  = params.device.value();
-    int64_t align   = params.align.value();
-    int64_t verbose = params.verbose.value();
+    int64_t device  = params.device();
+    int64_t align   = params.align();
+    int64_t verbose = params.verbose();
 
     // mark non-standard output values
-    params.gflops.value();
-    params.ref_time.value();
-    params.ref_gflops.value();
+    params.gflops();
+    params.ref_time();
+    params.ref_gflops();
 
     if ( ! run)
         return;
@@ -133,7 +133,7 @@ void test_gemm_device_work( Params& params, bool run )
     }
 
     // run test
-    libtest::flush_cache( params.cache.value() );
+    libtest::flush_cache( params.cache() );
     double time = get_wtime();
     blas::gemm( layout, transA, transB, m, n, k,
                 alpha, dA, lda, dB, ldb, beta, dC, ldc, queue );
@@ -141,8 +141,8 @@ void test_gemm_device_work( Params& params, bool run )
     time = get_wtime() - time;
 
     double gflop = Gflop < scalar_t >::gemm( m, n, k );
-    params.time.value()   = time;
-    params.gflops.value() = gflop / time;
+    params.time()   = time;
+    params.gflops() = gflop / time;
     blas::device_getmatrix(Cm, Cn, dC, ldc, C, ldc, queue);
     queue.sync();
 
@@ -150,9 +150,9 @@ void test_gemm_device_work( Params& params, bool run )
         printf( "C2 = " ); print_matrix( Cm, Cn, C, ldc );
     }
 
-    if (params.ref.value() == 'y' || params.check.value() == 'y') {
+    if (params.ref() == 'y' || params.check() == 'y') {
         // run reference
-        libtest::flush_cache( params.cache.value() );
+        libtest::flush_cache( params.cache() );
         time = get_wtime();
         cblas_gemm( cblas_layout_const(layout),
                     cblas_trans_const(transA),
@@ -160,8 +160,8 @@ void test_gemm_device_work( Params& params, bool run )
                     m, n, k, alpha, A, lda, B, ldb, beta, Cref, ldc );
         time = get_wtime() - time;
 
-        params.ref_time.value()   = time;
-        params.ref_gflops.value() = gflop / time;
+        params.ref_time()   = time;
+        params.ref_gflops() = gflop / time;
 
         if (verbose >= 2) {
             printf( "Cref = " ); print_matrix( Cm, Cn, Cref, ldc );
@@ -172,8 +172,8 @@ void test_gemm_device_work( Params& params, bool run )
         bool okay;
         check_gemm( Cm, Cn, k, alpha, beta, Anorm, Bnorm, Cnorm,
                     Cref, ldc, C, ldc, verbose, &error, &okay );
-        params.error.value() = error;
-        params.okay.value() = okay;
+        params.error() = error;
+        params.okay() = okay;
     }
 
     delete[] A;
@@ -189,7 +189,7 @@ void test_gemm_device_work( Params& params, bool run )
 // -----------------------------------------------------------------------------
 void test_gemm_device( Params& params, bool run )
 {
-    switch (params.datatype.value()) {
+    switch (params.datatype()) {
         case libtest::DataType::Integer:
             //test_gemm_device_work< int64_t >( params, run );
             throw std::exception();

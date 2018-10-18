@@ -138,5 +138,5 @@ void test_max( Params& params, bool run )
     okay = okay && (std::is_same< double,  decltype( min_yd   ) >::value);
     okay = okay && (std::is_same< double,  decltype( min_yd2  ) >::value);
 
-    params.okay.value() = okay;
+    params.okay() = okay;
 }

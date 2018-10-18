@@ -15,7 +15,7 @@ void test_rotg_work( Params& params, bool run )
     int64_t n = params.dim.n();
 
     // mark non-standard output values
-    params.ref_time.value();
+    params.ref_time();
 
     // adjust header to msec
     params.time.name( "BLAS++\ntime (ms)" );
@@ -38,23 +38,23 @@ void test_rotg_work( Params& params, bool run )
     bref = b;
 
     // run test
-    libtest::flush_cache( params.cache.value() );
+    libtest::flush_cache( params.cache() );
     double time = get_wtime();
     for (int64_t i = 0; i < n; ++i) {
         blas::rotg( &a[i], &b[i], &c[i], &s[i] );
     }
     time = get_wtime() - time;
-    params.time.value() = time * 1000;  // msec
+    params.time() = time * 1000;  // msec
 
-    if (params.check.value() == 'y') {
+    if (params.check() == 'y') {
         // run reference
-        libtest::flush_cache( params.cache.value() );
+        libtest::flush_cache( params.cache() );
         time = get_wtime();
         for (int64_t i = 0; i < n; ++i) {
             cblas_rotg( &aref[i], &bref[i], &cref[i], &sref[i] );
         }
         time = get_wtime() - time;
-        params.ref_time.value() = time * 1000;  // msec
+        params.ref_time() = time * 1000;  // msec
 
         // get max error of all outputs
         cblas_axpy( n, -1.0, &a[0], 1, &aref[0], 1 );
@@ -76,15 +76,15 @@ void test_rotg_work( Params& params, bool run )
 
         // error is normally 0, but allow for some rounding just in case.
         real_t u = 0.5 * std::numeric_limits< real_t >::epsilon();
-        params.error.value() = error;
-        params.okay.value() = (error < 10*u);
+        params.error() = error;
+        params.okay() = (error < 10*u);
     }
 }
 
 // -----------------------------------------------------------------------------
 void test_rotg( Params& params, bool run )
 {
-    switch (params.datatype.value()) {
+    switch (params.datatype()) {
         case libtest::DataType::Integer:
             //test_rotg_work< int64_t >( params, run );  // todo: generic implementation
             throw std::exception();

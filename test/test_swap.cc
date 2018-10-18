@@ -16,16 +16,16 @@ void test_swap_work( Params& params, bool run )
 
     // get & mark input values
     int64_t n       = params.dim.n();
-    int64_t incx    = params.incx.value();
-    int64_t incy    = params.incy.value();
-    int64_t verbose = params.verbose.value();
+    int64_t incx    = params.incx();
+    int64_t incy    = params.incy();
+    int64_t verbose = params.verbose();
 
     // mark non-standard output values
-    params.gflops.value();
-    params.gbytes.value();
-    params.ref_time.value();
-    params.ref_gflops.value();
-    params.ref_gbytes.value();
+    params.gflops();
+    params.gbytes();
+    params.ref_time();
+    params.ref_gflops();
+    params.ref_gbytes();
 
     // adjust header to msec
     params.time.name( "BLAS++\ntime (ms)" );
@@ -67,25 +67,25 @@ void test_swap_work( Params& params, bool run )
     }
 
     // run test
-    libtest::flush_cache( params.cache.value() );
+    libtest::flush_cache( params.cache() );
     double time = get_wtime();
     blas::swap( n, x, incx, y, incy );
     time = get_wtime() - time;
 
     double gflop = Gflop < scalar_t >::swap( n );
     double gbyte = Gbyte < scalar_t >::swap( n );
-    params.time.value()   = time * 1000;  // msec
-    params.gflops.value() = gflop / time;
-    params.gbytes.value() = gbyte / time;
+    params.time()   = time * 1000;  // msec
+    params.gflops() = gflop / time;
+    params.gbytes() = gbyte / time;
 
     if (verbose >= 2) {
         printf( "x2   = " ); print_vector( n, x, incx );
         printf( "y2   = " ); print_vector( n, y, incy );
     }
 
-    if (params.check.value() == 'y') {
+    if (params.check() == 'y') {
         // run reference
-        libtest::flush_cache( params.cache.value() );
+        libtest::flush_cache( params.cache() );
         time = get_wtime();
         cblas_swap( n, xref, incx, yref, incy );
         time = get_wtime() - time;
@@ -94,19 +94,19 @@ void test_swap_work( Params& params, bool run )
             printf( "yref = " ); print_vector( n, yref, incy );
         }
 
-        params.ref_time.value()   = time * 1000;  // msec
-        params.ref_gflops.value() = gflop / time;
-        params.ref_gbytes.value() = gbyte / time;
+        params.ref_time()   = time * 1000;  // msec
+        params.ref_gflops() = gflop / time;
+        params.ref_gbytes() = gbyte / time;
 
         // error = ||xref - x|| + ||yref - y||
         cblas_axpy( n, -1.0, x, incx, xref, incx );
         cblas_axpy( n, -1.0, y, incy, yref, incy );
         real_t error = cblas_nrm2( n, xref, std::abs(incx) )
                      + cblas_nrm2( n, yref, std::abs(incy) );
-        params.error.value() = error;
+        params.error() = error;
 
         // swap must be exact!
-        params.okay.value() = (error == 0);
+        params.okay() = (error == 0);
     }
 
     delete[] x;
@@ -118,7 +118,7 @@ void test_swap_work( Params& params, bool run )
 // -----------------------------------------------------------------------------
 void test_swap( Params& params, bool run )
 {
-    switch (params.datatype.value()) {
+    switch (params.datatype()) {
         case libtest::DataType::Integer:
             //test_swap_work< int64_t >( params, run );
             throw std::exception();

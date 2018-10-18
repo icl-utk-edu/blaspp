@@ -208,16 +208,16 @@ Params::Params():
     okay      ( "status",              6,    ParamType::Output,  -1,   0,   0, "success indicator" )
 {
     // mark standard set of output fields as used
-    okay  .value();
-    error .value();
-    time  .value();
+    okay();
+    error();
+    time();
 
     // mark framework parameters as used, so they will be accepted on the command line
-    check  .value();
-    //tol  .value();
-    repeat .value();
-    verbose.value();
-    cache  .value();
+    check();
+    //tol();
+    repeat();
+    verbose();
+    cache();
 
     // routine's parameters are marked by the test routine; see main
 }
@@ -271,17 +271,17 @@ int main( int argc, char** argv )
         }
 
         // show align column if it has non-default values
-        if (params.align.size() != 1 || params.align.value() != 1) {
+        if (params.align.size() != 1 || params.align() != 1) {
             params.align.width( 5 );
         }
 
         // run tests
-        int repeat = params.repeat.value();
-        libtest::DataType last = params.datatype.value();
+        int repeat = params.repeat();
+        libtest::DataType last = params.datatype();
         params.header();
         do {
-            if (params.datatype.value() != last) {
-                last = params.datatype.value();
+            if (params.datatype() != last) {
+                last = params.datatype();
                 printf( "\n" );
             }
             for (int iter = 0; iter < repeat; ++iter) {
@@ -291,12 +291,12 @@ int main( int argc, char** argv )
                 catch (const std::exception& ex) {
                     fprintf( stderr, "%s%sError: %s%s\n",
                              ansi_bold, ansi_red, ex.what(), ansi_normal );
-                    params.okay.value() = false;
+                    params.okay() = false;
                 }
 
                 params.print();
                 fflush( stdout );
-                status += ! params.okay.value();
+                status += ! params.okay();
                 params.reset_output();
             }
             if (repeat > 1) {

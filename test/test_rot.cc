@@ -19,16 +19,16 @@ void test_rot_work( Params& params, bool run )
 
     // get & mark input values
     int64_t n       = params.dim.n();
-    int64_t incx    = params.incx.value();
-    int64_t incy    = params.incy.value();
-    int64_t verbose = params.verbose.value();
+    int64_t incx    = params.incx();
+    int64_t incy    = params.incy();
+    int64_t verbose = params.verbose();
 
     // mark non-standard output values
-    params.gflops.value();
-    params.gbytes.value();
-    params.ref_time.value();
-    params.ref_gflops.value();
-    params.ref_gbytes.value();
+    params.gflops();
+    params.gbytes();
+    params.ref_time();
+    params.ref_gflops();
+    params.ref_gbytes();
 
     // adjust header to msec
     params.time.name( "BLAS++\ntime (ms)" );
@@ -77,32 +77,32 @@ void test_rot_work( Params& params, bool run )
     }
 
     // run test
-    libtest::flush_cache( params.cache.value() );
+    libtest::flush_cache( params.cache() );
     double time = get_wtime();
     blas::rot( n, x, incx, y, incy, c, s );
     time = get_wtime() - time;
 
     double gflop = Gflop < TX >::dot( n );
     double gbyte = Gbyte < TX >::dot( n );
-    params.time.value()   = time * 1000;  // msec
-    params.gflops.value() = gflop / time;
-    params.gbytes.value() = gbyte / time;
+    params.time()   = time * 1000;  // msec
+    params.gflops() = gflop / time;
+    params.gbytes() = gbyte / time;
 
     if (verbose >= 1) {
         printf( "x2   = " ); print_vector( n, x, incx );
         printf( "y2   = " ); print_vector( n, y, incy );
     }
 
-    if (params.ref.value() == 'y' || params.check.value() == 'y') {
+    if (params.ref() == 'y' || params.check() == 'y') {
         // run reference
-        libtest::flush_cache( params.cache.value() );
+        libtest::flush_cache( params.cache() );
         time = get_wtime();
         cblas_rot( n, xref, incx, yref, incy, c, s );
         time = get_wtime() - time;
 
-        params.ref_time.value()   = time * 1000;  // msec
-        params.ref_gflops.value() = gflop / time;
-        params.ref_gbytes.value() = gbyte / time;
+        params.ref_time()   = time * 1000;  // msec
+        params.ref_gflops() = gflop / time;
+        params.ref_gbytes() = gbyte / time;
 
         if (verbose >= 1) {
             printf( "xref = " ); print_vector( n, xref, incx );
@@ -123,8 +123,8 @@ void test_rot_work( Params& params, bool run )
         bool okay;
         check_gemm( n, 2, 2, TX(1), TX(0), Anorm, Rnorm, real_t(0),
                     Cref, n, C, n, verbose, &error, &okay );
-        params.error.value() = error;
-        params.okay.value() = okay;
+        params.error() = error;
+        params.okay() = okay;
 
         delete[] C;
         delete[] Cref;
@@ -139,7 +139,7 @@ void test_rot_work( Params& params, bool run )
 // -----------------------------------------------------------------------------
 void test_rot( Params& params, bool run )
 {
-    switch (params.datatype.value()) {
+    switch (params.datatype()) {
         case libtest::DataType::Integer:
             //test_rot_work< int64_t >( params, run );  // todo: generic implementation
             throw std::exception();

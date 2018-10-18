@@ -16,7 +16,7 @@ void test_rotmg_work( Params& params, bool run )
     int64_t n = params.dim.n();
 
     // mark non-standard output values
-    params.ref_time.value();
+    params.ref_time();
 
     // adjust header to msec
     params.time.name( "BLAS++\ntime (ms)" );
@@ -47,23 +47,23 @@ void test_rotmg_work( Params& params, bool run )
     ps_ref = ps;
 
     // run test
-    libtest::flush_cache( params.cache.value() );
+    libtest::flush_cache( params.cache() );
     double time = get_wtime();
     for (int64_t i = 0; i < n; ++i) {
         blas::rotmg( &d1[i], &d2[i], &x1[i], y1[i], &ps[5*i] );
     }
     time = get_wtime() - time;
-    params.time.value() = time * 1000;  // msec
+    params.time() = time * 1000;  // msec
 
-    if (params.check.value() == 'y') {
+    if (params.check() == 'y') {
         // run reference
-        libtest::flush_cache( params.cache.value() );
+        libtest::flush_cache( params.cache() );
         time = get_wtime();
         for (int64_t i = 0; i < n; ++i) {
             cblas_rotmg( &d1_ref[i], &d2_ref[i], &x1_ref[i], y1_ref[i], &ps_ref[5*i] );
         }
         time = get_wtime() - time;
-        params.ref_time.value() = time * 1000;  // msec
+        params.ref_time() = time * 1000;  // msec
 
         // get max error of all outputs
         cblas_axpy(   n, -1.0, &d1[0], 1, &d1_ref[0], 1 );
@@ -85,15 +85,15 @@ void test_rotmg_work( Params& params, bool run )
 
         // error is normally 0, but allow for some rounding just in case.
         real_t u = 0.5 * std::numeric_limits< real_t >::epsilon();
-        params.error.value() = error;
-        params.okay.value() = (error < 10*u);
+        params.error() = error;
+        params.okay() = (error < 10*u);
     }
 }
 
 // -----------------------------------------------------------------------------
 void test_rotmg( Params& params, bool run )
 {
-    switch (params.datatype.value()) {
+    switch (params.datatype()) {
         case libtest::DataType::Integer:
             //test_rotmg_work< int64_t >( params, run );  // todo: generic implementation
             throw std::exception();

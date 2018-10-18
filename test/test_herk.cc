@@ -16,20 +16,20 @@ void test_herk_work( Params& params, bool run )
     typedef long long lld;
 
     // get & mark input values
-    blas::Layout layout = params.layout.value();
-    blas::Op trans  = params.trans.value();
-    blas::Uplo uplo = params.uplo.value();
-    real_t alpha    = params.alpha.value();  // note: real
-    real_t beta     = params.beta.value();   // note: real
+    blas::Layout layout = params.layout();
+    blas::Op trans  = params.trans();
+    blas::Uplo uplo = params.uplo();
+    real_t alpha    = params.alpha();  // note: real
+    real_t beta     = params.beta();   // note: real
     int64_t n       = params.dim.n();
     int64_t k       = params.dim.k();
-    int64_t align   = params.align.value();
-    int64_t verbose = params.verbose.value();
+    int64_t align   = params.align();
+    int64_t verbose = params.verbose();
 
     // mark non-standard output values
-    params.gflops.value();
-    params.ref_time.value();
-    params.ref_gflops.value();
+    params.gflops();
+    params.ref_time();
+    params.ref_gflops();
 
     if ( ! run)
         return;
@@ -91,23 +91,23 @@ void test_herk_work( Params& params, bool run )
     }
 
     // run test
-    libtest::flush_cache( params.cache.value() );
+    libtest::flush_cache( params.cache() );
     double time = get_wtime();
     blas::herk( layout, uplo, trans, n, k,
                 alpha, A, lda, beta, C, ldc );
     time = get_wtime() - time;
 
     double gflop = Gflop < scalar_t >::herk( n, k );
-    params.time.value()   = time;
-    params.gflops.value() = gflop / time;
+    params.time()   = time;
+    params.gflops() = gflop / time;
 
     if (verbose >= 2) {
         printf( "C2 = " ); print_matrix( n, n, C, ldc );
     }
 
-    if (params.ref.value() == 'y' || params.check.value() == 'y') {
+    if (params.ref() == 'y' || params.check() == 'y') {
         // run reference
-        libtest::flush_cache( params.cache.value() );
+        libtest::flush_cache( params.cache() );
         time = get_wtime();
         cblas_herk( cblas_layout_const(layout),
                     cblas_uplo_const(uplo),
@@ -115,8 +115,8 @@ void test_herk_work( Params& params, bool run )
                     n, k, alpha, A, lda, beta, Cref, ldc );
         time = get_wtime() - time;
 
-        params.ref_time.value()   = time;
-        params.ref_gflops.value() = gflop / time;
+        params.ref_time()   = time;
+        params.ref_gflops() = gflop / time;
 
         if (verbose >= 2) {
             printf( "Cref = " ); print_matrix( n, n, Cref, ldc );
@@ -127,8 +127,8 @@ void test_herk_work( Params& params, bool run )
         bool okay;
         check_herk( uplo, n, k, alpha, beta, Anorm, Anorm, Cnorm,
                     Cref, ldc, C, ldc, verbose, &error, &okay );
-        params.error.value() = error;
-        params.okay.value() = okay;
+        params.error() = error;
+        params.okay() = okay;
     }
 
     delete[] A;
@@ -139,7 +139,7 @@ void test_herk_work( Params& params, bool run )
 // -----------------------------------------------------------------------------
 void test_herk( Params& params, bool run )
 {
-    switch (params.datatype.value()) {
+    switch (params.datatype()) {
         case libtest::DataType::Integer:
             //test_herk_work< int64_t >( params, run );
             throw std::exception();

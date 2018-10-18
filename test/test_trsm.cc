@@ -16,21 +16,21 @@ void test_trsm_work( Params& params, bool run )
     typedef long long lld;
 
     // get & mark input values
-    blas::Layout layout = params.layout.value();
-    blas::Side side = params.side.value();
-    blas::Uplo uplo = params.uplo.value();
-    blas::Op trans  = params.trans.value();
-    blas::Diag diag = params.diag.value();
-    scalar_t alpha  = params.alpha.value();
+    blas::Layout layout = params.layout();
+    blas::Side side = params.side();
+    blas::Uplo uplo = params.uplo();
+    blas::Op trans  = params.trans();
+    blas::Diag diag = params.diag();
+    scalar_t alpha  = params.alpha();
     int64_t m       = params.dim.m();
     int64_t n       = params.dim.n();
-    int64_t align   = params.align.value();
-    int64_t verbose = params.verbose.value();
+    int64_t align   = params.align();
+    int64_t verbose = params.verbose();
 
     // mark non-standard output values
-    params.gflops.value();
-    params.ref_time.value();
-    params.ref_gflops.value();
+    params.gflops();
+    params.ref_time();
+    params.ref_gflops();
 
     if (! run)
         return;
@@ -121,22 +121,22 @@ void test_trsm_work( Params& params, bool run )
     }
 
     // run test
-    libtest::flush_cache( params.cache.value() );
+    libtest::flush_cache( params.cache() );
     double time = get_wtime();
     blas::trsm( layout, side, uplo, trans, diag, m, n, alpha, A, lda, B, ldb );
     time = get_wtime() - time;
 
     double gflop = Gflop < scalar_t >::trsm( side, m, n );
-    params.time.value()   = time;
-    params.gflops.value() = gflop / time;
+    params.time()   = time;
+    params.gflops() = gflop / time;
 
     if (verbose >= 2) {
         printf( "X = " ); print_matrix( Bm, Bn, B, ldb );
     }
 
-    if (params.check.value() == 'y') {
+    if (params.check() == 'y') {
         // run reference
-        libtest::flush_cache( params.cache.value() );
+        libtest::flush_cache( params.cache() );
         time = get_wtime();
         cblas_trsm( cblas_layout_const(layout),
                     cblas_side_const(side),
@@ -146,8 +146,8 @@ void test_trsm_work( Params& params, bool run )
                     m, n, alpha, A, lda, Bref, ldb );
         time = get_wtime() - time;
 
-        params.ref_time.value()   = time;
-        params.ref_gflops.value() = gflop / time;
+        params.ref_time()   = time;
+        params.ref_gflops() = gflop / time;
 
         if (verbose >= 2) {
             printf( "Xref = " ); print_matrix( Bm, Bn, Bref, ldb );
@@ -160,8 +160,8 @@ void test_trsm_work( Params& params, bool run )
         bool okay;
         check_gemm( Bm, Bn, Am, alpha, scalar_t(0), Anorm, Bnorm, real_t(0),
                     Bref, ldb, B, ldb, verbose, &error, &okay );
-        params.error.value() = error;
-        params.okay.value() = okay;
+        params.error() = error;
+        params.okay() = okay;
     }
 
     delete[] A;
@@ -172,7 +172,7 @@ void test_trsm_work( Params& params, bool run )
 // -----------------------------------------------------------------------------
 void test_trsm( Params& params, bool run )
 {
-    switch (params.datatype.value()) {
+    switch (params.datatype()) {
         case libtest::DataType::Integer:
             //test_trsm_work< int64_t >( params, run );
             throw std::exception();

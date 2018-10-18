@@ -16,20 +16,20 @@ void test_batch_syrk_work( Params& params, bool run )
     typedef long long lld;
 
     // get & mark input values
-    blas::Layout layout = params.layout.value();
-    blas::Op trans_     = params.trans.value();
-    blas::Uplo uplo_    = params.uplo.value();
-    scalar_t alpha_     = params.alpha.value();
-    scalar_t beta_      = params.beta.value();
+    blas::Layout layout = params.layout();
+    blas::Op trans_     = params.trans();
+    blas::Uplo uplo_    = params.uplo();
+    scalar_t alpha_     = params.alpha();
+    scalar_t beta_      = params.beta();
     int64_t n_          = params.dim.n();
     int64_t k_          = params.dim.k();
-    size_t  batch      = params.batch.value();
-    int64_t align      = params.align.value();
-    int64_t verbose    = params.verbose.value();
+    size_t  batch      = params.batch();
+    int64_t align      = params.align();
+    int64_t verbose    = params.verbose();
 
     // mark non-standard output values
-    params.ref_time.value();
-    params.ref_gflops.value();
+    params.ref_time();
+    params.ref_gflops();
 
     if ( ! run)
         return;
@@ -91,19 +91,19 @@ void test_batch_syrk_work( Params& params, bool run )
     info.resize( 0 );
 
     // run test
-    libtest::flush_cache( params.cache.value() );
+    libtest::flush_cache( params.cache() );
     double time = get_wtime();
     blas::batch::syrk( layout, uplo, trans, n, k, alpha, Aarray, lda, beta, Carray, ldc, 
                        batch, info );
     time = get_wtime() - time;
 
     double gflop = batch * Gflop < scalar_t >::syrk( n_, k_ );
-    params.time.value()   = time;
-    params.gflops.value() = gflop / time;
+    params.time()   = time;
+    params.gflops() = gflop / time;
 
-    if (params.ref.value() == 'y' || params.check.value() == 'y') {
+    if (params.ref() == 'y' || params.check() == 'y') {
         // run reference
-        libtest::flush_cache( params.cache.value() );
+        libtest::flush_cache( params.cache() );
         time = get_wtime();
         for(size_t s = 0; s < batch; s++){
             cblas_syrk( cblas_layout_const(layout),
@@ -113,8 +113,8 @@ void test_batch_syrk_work( Params& params, bool run )
         }
         time = get_wtime() - time;
 
-        params.ref_time.value()   = time;
-        params.ref_gflops.value() = gflop / time;
+        params.ref_time()   = time;
+        params.ref_gflops() = gflop / time;
 
         // check error compared to reference
         real_t err, error = 0;
@@ -127,8 +127,8 @@ void test_batch_syrk_work( Params& params, bool run )
             okay &= ok;
         }
 
-        params.error.value() = error;
-        params.okay.value() = okay;
+        params.error() = error;
+        params.okay() = okay;
     }
 
     delete[] A;
@@ -142,7 +142,7 @@ void test_batch_syrk_work( Params& params, bool run )
 // -----------------------------------------------------------------------------
 void test_batch_syrk( Params& params, bool run )
 {
-    switch (params.datatype.value()) {
+    switch (params.datatype()) {
         case libtest::DataType::Integer:
             //test_batch_syrk_work< int64_t >( params, run );
             throw std::exception();

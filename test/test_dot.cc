@@ -17,16 +17,16 @@ void test_dot_work( Params& params, bool run )
 
     // get & mark input values
     int64_t n       = params.dim.n();
-    int64_t incx    = params.incx.value();
-    int64_t incy    = params.incy.value();
-    int64_t verbose = params.verbose.value();
+    int64_t incx    = params.incx();
+    int64_t incy    = params.incy();
+    int64_t verbose = params.verbose();
 
     // mark non-standard output values
-    params.gflops.value();
-    params.gbytes.value();
-    params.ref_time.value();
-    params.ref_gflops.value();
-    params.ref_gbytes.value();
+    params.gflops();
+    params.gbytes();
+    params.ref_time();
+    params.ref_gflops();
+    params.ref_gbytes();
 
     // adjust header to msec
     params.time.name( "BLAS++\ntime (ms)" );
@@ -68,31 +68,31 @@ void test_dot_work( Params& params, bool run )
     }
 
     // run test
-    libtest::flush_cache( params.cache.value() );
+    libtest::flush_cache( params.cache() );
     double time = get_wtime();
     scalar_t result = blas::dot( n, x, incx, y, incy );
     time = get_wtime() - time;
 
     double gflop = Gflop < scalar_t >::dot( n );
     double gbyte = Gbyte < scalar_t >::dot( n );
-    params.time.value()   = time * 1000;  // msec
-    params.gflops.value() = gflop / time;
-    params.gbytes.value() = gbyte / time;
+    params.time()   = time * 1000;  // msec
+    params.gflops() = gflop / time;
+    params.gbytes() = gbyte / time;
 
     if (verbose >= 1) {
         printf( "dot = %.4e + %.4ei\n", real(result), imag(result) );
     }
 
-    if (params.ref.value() == 'y' || params.check.value() == 'y') {
+    if (params.ref() == 'y' || params.check() == 'y') {
         // run reference
-        libtest::flush_cache( params.cache.value() );
+        libtest::flush_cache( params.cache() );
         time = get_wtime();
         scalar_t ref = cblas_dot( n, x, incx, y, incy );
         time = get_wtime() - time;
 
-        params.ref_time.value()   = time * 1000;  // msec
-        params.ref_gflops.value() = gflop / time;
-        params.ref_gbytes.value() = gflop / time;
+        params.ref_time()   = time * 1000;  // msec
+        params.ref_gflops() = gflop / time;
+        params.ref_gbytes() = gflop / time;
 
         if (verbose >= 1) {
             printf( "ref = %.4e + %.4ei\n", real(ref), imag(ref) );
@@ -105,8 +105,8 @@ void test_dot_work( Params& params, bool run )
         bool okay;
         check_gemm( 1, 1, n, scalar_t(1), scalar_t(0), Xnorm, Ynorm, real_t(0),
                     &ref, 1, &result, 1, verbose, &error, &okay );
-        params.error.value() = error;
-        params.okay.value() = okay;
+        params.error() = error;
+        params.okay() = okay;
     }
 
     delete[] x;
@@ -116,7 +116,7 @@ void test_dot_work( Params& params, bool run )
 // -----------------------------------------------------------------------------
 void test_dot( Params& params, bool run )
 {
-    switch (params.datatype.value()) {
+    switch (params.datatype()) {
         case libtest::DataType::Integer:
             //test_dot_work< int64_t >( params, run );
             throw std::exception();
