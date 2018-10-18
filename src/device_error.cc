@@ -2,15 +2,22 @@
 
 // ----------------------------------------------------------------------------- 
 // return true on runtime errors 
-bool blas::is_device_error(device_error_t error){ return (error != DevSuccess); }
+bool blas::is_device_error(device_error_t error)
+{
+    return (error != DevSuccess);
+}
 
 // ----------------------------------------------------------------------------- 
 // return true on blas errors
-bool blas::is_device_error(device_blas_status_t status){ return (status != DevBlasSuccess); }
+bool blas::is_device_error(device_blas_status_t status)
+{
+    return (status != DevBlasSuccess);
+}
 
 // ----------------------------------------------------------------------------- 
 // return string of runtime error  
-const char* blas::device_error_string(device_error_t error){
+const char* blas::device_error_string(device_error_t error)
+{
     #ifdef BLASPP_WITH_CUBLAS
     return cudaGetErrorString( error );
     #elif defined(HAVE_ROCBLAS)
@@ -20,8 +27,9 @@ const char* blas::device_error_string(device_error_t error){
 
 // ----------------------------------------------------------------------------- 
 // return string of blas error 
-const char* blas::device_error_string(device_blas_status_t status){
-    switch( status ) {
+const char* blas::device_error_string(device_blas_status_t status)
+{
+    switch (status) {
     #ifdef BLASPP_WITH_CUBLAS
         case CUBLAS_STATUS_SUCCESS:
             return "device blas: success";

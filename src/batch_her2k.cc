@@ -20,7 +20,7 @@ void blas::batch::her2k(
 {
     blas_error_if( batch < 0 );
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
-    if(info.size() > 0){
+    if (info.size() > 0) {
         // perform error checking
         blas::batch::her2k_check<float, float>( 
                         layout, uplo, trans, 
@@ -32,7 +32,7 @@ void blas::batch::her2k(
     }
 
     #pragma omp parallel for schedule(dynamic)
-    for(size_t i = 0; i < batch; i++){ 
+    for (size_t i = 0; i < batch; ++i) { 
         Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
         Op   trans_  = blas::batch::extract<Op>(trans, i);
         int64_t n_   = blas::batch::extract<int64_t>(n, i);
@@ -70,7 +70,7 @@ void blas::batch::her2k(
 {
     blas_error_if( batch < 0 );
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
-    if(info.size() > 0){
+    if (info.size() > 0) {
         // perform error checking
         blas::batch::her2k_check<double, double>( 
                         layout, uplo, trans, 
@@ -82,7 +82,7 @@ void blas::batch::her2k(
     }
 
     #pragma omp parallel for schedule(dynamic)
-    for(size_t i = 0; i < batch; i++){ 
+    for (size_t i = 0; i < batch; ++i) { 
         Uplo uplo_    = blas::batch::extract<Uplo>(uplo, i);
         Op   trans_   = blas::batch::extract<Op>(trans, i);
         int64_t n_    = blas::batch::extract<int64_t>(n, i);
@@ -120,7 +120,7 @@ void blas::batch::her2k(
 {
     blas_error_if( batch < 0 );
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
-    if(info.size() > 0){
+    if (info.size() > 0) {
         // perform error checking
         blas::batch::her2k_check<std::complex<float>, float>( 
                         layout, uplo, trans, 
@@ -132,7 +132,7 @@ void blas::batch::her2k(
     }
 
     #pragma omp parallel for schedule(dynamic)
-    for(size_t i = 0; i < batch; i++){
+    for (size_t i = 0; i < batch; ++i) {
         Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
         Op   trans_  = blas::batch::extract<Op>(trans, i);
         int64_t n_   = blas::batch::extract<int64_t>(n, i);
@@ -170,7 +170,7 @@ void blas::batch::her2k(
 {
     blas_error_if( batch < 0 );
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
-    if(info.size() > 0){
+    if (info.size() > 0) {
         // perform error checking
         blas::batch::her2k_check<std::complex<double>, double>( 
                         layout, uplo, trans, 
@@ -182,7 +182,7 @@ void blas::batch::her2k(
     }
 
     #pragma omp parallel for schedule(dynamic)
-    for(size_t i = 0; i < batch; i++){ 
+    for (size_t i = 0; i < batch; ++i) { 
         Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
         Op   trans_  = blas::batch::extract<Op>(trans, i);
         int64_t n_   = blas::batch::extract<int64_t>(n, i);

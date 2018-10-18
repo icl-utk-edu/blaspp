@@ -2,7 +2,7 @@
 #include <vector>
 /** device blas++ **/
 
-namespace blas{
+namespace blas {
 
 // =============================================================================
 // Level 1 BLAS 
@@ -462,7 +462,7 @@ void syr2k(
     std::complex<double>       *dC, int64_t lddc, 
     blas::Queue &queue );
 
-namespace batch{
+namespace batch {
 
 // =============================================================================
 // Level 1 Batch BLAS 

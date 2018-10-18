@@ -31,7 +31,7 @@ void test_batch_syr2k_work( Params& params, bool run )
     params.ref_time();
     params.ref_gflops();
 
-    if ( ! run)
+    if (! run)
         return;
 
     // setup
@@ -56,7 +56,7 @@ void test_batch_syr2k_work( Params& params, bool run )
     std::vector<TC*>    Carray( batch );
     std::vector<TC*> Crefarray( batch );
 
-    for(size_t s = 0; s < batch; s++){
+    for (size_t s = 0; s < batch; ++s) {
          Aarray[s]    =  A   + s * size_A;
          Barray[s]    =  B   + s * size_B;
          Carray[s]    =  C   + s * size_C;
@@ -90,7 +90,7 @@ void test_batch_syr2k_work( Params& params, bool run )
     real_t* Bnorm = new real_t[ batch ];
     real_t* Cnorm = new real_t[ batch ];
     
-    for(size_t s = 0; s < batch; s++){
+    for (size_t s = 0; s < batch; ++s) {
         Anorm[s] = lapack_lange( "f", Am, An, Aarray[s], lda_, work );
         Bnorm[s] = lapack_lange( "f", Am, An, Barray[s], ldb_, work );
         Cnorm[s] = lapack_lansy( "f", uplo2str(uplo_), n_, Carray[s], ldc_, work );
@@ -114,7 +114,7 @@ void test_batch_syr2k_work( Params& params, bool run )
         // run reference
         libtest::flush_cache( params.cache() );
         time = get_wtime();
-        for(size_t s = 0; s < batch; s++){
+        for (size_t s = 0; s < batch; ++s) {
             cblas_syr2k( cblas_layout_const(layout),
                          cblas_uplo_const(uplo_),
                          cblas_trans_const(trans_),
@@ -128,7 +128,7 @@ void test_batch_syr2k_work( Params& params, bool run )
         // check error compared to reference
         real_t err, error = 0;
         bool ok, okay = true;
-        for(size_t s = 0; s < batch; s++){
+        for (size_t s = 0; s < batch; ++s) {
             check_herk( uplo_, n_, 2*k_, alpha_, beta_, Anorm[s], Bnorm[s], Cnorm[s],
                         Crefarray[s], ldc_, Carray[s], ldc_, verbose, &err, &ok );
 

@@ -35,7 +35,7 @@ void test_device_batch_gemm_work( Params& params, bool run )
     params.ref_time();
     params.ref_gflops();
 
-    if ( ! run)
+    if (! run)
         return;
 
     // setup
@@ -77,7 +77,7 @@ void test_device_batch_gemm_work( Params& params, bool run )
     std::vector<TB*>   dBarray( batch );
     std::vector<TC*>   dCarray( batch );
 
-    for(size_t s = 0; s < batch; s++){
+    for (size_t s = 0; s < batch; ++s) {
          Aarray[s]   =  A   + s * size_A;
          Barray[s]   =  B   + s * size_B;
          Carray[s]   =  C   + s * size_C;
@@ -120,7 +120,7 @@ void test_device_batch_gemm_work( Params& params, bool run )
     real_t* Bnorm = new real_t[ batch ];
     real_t* Cnorm = new real_t[ batch ];
     
-    for(size_t s = 0; s < batch; s++){
+    for (size_t s = 0; s < batch; ++s) {
         Anorm[s] = lapack_lange( "f", Am, An, Aarray[s], lda_, work );
         Bnorm[s] = lapack_lange( "f", Bm, Bn, Barray[s], ldb_, work );
         Cnorm[s] = lapack_lange( "f", Cm, Cn, Carray[s], ldc_, work );
@@ -147,7 +147,7 @@ void test_device_batch_gemm_work( Params& params, bool run )
         // run reference
         libtest::flush_cache( params.cache() );
         time = get_wtime();
-        for(size_t s = 0; s < batch; s++){
+        for (size_t s = 0; s < batch; ++s) {
             cblas_gemm( cblas_layout_const(layout),
                         cblas_trans_const(transA_),
                         cblas_trans_const(transB_),
@@ -161,7 +161,7 @@ void test_device_batch_gemm_work( Params& params, bool run )
         // check error compared to reference
         real_t err, error = 0;
         bool ok, okay = true;
-        for(size_t s = 0; s < batch; s++){
+        for (size_t s = 0; s < batch; ++s) {
             check_gemm( Cm, Cn, k_, alpha_, beta_, Anorm[s], Bnorm[s], Cnorm[s],
                         Crefarray[s], ldc_, Carray[s], ldc_, verbose, &err, &ok );
             error = max(error, err);

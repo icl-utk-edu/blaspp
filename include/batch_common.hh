@@ -4,14 +4,14 @@
 #include "blas_util.hh"
 #include <vector>
 
-namespace blas{
-
-namespace batch{
+namespace blas {
+namespace batch {
 
 #define INTERNAL_INFO_DEFAULT    (-1000)
 
 template<typename T>
-T extract(std::vector<T> const &ivector, const int64_t index){
+T extract(std::vector<T> const &ivector, const int64_t index)
+{
     return (ivector.size() == 1) ? ivector[0] : ivector[index];
 }
 
@@ -63,15 +63,15 @@ void gemm_check(
              );
 
     int64_t* internal_info; 
-    if(info.size() == 1){
+    if (info.size() == 1) {
         internal_info = new int64_t[batchCount];
     }
-    else{
+    else {
         internal_info = &info[0];
     }
 
     #pragma omp parallel for schedule(dynamic)
-    for(size_t i = 0; i < batchCount; i++){
+    for (size_t i = 0; i < batchCount; ++i) {
         Op transA_ = extract<Op>(transA, i);
         Op transB_ = extract<Op>(transB, i);
         
@@ -88,30 +88,30 @@ void gemm_check(
         int64_t nrowC_ = (layout == Layout::ColMajor) ? k_ : n_;
         
         internal_info[i] = 0;
-        if(transA_ != Op::NoTrans && 
+        if (transA_ != Op::NoTrans && 
            transA_ != Op::Trans   && 
            transA_ != Op::ConjTrans) {
             internal_info[i] = -2;
         }
-        else if(transB_ != Op::NoTrans && 
+        else if (transB_ != Op::NoTrans && 
                 transB_ != Op::Trans   && 
                 transB_ != Op::ConjTrans) {
             internal_info[i] = -3;
         }
-        else if(m_ < 0) internal_info[i] = -4;
-        else if(n_ < 0) internal_info[i] = -5;
-        else if(k_ < 0) internal_info[i] = -6;
-        else if(lda_ < nrowA_) internal_info[i] = -8;
-        else if(ldb_ < nrowB_) internal_info[i] = -11;
-        else if(ldc_ < nrowC_) internal_info[i] = -14;
+        else if (m_ < 0) internal_info[i] = -4;
+        else if (n_ < 0) internal_info[i] = -5;
+        else if (k_ < 0) internal_info[i] = -6;
+        else if (lda_ < nrowA_) internal_info[i] = -8;
+        else if (ldb_ < nrowB_) internal_info[i] = -11;
+        else if (ldc_ < nrowC_) internal_info[i] = -14;
     }
         
-    if(info.size() == 1){
+    if (info.size() == 1) {
         // do a reduction that finds the first argument to encounter an error
         int64_t lerror = INTERNAL_INFO_DEFAULT; 
         #pragma omp parallel for reduction(max:lerror)
-        for(size_t i = 0; i < batchCount; i++){
-            if( internal_info[i] == 0) continue;    // skip problems that passed error checks
+        for (size_t i = 0; i < batchCount; ++i) {
+            if (internal_info[i] == 0) continue;    // skip problems that passed error checks
             lerror = std::max(lerror, internal_info[i]);
         }
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
@@ -122,10 +122,10 @@ void gemm_check(
         // throw an exception if needed
         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
-    else{
+    else {
         int64_t info_ = 0;
         #pragma omp parallel for reduction(+:info_)
-        for(size_t i = 0; i < batchCount; i++){
+        for (size_t i = 0; i < batchCount; ++i) {
             info_ += info[i];
         }
         blas_error_if_msg( info_ != 0, "One or more non-zero entry in vector info");
@@ -176,15 +176,15 @@ void trsm_check(
                                       lda.size()   > 1 || ldb.size()  > 1 )); 
     
     int64_t* internal_info; 
-    if(info.size() == 1){
+    if (info.size() == 1) {
         internal_info = new int64_t[batchCount];
     }
-    else{
+    else {
         internal_info = &info[0];
     }
 
     #pragma omp parallel for schedule(dynamic)
-    for(size_t i = 0; i < batchCount; i++){
+    for (size_t i = 0; i < batchCount; ++i) {
         Side  side_ = extract<Side>(side , i);
         Uplo  uplo_ = extract<Uplo>(uplo , i);
         Op   trans_ = extract<Op  >(trans, i);
@@ -200,30 +200,30 @@ void trsm_check(
         int64_t nrowB_ = (layout == Layout::ColMajor) ? m_ : n_;
 
         internal_info[i] = 0;
-        if(side_ != Side::Left && side_ != Side::Right) {
+        if (side_ != Side::Left && side_ != Side::Right) {
             internal_info[i] = -2;
         }
-        else if(uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
+        else if (uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
             internal_info[i] = -3;
         }
-        else if(trans_ != Op::NoTrans && trans_ != Op::Trans && trans_ != Op::ConjTrans){
+        else if (trans_ != Op::NoTrans && trans_ != Op::Trans && trans_ != Op::ConjTrans) {
             internal_info[i] = -4;
         }
-        else if( diag_ != Diag::NonUnit && diag_ != Diag::Unit){
+        else if (diag_ != Diag::NonUnit && diag_ != Diag::Unit) {
             internal_info[i] = -5;
         }
-        else if(m_ < 0) internal_info[i] = -6;
-        else if(n_ < 0) internal_info[i] = -7;
-        else if(lda_ < nrowA_) internal_info[i] = -10;
-        else if(ldb_ < nrowB_) internal_info[i] = -12;
+        else if (m_ < 0) internal_info[i] = -6;
+        else if (n_ < 0) internal_info[i] = -7;
+        else if (lda_ < nrowA_) internal_info[i] = -10;
+        else if (ldb_ < nrowB_) internal_info[i] = -12;
     }
 
-    if(info.size() == 1){
+    if (info.size() == 1) {
         // do a reduction that finds the first argument to encounter an error
         int64_t lerror = INTERNAL_INFO_DEFAULT; 
         #pragma omp parallel for reduction(max:lerror)
-        for(size_t i = 0; i < batchCount; i++){
-            if( internal_info[i] == 0) continue;    // skip problems that passed error checks
+        for (size_t i = 0; i < batchCount; ++i) {
+            if (internal_info[i] == 0) continue;    // skip problems that passed error checks
             lerror = std::max(lerror, internal_info[i]);
         }
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
@@ -234,10 +234,10 @@ void trsm_check(
         // throw an exception if needed
          blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
-    else{
+    else {
         int64_t info_ = 0;
         #pragma omp parallel for reduction(+:info_)
-        for(size_t i = 0; i < batchCount; i++){
+        for (size_t i = 0; i < batchCount; ++i) {
             info_ += info[i];
         }
          blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
@@ -288,15 +288,15 @@ void trmm_check(
                                       lda.size()   > 1 || ldb.size()  > 1 )); 
     
     int64_t* internal_info; 
-    if(info.size() == 1){
+    if (info.size() == 1) {
         internal_info = new int64_t[batchCount];
     }
-    else{
+    else {
         internal_info = &info[0];
     }
 
     #pragma omp parallel for schedule(dynamic)
-    for(size_t i = 0; i < batchCount; i++){
+    for (size_t i = 0; i < batchCount; ++i) {
         Side  side_ = extract<Side>(side , i);
         Uplo  uplo_ = extract<Uplo>(uplo , i);
         Op   trans_ = extract<Op  >(trans, i);
@@ -312,30 +312,30 @@ void trmm_check(
         int64_t nrowB_ = (layout == Layout::ColMajor) ? m_ : n_;
 
         internal_info[i] = 0;
-        if(side_ != Side::Left && side_ != Side::Right) {
+        if (side_ != Side::Left && side_ != Side::Right) {
             internal_info[i] = -2;
         }
-        else if(uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
+        else if (uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
             internal_info[i] = -3;
         }
-        else if(trans_ != Op::NoTrans && trans_ != Op::Trans && trans_ != Op::ConjTrans){
+        else if (trans_ != Op::NoTrans && trans_ != Op::Trans && trans_ != Op::ConjTrans) {
             internal_info[i] = -4;
         }
-        else if( diag_ != Diag::NonUnit && diag_ != Diag::Unit){
+        else if (diag_ != Diag::NonUnit && diag_ != Diag::Unit) {
             internal_info[i] = -5;
         }
-        else if(m_ < 0) internal_info[i] = -6;
-        else if(n_ < 0) internal_info[i] = -7;
-        else if(lda_ < nrowA_) internal_info[i] = -10;
-        else if(ldb_ < nrowB_) internal_info[i] = -12;
+        else if (m_ < 0) internal_info[i] = -6;
+        else if (n_ < 0) internal_info[i] = -7;
+        else if (lda_ < nrowA_) internal_info[i] = -10;
+        else if (ldb_ < nrowB_) internal_info[i] = -12;
     }
 
-    if(info.size() == 1){
+    if (info.size() == 1) {
         // do a reduction that finds the first argument to encounter an error
         int64_t lerror = INTERNAL_INFO_DEFAULT; 
         #pragma omp parallel for reduction(max:lerror)
-        for(size_t i = 0; i < batchCount; i++){
-            if( internal_info[i] == 0) continue;    // skip problems that passed error checks
+        for (size_t i = 0; i < batchCount; ++i) {
+            if (internal_info[i] == 0) continue;    // skip problems that passed error checks
             lerror = std::max(lerror, internal_info[i]);
         }
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
@@ -344,15 +344,15 @@ void trmm_check(
         delete[] internal_info; 
 
         // throw an exception if needed
-         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
+        blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
-    else{
+    else {
         int64_t info_ = 0;
         #pragma omp parallel for reduction(+:info_)
-        for(size_t i = 0; i < batchCount; i++){
+        for (size_t i = 0; i < batchCount; ++i) {
             info_ += info[i];
         }
-         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
+        blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
 }
 
@@ -415,15 +415,15 @@ void hemm_check(
                    ldc.size()   > 1 ));
     
     int64_t* internal_info; 
-    if(info.size() == 1){
+    if (info.size() == 1) {
         internal_info = new int64_t[batchCount];
     }
-    else{
+    else {
         internal_info = &info[0];
     }
 
     #pragma omp parallel for schedule(dynamic)
-    for(size_t i = 0; i < batchCount; i++){
+    for (size_t i = 0; i < batchCount; ++i) {
         Side  side_ = extract<Side>(side , i);
         Uplo  uplo_ = extract<Uplo>(uplo , i);
 
@@ -439,25 +439,25 @@ void hemm_check(
         int64_t nrowC_ = (layout == Layout::ColMajor) ? m_ : n_;
 
         internal_info[i] = 0;
-        if(side_ != Side::Left && side_ != Side::Right) {
+        if (side_ != Side::Left && side_ != Side::Right) {
             internal_info[i] = -2;
         }
-        else if(uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
+        else if (uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
             internal_info[i] = -3;
         }
-        else if(m_ < 0) internal_info[i] = -4;
-        else if(n_ < 0) internal_info[i] = -5;
-        else if(lda_ < nrowA_) internal_info[i] = -8;
-        else if(ldb_ < nrowB_) internal_info[i] = -10;
-        else if(ldc_ < nrowC_) internal_info[i] = -13;
+        else if (m_ < 0) internal_info[i] = -4;
+        else if (n_ < 0) internal_info[i] = -5;
+        else if (lda_ < nrowA_) internal_info[i] = -8;
+        else if (ldb_ < nrowB_) internal_info[i] = -10;
+        else if (ldc_ < nrowC_) internal_info[i] = -13;
     }
 
-    if(info.size() == 1){
+    if (info.size() == 1) {
         // do a reduction that finds the first argument to encounter an error
         int64_t lerror = INTERNAL_INFO_DEFAULT; 
         #pragma omp parallel for reduction(max:lerror)
-        for(size_t i = 0; i < batchCount; i++){
-            if( internal_info[i] == 0) continue;    // skip problems that passed error checks
+        for (size_t i = 0; i < batchCount; ++i) {
+            if (internal_info[i] == 0) continue;    // skip problems that passed error checks
             lerror = std::max(lerror, internal_info[i]);
         }
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
@@ -468,10 +468,10 @@ void hemm_check(
         // throw an exception if needed
          blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
-    else{
+    else {
         int64_t info_ = 0;
         #pragma omp parallel for reduction(+:info_)
-        for(size_t i = 0; i < batchCount; i++){
+        for (size_t i = 0; i < batchCount; ++i) {
             info_ += info[i];
         }
          blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
@@ -527,15 +527,15 @@ void herk_check(
                    ldc.size()   > 1 ));
 
     int64_t* internal_info; 
-    if(info.size() == 1){
+    if (info.size() == 1) {
         internal_info = new int64_t[batchCount];
     }
-    else{
+    else {
         internal_info = &info[0];
     }
 
     #pragma omp parallel for schedule(dynamic)
-    for(size_t i = 0; i < batchCount; i++){
+    for (size_t i = 0; i < batchCount; ++i) {
         Uplo  uplo_ = extract<Uplo>(uplo , i);
         Op   trans_ = extract<Op>(trans , i);
 
@@ -548,24 +548,24 @@ void herk_check(
         int64_t nrowA_ = ((trans_ == Op::NoTrans) ^ (layout == Layout::RowMajor)) ? n_ : k_;
 
         internal_info[i] = 0;
-        if(uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
+        if (uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
             internal_info[i] = -2;
         }
-        else if(trans_ != Op::NoTrans && trans_ != Op::ConjTrans) {
+        else if (trans_ != Op::NoTrans && trans_ != Op::ConjTrans) {
             internal_info[i] = -3;
         }
-        else if(n_ < 0) internal_info[i] = -4;
-        else if(k_ < 0) internal_info[i] = -5;
-        else if(lda_ < nrowA_) internal_info[i] = -8;
-        else if(ldc_ < n_ ) internal_info[i] = -11;
+        else if (n_ < 0) internal_info[i] = -4;
+        else if (k_ < 0) internal_info[i] = -5;
+        else if (lda_ < nrowA_) internal_info[i] = -8;
+        else if (ldc_ < n_) internal_info[i] = -11;
     }
 
-    if(info.size() == 1){
+    if (info.size() == 1) {
         // do a reduction that finds the first argument to encounter an error
         int64_t lerror = INTERNAL_INFO_DEFAULT; 
         #pragma omp parallel for reduction(max:lerror)
-        for(size_t i = 0; i < batchCount; i++){
-            if( internal_info[i] == 0) continue;    // skip problems that passed error checks
+        for (size_t i = 0; i < batchCount; ++i) {
+            if (internal_info[i] == 0) continue;    // skip problems that passed error checks
             lerror = std::max(lerror, internal_info[i]);
         }
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
@@ -576,10 +576,10 @@ void herk_check(
         // throw an exception if needed
          blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
-    else{
+    else {
         int64_t info_ = 0;
         #pragma omp parallel for reduction(+:info_)
-        for(size_t i = 0; i < batchCount; i++){
+        for (size_t i = 0; i < batchCount; ++i) {
             info_ += info[i];
         }
          blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
@@ -654,15 +654,15 @@ void syrk_check(
                    ldc.size()   > 1 ));
 
     int64_t* internal_info; 
-    if(info.size() == 1){
+    if (info.size() == 1) {
         internal_info = new int64_t[batchCount];
     }
-    else{
+    else {
         internal_info = &info[0];
     }
 
     #pragma omp parallel for schedule(dynamic)
-    for(size_t i = 0; i < batchCount; i++){
+    for (size_t i = 0; i < batchCount; ++i) {
         Uplo  uplo_ = extract<Uplo>(uplo , i);
         Op   trans_ = extract<Op>(trans , i);
 
@@ -675,24 +675,24 @@ void syrk_check(
         int64_t nrowA_ = ((trans_ == Op::NoTrans) ^ (layout == Layout::RowMajor)) ? n_ : k_;
 
         internal_info[i] = 0;
-        if(uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
+        if (uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
             internal_info[i] = -2;
         }
-        else if(trans_ != Op::NoTrans && trans_ != Op::Trans) {
+        else if (trans_ != Op::NoTrans && trans_ != Op::Trans) {
             internal_info[i] = -3;
         }
-        else if(n_ < 0) internal_info[i] = -4;
-        else if(k_ < 0) internal_info[i] = -5;
-        else if(lda_ < nrowA_) internal_info[i] = -8;
-        else if(ldc_ < n_ ) internal_info[i] = -11;
+        else if (n_ < 0) internal_info[i] = -4;
+        else if (k_ < 0) internal_info[i] = -5;
+        else if (lda_ < nrowA_) internal_info[i] = -8;
+        else if (ldc_ < n_) internal_info[i] = -11;
     }
 
-    if(info.size() == 1){
+    if (info.size() == 1) {
         // do a reduction that finds the first argument to encounter an error
         int64_t lerror = INTERNAL_INFO_DEFAULT; 
         #pragma omp parallel for reduction(max:lerror)
-        for(size_t i = 0; i < batchCount; i++){
-            if( internal_info[i] == 0) continue;    // skip problems that passed error checks
+        for (size_t i = 0; i < batchCount; ++i) {
+            if (internal_info[i] == 0) continue;    // skip problems that passed error checks
             lerror = std::max(lerror, internal_info[i]);
         }
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
@@ -703,10 +703,10 @@ void syrk_check(
         // throw an exception if needed
          blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
-    else{
+    else {
         int64_t info_ = 0;
         #pragma omp parallel for reduction(+:info_)
-        for(size_t i = 0; i < batchCount; i++){
+        for (size_t i = 0; i < batchCount; ++i) {
             info_ += info[i];
         }
          blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
@@ -773,15 +773,15 @@ void her2k_check(
                    ldc.size()   > 1 ));
 
     int64_t* internal_info; 
-    if(info.size() == 1){
+    if (info.size() == 1) {
         internal_info = new int64_t[batchCount];
     }
-    else{
+    else {
         internal_info = &info[0];
     }
 
     #pragma omp parallel for schedule(dynamic)
-    for(size_t i = 0; i < batchCount; i++){
+    for (size_t i = 0; i < batchCount; ++i) {
         Uplo  uplo_ = extract<Uplo>(uplo , i);
         Op   trans_ = extract<Op>(trans , i);
 
@@ -796,25 +796,25 @@ void her2k_check(
         int64_t nrowB_ = ((trans_ == Op::NoTrans) ^ (layout == Layout::RowMajor)) ? n_ : k_;
 
         internal_info[i] = 0;
-        if(uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
+        if (uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
             internal_info[i] = -2;
         }
-        else if(trans_ != Op::NoTrans && trans_ != Op::ConjTrans) {
+        else if (trans_ != Op::NoTrans && trans_ != Op::ConjTrans) {
             internal_info[i] = -3;
         }
-        else if(n_ < 0) internal_info[i] = -4;
-        else if(k_ < 0) internal_info[i] = -5;
-        else if(lda_ < nrowA_) internal_info[i] = -8;
-        else if(ldb_ < nrowB_) internal_info[i] = -10;
-        else if(ldc_ < n_ ) internal_info[i] = -13;
+        else if (n_ < 0) internal_info[i] = -4;
+        else if (k_ < 0) internal_info[i] = -5;
+        else if (lda_ < nrowA_) internal_info[i] = -8;
+        else if (ldb_ < nrowB_) internal_info[i] = -10;
+        else if (ldc_ < n_) internal_info[i] = -13;
     }
 
-    if(info.size() == 1){
+    if (info.size() == 1) {
         // do a reduction that finds the first argument to encounter an error
         int64_t lerror = INTERNAL_INFO_DEFAULT; 
         #pragma omp parallel for reduction(max:lerror)
-        for(size_t i = 0; i < batchCount; i++){
-            if( internal_info[i] == 0) continue;    // skip problems that passed error checks
+        for (size_t i = 0; i < batchCount; ++i) {
+            if (internal_info[i] == 0) continue;    // skip problems that passed error checks
             lerror = std::max(lerror, internal_info[i]);
         }
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
@@ -825,10 +825,10 @@ void her2k_check(
         // throw an exception if needed
          blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
-    else{
+    else {
         int64_t info_ = 0;
         #pragma omp parallel for reduction(+:info_)
-        for(size_t i = 0; i < batchCount; i++){
+        for (size_t i = 0; i < batchCount; ++i) {
             info_ += info[i];
         }
          blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
@@ -895,15 +895,15 @@ void syr2k_check(
                    ldc.size()   > 1 ));
 
     int64_t* internal_info; 
-    if(info.size() == 1){
+    if (info.size() == 1) {
         internal_info = new int64_t[batchCount];
     }
-    else{
+    else {
         internal_info = &info[0];
     }
 
     #pragma omp parallel for schedule(dynamic)
-    for(size_t i = 0; i < batchCount; i++){
+    for (size_t i = 0; i < batchCount; ++i) {
         Uplo  uplo_ = extract<Uplo>(uplo , i);
         Op   trans_ = extract<Op>(trans , i);
 
@@ -918,25 +918,25 @@ void syr2k_check(
         int64_t nrowB_ = ((trans_ == Op::NoTrans) ^ (layout == Layout::RowMajor)) ? n_ : k_;
 
         internal_info[i] = 0;
-        if(uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
+        if (uplo_ != Uplo::Lower && uplo_ != Uplo::Upper) {
             internal_info[i] = -2;
         }
-        else if(trans_ != Op::NoTrans && trans_ != Op::Trans) {
+        else if (trans_ != Op::NoTrans && trans_ != Op::Trans) {
             internal_info[i] = -3;
         }
-        else if(n_ < 0) internal_info[i] = -4;
-        else if(k_ < 0) internal_info[i] = -5;
-        else if(lda_ < nrowA_) internal_info[i] = -8;
-        else if(ldb_ < nrowB_) internal_info[i] = -10;
-        else if(ldc_ < n_ ) internal_info[i] = -13;
+        else if (n_ < 0) internal_info[i] = -4;
+        else if (k_ < 0) internal_info[i] = -5;
+        else if (lda_ < nrowA_) internal_info[i] = -8;
+        else if (ldb_ < nrowB_) internal_info[i] = -10;
+        else if (ldc_ < n_) internal_info[i] = -13;
     }
 
-    if(info.size() == 1){
+    if (info.size() == 1) {
         // do a reduction that finds the first argument to encounter an error
         int64_t lerror = INTERNAL_INFO_DEFAULT; 
         #pragma omp parallel for reduction(max:lerror)
-        for(size_t i = 0; i < batchCount; i++){
-            if( internal_info[i] == 0) continue;    // skip problems that passed error checks
+        for (size_t i = 0; i < batchCount; ++i) {
+            if (internal_info[i] == 0) continue;    // skip problems that passed error checks
             lerror = std::max(lerror, internal_info[i]);
         }
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
@@ -947,10 +947,10 @@ void syr2k_check(
         // throw an exception if needed
          blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
-    else{
+    else {
         int64_t info_ = 0;
         #pragma omp parallel for reduction(+:info_)
-        for(size_t i = 0; i < batchCount; i++){
+        for (size_t i = 0; i < batchCount; ++i) {
             info_ += info[i];
         }
          blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );

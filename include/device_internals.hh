@@ -63,25 +63,37 @@ const char* device_error_string(device_blas_status_t status);
 
     // blaspp aborts on device errors
     #define device_error_check( error ) \
-        do{ device_error_t e = error; \
-            blas::internal::abort_if( blas::is_device_error(e), __func__, "%s", blas::device_error_string(e) ); } while(0)
+        do { \
+            device_error_t e = error; \
+            blas::internal::abort_if( blas::is_device_error(e), __func__, \
+                                      "%s", blas::device_error_string(e) ); \
+        } while(0)
 
     // blaspp aborts on device blas errors
     #define device_blas_check( status )  \
-        do{ device_blas_status_t s = status; \
-            blas::internal::abort_if( blas::is_device_error(s), __func__, "%s", blas::device_error_string(s) ); } while(0)
+        do { \
+            device_blas_status_t s = status; \
+            blas::internal::abort_if( blas::is_device_error(s), __func__, \
+                                      "%s", blas::device_error_string(s) ); \
+        } while(0)
 
 #else
 
     // blaspp throws device errors (default)
     #define device_error_check( error ) \
-        do{ device_error_t e = error; \
-            blas::internal::throw_if( blas::is_device_error(e), blas::device_error_string(e), __func__ ); } while(0)
+        do { \
+            device_error_t e = error; \
+            blas::internal::throw_if( blas::is_device_error(e), \
+                                      blas::device_error_string(e), __func__ ); \
+        } while(0)
 
     // blaspp throws device blas errors (default)
     #define device_blas_check( status ) \
-        do{ device_blas_status_t s = status; \
-            blas::internal::throw_if( blas::is_device_error(s), blas::device_error_string(s), __func__ ); } while(0)
+        do { \
+            device_blas_status_t s = status; \
+            blas::internal::throw_if( blas::is_device_error(s),
+                                      blas::device_error_string(s), __func__ ); \
+        } while(0)
 
 #endif
 
@@ -106,7 +118,8 @@ void device_free_pinned(void* ptr);
 
 /// @return a device pointer to an allocated memory space 
 template<typename T> 
-T* device_malloc(int64_t nelements){
+T* device_malloc(int64_t nelements)
+{
     T* ptr = NULL;
     #ifdef BLASPP_WITH_CUBLAS
     device_error_check( cudaMalloc((void**)&ptr, nelements * sizeof(T)) );
@@ -118,7 +131,8 @@ T* device_malloc(int64_t nelements){
 
 /// @return a host pointer to a pinned memory space 
 template<typename T>   
-T* device_malloc_pinned(int64_t nelements){
+T* device_malloc_pinned(int64_t nelements)
+{
     T* ptr = NULL;
     #ifdef BLASPP_WITH_CUBLAS
     device_error_check( cudaMallocHost((void**)&ptr, nelements * sizeof(T)) );
@@ -131,7 +145,10 @@ T* device_malloc_pinned(int64_t nelements){
 
 // device set matrix
 template<typename T>  
-void device_setmatrix(int64_t m, int64_t n, T* hostPtr, int64_t ldh, T* devPtr, int64_t ldd, Queue &queue){
+void device_setmatrix(int64_t m, int64_t n,
+                      T* hostPtr, int64_t ldh,
+                      T* devPtr, int64_t ldd, Queue &queue)
+{
     #ifdef BLASPP_WITH_CUBLAS
     device_blas_check( cublasSetMatrixAsync( 
                        (device_blas_int)m,    (device_blas_int)n, (device_blas_int)sizeof(T), 
@@ -144,7 +161,10 @@ void device_setmatrix(int64_t m, int64_t n, T* hostPtr, int64_t ldh, T* devPtr, 
 
 // device get matrix
 template<typename T> 
-void device_getmatrix(int64_t m, int64_t n, T* devPtr, int64_t ldd, T* hostPtr, int64_t ldh, Queue &queue){
+void device_getmatrix(int64_t m, int64_t n,
+                      T* devPtr, int64_t ldd,
+                      T* hostPtr, int64_t ldh, Queue &queue)
+{
     #ifdef BLASPP_WITH_CUBLAS
     device_blas_check( cublasGetMatrixAsync( 
                        (device_blas_int)m,    (device_blas_int)n, (device_blas_int)sizeof(T), 
@@ -157,7 +177,10 @@ void device_getmatrix(int64_t m, int64_t n, T* devPtr, int64_t ldd, T* hostPtr, 
 
 // device set vector
 template<typename T>  
-void device_setvector(int64_t n, T* hostPtr, int64_t inch, T* devPtr, int64_t incd, Queue &queue){
+void device_setvector(int64_t n,
+                      T* hostPtr, int64_t inch,
+                      T* devPtr, int64_t incd, Queue &queue)
+{
     #ifdef BLASPP_WITH_CUBLAS
     device_blas_check( cublasSetVectorAsync( 
                        (device_blas_int)n,    (device_blas_int)sizeof(T), 
@@ -170,7 +193,10 @@ void device_setvector(int64_t n, T* hostPtr, int64_t inch, T* devPtr, int64_t in
 
 // device get vector
 template<typename T>  
-void device_getvector(int64_t n, T* devPtr, int64_t incd, T* hostPtr, int64_t inch, Queue &queue){
+void device_getvector(int64_t n,
+                      T* devPtr, int64_t incd,
+                      T* hostPtr, int64_t inch, Queue &queue)
+{
     #ifdef BLASPP_WITH_CUBLAS
     device_blas_check( cublasGetVectorAsync(
                        (device_blas_int)n,    (device_blas_int)sizeof(T), 
@@ -185,4 +211,3 @@ void device_getvector(int64_t n, T* devPtr, int64_t incd, T* hostPtr, int64_t in
 
 
 #endif        //  #ifndef DEVICE_INTERNALS_HH
-

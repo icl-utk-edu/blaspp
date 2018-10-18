@@ -68,7 +68,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
     std::vector<TB*>   dBarray( batch );
     std::vector<TB*> Brefarray( batch );
 
-    for(size_t i = 0; i < batch; i++){
+    for (size_t i = 0; i < batch; ++i) {
          Aarray[i]   =  A   + i * size_A;
          Barray[i]   =  B   + i * size_B;
         dAarray[i]   = dA   + i * size_A;
@@ -98,22 +98,22 @@ void test_device_batch_trsm_work( Params& params, bool run )
 
     // set unused data to nan
     /*if (uplo_ == Uplo::Lower) {
-        for (int j = 0; j < Am; ++j)
-            for (int i = 0; i < j; ++i)  // upper
+        for (int64_t j = 0; j < Am; ++j)
+            for (int64_t i = 0; i < j; ++i)  // upper
                 A[ i + j*lda_ ] = nan("");
     }
     else {
-        for (int j = 0; j < Am; ++j)
-            for (int i = j+1; i < Am; ++i)  // lower
+        for (int64_t j = 0; j < Am; ++j)
+            for (int64_t i = j+1; i < Am; ++i)  // lower
                 A[ i + j*lda_ ] = nan("");
     }*/
 
     // Factor A into L L^H or U U^H to get a well-conditioned triangular matrix.
     // If diag_ == Unit, the diag_onal is replaced; this is still well-conditioned.
-    for(size_t s = 0; s < batch; s++){
+    for (size_t s = 0; s < batch; ++s) {
         TA* pA = Aarray[s];
         // First, brute force positive definiteness.
-        for (int i = 0; i < Am; ++i) {
+        for (int64_t i = 0; i < Am; ++i) {
             pA[ i + i*lda_ ] += Am;
         }
         blas_int potrf_info = 0;
@@ -123,7 +123,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
 
     // if row-major, transpose A
     if (layout == Layout::RowMajor) {
-        for(size_t s = 0; s < batch; s++){
+        for (size_t s = 0; s < batch; ++s) {
             for (int64_t j = 0; j < Am; ++j) {
                 for (int64_t i = 0; i < j; ++i) {
                     std::swap( Aarray[s][ i + j*lda_ ], Aarray[s][ j + i*lda_ ] );
@@ -140,7 +140,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
     real_t work[1];
     real_t* Anorm = new real_t[ batch ];
     real_t* Bnorm = new real_t[ batch ];
-    for(size_t s = 0; s < batch; s++){
+    for (size_t s = 0; s < batch; ++s) {
         Anorm[ s ] = lapack_lantr( "f", uplo2str(uplo_), diag2str(diag_), Am, Am, Aarray[s], lda_, work );
         Bnorm[ s ] = lapack_lange( "f", Bm, Bn, Barray[s], ldb_, work );
     }
@@ -167,7 +167,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
         // run reference
         libtest::flush_cache( params.cache() );
         time = get_wtime();
-        for(size_t i = 0; i < batch; i++){
+        for (size_t i = 0; i < batch; ++i) {
             cblas_trsm( cblas_layout_const(layout),
                         cblas_side_const(side_),
                         cblas_uplo_const(uplo_),
@@ -185,7 +185,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
         // beta = 0, Cnorm = 0 (initial).
         real_t err, error = 0;
         bool ok, okay = true;
-        for(size_t i = 0; i < batch; i++){
+        for (size_t i = 0; i < batch; ++i) {
             check_gemm( Bm, Bn, Am, alpha_, scalar_t(0), Anorm[i], Bnorm[i], real_t(0),
                         Brefarray[i], ldb_, Barray[i], ldb_, verbose, &err, &ok );
             error = max(error, err);

@@ -36,7 +36,7 @@ void test_batch_symm_device_work( Params& params, bool run )
     params.time.name( "BLAS++\ntime (ms)" );
     params.ref_time.name( "Ref.\ntime (ms)" );
 
-    if ( ! run)
+    if (! run)
         return;
 
     // setup
@@ -70,7 +70,7 @@ void test_batch_symm_device_work( Params& params, bool run )
     std::vector<TB*>   dBarray( batch );
     std::vector<TC*>   dCarray( batch );
 
-    for(size_t s = 0; s < batch; s++){
+    for (size_t s = 0; s < batch; ++s) {
          Aarray[s]   =  A   + s * size_A;
          Barray[s]   =  B   + s * size_B;
          Carray[s]   =  C   + s * size_C;
@@ -112,7 +112,7 @@ void test_batch_symm_device_work( Params& params, bool run )
     real_t* Bnorm = new real_t[ batch ];
     real_t* Cnorm = new real_t[ batch ];
 
-    for(size_t s = 0; s < batch; s++){
+    for (size_t s = 0; s < batch; ++s) {
         Anorm[s] = lapack_lansy( "f", uplo2str(uplo_), An, Aarray[s], lda_, work );
         Bnorm[s] = lapack_lange( "f", Cm, Cn, Barray[s], ldb_, work ); 
         Cnorm[s] = lapack_lange( "f", Cm, Cn, Carray[s], ldc_, work );
@@ -138,7 +138,7 @@ void test_batch_symm_device_work( Params& params, bool run )
         // run reference
         libtest::flush_cache( params.cache() );
         time = get_wtime();
-        for(size_t s = 0; s < batch; s++){
+        for (size_t s = 0; s < batch; ++s) {
             cblas_symm( cblas_layout_const(layout),
                         cblas_side_const(side_),
                         cblas_uplo_const(uplo_),
@@ -152,7 +152,7 @@ void test_batch_symm_device_work( Params& params, bool run )
         // check error compared to reference
         real_t err, error = 0;
         bool ok, okay = true;
-        for(size_t s = 0; s < batch; s++){
+        for (size_t s = 0; s < batch; ++s) {
             check_gemm( Cm, Cn, An, alpha_, beta_, Anorm[s], Bnorm[s], Cnorm[s],
                         Crefarray[s], ldc_, Carray[s], ldc_, verbose, &err, &ok );
             error = max( error, err );

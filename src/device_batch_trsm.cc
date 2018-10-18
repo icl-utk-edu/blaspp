@@ -22,7 +22,7 @@ void blas::batch::trsm(
     blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
-    if(info.size() > 0){
+    if (info.size() > 0) {
         // perform error checking
         blas::batch::trsm_check<float>( layout, side, uplo, trans, diag,  
                                         m, n, 
@@ -44,7 +44,7 @@ void blas::batch::trsm(
                           lddb.size()   == 1  );
     
     blas::set_device( queue.device() );
-    if( fixed_size ) {
+    if (fixed_size) {
         // call the vendor routine
         device_blas_int m_      = (device_blas_int) m[0];
         device_blas_int n_      = (device_blas_int) n[0];
@@ -77,8 +77,8 @@ void blas::batch::trsm(
                             dAarray, ldda_, 
                             dBarray, lddb_, batch);
     }
-    else{
-         for(size_t i = 0; i < batch; i++){ 
+    else {
+        for (size_t i = 0; i < batch; ++i) { 
             Side side_   = blas::batch::extract<Side>(side, i);
             Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
             Op   trans_  = blas::batch::extract<Op>(trans, i);
@@ -94,7 +94,7 @@ void blas::batch::trsm(
                 layout, side_, uplo_, trans_, diag_, m_, n_,  
                 alpha_, dA_, lda_, 
                         dB_, ldb_, queue );
-         }
+        }
     }
 }
 
@@ -118,7 +118,7 @@ void blas::batch::trsm(
     blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
-    if(info.size() > 0){
+    if (info.size() > 0) {
         // perform error checking
         blas::batch::trsm_check<double>( layout, side, uplo, trans, diag,  
                                         m, n, 
@@ -140,7 +140,7 @@ void blas::batch::trsm(
                           lddb.size()   == 1  );
     
     blas::set_device( queue.device() );
-    if( fixed_size ) {
+    if (fixed_size) {
         // call the vendor routine
         device_blas_int m_      = (device_blas_int) m[0];
         device_blas_int n_      = (device_blas_int) n[0];
@@ -173,8 +173,8 @@ void blas::batch::trsm(
                             dAarray, ldda_, 
                             dBarray, lddb_, batch);
     }
-    else{
-         for(size_t i = 0; i < batch; i++){ 
+    else {
+        for (size_t i = 0; i < batch; ++i) { 
             Side side_   = blas::batch::extract<Side>(side, i);
             Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
             Op   trans_  = blas::batch::extract<Op>(trans, i);
@@ -190,7 +190,7 @@ void blas::batch::trsm(
                 layout, side_, uplo_, trans_, diag_, m_, n_,  
                 alpha_, dA_, lda_, 
                         dB_, ldb_, queue );
-         }
+        }
     }
 }
 
@@ -214,7 +214,7 @@ void blas::batch::trsm(
     blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
-    if(info.size() > 0){
+    if (info.size() > 0) {
         // perform error checking
         blas::batch::trsm_check<std::complex<float>>( layout, side, uplo, trans, diag,  
                                         m, n, 
@@ -236,7 +236,7 @@ void blas::batch::trsm(
                           lddb.size()   == 1  );
     
     blas::set_device( queue.device() );
-    if( fixed_size ) {
+    if (fixed_size) {
         // call the vendor routine
         device_blas_int m_      = (device_blas_int) m[0];
         device_blas_int n_      = (device_blas_int) n[0];
@@ -269,8 +269,8 @@ void blas::batch::trsm(
                             dAarray, ldda_, 
                             dBarray, lddb_, batch);
     }
-    else{
-         for(size_t i = 0; i < batch; i++){ 
+    else {
+        for (size_t i = 0; i < batch; ++i) { 
             Side side_   = blas::batch::extract<Side>(side, i);
             Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
             Op   trans_  = blas::batch::extract<Op>(trans, i);
@@ -286,7 +286,7 @@ void blas::batch::trsm(
                 layout, side_, uplo_, trans_, diag_, m_, n_,  
                 alpha_, dA_, lda_, 
                         dB_, ldb_, queue );
-         }
+        }
     }
 }
 
@@ -310,7 +310,7 @@ void blas::batch::trsm(
     blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
-    if(info.size() > 0){
+    if (info.size() > 0) {
         // perform error checking
         blas::batch::trsm_check<std::complex<double>>( layout, side, uplo, trans, diag,  
                                         m, n, 
@@ -332,7 +332,7 @@ void blas::batch::trsm(
                           lddb.size()   == 1  );
     
     blas::set_device( queue.device() );
-    if( fixed_size ) {
+    if (fixed_size) {
         // call the vendor routine
         device_blas_int m_      = (device_blas_int) m[0];
         device_blas_int n_      = (device_blas_int) n[0];
@@ -365,8 +365,8 @@ void blas::batch::trsm(
                             dAarray, ldda_, 
                             dBarray, lddb_, batch);
     }
-    else{
-         for(size_t i = 0; i < batch; i++){ 
+    else {
+        for (size_t i = 0; i < batch; ++i) { 
             Side side_   = blas::batch::extract<Side>(side, i);
             Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
             Op   trans_  = blas::batch::extract<Op>(trans, i);
@@ -382,6 +382,6 @@ void blas::batch::trsm(
                 layout, side_, uplo_, trans_, diag_, m_, n_,  
                 alpha_, dA_, lda_, 
                         dB_, ldb_, queue );
-         }
+        }
     }
 }

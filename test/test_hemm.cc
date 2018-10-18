@@ -31,7 +31,7 @@ void test_hemm_work( Params& params, bool run )
     params.ref_time();
     params.ref_gflops();
 
-    if ( ! run)
+    if (! run)
         return;
 
     // setup

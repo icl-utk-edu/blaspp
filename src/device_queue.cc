@@ -4,7 +4,8 @@
 
 // -----------------------------------------------------------------------------
 // default constructor 
-blas::Queue::Queue(){
+blas::Queue::Queue()
+{
     blas::get_device( &device_ );
     #ifdef BLASPP_WITH_CUBLAS
     device_error_check( cudaStreamCreate(&stream_) );
@@ -17,7 +18,8 @@ blas::Queue::Queue(){
 
 // -----------------------------------------------------------------------------
 // constructor with batch init 
-blas::Queue::Queue(blas::Device device, int64_t batch_size){
+blas::Queue::Queue(blas::Device device, int64_t batch_size)
+{
     device_ = device;
     blas::set_device( device_ );
     hostPtrArray = blas::device_malloc_pinned<void*>( 3 * batch_size );
@@ -50,7 +52,8 @@ cudaStream_t     blas::Queue::stream()     { return stream_;   }
     
 // -----------------------------------------------------------------------------
 /// synchronize with queue.
-void blas::Queue::sync(){
+void blas::Queue::sync()
+{
     #ifdef BLASPP_WITH_CUBLAS
     device_error_check( cudaStreamSynchronize(this->stream()) );
     #elif defined(HAVE_ROCBLAS)
@@ -60,7 +63,8 @@ void blas::Queue::sync(){
     
 // -----------------------------------------------------------------------------
 // default destructor
-blas::Queue::~Queue(){
+blas::Queue::~Queue()
+{
     blas::device_free( devPtrArray );
     blas::device_free_pinned( hostPtrArray );
     #ifdef BLASPP_WITH_CUBLAS

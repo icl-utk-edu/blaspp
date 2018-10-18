@@ -67,20 +67,20 @@ void test_trsm_device_work( Params& params, bool run )
 
     // set unused data to nan
     if (uplo == Uplo::Lower) {
-        for (int j = 0; j < Am; ++j)
-            for (int i = 0; i < j; ++i)  // upper
+        for (int64_t j = 0; j < Am; ++j)
+            for (int64_t i = 0; i < j; ++i)  // upper
                 A[ i + j*lda ] = nan("");
     }
     else {
-        for (int j = 0; j < Am; ++j)
-            for (int i = j+1; i < Am; ++i)  // lower
+        for (int64_t j = 0; j < Am; ++j)
+            for (int64_t i = j+1; i < Am; ++i)  // lower
                 A[ i + j*lda ] = nan("");
     }
 
     // Factor A into L L^H or U U^H to get a well-conditioned triangular matrix.
     // If diag == Unit, the diagonal is replaced; this is still well-conditioned.
     // First, brute force positive definiteness.
-    for (int i = 0; i < Am; ++i) {
+    for (int64_t i = 0; i < Am; ++i) {
         A[ i + i*lda ] += Am;
     }
     blas_int info = 0;

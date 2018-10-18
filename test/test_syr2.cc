@@ -36,7 +36,7 @@ void test_syr2_work( Params& params, bool run )
     params.time.name( "BLAS++\ntime (ms)" );
     params.ref_time.name( "Ref.\ntime (ms)" );
 
-    if ( ! run)
+    if (! run)
         return;
 
     // constants

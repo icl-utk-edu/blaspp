@@ -23,7 +23,7 @@ void blas::batch::gemm(
     blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
-    if(info.size() > 0){
+    if (info.size() > 0) {
         // perform error checking
         blas::batch::gemm_check<float>( layout, transA, transB, 
                                         m, n, k, 
@@ -48,7 +48,7 @@ void blas::batch::gemm(
                           lddc.size()   == 1 );
 
     blas::set_device( queue.device() );
-    if( fixed_size ) {
+    if (fixed_size) {
         // call the vendor routine
         device_trans_t  transA_ = blas::device_trans_const( transA[0] );
         device_trans_t  transB_ = blas::device_trans_const( transB[0] );
@@ -77,7 +77,7 @@ void blas::batch::gemm(
                                 beta[0],  dCarray, lddc_, 
                                 batch);
         }
-        else{
+        else {
             DEVICE_BATCH_sgemm( queue.handle(), 
                                 transA_, transB_, 
                                 m_, n_, k_, 
@@ -86,8 +86,8 @@ void blas::batch::gemm(
                                 batch);
         }
     }
-    else{
-        for(size_t i = 0; i < batch; i++){
+    else {
+        for (size_t i = 0; i < batch; ++i) {
             Op transA_   = blas::batch::extract<Op>(transA, i);
             Op transB_   = blas::batch::extract<Op>(transB, i);
             int64_t m_   = blas::batch::extract<int64_t>(m, i); 
@@ -130,7 +130,7 @@ void blas::batch::gemm(
     blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
-    if(info.size() > 0){
+    if (info.size() > 0) {
         // perform error checking
         blas::batch::gemm_check<double>( layout, transA, transB, 
                                         m, n, k, 
@@ -154,7 +154,7 @@ void blas::batch::gemm(
                           lddc.size()   == 1 );
 
     blas::set_device( queue.device() );
-    if( fixed_size ) {
+    if (fixed_size) {
         // call the vendor routine
         device_trans_t  transA_ = blas::device_trans_const( transA[0] );
         device_trans_t  transB_ = blas::device_trans_const( transB[0] );
@@ -182,7 +182,7 @@ void blas::batch::gemm(
                                 beta[0],  dCarray, lddc_, 
                                 batch);
         }
-        else{
+        else {
             DEVICE_BATCH_dgemm( queue.handle(), 
                                 transA_, transB_, 
                                 m_, n_, k_, 
@@ -191,8 +191,8 @@ void blas::batch::gemm(
                                 batch);
         }
     }
-    else{
-        for(size_t i = 0; i < batch; i++){
+    else {
+        for (size_t i = 0; i < batch; ++i) {
             Op transA_    = blas::batch::extract<Op>(transA, i);
             Op transB_    = blas::batch::extract<Op>(transB, i);
             int64_t m_    = blas::batch::extract<int64_t>(m, i); 
@@ -235,7 +235,7 @@ void blas::batch::gemm(
     blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
-    if(info.size() > 0){
+    if (info.size() > 0) {
         // perform error checking
         blas::batch::gemm_check< std::complex<float> >( layout, transA, transB, 
                                         m, n, k, 
@@ -260,7 +260,7 @@ void blas::batch::gemm(
                           lddc.size()   == 1 );
     blas::set_device( queue.device() );
 
-    if( fixed_size ) {
+    if (fixed_size) {
         // call the vendor routine
         device_trans_t  transA_ = blas::device_trans_const( transA[0] );
         device_trans_t  transB_ = blas::device_trans_const( transB[0] );
@@ -288,7 +288,7 @@ void blas::batch::gemm(
                                 beta[0],  dCarray, lddc_, 
                                 batch);
         }
-        else{
+        else {
             DEVICE_BATCH_cgemm( queue.handle(), 
                                 transA_, transB_, 
                                 m_, n_, k_, 
@@ -297,8 +297,8 @@ void blas::batch::gemm(
                                 batch);
         }
     }
-    else{
-        for(size_t i = 0; i < batch; i++){
+    else {
+        for (size_t i = 0; i < batch; ++i) {
             Op transA_    = blas::batch::extract<Op>(transA, i);
             Op transB_    = blas::batch::extract<Op>(transB, i);
             int64_t m_    = blas::batch::extract<int64_t>(m, i); 
@@ -341,7 +341,7 @@ void blas::batch::gemm(
     blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
-    if(info.size() > 0){
+    if (info.size() > 0) {
         // perform error checking
         blas::batch::gemm_check< std::complex<double> >( layout, transA, transB, 
                                         m, n, k, 
@@ -366,7 +366,7 @@ void blas::batch::gemm(
                           lddc.size()   == 1 );
     blas::set_device( queue.device() );
 
-    if( fixed_size ) {
+    if (fixed_size) {
         // call the vendor routine
         device_trans_t  transA_ = blas::device_trans_const( transA[0] );
         device_trans_t  transB_ = blas::device_trans_const( transB[0] );
@@ -394,7 +394,7 @@ void blas::batch::gemm(
                                 beta[0],  dCarray, lddc_, 
                                 batch);
         }
-        else{
+        else {
             DEVICE_BATCH_zgemm( queue.handle(), 
                                 transA_, transB_, 
                                 m_, n_, k_, 
@@ -403,8 +403,8 @@ void blas::batch::gemm(
                                 batch);
         }
     }
-    else{
-        for(size_t i = 0; i < batch; i++){
+    else {
+        for (size_t i = 0; i < batch; ++i) {
             Op transA_    = blas::batch::extract<Op>(transA, i);
             Op transB_    = blas::batch::extract<Op>(transB, i);
             int64_t m_    = blas::batch::extract<int64_t>(m, i); 

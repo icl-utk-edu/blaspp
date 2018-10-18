@@ -2,7 +2,8 @@
 
 // -----------------------------------------------------------------------------
 // set device 
-void blas::set_device(blas::Device device){
+void blas::set_device(blas::Device device)
+{
     #ifdef BLASPP_WITH_CUBLAS
     device_error_check( cudaSetDevice((device_blas_int)device) );
     #elif defined(HAVE_ROCBLAS)
@@ -12,7 +13,8 @@ void blas::set_device(blas::Device device){
 
 // -----------------------------------------------------------------------------
 // get current device 
-void blas::get_device(blas::Device *device){
+void blas::get_device(blas::Device *device)
+{
     device_blas_int dev; 
 
     #ifdef BLASPP_WITH_CUBLAS
@@ -26,14 +28,14 @@ void blas::get_device(blas::Device *device){
 
 // -----------------------------------------------------------------------------
 /// @return the corresponding device trans constant  
-device_trans_t    blas::device_trans_const(blas::Op trans){    
+device_trans_t    blas::device_trans_const(blas::Op trans)
+{    
     blas_error_if( trans != Op::NoTrans &&
                    trans != Op::Trans &&
                    trans != Op::ConjTrans );
 
     device_trans_t trans_ = DevNoTrans; 
-    switch(trans)
-    {
+    switch (trans) {
         case Op::NoTrans:   trans_ = DevNoTrans;   break;
         case Op::Trans:     trans_ = DevTrans;     break;
         case Op::ConjTrans: trans_ = DevConjTrans; break;
@@ -44,13 +46,13 @@ device_trans_t    blas::device_trans_const(blas::Op trans){
 
 // -----------------------------------------------------------------------------
 /// @return the corresponding device diag constant  
-device_diag_t    blas::device_diag_const(blas::Diag diag){
+device_diag_t    blas::device_diag_const(blas::Diag diag)
+{
     blas_error_if( diag != Diag::NonUnit &&
                    diag != Diag::Unit );
 
     device_diag_t diag_ = DevDiagUnit;
-    switch(diag)
-    {
+    switch (diag) {
         case Diag::Unit:    diag_ = DevDiagUnit;    break;
         case Diag::NonUnit: diag_ = DevDiagNonUnit; break;
         default:;
@@ -60,13 +62,13 @@ device_diag_t    blas::device_diag_const(blas::Diag diag){
 
 // -----------------------------------------------------------------------------
 /// @return the corresponding device uplo constant  
-device_uplo_t    blas::device_uplo_const(blas::Uplo uplo){
+device_uplo_t    blas::device_uplo_const(blas::Uplo uplo)
+{
     blas_error_if( uplo != Uplo::Lower &&
                    uplo != Uplo::Upper );
 
     device_uplo_t uplo_ = DevUploLower;
-    switch(uplo)
-    {
+    switch (uplo) {
         case Uplo::Upper: uplo_ = DevUploUpper; break;
         case Uplo::Lower: uplo_ = DevUploLower; break;
         default:;
@@ -76,13 +78,13 @@ device_uplo_t    blas::device_uplo_const(blas::Uplo uplo){
 
 // -----------------------------------------------------------------------------
 /// @return the corresponding device side constant  
-device_side_t    blas::device_side_const(blas::Side side){
+device_side_t    blas::device_side_const(blas::Side side)
+{
     blas_error_if( side != Side::Left &&
                    side != Side::Right );
 
     device_side_t side_ = DevSideLeft;
-    switch(side)
-    {
+    switch (side) {
         case Side::Left:  side_ = DevSideLeft;  break;
         case Side::Right: side_ = DevSideRight; break;
         default:;
@@ -92,7 +94,8 @@ device_side_t    blas::device_side_const(blas::Side side){
 
 // -----------------------------------------------------------------------------
 /// @free a device pointer  
-void blas::device_free(void* ptr){
+void blas::device_free(void* ptr)
+{
     #ifdef BLASPP_WITH_CUBLAS
     device_error_check( cudaFree( ptr ) );
     #elif defined(HAVE_ROCBLAS)
@@ -102,11 +105,11 @@ void blas::device_free(void* ptr){
 
 // -----------------------------------------------------------------------------
 /// @free a pinned memory space  
-void blas::device_free_pinned(void* ptr){
+void blas::device_free_pinned(void* ptr)
+{
     #ifdef BLASPP_WITH_CUBLAS
     device_error_check( cudaFreeHost( ptr ) );
     #elif defined(HAVE_ROCBLAS)
     // TODO: free memory using AMD driver API
     #endif
 }
-
