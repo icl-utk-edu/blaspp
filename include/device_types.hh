@@ -13,9 +13,9 @@ typedef    cublasDiagType_t     device_diag_t;
 typedef    cublasFillMode_t     device_uplo_t;
 typedef    cublasSideMode_t     device_side_t;
 
-// constants -- defined as needed. 
+// constants -- defined as needed.
 // Only needed are those shared between cublas and rocblas
-// Constants that exist on only one side should be explicitly handled 
+// Constants that exist on only one side should be explicitly handled
 #define    DevSuccess        cudaSuccess
 #define    DevBlasSuccess    CUBLAS_STATUS_SUCCESS
 

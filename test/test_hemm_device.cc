@@ -39,7 +39,7 @@ void test_hemm_device_work( Params& params, bool run )
     int64_t An = (side == Side::Left ? m : n);
     int64_t Cm = m;
     int64_t Cn = n;
-    int64_t Bm = Cm, Bn = Cn; 
+    int64_t Bm = Cm, Bn = Cn;
     if (layout == Layout::RowMajor)
         std::swap( Cm, Cn );
     int64_t lda = roundup( An, align );
@@ -53,12 +53,12 @@ void test_hemm_device_work( Params& params, bool run )
     TC* C    = new TC[ size_C ];
     TC* Cref = new TC[ size_C ];
 
-    // device specifics 
+    // device specifics
     blas::Queue queue(device,0);
-    TA* dA; 
-    TB* dB; 
+    TA* dA;
+    TB* dB;
     TC* dC;
- 
+
     dA = blas::device_malloc<TA>(size_A);
     dB = blas::device_malloc<TB>(size_B);
     dC = blas::device_malloc<TC>(size_C);
@@ -74,7 +74,7 @@ void test_hemm_device_work( Params& params, bool run )
     blas::device_setmatrix(Bm, Bn, B, ldb, dB, ldb, queue);
     blas::device_setmatrix(Cm, Cn, C, ldc, dC, ldc, queue);
     queue.sync();
-    
+
     // norms for error check
     real_t work[1];
     real_t Anorm = lapack_lansy( "f", uplo2str(uplo), An, A, lda, work );

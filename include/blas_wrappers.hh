@@ -1173,110 +1173,110 @@ namespace batch {
 // -----------------------------------------------------------------------------
 // batch gemm
 void gemm(
-    blas::Layout                layout, 
+    blas::Layout                layout,
     std::vector<blas::Op> const &transA,
     std::vector<blas::Op> const &transB,
-    std::vector<int64_t>  const &m, 
-    std::vector<int64_t>  const &n, 
+    std::vector<int64_t>  const &m,
+    std::vector<int64_t>  const &n,
     std::vector<int64_t>  const &k,
     std::vector<float >   const &alpha,
     std::vector<float*>   const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<float*>   const &Barray, std::vector<int64_t> const &lddb,
     std::vector<float >   const &beta,
-    std::vector<float*>   const &Carray, std::vector<int64_t> const &lddc, 
+    std::vector<float*>   const &Carray, std::vector<int64_t> const &lddc,
     const size_t batch,                  std::vector<int64_t>       &info );
 
 void gemm(
-    blas::Layout                layout, 
+    blas::Layout                layout,
     std::vector<blas::Op> const &transA,
     std::vector<blas::Op> const &transB,
-    std::vector<int64_t>  const &m, 
-    std::vector<int64_t>  const &n, 
+    std::vector<int64_t>  const &m,
+    std::vector<int64_t>  const &n,
     std::vector<int64_t>  const &k,
     std::vector<double >  const &alpha,
     std::vector<double*>  const &Aarray, std::vector<int64_t>  const &ldda,
     std::vector<double*>  const &Barray, std::vector<int64_t>  const &lddb,
     std::vector<double >  const &beta,
-    std::vector<double*>  const &Carray, std::vector<int64_t> const &lddc, 
+    std::vector<double*>  const &Carray, std::vector<int64_t> const &lddc,
     const size_t batch,                  std::vector<int64_t>       &info );
 
 void gemm(
-    blas::Layout                layout, 
+    blas::Layout                layout,
     std::vector<blas::Op> const &transA,
     std::vector<blas::Op> const &transB,
-    std::vector<int64_t>  const &m, 
-    std::vector<int64_t>  const &n, 
+    std::vector<int64_t>  const &m,
+    std::vector<int64_t>  const &n,
     std::vector<int64_t>  const &k,
     std::vector< std::complex<float>  >   const &alpha,
     std::vector< std::complex<float>* >   const &Aarray, std::vector<int64_t> const &ldda,
     std::vector< std::complex<float>* >   const &Barray, std::vector<int64_t> const &lddb,
     std::vector< std::complex<float>  >   const &beta,
-    std::vector< std::complex<float>* >   const &Carray, std::vector<int64_t> const &lddc, 
+    std::vector< std::complex<float>* >   const &Carray, std::vector<int64_t> const &lddc,
     const size_t batch,                                  std::vector<int64_t>  &info );
 
 void gemm(
-    blas::Layout                layout, 
+    blas::Layout                layout,
     std::vector<blas::Op> const &transA,
     std::vector<blas::Op> const &transB,
-    std::vector<int64_t>  const &m, 
-    std::vector<int64_t>  const &n, 
+    std::vector<int64_t>  const &m,
+    std::vector<int64_t>  const &n,
     std::vector<int64_t>  const &k,
     std::vector< std::complex<double>  >   const &alpha,
     std::vector< std::complex<double>* >   const &Aarray, std::vector<int64_t> const &ldda,
     std::vector< std::complex<double>* >   const &Barray, std::vector<int64_t> const &lddb,
     std::vector< std::complex<double>  >   const &beta,
-    std::vector< std::complex<double>* >   const &Carray, std::vector<int64_t> const &lddc, 
+    std::vector< std::complex<double>* >   const &Carray, std::vector<int64_t> const &lddc,
     const size_t batch,                                   std::vector<int64_t>       &info );
 
 // -----------------------------------------------------------------------------
 // batch trsm
 void trsm(
-    blas::Layout                   layout, 
+    blas::Layout                   layout,
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
     std::vector<blas::Diag> const &diag,
-    std::vector<int64_t>    const &m, 
-    std::vector<int64_t>    const &n, 
+    std::vector<int64_t>    const &m,
+    std::vector<int64_t>    const &n,
     std::vector<float >     const &alpha,
     std::vector<float*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<float*>     const &Barray, std::vector<int64_t> const &lddb,
     const size_t batch,                    std::vector<int64_t>       &info );
 
 void trsm(
-    blas::Layout                   layout, 
+    blas::Layout                   layout,
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
     std::vector<blas::Diag> const &diag,
-    std::vector<int64_t>    const &m, 
-    std::vector<int64_t>    const &n, 
+    std::vector<int64_t>    const &m,
+    std::vector<int64_t>    const &n,
     std::vector<double >     const &alpha,
     std::vector<double*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<double*>     const &Barray, std::vector<int64_t> const &lddb,
     const size_t batch,                     std::vector<int64_t>       &info );
 
 void trsm(
-    blas::Layout                   layout, 
+    blas::Layout                   layout,
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
     std::vector<blas::Diag> const &diag,
-    std::vector<int64_t>    const &m, 
-    std::vector<int64_t>    const &n, 
+    std::vector<int64_t>    const &m,
+    std::vector<int64_t>    const &n,
     std::vector<std::complex<float> >     const &alpha,
     std::vector<std::complex<float>*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<std::complex<float>*>     const &Barray, std::vector<int64_t> const &lddb,
     const size_t batch,                     std::vector<int64_t>       &info );
 
 void trsm(
-    blas::Layout                   layout, 
+    blas::Layout                   layout,
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
     std::vector<blas::Diag> const &diag,
-    std::vector<int64_t>    const &m, 
-    std::vector<int64_t>    const &n, 
+    std::vector<int64_t>    const &m,
+    std::vector<int64_t>    const &n,
     std::vector<std::complex<double> >     const &alpha,
     std::vector<std::complex<double>*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<std::complex<double>*>     const &Barray, std::vector<int64_t> const &lddb,
@@ -1285,52 +1285,52 @@ void trsm(
 // -----------------------------------------------------------------------------
 // batch trmm
 void trmm(
-    blas::Layout                   layout, 
+    blas::Layout                   layout,
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
     std::vector<blas::Diag> const &diag,
-    std::vector<int64_t>    const &m, 
-    std::vector<int64_t>    const &n, 
+    std::vector<int64_t>    const &m,
+    std::vector<int64_t>    const &n,
     std::vector<float >     const &alpha,
     std::vector<float*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<float*>     const &Barray, std::vector<int64_t> const &lddb,
     const size_t batch,                    std::vector<int64_t>       &info );
 
 void trmm(
-    blas::Layout                   layout, 
+    blas::Layout                   layout,
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
     std::vector<blas::Diag> const &diag,
-    std::vector<int64_t>    const &m, 
-    std::vector<int64_t>    const &n, 
+    std::vector<int64_t>    const &m,
+    std::vector<int64_t>    const &n,
     std::vector<double >     const &alpha,
     std::vector<double*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<double*>     const &Barray, std::vector<int64_t> const &lddb,
     const size_t batch,                     std::vector<int64_t>       &info );
 
 void trmm(
-    blas::Layout                   layout, 
+    blas::Layout                   layout,
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
     std::vector<blas::Diag> const &diag,
-    std::vector<int64_t>    const &m, 
-    std::vector<int64_t>    const &n, 
+    std::vector<int64_t>    const &m,
+    std::vector<int64_t>    const &n,
     std::vector<std::complex<float> >     const &alpha,
     std::vector<std::complex<float>*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<std::complex<float>*>     const &Barray, std::vector<int64_t> const &lddb,
     const size_t batch,                     std::vector<int64_t>       &info );
 
 void trmm(
-    blas::Layout                   layout, 
+    blas::Layout                   layout,
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
     std::vector<blas::Diag> const &diag,
-    std::vector<int64_t>    const &m, 
-    std::vector<int64_t>    const &n, 
+    std::vector<int64_t>    const &m,
+    std::vector<int64_t>    const &n,
     std::vector<std::complex<double> >     const &alpha,
     std::vector<std::complex<double>*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<std::complex<double>*>     const &Barray, std::vector<int64_t> const &lddb,
@@ -1339,11 +1339,11 @@ void trmm(
 // -----------------------------------------------------------------------------
 // batch hemm
 void hemm(
-    blas::Layout                   layout, 
+    blas::Layout                   layout,
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
-    std::vector<int64_t>    const &m, 
-    std::vector<int64_t>    const &n, 
+    std::vector<int64_t>    const &m,
+    std::vector<int64_t>    const &n,
     std::vector<float >     const &alpha,
     std::vector<float*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<float*>     const &Barray, std::vector<int64_t> const &lddb,
@@ -1352,11 +1352,11 @@ void hemm(
     const size_t batch,                    std::vector<int64_t>       &info );
 
 void hemm(
-    blas::Layout                    layout, 
+    blas::Layout                    layout,
     std::vector<blas::Side>  const &side,
     std::vector<blas::Uplo>  const &uplo,
-    std::vector<int64_t>     const &m, 
-    std::vector<int64_t>     const &n, 
+    std::vector<int64_t>     const &m,
+    std::vector<int64_t>     const &n,
     std::vector<double >     const &alpha,
     std::vector<double*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<double*>     const &Barray, std::vector<int64_t> const &lddb,
@@ -1365,11 +1365,11 @@ void hemm(
     const size_t batch,                    std::vector<int64_t>       &info );
 
 void hemm(
-    blas::Layout                    layout, 
+    blas::Layout                    layout,
     std::vector<blas::Side>  const &side,
     std::vector<blas::Uplo>  const &uplo,
-    std::vector<int64_t>     const &m, 
-    std::vector<int64_t>     const &n, 
+    std::vector<int64_t>     const &m,
+    std::vector<int64_t>     const &n,
     std::vector<std::complex<float> >     const &alpha,
     std::vector<std::complex<float>*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<std::complex<float>*>     const &Barray, std::vector<int64_t> const &lddb,
@@ -1378,11 +1378,11 @@ void hemm(
     const size_t batch,                    std::vector<int64_t>       &info );
 
 void hemm(
-    blas::Layout                    layout, 
+    blas::Layout                    layout,
     std::vector<blas::Side>  const &side,
     std::vector<blas::Uplo>  const &uplo,
-    std::vector<int64_t>     const &m, 
-    std::vector<int64_t>     const &n, 
+    std::vector<int64_t>     const &m,
+    std::vector<int64_t>     const &n,
     std::vector<std::complex<double> >     const &alpha,
     std::vector<std::complex<double>*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<std::complex<double>*>     const &Barray, std::vector<int64_t> const &lddb,
@@ -1393,11 +1393,11 @@ void hemm(
 // -----------------------------------------------------------------------------
 // batch symm
 void symm(
-    blas::Layout                   layout, 
+    blas::Layout                   layout,
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
-    std::vector<int64_t>    const &m, 
-    std::vector<int64_t>    const &n, 
+    std::vector<int64_t>    const &m,
+    std::vector<int64_t>    const &n,
     std::vector<float >     const &alpha,
     std::vector<float*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<float*>     const &Barray, std::vector<int64_t> const &lddb,
@@ -1406,11 +1406,11 @@ void symm(
     const size_t batch,                    std::vector<int64_t>       &info );
 
 void symm(
-    blas::Layout                    layout, 
+    blas::Layout                    layout,
     std::vector<blas::Side>  const &side,
     std::vector<blas::Uplo>  const &uplo,
-    std::vector<int64_t>     const &m, 
-    std::vector<int64_t>     const &n, 
+    std::vector<int64_t>     const &m,
+    std::vector<int64_t>     const &n,
     std::vector<double >     const &alpha,
     std::vector<double*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<double*>     const &Barray, std::vector<int64_t> const &lddb,
@@ -1419,11 +1419,11 @@ void symm(
     const size_t batch,                    std::vector<int64_t>       &info );
 
 void symm(
-    blas::Layout                    layout, 
+    blas::Layout                    layout,
     std::vector<blas::Side>  const &side,
     std::vector<blas::Uplo>  const &uplo,
-    std::vector<int64_t>     const &m, 
-    std::vector<int64_t>     const &n, 
+    std::vector<int64_t>     const &m,
+    std::vector<int64_t>     const &n,
     std::vector<std::complex<float> >     const &alpha,
     std::vector<std::complex<float>*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<std::complex<float>*>     const &Barray, std::vector<int64_t> const &lddb,
@@ -1432,11 +1432,11 @@ void symm(
     const size_t batch,                    std::vector<int64_t>       &info );
 
 void symm(
-    blas::Layout                    layout, 
+    blas::Layout                    layout,
     std::vector<blas::Side>  const &side,
     std::vector<blas::Uplo>  const &uplo,
-    std::vector<int64_t>     const &m, 
-    std::vector<int64_t>     const &n, 
+    std::vector<int64_t>     const &m,
+    std::vector<int64_t>     const &n,
     std::vector<std::complex<double> >     const &alpha,
     std::vector<std::complex<double>*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<std::complex<double>*>     const &Barray, std::vector<int64_t> const &lddb,
@@ -1447,11 +1447,11 @@ void symm(
 // -----------------------------------------------------------------------------
 // batch herk
 void herk(
-    blas::Layout                   layout, 
+    blas::Layout                   layout,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
-    std::vector<int64_t>    const &n, 
-    std::vector<int64_t>    const &k, 
+    std::vector<int64_t>    const &n,
+    std::vector<int64_t>    const &k,
     std::vector<float >     const &alpha,
     std::vector<float*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<float >     const &beta,
@@ -1459,11 +1459,11 @@ void herk(
     const size_t batch,                    std::vector<int64_t>       &info );
 
 void herk(
-    blas::Layout                    layout, 
+    blas::Layout                    layout,
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
-    std::vector<int64_t>     const &n, 
-    std::vector<int64_t>     const &k, 
+    std::vector<int64_t>     const &n,
+    std::vector<int64_t>     const &k,
     std::vector<double >     const &alpha,
     std::vector<double*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<double >     const &beta,
@@ -1471,11 +1471,11 @@ void herk(
     const size_t batch,                     std::vector<int64_t>       &info );
 
 void herk(
-    blas::Layout                    layout, 
+    blas::Layout                    layout,
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
-    std::vector<int64_t>     const &n, 
-    std::vector<int64_t>     const &k, 
+    std::vector<int64_t>     const &n,
+    std::vector<int64_t>     const &k,
     std::vector<float>       const &alpha,
     std::vector<std::complex<float>*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<float >      const &beta,
@@ -1483,11 +1483,11 @@ void herk(
     const size_t batch, std::vector<int64_t>       &info );
 
 void herk(
-    blas::Layout                    layout, 
+    blas::Layout                    layout,
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
-    std::vector<int64_t>     const &n, 
-    std::vector<int64_t>     const &k, 
+    std::vector<int64_t>     const &n,
+    std::vector<int64_t>     const &k,
     std::vector<double>      const &alpha,
     std::vector<std::complex<double>*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<double >     const &beta,
@@ -1497,11 +1497,11 @@ void herk(
 // -----------------------------------------------------------------------------
 // batch syrk
 void syrk(
-    blas::Layout                   layout, 
+    blas::Layout                   layout,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
-    std::vector<int64_t>    const &n, 
-    std::vector<int64_t>    const &k, 
+    std::vector<int64_t>    const &n,
+    std::vector<int64_t>    const &k,
     std::vector<float >     const &alpha,
     std::vector<float*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<float >     const &beta,
@@ -1509,11 +1509,11 @@ void syrk(
     const size_t batch,                    std::vector<int64_t>       &info );
 
 void syrk(
-    blas::Layout                    layout, 
+    blas::Layout                    layout,
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
-    std::vector<int64_t>     const &n, 
-    std::vector<int64_t>     const &k, 
+    std::vector<int64_t>     const &n,
+    std::vector<int64_t>     const &k,
     std::vector<double >     const &alpha,
     std::vector<double*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<double >     const &beta,
@@ -1521,11 +1521,11 @@ void syrk(
     const size_t batch,                     std::vector<int64_t>       &info );
 
 void syrk(
-    blas::Layout                    layout, 
+    blas::Layout                    layout,
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
-    std::vector<int64_t>     const &n, 
-    std::vector<int64_t>     const &k, 
+    std::vector<int64_t>     const &n,
+    std::vector<int64_t>     const &k,
     std::vector<std::complex<float> > const &alpha,
     std::vector<std::complex<float>*> const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<std::complex<float> > const &beta,
@@ -1533,11 +1533,11 @@ void syrk(
     const size_t batch, std::vector<int64_t>       &info );
 
 void syrk(
-    blas::Layout                    layout, 
+    blas::Layout                    layout,
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
-    std::vector<int64_t>     const &n, 
-    std::vector<int64_t>     const &k, 
+    std::vector<int64_t>     const &n,
+    std::vector<int64_t>     const &k,
     std::vector<std::complex<double> > const &alpha,
     std::vector<std::complex<double>*> const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<std::complex<double> > const &beta,
@@ -1547,11 +1547,11 @@ void syrk(
 // -----------------------------------------------------------------------------
 // batch her2k
 void her2k(
-    blas::Layout                   layout, 
+    blas::Layout                   layout,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
-    std::vector<int64_t>    const &n, 
-    std::vector<int64_t>    const &k, 
+    std::vector<int64_t>    const &n,
+    std::vector<int64_t>    const &k,
     std::vector<float >     const &alpha,
     std::vector<float*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<float*>     const &Barray, std::vector<int64_t> const &lddb,
@@ -1560,11 +1560,11 @@ void her2k(
     const size_t batch,                    std::vector<int64_t>       &info );
 
 void her2k(
-    blas::Layout                    layout, 
+    blas::Layout                    layout,
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
-    std::vector<int64_t>     const &n, 
-    std::vector<int64_t>     const &k, 
+    std::vector<int64_t>     const &n,
+    std::vector<int64_t>     const &k,
     std::vector<double >     const &alpha,
     std::vector<double*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<double*>     const &Barray, std::vector<int64_t> const &lddb,
@@ -1573,11 +1573,11 @@ void her2k(
     const size_t batch,                     std::vector<int64_t>       &info );
 
 void her2k(
-    blas::Layout                    layout, 
+    blas::Layout                    layout,
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
-    std::vector<int64_t>     const &n, 
-    std::vector<int64_t>     const &k, 
+    std::vector<int64_t>     const &n,
+    std::vector<int64_t>     const &k,
     std::vector<std::complex<float>>      const &alpha,
     std::vector<std::complex<float>*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<std::complex<float>*>     const &Barray, std::vector<int64_t> const &lddb,
@@ -1586,11 +1586,11 @@ void her2k(
     const size_t batch, std::vector<int64_t>       &info );
 
 void her2k(
-    blas::Layout                    layout, 
+    blas::Layout                    layout,
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
-    std::vector<int64_t>     const &n, 
-    std::vector<int64_t>     const &k, 
+    std::vector<int64_t>     const &n,
+    std::vector<int64_t>     const &k,
     std::vector<std::complex<double>>      const &alpha,
     std::vector<std::complex<double>*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<std::complex<double>*>     const &Barray, std::vector<int64_t> const &lddb,
@@ -1601,11 +1601,11 @@ void her2k(
 // -----------------------------------------------------------------------------
 // batch syr2k
 void syr2k(
-    blas::Layout                   layout, 
+    blas::Layout                   layout,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
-    std::vector<int64_t>    const &n, 
-    std::vector<int64_t>    const &k, 
+    std::vector<int64_t>    const &n,
+    std::vector<int64_t>    const &k,
     std::vector<float >     const &alpha,
     std::vector<float*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<float*>     const &Barray, std::vector<int64_t> const &lddb,
@@ -1614,11 +1614,11 @@ void syr2k(
     const size_t batch,                    std::vector<int64_t>       &info );
 
 void syr2k(
-    blas::Layout                    layout, 
+    blas::Layout                    layout,
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
-    std::vector<int64_t>     const &n, 
-    std::vector<int64_t>     const &k, 
+    std::vector<int64_t>     const &n,
+    std::vector<int64_t>     const &k,
     std::vector<double >     const &alpha,
     std::vector<double*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<double*>     const &Barray, std::vector<int64_t> const &lddb,
@@ -1627,11 +1627,11 @@ void syr2k(
     const size_t batch,                     std::vector<int64_t>       &info );
 
 void syr2k(
-    blas::Layout                    layout, 
+    blas::Layout                    layout,
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
-    std::vector<int64_t>     const &n, 
-    std::vector<int64_t>     const &k, 
+    std::vector<int64_t>     const &n,
+    std::vector<int64_t>     const &k,
     std::vector<std::complex<float> > const &alpha,
     std::vector<std::complex<float>*> const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<std::complex<float>*> const &Barray, std::vector<int64_t> const &lddb,
@@ -1640,11 +1640,11 @@ void syr2k(
     const size_t batch, std::vector<int64_t>       &info );
 
 void syr2k(
-    blas::Layout                    layout, 
+    blas::Layout                    layout,
     std::vector<blas::Uplo>  const &uplo,
     std::vector<blas::Op>    const &trans,
-    std::vector<int64_t>     const &n, 
-    std::vector<int64_t>     const &k, 
+    std::vector<int64_t>     const &n,
+    std::vector<int64_t>     const &k,
     std::vector<std::complex<double> > const &alpha,
     std::vector<std::complex<double>*> const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<std::complex<double>*> const &Barray, std::vector<int64_t> const &lddb,

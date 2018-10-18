@@ -15,7 +15,7 @@ void blas::hemm(
     float const *dA, int64_t ldda,
     float const *dB, int64_t lddb,
     float beta,
-    float       *dC, int64_t lddc, 
+    float       *dC, int64_t lddc,
     blas::Queue &queue )
 {
     blas::symm( layout, side, uplo, m, n, alpha, dA, ldda, dB, lddb, beta, dC, lddc, queue );
@@ -32,7 +32,7 @@ void blas::hemm(
     double const *dA, int64_t ldda,
     double const *dB, int64_t lddb,
     double beta,
-    double       *dC, int64_t lddc, 
+    double       *dC, int64_t lddc,
     blas::Queue &queue )
 {
     symm( layout, side, uplo, m, n, alpha, dA, ldda, dB, lddb, beta, dC, lddc, queue);
@@ -49,7 +49,7 @@ void blas::hemm(
     std::complex<float> const *dA, int64_t ldda,
     std::complex<float> const *dB, int64_t lddb,
     std::complex<float> beta,
-    std::complex<float>       *dC, int64_t lddc, 
+    std::complex<float>       *dC, int64_t lddc,
     blas::Queue &queue )
 {
     typedef long long lld;
@@ -103,11 +103,11 @@ void blas::hemm(
     device_side_t side_ = device_side_const( side );
     device_uplo_t uplo_ = device_uplo_const( uplo );
 
-    blas::set_device( queue.device() );    
-    DEVICE_chemm( 
+    blas::set_device( queue.device() );
+    DEVICE_chemm(
             queue.handle(), side_, uplo_, m_, n_,
-            alpha, dA, ldda_, 
-                   dB, lddb_, 
+            alpha, dA, ldda_,
+                   dB, lddb_,
             beta,  dC, lddc_ );
 }
 
@@ -122,7 +122,7 @@ void blas::hemm(
     std::complex<double> const *dA, int64_t ldda,
     std::complex<double> const *dB, int64_t lddb,
     std::complex<double> beta,
-    std::complex<double>       *dC, int64_t lddc, 
+    std::complex<double>       *dC, int64_t lddc,
     blas::Queue &queue )
 {
     typedef long long lld;
@@ -176,10 +176,10 @@ void blas::hemm(
     device_side_t side_ = device_side_const( side );
     device_uplo_t uplo_ = device_uplo_const( uplo );
 
-    blas::set_device( queue.device() );    
-    DEVICE_zhemm( 
+    blas::set_device( queue.device() );
+    DEVICE_zhemm(
             queue.handle(), side_, uplo_, m_, n_,
-            alpha, dA, ldda_, 
-                   dB, lddb_, 
+            alpha, dA, ldda_,
+                   dB, lddb_,
             beta,  dC, lddc_ );
 }

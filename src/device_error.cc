@@ -1,21 +1,21 @@
 #include "device.hh"
 
-// ----------------------------------------------------------------------------- 
-// return true on runtime errors 
+// -----------------------------------------------------------------------------
+// return true on runtime errors
 bool blas::is_device_error(device_error_t error)
 {
     return (error != DevSuccess);
 }
 
-// ----------------------------------------------------------------------------- 
+// -----------------------------------------------------------------------------
 // return true on blas errors
 bool blas::is_device_error(device_blas_status_t status)
 {
     return (status != DevBlasSuccess);
 }
 
-// ----------------------------------------------------------------------------- 
-// return string of runtime error  
+// -----------------------------------------------------------------------------
+// return string of runtime error
 const char* blas::device_error_string(device_error_t error)
 {
     #ifdef BLASPP_WITH_CUBLAS
@@ -25,8 +25,8 @@ const char* blas::device_error_string(device_error_t error)
     #endif
 }
 
-// ----------------------------------------------------------------------------- 
-// return string of blas error 
+// -----------------------------------------------------------------------------
+// return string of blas error
 const char* blas::device_error_string(device_blas_status_t status)
 {
     switch (status) {

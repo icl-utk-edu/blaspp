@@ -53,10 +53,10 @@ void test_device_batch_trsm_work( Params& params, bool run )
     TB* B         = new TB[ batch * size_B ];
     TB* Bref      = new TB[ batch * size_B ];
 
-    // device specifics 
+    // device specifics
     blas::Queue queue(device, batch);
-    TA* dA; 
-    TB* dB; 
+    TA* dA;
+    TB* dB;
 
     dA = blas::device_malloc<TA>( batch * size_A );
     dB = blas::device_malloc<TB>( batch * size_B );
@@ -151,7 +151,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
     // run test
     libtest::flush_cache( params.cache() );
     double time = get_wtime();
-    blas::batch::trsm( layout, side, uplo, trans, diag, m, n, alpha, dAarray, ldda, dBarray, lddb, 
+    blas::batch::trsm( layout, side, uplo, trans, diag, m, n, alpha, dAarray, ldda, dBarray, lddb,
                        batch, info, queue );
     queue.sync();
     time = get_wtime() - time;

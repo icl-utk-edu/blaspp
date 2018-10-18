@@ -56,12 +56,12 @@ void test_symm_device_work( Params& params, bool run )
     TC* C    = new TC[ size_C ];
     TC* Cref = new TC[ size_C ];
 
-    // device specifics 
+    // device specifics
     blas::Queue queue(device,0);
-    TA* dA; 
-    TB* dB; 
+    TA* dA;
+    TB* dB;
     TC* dC;
- 
+
     dA = blas::device_malloc<TA>(size_A);
     dB = blas::device_malloc<TB>(size_B);
     dC = blas::device_malloc<TC>(size_C);

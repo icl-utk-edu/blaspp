@@ -3,7 +3,7 @@
 
 namespace blas {
 
-typedef int64_t Device; 
+typedef int64_t Device;
 
 // -----------------------------------------------------------------------------
 // device queue
@@ -13,7 +13,7 @@ public:
      Queue();
      Queue(blas::Device device, int64_t batch_size);
     ~Queue();
-    
+
     blas::Device           device();
     device_blas_handle_t   handle();
     void                   sync();
@@ -26,7 +26,7 @@ public:
 
     void** devPtrArray;
     void** hostPtrArray;
-    
+
 private:
     blas::Device          device_;      // associated device ID
     device_blas_handle_t  handle_;      // associated device blas handle
@@ -36,7 +36,7 @@ private:
     #elif defined(HAVE_ROCBLAS)
     // TODO: stream for rocBLAS
     #endif
-    
+
 };
 
 // -----------------------------------------------------------------------------
@@ -116,8 +116,8 @@ void device_free_pinned(void* ptr);
 // Template functions declared here
 // -----------------------------------------------------------------------------
 
-/// @return a device pointer to an allocated memory space 
-template<typename T> 
+/// @return a device pointer to an allocated memory space
+template<typename T>
 T* device_malloc(int64_t nelements)
 {
     T* ptr = NULL;
@@ -129,8 +129,8 @@ T* device_malloc(int64_t nelements)
     return ptr;
 }
 
-/// @return a host pointer to a pinned memory space 
-template<typename T>   
+/// @return a host pointer to a pinned memory space
+template<typename T>
 T* device_malloc_pinned(int64_t nelements)
 {
     T* ptr = NULL;
@@ -144,15 +144,15 @@ T* device_malloc_pinned(int64_t nelements)
 
 
 // device set matrix
-template<typename T>  
+template<typename T>
 void device_setmatrix(int64_t m, int64_t n,
                       T* hostPtr, int64_t ldh,
                       T* devPtr, int64_t ldd, Queue &queue)
 {
     #ifdef BLASPP_WITH_CUBLAS
-    device_blas_check( cublasSetMatrixAsync( 
-                       (device_blas_int)m,    (device_blas_int)n, (device_blas_int)sizeof(T), 
-                       (const void *)hostPtr, (device_blas_int)ldh, 
+    device_blas_check( cublasSetMatrixAsync(
+                       (device_blas_int)m,    (device_blas_int)n, (device_blas_int)sizeof(T),
+                       (const void *)hostPtr, (device_blas_int)ldh,
                        (      void *)devPtr,  (device_blas_int)ldd, queue.stream() ) );
     #elif defined(HAVE_ROCBLAS)
     // TODO: call rocblas_set_matrix
@@ -160,15 +160,15 @@ void device_setmatrix(int64_t m, int64_t n,
 }
 
 // device get matrix
-template<typename T> 
+template<typename T>
 void device_getmatrix(int64_t m, int64_t n,
                       T* devPtr, int64_t ldd,
                       T* hostPtr, int64_t ldh, Queue &queue)
 {
     #ifdef BLASPP_WITH_CUBLAS
-    device_blas_check( cublasGetMatrixAsync( 
-                       (device_blas_int)m,    (device_blas_int)n, (device_blas_int)sizeof(T), 
-                       (const void *)devPtr,  (device_blas_int)ldd, 
+    device_blas_check( cublasGetMatrixAsync(
+                       (device_blas_int)m,    (device_blas_int)n, (device_blas_int)sizeof(T),
+                       (const void *)devPtr,  (device_blas_int)ldd,
                        (      void *)hostPtr, (device_blas_int)ldh, queue.stream() ) );
     #elif defined(HAVE_ROCBLAS)
     // TODO: call rocblas_get_matrix
@@ -176,15 +176,15 @@ void device_getmatrix(int64_t m, int64_t n,
 }
 
 // device set vector
-template<typename T>  
+template<typename T>
 void device_setvector(int64_t n,
                       T* hostPtr, int64_t inch,
                       T* devPtr, int64_t incd, Queue &queue)
 {
     #ifdef BLASPP_WITH_CUBLAS
-    device_blas_check( cublasSetVectorAsync( 
-                       (device_blas_int)n,    (device_blas_int)sizeof(T), 
-                       (const void *)hostPtr, (device_blas_int)inch, 
+    device_blas_check( cublasSetVectorAsync(
+                       (device_blas_int)n,    (device_blas_int)sizeof(T),
+                       (const void *)hostPtr, (device_blas_int)inch,
                        (      void *)devPtr,  (device_blas_int)incd, queue.stream() ) );
     #elif defined(HAVE_ROCBLAS)
     // TODO: call rocblas_set_vector
@@ -192,15 +192,15 @@ void device_setvector(int64_t n,
 }
 
 // device get vector
-template<typename T>  
+template<typename T>
 void device_getvector(int64_t n,
                       T* devPtr, int64_t incd,
                       T* hostPtr, int64_t inch, Queue &queue)
 {
     #ifdef BLASPP_WITH_CUBLAS
     device_blas_check( cublasGetVectorAsync(
-                       (device_blas_int)n,    (device_blas_int)sizeof(T), 
-                       (const void *)devPtr,  (device_blas_int)incd, 
+                       (device_blas_int)n,    (device_blas_int)sizeof(T),
+                       (const void *)devPtr,  (device_blas_int)incd,
                        (      void *)hostPtr, (device_blas_int)inch, queue.stream() ) );
     #elif defined(HAVE_ROCBLAS)
     // TODO: call rocblas_get_vector

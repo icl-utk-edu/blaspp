@@ -51,7 +51,7 @@ void test_batch_syr2k_device_work( Params& params, bool run )
     TC* C    = new TC[ batch * size_C ];
     TC* Cref = new TC[ batch * size_C ];
 
-    // device specifics 
+    // device specifics
     blas::Queue queue(device, batch);
     TA* dA = blas::device_malloc<TA>( batch * size_A );
     TB* dB = blas::device_malloc<TB>( batch * size_B );
@@ -107,7 +107,7 @@ void test_batch_syr2k_device_work( Params& params, bool run )
     real_t* Anorm = new real_t[ batch ];
     real_t* Bnorm = new real_t[ batch ];
     real_t* Cnorm = new real_t[ batch ];
-    
+
     for (size_t s = 0; s < batch; ++s) {
         Anorm[s] = lapack_lange( "f", Am, An, Aarray[s], lda_, work );
         Bnorm[s] = lapack_lange( "f", Am, An, Barray[s], ldb_, work );
@@ -120,7 +120,7 @@ void test_batch_syr2k_device_work( Params& params, bool run )
     // run test
     libtest::flush_cache( params.cache() );
     double time = get_wtime();
-    blas::batch::syr2k( layout, uplo, trans, n, k, alpha, dAarray, lda, dBarray, ldb, beta, dCarray, ldc, 
+    blas::batch::syr2k( layout, uplo, trans, n, k, alpha, dAarray, lda, dBarray, ldb, beta, dCarray, ldc,
                         batch, info, queue);
     queue.sync();
     time = get_wtime() - time;

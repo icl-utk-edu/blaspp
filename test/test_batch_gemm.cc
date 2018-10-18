@@ -50,7 +50,7 @@ void test_batch_gemm_work( Params& params, bool run )
         std::swap( Bm, Bn );
         std::swap( Cm, Cn );
     }
-    
+
     int64_t lda_ = roundup( Am, align );
     int64_t ldb_ = roundup( Bm, align );
     int64_t ldc_ = roundup( Cm, align );
@@ -102,7 +102,7 @@ void test_batch_gemm_work( Params& params, bool run )
     real_t* Anorm = new real_t[ batch ];
     real_t* Bnorm = new real_t[ batch ];
     real_t* Cnorm = new real_t[ batch ];
-    
+
     for (size_t i = 0; i < batch; ++i) {
         Anorm[i] = lapack_lange( "f", Am, An, Aarray[i], lda_, work );
         Bnorm[i] = lapack_lange( "f", Bm, Bn, Barray[i], ldb_, work );
@@ -115,8 +115,8 @@ void test_batch_gemm_work( Params& params, bool run )
     // run test
     libtest::flush_cache( params.cache() );
     double time = get_wtime();
-    blas::batch::gemm( layout, transA, transB, m, n, k, 
-                       alpha, Aarray, lda, Barray, ldb, beta, Carray, ldc, 
+    blas::batch::gemm( layout, transA, transB, m, n, k,
+                       alpha, Aarray, lda, Barray, ldb, beta, Carray, ldc,
                        batch, info );
     time = get_wtime() - time;
 

@@ -15,7 +15,7 @@ void blas::her2k(
     float const *dA, int64_t ldda,
     float const *dB, int64_t lddb,
     float beta,
-    float       *dC, int64_t lddc, 
+    float       *dC, int64_t lddc,
     blas::Queue &queue )
 {
     syr2k( layout, uplo, trans, n, k, alpha, dA, ldda, dB, lddb, beta, dC, lddc, queue);
@@ -32,7 +32,7 @@ void blas::her2k(
     double const *dA, int64_t ldda,
     double const *dB, int64_t lddb,
     double beta,
-    double       *dC, int64_t lddc, 
+    double       *dC, int64_t lddc,
     blas::Queue &queue )
 {
     syr2k( layout, uplo, trans, n, k, alpha, dA, ldda, dB, lddb, beta, dC, lddc, queue);
@@ -49,7 +49,7 @@ void blas::her2k(
     std::complex<float> const *dA, int64_t ldda,
     std::complex<float> const *dB, int64_t lddb,
     float beta,   // note: real
-    std::complex<float>       *dC, int64_t lddc, 
+    std::complex<float>       *dC, int64_t lddc,
     blas::Queue &queue )
 {
     // check arguments
@@ -97,11 +97,11 @@ void blas::her2k(
     device_uplo_t  uplo_  = device_uplo_const( uplo );
     device_trans_t trans_ = device_trans_const( trans );
     blas::set_device( queue.device() );
-    DEVICE_cher2k( 
-            queue.handle(), 
+    DEVICE_cher2k(
+            queue.handle(),
             uplo_, trans_, n_, k_,
-            alpha, dA, ldda_, 
-                   dB, lddb_, 
+            alpha, dA, ldda_,
+                   dB, lddb_,
             beta,  dC, lddc_ );
 }
 
@@ -116,7 +116,7 @@ void blas::her2k(
     std::complex<double> const *dA, int64_t ldda,
     std::complex<double> const *dB, int64_t lddb,
     double beta,  // note: real
-    std::complex<double>       *dC, int64_t lddc, 
+    std::complex<double>       *dC, int64_t lddc,
     blas::Queue &queue )
 {
     // check arguments
@@ -164,10 +164,10 @@ void blas::her2k(
     device_uplo_t  uplo_  = device_uplo_const( uplo );
     device_trans_t trans_ = device_trans_const( trans );
     blas::set_device( queue.device() );
-    DEVICE_zher2k( 
-            queue.handle(), 
+    DEVICE_zher2k(
+            queue.handle(),
             uplo_, trans_, n_, k_,
-            alpha, dA, ldda_, 
-                   dB, lddb_, 
+            alpha, dA, ldda_,
+                   dB, lddb_,
             beta,  dC, lddc_ );
 }

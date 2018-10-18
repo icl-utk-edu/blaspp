@@ -6,17 +6,17 @@
 // -----------------------------------------------------------------------------
 /// @ingroup trmm
 void blas::batch::trmm(
-    blas::Layout                   layout, 
+    blas::Layout                   layout,
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
     std::vector<blas::Diag> const &diag,
-    std::vector<int64_t>    const &m, 
-    std::vector<int64_t>    const &n, 
+    std::vector<int64_t>    const &m,
+    std::vector<int64_t>    const &n,
     std::vector<float >     const &alpha,
     std::vector<float*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<float*>     const &Barray, std::vector<int64_t> const &lddb,
-    const size_t batch,                    std::vector<int64_t>       &info, 
+    const size_t batch,                    std::vector<int64_t>       &info,
     blas::Queue &queue )
 {
     blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
@@ -24,20 +24,20 @@ void blas::batch::trmm(
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if (info.size() > 0) {
         // perform error checking
-        blas::batch::trmm_check<float>( layout, side, uplo, trans, diag,  
-                                        m, n, 
-                                        alpha, Aarray, ldda, 
-                                               Barray, lddb, 
+        blas::batch::trmm_check<float>( layout, side, uplo, trans, diag,
+                                        m, n,
+                                        alpha, Aarray, ldda,
+                                               Barray, lddb,
                                         batch, info );
     }
 
     blas::set_device( queue.device() );
-    for (size_t i = 0; i < batch; ++i) { 
+    for (size_t i = 0; i < batch; ++i) {
         Side side_   = blas::batch::extract<Side>(side, i);
         Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
         Op   trans_  = blas::batch::extract<Op>(trans, i);
         Diag diag_   = blas::batch::extract<Diag>(diag, i);
-        int64_t m_   = blas::batch::extract<int64_t>(m, i); 
+        int64_t m_   = blas::batch::extract<int64_t>(m, i);
         int64_t n_   = blas::batch::extract<int64_t>(n, i);
         int64_t lda_ = blas::batch::extract<int64_t>(ldda, i);
         int64_t ldb_ = blas::batch::extract<int64_t>(lddb, i);
@@ -45,8 +45,8 @@ void blas::batch::trmm(
         float* dA_   = blas::batch::extract<float*>(Aarray, i);
         float* dB_   = blas::batch::extract<float*>(Barray, i);
         blas::trmm(
-            layout, side_, uplo_, trans_, diag_, m_, n_,  
-            alpha_, dA_, lda_, 
+            layout, side_, uplo_, trans_, diag_, m_, n_,
+            alpha_, dA_, lda_,
                     dB_, ldb_, queue );
     }
 }
@@ -55,17 +55,17 @@ void blas::batch::trmm(
 // -----------------------------------------------------------------------------
 /// @ingroup trmm
 void blas::batch::trmm(
-    blas::Layout                   layout, 
+    blas::Layout                   layout,
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
     std::vector<blas::Diag> const &diag,
-    std::vector<int64_t>    const &m, 
-    std::vector<int64_t>    const &n, 
+    std::vector<int64_t>    const &m,
+    std::vector<int64_t>    const &n,
     std::vector<double >     const &alpha,
     std::vector<double*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<double*>     const &Barray, std::vector<int64_t> const &lddb,
-    const size_t batch,                     std::vector<int64_t>       &info, 
+    const size_t batch,                     std::vector<int64_t>       &info,
     blas::Queue &queue )
 {
     blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
@@ -73,20 +73,20 @@ void blas::batch::trmm(
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if (info.size() > 0) {
         // perform error checking
-        blas::batch::trmm_check<double>( layout, side, uplo, trans, diag,  
-                                        m, n, 
-                                        alpha, Aarray, ldda, 
-                                               Barray, lddb, 
+        blas::batch::trmm_check<double>( layout, side, uplo, trans, diag,
+                                        m, n,
+                                        alpha, Aarray, ldda,
+                                               Barray, lddb,
                                         batch, info );
     }
 
     blas::set_device( queue.device() );
-    for (size_t i = 0; i < batch; ++i) { 
+    for (size_t i = 0; i < batch; ++i) {
         Side side_   = blas::batch::extract<Side>(side, i);
         Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
         Op   trans_  = blas::batch::extract<Op>(trans, i);
         Diag diag_   = blas::batch::extract<Diag>(diag, i);
-        int64_t m_   = blas::batch::extract<int64_t>(m, i); 
+        int64_t m_   = blas::batch::extract<int64_t>(m, i);
         int64_t n_   = blas::batch::extract<int64_t>(n, i);
         int64_t lda_ = blas::batch::extract<int64_t>(ldda, i);
         int64_t ldb_ = blas::batch::extract<int64_t>(lddb, i);
@@ -94,8 +94,8 @@ void blas::batch::trmm(
         double* dA_   = blas::batch::extract<double*>(Aarray, i);
         double* dB_   = blas::batch::extract<double*>(Barray, i);
         blas::trmm(
-            layout, side_, uplo_, trans_, diag_, m_, n_,  
-            alpha_, dA_, lda_, 
+            layout, side_, uplo_, trans_, diag_, m_, n_,
+            alpha_, dA_, lda_,
                     dB_, ldb_, queue );
     }
 }
@@ -104,17 +104,17 @@ void blas::batch::trmm(
 // -----------------------------------------------------------------------------
 /// @ingroup trmm
 void blas::batch::trmm(
-    blas::Layout                   layout, 
+    blas::Layout                   layout,
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
     std::vector<blas::Diag> const &diag,
-    std::vector<int64_t>    const &m, 
-    std::vector<int64_t>    const &n, 
+    std::vector<int64_t>    const &m,
+    std::vector<int64_t>    const &n,
     std::vector<std::complex<float> >     const &alpha,
     std::vector<std::complex<float>*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<std::complex<float>*>     const &Barray, std::vector<int64_t> const &lddb,
-    const size_t batch,                     std::vector<int64_t>       &info, 
+    const size_t batch,                     std::vector<int64_t>       &info,
     blas::Queue &queue )
 {
     blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
@@ -122,20 +122,20 @@ void blas::batch::trmm(
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if (info.size() > 0) {
         // perform error checking
-        blas::batch::trmm_check<std::complex<float>>( layout, side, uplo, trans, diag,  
-                                        m, n, 
-                                        alpha, Aarray, ldda, 
-                                               Barray, lddb, 
+        blas::batch::trmm_check<std::complex<float>>( layout, side, uplo, trans, diag,
+                                        m, n,
+                                        alpha, Aarray, ldda,
+                                               Barray, lddb,
                                         batch, info );
     }
 
     blas::set_device( queue.device() );
-    for (size_t i = 0; i < batch; ++i) { 
+    for (size_t i = 0; i < batch; ++i) {
         Side side_   = blas::batch::extract<Side>(side, i);
         Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
         Op   trans_  = blas::batch::extract<Op>(trans, i);
         Diag diag_   = blas::batch::extract<Diag>(diag, i);
-        int64_t m_   = blas::batch::extract<int64_t>(m, i); 
+        int64_t m_   = blas::batch::extract<int64_t>(m, i);
         int64_t n_   = blas::batch::extract<int64_t>(n, i);
         int64_t lda_ = blas::batch::extract<int64_t>(ldda, i);
         int64_t ldb_ = blas::batch::extract<int64_t>(lddb, i);
@@ -143,8 +143,8 @@ void blas::batch::trmm(
         std::complex<float>* dA_   = blas::batch::extract<std::complex<float>*>(Aarray, i);
         std::complex<float>* dB_   = blas::batch::extract<std::complex<float>*>(Barray, i);
         blas::trmm(
-            layout, side_, uplo_, trans_, diag_, m_, n_,  
-            alpha_, dA_, lda_, 
+            layout, side_, uplo_, trans_, diag_, m_, n_,
+            alpha_, dA_, lda_,
                     dB_, ldb_, queue );
     }
 }
@@ -152,17 +152,17 @@ void blas::batch::trmm(
 // -----------------------------------------------------------------------------
 /// @ingroup trmm
 void blas::batch::trmm(
-    blas::Layout                   layout, 
+    blas::Layout                   layout,
     std::vector<blas::Side> const &side,
     std::vector<blas::Uplo> const &uplo,
     std::vector<blas::Op>   const &trans,
     std::vector<blas::Diag> const &diag,
-    std::vector<int64_t>    const &m, 
-    std::vector<int64_t>    const &n, 
+    std::vector<int64_t>    const &m,
+    std::vector<int64_t>    const &n,
     std::vector<std::complex<double> >     const &alpha,
     std::vector<std::complex<double>*>     const &Aarray, std::vector<int64_t> const &ldda,
     std::vector<std::complex<double>*>     const &Barray, std::vector<int64_t> const &lddb,
-    const size_t batch,                     std::vector<int64_t>       &info, 
+    const size_t batch,                     std::vector<int64_t>       &info,
     blas::Queue &queue )
 {
     blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
@@ -170,20 +170,20 @@ void blas::batch::trmm(
     blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if (info.size() > 0) {
         // perform error checking
-        blas::batch::trmm_check<std::complex<double>>( layout, side, uplo, trans, diag,  
-                                        m, n, 
-                                        alpha, Aarray, ldda, 
-                                               Barray, lddb, 
+        blas::batch::trmm_check<std::complex<double>>( layout, side, uplo, trans, diag,
+                                        m, n,
+                                        alpha, Aarray, ldda,
+                                               Barray, lddb,
                                         batch, info );
     }
 
     blas::set_device( queue.device() );
-    for (size_t i = 0; i < batch; ++i) { 
+    for (size_t i = 0; i < batch; ++i) {
         Side side_   = blas::batch::extract<Side>(side, i);
         Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
         Op   trans_  = blas::batch::extract<Op>(trans, i);
         Diag diag_   = blas::batch::extract<Diag>(diag, i);
-        int64_t m_   = blas::batch::extract<int64_t>(m, i); 
+        int64_t m_   = blas::batch::extract<int64_t>(m, i);
         int64_t n_   = blas::batch::extract<int64_t>(n, i);
         int64_t lda_ = blas::batch::extract<int64_t>(ldda, i);
         int64_t ldb_ = blas::batch::extract<int64_t>(lddb, i);
@@ -191,8 +191,8 @@ void blas::batch::trmm(
         std::complex<double>* dA_   = blas::batch::extract<std::complex<double>*>(Aarray, i);
         std::complex<double>* dB_   = blas::batch::extract<std::complex<double>*>(Barray, i);
         blas::trmm(
-            layout, side_, uplo_, trans_, diag_, m_, n_,  
-            alpha_, dA_, lda_, 
+            layout, side_, uplo_, trans_, diag_, m_, n_,
+            alpha_, dA_, lda_,
                     dB_, ldb_, queue );
     }
 }

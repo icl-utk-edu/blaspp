@@ -81,7 +81,7 @@ void test_batch_symm_work( Params& params, bool run )
     std::vector<int64_t>    ldc(1, ldc_);
     std::vector<scalar_t>   alpha(1, alpha_);
     std::vector<scalar_t>   beta(1, beta_);
- 
+
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
     lapack_larnv( idist, iseed, batch * size_A, A );
@@ -97,7 +97,7 @@ void test_batch_symm_work( Params& params, bool run )
 
     for (size_t s = 0; s < batch; ++s) {
         Anorm[s] = lapack_lansy( "f", uplo2str(uplo_), An, Aarray[s], lda_, work );
-        Bnorm[s] = lapack_lange( "f", Cm, Cn, Barray[s], ldb_, work ); 
+        Bnorm[s] = lapack_lange( "f", Cm, Cn, Barray[s], ldb_, work );
         Cnorm[s] = lapack_lange( "f", Cm, Cn, Carray[s], ldc_, work );
     }
 
@@ -107,7 +107,7 @@ void test_batch_symm_work( Params& params, bool run )
     // run test
     libtest::flush_cache( params.cache() );
     double time = get_wtime();
-    blas::batch::symm( layout, side, uplo, m, n, alpha, Aarray, lda, Barray, ldb, beta, Carray, ldc, 
+    blas::batch::symm( layout, side, uplo, m, n, alpha, Aarray, lda, Barray, ldb, beta, Carray, ldc,
                        batch, info );
     time = get_wtime() - time;
 

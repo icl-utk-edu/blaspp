@@ -50,12 +50,12 @@ void test_batch_trmm_work_device( Params& params, bool run )
     TA* A    = new TA[ batch * size_A ];
     TB* B    = new TB[ batch * size_B ];
     TB* Bref = new TB[ batch * size_B ];
-    
-    // device specifics 
+
+    // device specifics
     blas::Queue queue(device, batch);
     TA* dA = blas::device_malloc<TA>( batch * size_A );
     TB* dB = blas::device_malloc<TB>( batch * size_B );
-    
+
     // pointer arrays
     std::vector<TA*>    Aarray( batch );
     std::vector<TB*>    Barray( batch );
@@ -111,7 +111,7 @@ void test_batch_trmm_work_device( Params& params, bool run )
     // run test
     libtest::flush_cache( params.cache() );
     double time = get_wtime();
-    blas::batch::trmm( layout, side, uplo, trans, diag, m, n, alpha, dAarray, lda, dBarray, ldb, 
+    blas::batch::trmm( layout, side, uplo, trans, diag, m, n, alpha, dAarray, lda, dBarray, ldb,
                        batch, info, queue );
     queue.sync();
     time = get_wtime() - time;

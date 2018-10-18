@@ -1,7 +1,7 @@
 #include "device.hh"
 
 // -----------------------------------------------------------------------------
-// set device 
+// set device
 void blas::set_device(blas::Device device)
 {
     #ifdef BLASPP_WITH_CUBLAS
@@ -12,10 +12,10 @@ void blas::set_device(blas::Device device)
 }
 
 // -----------------------------------------------------------------------------
-// get current device 
+// get current device
 void blas::get_device(blas::Device *device)
 {
-    device_blas_int dev; 
+    device_blas_int dev;
 
     #ifdef BLASPP_WITH_CUBLAS
     device_error_check( cudaGetDevice(&dev) );
@@ -27,14 +27,14 @@ void blas::get_device(blas::Device *device)
 }
 
 // -----------------------------------------------------------------------------
-/// @return the corresponding device trans constant  
+/// @return the corresponding device trans constant
 device_trans_t    blas::device_trans_const(blas::Op trans)
-{    
+{
     blas_error_if( trans != Op::NoTrans &&
                    trans != Op::Trans &&
                    trans != Op::ConjTrans );
 
-    device_trans_t trans_ = DevNoTrans; 
+    device_trans_t trans_ = DevNoTrans;
     switch (trans) {
         case Op::NoTrans:   trans_ = DevNoTrans;   break;
         case Op::Trans:     trans_ = DevTrans;     break;
@@ -45,7 +45,7 @@ device_trans_t    blas::device_trans_const(blas::Op trans)
 }
 
 // -----------------------------------------------------------------------------
-/// @return the corresponding device diag constant  
+/// @return the corresponding device diag constant
 device_diag_t    blas::device_diag_const(blas::Diag diag)
 {
     blas_error_if( diag != Diag::NonUnit &&
@@ -61,7 +61,7 @@ device_diag_t    blas::device_diag_const(blas::Diag diag)
 }
 
 // -----------------------------------------------------------------------------
-/// @return the corresponding device uplo constant  
+/// @return the corresponding device uplo constant
 device_uplo_t    blas::device_uplo_const(blas::Uplo uplo)
 {
     blas_error_if( uplo != Uplo::Lower &&
@@ -77,7 +77,7 @@ device_uplo_t    blas::device_uplo_const(blas::Uplo uplo)
 }
 
 // -----------------------------------------------------------------------------
-/// @return the corresponding device side constant  
+/// @return the corresponding device side constant
 device_side_t    blas::device_side_const(blas::Side side)
 {
     blas_error_if( side != Side::Left &&
@@ -93,7 +93,7 @@ device_side_t    blas::device_side_const(blas::Side side)
 }
 
 // -----------------------------------------------------------------------------
-/// @free a device pointer  
+/// @free a device pointer
 void blas::device_free(void* ptr)
 {
     #ifdef BLASPP_WITH_CUBLAS
@@ -104,7 +104,7 @@ void blas::device_free(void* ptr)
 }
 
 // -----------------------------------------------------------------------------
-/// @free a pinned memory space  
+/// @free a pinned memory space
 void blas::device_free_pinned(void* ptr)
 {
     #ifdef BLASPP_WITH_CUBLAS

@@ -51,16 +51,16 @@ void test_her2k_device_work( Params& params, bool run )
     TC* C    = new TC[ size_C ];
     TC* Cref = new TC[ size_C ];
 
-    // device specifics 
+    // device specifics
     blas::Queue queue(device,0);
-    TA* dA; 
-    TB* dB; 
+    TA* dA;
+    TB* dB;
     TC* dC;
- 
+
     dA = blas::device_malloc<TA>(size_A);
     dB = blas::device_malloc<TB>(size_B);
     dC = blas::device_malloc<TC>(size_C);
-    
+
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
     lapack_larnv( idist, iseed, size_A, A );
@@ -123,7 +123,7 @@ void test_her2k_device_work( Params& params, bool run )
         printf( "B = "    ); print_matrix( Am, An, B, ldb );
         printf( "C = "    ); print_matrix(  n,  n, C, ldc );
     }
-    
+
     // run test
     libtest::flush_cache( params.cache() );
     double time = get_wtime();

@@ -48,11 +48,11 @@ void test_herk_device_work( Params& params, bool run )
     TC* C    = new TC[ size_C ];
     TC* Cref = new TC[ size_C ];
 
-    // device specifics 
+    // device specifics
     blas::Queue queue(device,0);
-    TA* dA; 
+    TA* dA;
     TC* dC;
- 
+
     dA = blas::device_malloc<TA>(size_A);
     dC = blas::device_malloc<TC>(size_C);
 

@@ -97,7 +97,7 @@ void test_batch_trmm_work( Params& params, bool run )
     // run test
     libtest::flush_cache( params.cache() );
     double time = get_wtime();
-    blas::batch::trmm( layout, side, uplo, trans, diag, m, n, alpha, Aarray, lda, Barray, ldb, 
+    blas::batch::trmm( layout, side, uplo, trans, diag, m, n, alpha, Aarray, lda, Barray, ldb,
                        batch, info );
     time = get_wtime() - time;
 

@@ -51,7 +51,7 @@ void test_trsm_device_work( Params& params, bool run )
     TB* B    = new TB[ size_B ];
     TB* Bref = new TB[ size_B ];
 
-    // device specifics 
+    // device specifics
     blas::Queue queue(device,0);
     TA* dA;
     TB* dB;

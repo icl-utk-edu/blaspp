@@ -16,7 +16,7 @@ void blas::trsm(
     int64_t n,
     float alpha,
     float const *dA, int64_t ldda,
-    float       *dB, int64_t lddb, 
+    float       *dB, int64_t lddb,
     blas::Queue &queue )
 {
     // check arguments
@@ -68,13 +68,13 @@ void blas::trsm(
     device_uplo_t uplo_   = blas::device_uplo_const( uplo );
     device_trans_t trans_ = blas::device_trans_const( trans );
     device_diag_t diag_   = blas::device_diag_const( diag );
-    
+
     blas::set_device( queue.device() );
-    DEVICE_strsm( 
-            queue.handle(), 
-            side_, uplo_, trans_, diag_, 
-            m_, n_, alpha, 
-            dA, ldda_, 
+    DEVICE_strsm(
+            queue.handle(),
+            side_, uplo_, trans_, diag_,
+            m_, n_, alpha,
+            dA, ldda_,
             dB, lddb_ );
 }
 
@@ -90,7 +90,7 @@ void blas::trsm(
     int64_t n,
     double alpha,
     double const *dA, int64_t ldda,
-    double       *dB, int64_t lddb, 
+    double       *dB, int64_t lddb,
     blas::Queue  &queue )
 {
     // check arguments
@@ -142,13 +142,13 @@ void blas::trsm(
     device_uplo_t uplo_   = blas::device_uplo_const( uplo );
     device_trans_t trans_ = blas::device_trans_const( trans );
     device_diag_t diag_   = blas::device_diag_const( diag );
-    
+
     blas::set_device( queue.device() );
-    DEVICE_dtrsm( 
-            queue.handle(), 
-            side_, uplo_, trans_, diag_, 
-            m_, n_, alpha, 
-            dA, ldda_, 
+    DEVICE_dtrsm(
+            queue.handle(),
+            side_, uplo_, trans_, diag_,
+            m_, n_, alpha,
+            dA, ldda_,
             dB, lddb_ );
 }
 
@@ -164,7 +164,7 @@ void blas::trsm(
     int64_t n,
     std::complex<float> alpha,
     std::complex<float> const *dA, int64_t ldda,
-    std::complex<float>       *dB, int64_t lddb, 
+    std::complex<float>       *dB, int64_t lddb,
     blas::Queue  &queue )
 {
     // check arguments
@@ -216,13 +216,13 @@ void blas::trsm(
     device_uplo_t uplo_   = blas::device_uplo_const( uplo );
     device_trans_t trans_ = blas::device_trans_const( trans );
     device_diag_t diag_   = blas::device_diag_const( diag );
-    
+
     blas::set_device( queue.device() );
-    DEVICE_ctrsm( 
-            queue.handle(), 
-            side_, uplo_, trans_, diag_, 
-            m_, n_, alpha, 
-            dA, ldda_, 
+    DEVICE_ctrsm(
+            queue.handle(),
+            side_, uplo_, trans_, diag_,
+            m_, n_, alpha,
+            dA, ldda_,
             dB, lddb_ );
 }
 
@@ -238,7 +238,7 @@ void blas::trsm(
     int64_t n,
     std::complex<double> alpha,
     std::complex<double> const *dA, int64_t ldda,
-    std::complex<double>       *dB, int64_t lddb, 
+    std::complex<double>       *dB, int64_t lddb,
     blas::Queue  &queue )
 {
     // check arguments
@@ -290,12 +290,12 @@ void blas::trsm(
     device_uplo_t uplo_   = blas::device_uplo_const( uplo );
     device_trans_t trans_ = blas::device_trans_const( trans );
     device_diag_t diag_   = blas::device_diag_const( diag );
-    
+
     blas::set_device( queue.device() );
-    DEVICE_ztrsm( 
-            queue.handle(), 
-            side_, uplo_, trans_, diag_, 
-            m_, n_, alpha, 
-            dA, ldda_, 
+    DEVICE_ztrsm(
+            queue.handle(),
+            side_, uplo_, trans_, diag_,
+            m_, n_, alpha,
+            dA, ldda_,
             dB, lddb_ );
 }

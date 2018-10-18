@@ -48,7 +48,7 @@ void test_batch_syrk_device_work( Params& params, bool run )
     TC* C    = new TC[ batch * size_C ];
     TC* Cref = new TC[ batch * size_C ];
 
-    // device specifics 
+    // device specifics
     blas::Queue queue(device, batch);
     TA* dA = blas::device_malloc<TA>( batch * size_A );
     TC* dC = blas::device_malloc<TC>( batch * size_C );
@@ -65,7 +65,7 @@ void test_batch_syrk_device_work( Params& params, bool run )
          Carray[i]   =  C   + i * size_C;
         Crefarray[i] = Cref + i * size_C;
         dAarray[i]   = dA   + i * size_A;
-        dCarray[i]   = dC   + i * size_C;        
+        dCarray[i]   = dC   + i * size_C;
     }
 
     // info
@@ -107,7 +107,7 @@ void test_batch_syrk_device_work( Params& params, bool run )
     // run test
     libtest::flush_cache( params.cache() );
     double time = get_wtime();
-    blas::batch::syrk( layout, uplo, trans, n, k, alpha, dAarray, lda, beta, dCarray, ldc, 
+    blas::batch::syrk( layout, uplo, trans, n, k, alpha, dAarray, lda, beta, dCarray, ldc,
                        batch, info, queue );
     queue.sync();
     time = get_wtime() - time;

@@ -15,7 +15,7 @@ void blas::symm(
     float const *dA, int64_t ldda,
     float const *dB, int64_t lddb,
     float beta,
-    float       *dC, int64_t lddc, 
+    float       *dC, int64_t lddc,
     blas::Queue &queue )
 {
     typedef long long lld;
@@ -69,11 +69,11 @@ void blas::symm(
     device_side_t side_ = device_side_const( side );
     device_uplo_t uplo_ = device_uplo_const( uplo );
     blas::set_device( queue.device() );
-    DEVICE_ssymm( 
-            queue.handle(), 
+    DEVICE_ssymm(
+            queue.handle(),
             side_, uplo_, m_, n_,
-            alpha, dA, ldda_, 
-                   dB, lddb_, 
+            alpha, dA, ldda_,
+                   dB, lddb_,
             beta,  dC, lddc_ );
 }
 
@@ -88,7 +88,7 @@ void blas::symm(
     double const *dA, int64_t ldda,
     double const *dB, int64_t lddb,
     double beta,
-    double       *dC, int64_t lddc, 
+    double       *dC, int64_t lddc,
     blas::Queue &queue )
 {
     typedef long long lld;
@@ -142,11 +142,11 @@ void blas::symm(
     device_side_t side_ = device_side_const( side );
     device_uplo_t uplo_ = device_uplo_const( uplo );
     blas::set_device( queue.device() );
-    DEVICE_dsymm( 
-            queue.handle(), 
+    DEVICE_dsymm(
+            queue.handle(),
             side_, uplo_, m_, n_,
-            alpha, dA, ldda_, 
-                   dB, lddb_, 
+            alpha, dA, ldda_,
+                   dB, lddb_,
             beta,  dC, lddc_ );
 }
 
@@ -161,7 +161,7 @@ void blas::symm(
     std::complex<float> const *dA, int64_t ldda,
     std::complex<float> const *dB, int64_t lddb,
     std::complex<float> beta,
-    std::complex<float>       *dC, int64_t lddc, 
+    std::complex<float>       *dC, int64_t lddc,
     blas::Queue &queue )
 {
     typedef long long lld;
@@ -215,11 +215,11 @@ void blas::symm(
     device_side_t side_ = device_side_const( side );
     device_uplo_t uplo_ = device_uplo_const( uplo );
     blas::set_device( queue.device() );
-    DEVICE_csymm( 
-            queue.handle(), 
+    DEVICE_csymm(
+            queue.handle(),
             side_, uplo_, m_, n_,
-            alpha, dA, ldda_, 
-                   dB, lddb_, 
+            alpha, dA, ldda_,
+                   dB, lddb_,
             beta,  dC, lddc_ );
 }
 
@@ -234,7 +234,7 @@ void blas::symm(
     std::complex<double> const *dA, int64_t ldda,
     std::complex<double> const *dB, int64_t lddb,
     std::complex<double> beta,
-    std::complex<double>       *dC, int64_t lddc, 
+    std::complex<double>       *dC, int64_t lddc,
     blas::Queue &queue )
 {
     typedef long long lld;
@@ -288,10 +288,10 @@ void blas::symm(
     device_side_t side_ = device_side_const( side );
     device_uplo_t uplo_ = device_uplo_const( uplo );
     blas::set_device( queue.device() );
-    DEVICE_zsymm( 
-            queue.handle(), 
+    DEVICE_zsymm(
+            queue.handle(),
             side_, uplo_, m_, n_,
-            alpha, dA, ldda_, 
-                   dB, lddb_, 
+            alpha, dA, ldda_,
+                   dB, lddb_,
             beta,  dC, lddc_ );
 }

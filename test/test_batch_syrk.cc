@@ -93,7 +93,7 @@ void test_batch_syrk_work( Params& params, bool run )
     // run test
     libtest::flush_cache( params.cache() );
     double time = get_wtime();
-    blas::batch::syrk( layout, uplo, trans, n, k, alpha, Aarray, lda, beta, Carray, ldc, 
+    blas::batch::syrk( layout, uplo, trans, n, k, alpha, Aarray, lda, beta, Carray, ldc,
                        batch, info );
     time = get_wtime() - time;
 

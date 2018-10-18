@@ -81,7 +81,7 @@ void test_batch_herk_work( Params& params, bool run )
     real_t work[1];
     real_t* Anorm = new real_t[ batch ];
     real_t* Cnorm = new real_t[ batch ];
-    
+
     for (size_t s = 0; s < batch; ++s) {
         Anorm[s] = lapack_lange( "f", Am, An, Aarray[s], lda_, work );
         Cnorm[s] = lapack_lansy( "f", uplo2str(uplo_), n_, Carray[s], ldc_, work );
@@ -93,7 +93,7 @@ void test_batch_herk_work( Params& params, bool run )
     // run test
     libtest::flush_cache( params.cache() );
     double time = get_wtime();
-    blas::batch::herk( layout, uplo, trans, n, k, alpha, Aarray, lda, beta, Carray, ldc, 
+    blas::batch::herk( layout, uplo, trans, n, k, alpha, Aarray, lda, beta, Carray, ldc,
                        batch, info );
     time = get_wtime() - time;
 

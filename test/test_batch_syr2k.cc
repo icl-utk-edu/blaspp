@@ -89,7 +89,7 @@ void test_batch_syr2k_work( Params& params, bool run )
     real_t* Anorm = new real_t[ batch ];
     real_t* Bnorm = new real_t[ batch ];
     real_t* Cnorm = new real_t[ batch ];
-    
+
     for (size_t s = 0; s < batch; ++s) {
         Anorm[s] = lapack_lange( "f", Am, An, Aarray[s], lda_, work );
         Bnorm[s] = lapack_lange( "f", Am, An, Barray[s], ldb_, work );
@@ -102,7 +102,7 @@ void test_batch_syr2k_work( Params& params, bool run )
     // run test
     libtest::flush_cache( params.cache() );
     double time = get_wtime();
-    blas::batch::syr2k( layout, uplo, trans, n, k, alpha, Aarray, lda, Barray, ldb, beta, Carray, ldc, 
+    blas::batch::syr2k( layout, uplo, trans, n, k, alpha, Aarray, lda, Barray, ldb, beta, Carray, ldc,
                         batch, info );
     time = get_wtime() - time;
 

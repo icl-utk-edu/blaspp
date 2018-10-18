@@ -59,16 +59,16 @@ void test_gemm_device_work( Params& params, bool run )
     TC* C    = new TC[ size_C ];
     TC* Cref = new TC[ size_C ];
 
-    // device specifics 
+    // device specifics
     blas::Queue queue(device,0);
-    TA* dA; 
-    TB* dB; 
+    TA* dA;
+    TB* dB;
     TC* dC;
- 
+
     dA = blas::device_malloc<TA>(size_A);
     dB = blas::device_malloc<TB>(size_B);
     dC = blas::device_malloc<TC>(size_C);
-    
+
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
     lapack_larnv( idist, iseed, size_A, A );
@@ -94,7 +94,7 @@ void test_gemm_device_work( Params& params, bool run )
     assert_throw( blas::gemm( layout,    transA, transB, -1,  n,  k, alpha, dA, lda, dB, ldb, beta, dC, ldc, queue ), blas::Error );
     assert_throw( blas::gemm( layout,    transA, transB,  m, -1,  k, alpha, dA, lda, dB, ldb, beta, dC, ldc, queue ), blas::Error );
     assert_throw( blas::gemm( layout,    transA, transB,  m,  n, -1, alpha, dA, lda, dB, ldb, beta, dC, ldc, queue ), blas::Error );
-    
+
     assert_throw( blas::gemm( Layout::ColMajor, Op::NoTrans,   Op::NoTrans, m, n, k, alpha, dA, m-1, dB, ldb, beta, dC, ldc, queue ), blas::Error );
     assert_throw( blas::gemm( Layout::ColMajor, Op::Trans,     Op::NoTrans, m, n, k, alpha, dA, k-1, dB, ldb, beta, dC, ldc, queue ), blas::Error );
     assert_throw( blas::gemm( Layout::ColMajor, Op::ConjTrans, Op::NoTrans, m, n, k, alpha, dA, k-1, dB, ldb, beta, dC, ldc, queue ), blas::Error );
@@ -180,7 +180,7 @@ void test_gemm_device_work( Params& params, bool run )
     delete[] B;
     delete[] C;
     delete[] Cref;
-    
+
     blas::device_free( dA );
     blas::device_free( dB );
     blas::device_free( dC );

@@ -19,17 +19,17 @@ T extract(std::vector<T> const &ivector, const int64_t index)
 // batch gemm check
 template<typename T>
 void gemm_check(
-        blas::Layout                 layout, 
-        std::vector<blas::Op> const &transA, 
-        std::vector<blas::Op> const &transB, 
-        std::vector<int64_t>  const &m, 
-        std::vector<int64_t>  const &n, 
-        std::vector<int64_t>  const &k, 
-        std::vector<T >       const &alpha, 
-        std::vector<T*>       const &A, std::vector<int64_t> const &lda, 
-        std::vector<T*>       const &B, std::vector<int64_t> const &ldb, 
-        std::vector<T >       const &beta, 
-        std::vector<T*>       const &C, std::vector<int64_t> const &ldc, 
+        blas::Layout                 layout,
+        std::vector<blas::Op> const &transA,
+        std::vector<blas::Op> const &transB,
+        std::vector<int64_t>  const &m,
+        std::vector<int64_t>  const &n,
+        std::vector<int64_t>  const &k,
+        std::vector<T >       const &alpha,
+        std::vector<T*>       const &A, std::vector<int64_t> const &lda,
+        std::vector<T*>       const &B, std::vector<int64_t> const &ldb,
+        std::vector<T >       const &beta,
+        std::vector<T*>       const &C, std::vector<int64_t> const &ldc,
         const size_t batchCount, std::vector<int64_t> &info)
 {
     // size error checking
@@ -53,16 +53,16 @@ void gemm_check(
 
     blas_error_if( A.size() == 1 && (m.size() > 1 || k.size() > 1 || lda.size() > 1) );
     blas_error_if( B.size() == 1 && (k.size() > 1 || n.size() > 1 || ldb.size() > 1) );
-    blas_error_if( C.size() == 1 && 
-               (transA.size() > 1 || transB.size() > 1 || 
+    blas_error_if( C.size() == 1 &&
+               (transA.size() > 1 || transB.size() > 1 ||
                 m.size()      > 1 || n.size()      > 1 || k.size()   > 1 ||
-                alpha.size()  > 1 || beta.size()   > 1 || 
-                lda.size()    > 1 || ldb.size()    > 1 || ldc.size() > 1 || 
-                A.size()      > 1 || B.size()      > 1      
-                ) 
+                alpha.size()  > 1 || beta.size()   > 1 ||
+                lda.size()    > 1 || ldb.size()    > 1 || ldc.size() > 1 ||
+                A.size()      > 1 || B.size()      > 1
+                )
              );
 
-    int64_t* internal_info; 
+    int64_t* internal_info;
     if (info.size() == 1) {
         internal_info = new int64_t[batchCount];
     }
@@ -74,27 +74,27 @@ void gemm_check(
     for (size_t i = 0; i < batchCount; ++i) {
         Op transA_ = extract<Op>(transA, i);
         Op transB_ = extract<Op>(transB, i);
-        
-        int64_t m_ = extract<int64_t>(m, i); 
+
+        int64_t m_ = extract<int64_t>(m, i);
         int64_t n_ = extract<int64_t>(n, i);
         int64_t k_ = extract<int64_t>(k, i);
 
         int64_t lda_ = extract<int64_t>(lda, i);
         int64_t ldb_ = extract<int64_t>(ldb, i);
         int64_t ldc_ = extract<int64_t>(ldc, i);
-        
+
         int64_t nrowA_ = ((transA_ == Op::NoTrans) ^ (layout == Layout::RowMajor)) ? m_ : k_;
         int64_t nrowB_ = ((transB_ == Op::NoTrans) ^ (layout == Layout::RowMajor)) ? k_ : n_;
         int64_t nrowC_ = (layout == Layout::ColMajor) ? k_ : n_;
-        
+
         internal_info[i] = 0;
-        if (transA_ != Op::NoTrans && 
-           transA_ != Op::Trans   && 
+        if (transA_ != Op::NoTrans &&
+           transA_ != Op::Trans   &&
            transA_ != Op::ConjTrans) {
             internal_info[i] = -2;
         }
-        else if (transB_ != Op::NoTrans && 
-                transB_ != Op::Trans   && 
+        else if (transB_ != Op::NoTrans &&
+                transB_ != Op::Trans   &&
                 transB_ != Op::ConjTrans) {
             internal_info[i] = -3;
         }
@@ -105,10 +105,10 @@ void gemm_check(
         else if (ldb_ < nrowB_) internal_info[i] = -11;
         else if (ldc_ < nrowC_) internal_info[i] = -14;
     }
-        
+
     if (info.size() == 1) {
         // do a reduction that finds the first argument to encounter an error
-        int64_t lerror = INTERNAL_INFO_DEFAULT; 
+        int64_t lerror = INTERNAL_INFO_DEFAULT;
         #pragma omp parallel for reduction(max:lerror)
         for (size_t i = 0; i < batchCount; ++i) {
             if (internal_info[i] == 0) continue;    // skip problems that passed error checks
@@ -117,7 +117,7 @@ void gemm_check(
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
 
         // delete the internal vector
-        delete[] internal_info; 
+        delete[] internal_info;
 
         // throw an exception if needed
         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
@@ -136,16 +136,16 @@ void gemm_check(
 // batch trsm check
 template<typename T>
 void trsm_check(
-        blas::Layout                   layout, 
-        std::vector<blas::Side> const &side, 
-        std::vector<blas::Uplo> const &uplo, 
-        std::vector<blas::Op>   const &trans, 
-        std::vector<blas::Diag> const &diag, 
-        std::vector<int64_t>    const &m, 
-        std::vector<int64_t>    const &n, 
-        std::vector<T>          const &alpha, 
-        std::vector<T*>         const &A, std::vector<int64_t> const &lda, 
-        std::vector<T*>         const &B, std::vector<int64_t> const &ldb, 
+        blas::Layout                   layout,
+        std::vector<blas::Side> const &side,
+        std::vector<blas::Uplo> const &uplo,
+        std::vector<blas::Op>   const &trans,
+        std::vector<blas::Diag> const &diag,
+        std::vector<int64_t>    const &m,
+        std::vector<int64_t>    const &n,
+        std::vector<T>          const &alpha,
+        std::vector<T*>         const &A, std::vector<int64_t> const &lda,
+        std::vector<T*>         const &B, std::vector<int64_t> const &ldb,
         const size_t batchCount, std::vector<int64_t> &info)
 {
     // size error checking
@@ -165,17 +165,17 @@ void trsm_check(
 
     blas_error_if( (alpha.size() != 1 && alpha.size() != batchCount) );
 
-    blas_error_if( A.size() == 1 && ( lda.size()  > 1                         || 
-                                      side.size() > 1                         || 
-                                     (side[0] == Side::Left  && m.size() > 1) || 
+    blas_error_if( A.size() == 1 && ( lda.size()  > 1                         ||
+                                      side.size() > 1                         ||
+                                     (side[0] == Side::Left  && m.size() > 1) ||
                                      (side[0] == Side::Right && n.size() > 1) ));
-    blas_error_if( B.size() == 1 && ( side.size()  > 1 || uplo.size() > 1 || 
+    blas_error_if( B.size() == 1 && ( side.size()  > 1 || uplo.size() > 1 ||
                                       trans.size() > 1 || diag.size() > 1 ||
-                                      m.size()     > 1 || n.size()    > 1 || 
-                                      alpha.size() > 1 || A.size()    > 1 || 
-                                      lda.size()   > 1 || ldb.size()  > 1 )); 
-    
-    int64_t* internal_info; 
+                                      m.size()     > 1 || n.size()    > 1 ||
+                                      alpha.size() > 1 || A.size()    > 1 ||
+                                      lda.size()   > 1 || ldb.size()  > 1 ));
+
+    int64_t* internal_info;
     if (info.size() == 1) {
         internal_info = new int64_t[batchCount];
     }
@@ -190,7 +190,7 @@ void trsm_check(
         Op   trans_ = extract<Op  >(trans, i);
         Diag  diag_ = extract<Diag>(diag , i);
 
-        int64_t m_ = extract<int64_t>(m, i); 
+        int64_t m_ = extract<int64_t>(m, i);
         int64_t n_ = extract<int64_t>(n, i);
 
         int64_t lda_ = extract<int64_t>(lda, i);
@@ -220,7 +220,7 @@ void trsm_check(
 
     if (info.size() == 1) {
         // do a reduction that finds the first argument to encounter an error
-        int64_t lerror = INTERNAL_INFO_DEFAULT; 
+        int64_t lerror = INTERNAL_INFO_DEFAULT;
         #pragma omp parallel for reduction(max:lerror)
         for (size_t i = 0; i < batchCount; ++i) {
             if (internal_info[i] == 0) continue;    // skip problems that passed error checks
@@ -229,7 +229,7 @@ void trsm_check(
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
 
         // delete the internal vector
-        delete[] internal_info; 
+        delete[] internal_info;
 
         // throw an exception if needed
          blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
@@ -248,16 +248,16 @@ void trsm_check(
 // batch trmm check
 template<typename T>
 void trmm_check(
-        blas::Layout                   layout, 
+        blas::Layout                   layout,
         std::vector<blas::Side> const &side,
-        std::vector<blas::Uplo> const &uplo, 
-        std::vector<blas::Op>   const &trans, 
-        std::vector<blas::Diag> const &diag, 
-        std::vector<int64_t>    const &m, 
-        std::vector<int64_t>    const &n, 
-        std::vector<T>          const &alpha, 
-        std::vector<T*>         const &A, std::vector<int64_t> const &lda, 
-        std::vector<T*>         const &B, std::vector<int64_t> const &ldb, 
+        std::vector<blas::Uplo> const &uplo,
+        std::vector<blas::Op>   const &trans,
+        std::vector<blas::Diag> const &diag,
+        std::vector<int64_t>    const &m,
+        std::vector<int64_t>    const &n,
+        std::vector<T>          const &alpha,
+        std::vector<T*>         const &A, std::vector<int64_t> const &lda,
+        std::vector<T*>         const &B, std::vector<int64_t> const &ldb,
         const size_t batchCount, std::vector<int64_t> &info)
 {
     // size error checking
@@ -277,17 +277,17 @@ void trmm_check(
 
     blas_error_if( (alpha.size() != 1 && alpha.size() != batchCount) );
 
-    blas_error_if( A.size() == 1 && ( lda.size()  > 1                         || 
-                                      side.size() > 1                         || 
-                                     (side[0] == Side::Left  && m.size() > 1) || 
+    blas_error_if( A.size() == 1 && ( lda.size()  > 1                         ||
+                                      side.size() > 1                         ||
+                                     (side[0] == Side::Left  && m.size() > 1) ||
                                      (side[0] == Side::Right && n.size() > 1) ));
-    blas_error_if( B.size() == 1 && ( side.size()  > 1 || uplo.size() > 1 || 
+    blas_error_if( B.size() == 1 && ( side.size()  > 1 || uplo.size() > 1 ||
                                       trans.size() > 1 || diag.size() > 1 ||
-                                      m.size()     > 1 || n.size()    > 1 || 
-                                      alpha.size() > 1 || A.size()    > 1 || 
-                                      lda.size()   > 1 || ldb.size()  > 1 )); 
-    
-    int64_t* internal_info; 
+                                      m.size()     > 1 || n.size()    > 1 ||
+                                      alpha.size() > 1 || A.size()    > 1 ||
+                                      lda.size()   > 1 || ldb.size()  > 1 ));
+
+    int64_t* internal_info;
     if (info.size() == 1) {
         internal_info = new int64_t[batchCount];
     }
@@ -302,7 +302,7 @@ void trmm_check(
         Op   trans_ = extract<Op  >(trans, i);
         Diag  diag_ = extract<Diag>(diag , i);
 
-        int64_t m_ = extract<int64_t>(m, i); 
+        int64_t m_ = extract<int64_t>(m, i);
         int64_t n_ = extract<int64_t>(n, i);
 
         int64_t lda_ = extract<int64_t>(lda, i);
@@ -332,7 +332,7 @@ void trmm_check(
 
     if (info.size() == 1) {
         // do a reduction that finds the first argument to encounter an error
-        int64_t lerror = INTERNAL_INFO_DEFAULT; 
+        int64_t lerror = INTERNAL_INFO_DEFAULT;
         #pragma omp parallel for reduction(max:lerror)
         for (size_t i = 0; i < batchCount; ++i) {
             if (internal_info[i] == 0) continue;    // skip problems that passed error checks
@@ -341,7 +341,7 @@ void trmm_check(
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
 
         // delete the internal vector
-        delete[] internal_info; 
+        delete[] internal_info;
 
         // throw an exception if needed
         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
@@ -360,16 +360,16 @@ void trmm_check(
 // batch hemm check
 template<typename T>
 void hemm_check(
-        blas::Layout                   layout, 
+        blas::Layout                   layout,
         std::vector<blas::Side> const &side,
-        std::vector<blas::Uplo> const &uplo, 
-        std::vector<int64_t>    const &m, 
-        std::vector<int64_t>    const &n, 
-        std::vector<T>          const &alpha, 
-        std::vector<T*>         const &A, std::vector<int64_t> const &lda, 
-        std::vector<T*>         const &B, std::vector<int64_t> const &ldb, 
-        std::vector<T>          const &beta, 
-        std::vector<T*>         const &C, std::vector<int64_t> const &ldc, 
+        std::vector<blas::Uplo> const &uplo,
+        std::vector<int64_t>    const &m,
+        std::vector<int64_t>    const &n,
+        std::vector<T>          const &alpha,
+        std::vector<T*>         const &A, std::vector<int64_t> const &lda,
+        std::vector<T*>         const &B, std::vector<int64_t> const &ldb,
+        std::vector<T>          const &beta,
+        std::vector<T*>         const &C, std::vector<int64_t> const &ldc,
         const size_t batchCount, std::vector<int64_t> &info)
 {
     // size error checking
@@ -390,31 +390,31 @@ void hemm_check(
     blas_error_if( (alpha.size() != 1 && alpha.size() != batchCount) );
     blas_error_if( (beta.size()  != 1 && beta.size()  != batchCount) );
 
-    blas_error_if( A.size() == 1 && 
-                  (lda.size()  > 1                          || 
-                   side.size() > 1                          || 
-                   (side[0] == Side::Left  && m.size() > 1) || 
+    blas_error_if( A.size() == 1 &&
+                  (lda.size()  > 1                          ||
+                   side.size() > 1                          ||
+                   (side[0] == Side::Left  && m.size() > 1) ||
                    (side[0] == Side::Right && n.size() > 1) ));
 
-    blas_error_if( B.size() == 1 && 
-                  (m.size()   > 1 || 
-                   n.size()   > 1 || 
+    blas_error_if( B.size() == 1 &&
+                  (m.size()   > 1 ||
+                   n.size()   > 1 ||
                    ldb.size() > 1 ));
 
-    blas_error_if( C.size() == 1 && 
-                  (side.size()  > 1 || 
-                   uplo.size()  > 1 || 
-                   m.size()     > 1 || 
-                   n.size()     > 1 || 
-                   alpha.size() > 1 || 
-                   A.size()     > 1 || 
-                   lda.size()   > 1 || 
+    blas_error_if( C.size() == 1 &&
+                  (side.size()  > 1 ||
+                   uplo.size()  > 1 ||
+                   m.size()     > 1 ||
+                   n.size()     > 1 ||
+                   alpha.size() > 1 ||
+                   A.size()     > 1 ||
+                   lda.size()   > 1 ||
                    B.size()     > 1 ||
-                   ldb.size()   > 1 || 
-                   beta.size()  > 1 || 
+                   ldb.size()   > 1 ||
+                   beta.size()  > 1 ||
                    ldc.size()   > 1 ));
-    
-    int64_t* internal_info; 
+
+    int64_t* internal_info;
     if (info.size() == 1) {
         internal_info = new int64_t[batchCount];
     }
@@ -427,7 +427,7 @@ void hemm_check(
         Side  side_ = extract<Side>(side , i);
         Uplo  uplo_ = extract<Uplo>(uplo , i);
 
-        int64_t m_ = extract<int64_t>(m, i); 
+        int64_t m_ = extract<int64_t>(m, i);
         int64_t n_ = extract<int64_t>(n, i);
 
         int64_t lda_ = extract<int64_t>(lda, i);
@@ -454,7 +454,7 @@ void hemm_check(
 
     if (info.size() == 1) {
         // do a reduction that finds the first argument to encounter an error
-        int64_t lerror = INTERNAL_INFO_DEFAULT; 
+        int64_t lerror = INTERNAL_INFO_DEFAULT;
         #pragma omp parallel for reduction(max:lerror)
         for (size_t i = 0; i < batchCount; ++i) {
             if (internal_info[i] == 0) continue;    // skip problems that passed error checks
@@ -463,7 +463,7 @@ void hemm_check(
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
 
         // delete the internal vector
-        delete[] internal_info; 
+        delete[] internal_info;
 
         // throw an exception if needed
          blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
@@ -482,15 +482,15 @@ void hemm_check(
 // batch herk check
 template<typename T, typename scalarT>
 void herk_check(
-        blas::Layout                   layout, 
-        std::vector<blas::Uplo> const &uplo, 
-        std::vector<blas::Op>   const &trans, 
-        std::vector<int64_t>    const &n, 
-        std::vector<int64_t>    const &k, 
-        std::vector<scalarT>    const &alpha, 
-        std::vector<T*>         const &A, std::vector<int64_t> const &lda, 
-        std::vector<scalarT>    const &beta, 
-        std::vector<T*>         const &C, std::vector<int64_t> const &ldc, 
+        blas::Layout                   layout,
+        std::vector<blas::Uplo> const &uplo,
+        std::vector<blas::Op>   const &trans,
+        std::vector<int64_t>    const &n,
+        std::vector<int64_t>    const &k,
+        std::vector<scalarT>    const &alpha,
+        std::vector<T*>         const &A, std::vector<int64_t> const &lda,
+        std::vector<scalarT>    const &beta,
+        std::vector<T*>         const &C, std::vector<int64_t> const &ldc,
         const size_t batchCount, std::vector<int64_t> &info)
 {
     // size error checking
@@ -509,24 +509,24 @@ void herk_check(
     blas_error_if( (alpha.size() != 1 && alpha.size() != batchCount) );
     blas_error_if( (beta.size()  != 1 && beta.size()  != batchCount) );
 
-    blas_error_if( A.size() == 1 && 
-                  (lda.size()    > 1                  || 
+    blas_error_if( A.size() == 1 &&
+                  (lda.size()    > 1                  ||
                    n.size()      > 1                  ||
                    k.size()      > 1                  ||
                    (trans.size() > 1 && n[0] != k[0]) ));
 
-    blas_error_if( C.size() == 1 && 
-                  (uplo.size()  > 1 || 
-                   trans.size() > 1 || 
-                   n.size()     > 1 || 
-                   k.size()     > 1 || 
-                   alpha.size() > 1 || 
-                   A.size()     > 1 || 
-                   lda.size()   > 1 || 
-                   beta.size()  > 1 || 
+    blas_error_if( C.size() == 1 &&
+                  (uplo.size()  > 1 ||
+                   trans.size() > 1 ||
+                   n.size()     > 1 ||
+                   k.size()     > 1 ||
+                   alpha.size() > 1 ||
+                   A.size()     > 1 ||
+                   lda.size()   > 1 ||
+                   beta.size()  > 1 ||
                    ldc.size()   > 1 ));
 
-    int64_t* internal_info; 
+    int64_t* internal_info;
     if (info.size() == 1) {
         internal_info = new int64_t[batchCount];
     }
@@ -539,7 +539,7 @@ void herk_check(
         Uplo  uplo_ = extract<Uplo>(uplo , i);
         Op   trans_ = extract<Op>(trans , i);
 
-        int64_t n_ = extract<int64_t>(n, i); 
+        int64_t n_ = extract<int64_t>(n, i);
         int64_t k_ = extract<int64_t>(k, i);
 
         int64_t lda_ = extract<int64_t>(lda, i);
@@ -562,7 +562,7 @@ void herk_check(
 
     if (info.size() == 1) {
         // do a reduction that finds the first argument to encounter an error
-        int64_t lerror = INTERNAL_INFO_DEFAULT; 
+        int64_t lerror = INTERNAL_INFO_DEFAULT;
         #pragma omp parallel for reduction(max:lerror)
         for (size_t i = 0; i < batchCount; ++i) {
             if (internal_info[i] == 0) continue;    // skip problems that passed error checks
@@ -571,7 +571,7 @@ void herk_check(
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
 
         // delete the internal vector
-        delete[] internal_info; 
+        delete[] internal_info;
 
         // throw an exception if needed
          blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
@@ -590,16 +590,16 @@ void herk_check(
 // batch hemm check
 template<typename T>
 void symm_check(
-        blas::Layout                   layout, 
+        blas::Layout                   layout,
         std::vector<blas::Side> const &side,
-        std::vector<blas::Uplo> const &uplo, 
-        std::vector<int64_t>    const &m, 
-        std::vector<int64_t>    const &n, 
-        std::vector<T>          const &alpha, 
-        std::vector<T*>         const &A, std::vector<int64_t> const &lda, 
-        std::vector<T*>         const &B, std::vector<int64_t> const &ldb, 
-        std::vector<T>          const &beta, 
-        std::vector<T*>         const &C, std::vector<int64_t> const &ldc, 
+        std::vector<blas::Uplo> const &uplo,
+        std::vector<int64_t>    const &m,
+        std::vector<int64_t>    const &n,
+        std::vector<T>          const &alpha,
+        std::vector<T*>         const &A, std::vector<int64_t> const &lda,
+        std::vector<T*>         const &B, std::vector<int64_t> const &ldb,
+        std::vector<T>          const &beta,
+        std::vector<T*>         const &C, std::vector<int64_t> const &ldc,
         const size_t batchCount, std::vector<int64_t> &info)
 {
     hemm_check(layout, side, uplo, m, n, alpha, A, lda, B, ldb, beta, C, ldc, batchCount, info);
@@ -609,15 +609,15 @@ void symm_check(
 // batch syrk check
 template<typename T>
 void syrk_check(
-        blas::Layout                   layout, 
-        std::vector<blas::Uplo> const &uplo, 
-        std::vector<blas::Op>   const &trans, 
-        std::vector<int64_t>    const &n, 
-        std::vector<int64_t>    const &k, 
-        std::vector<T>          const &alpha, 
-        std::vector<T*>         const &A, std::vector<int64_t> const &lda, 
-        std::vector<T>          const &beta, 
-        std::vector<T*>         const &C, std::vector<int64_t> const &ldc, 
+        blas::Layout                   layout,
+        std::vector<blas::Uplo> const &uplo,
+        std::vector<blas::Op>   const &trans,
+        std::vector<int64_t>    const &n,
+        std::vector<int64_t>    const &k,
+        std::vector<T>          const &alpha,
+        std::vector<T*>         const &A, std::vector<int64_t> const &lda,
+        std::vector<T>          const &beta,
+        std::vector<T*>         const &C, std::vector<int64_t> const &ldc,
         const size_t batchCount, std::vector<int64_t> &info)
 {
     // size error checking
@@ -636,24 +636,24 @@ void syrk_check(
     blas_error_if( (alpha.size() != 1 && alpha.size() != batchCount) );
     blas_error_if( (beta.size()  != 1 && beta.size()  != batchCount) );
 
-    blas_error_if( A.size() == 1 && 
-                  (lda.size()    > 1                  || 
+    blas_error_if( A.size() == 1 &&
+                  (lda.size()    > 1                  ||
                    n.size()      > 1                  ||
                    k.size()      > 1                  ||
                    (trans.size() > 1 && n[0] != k[0]) ));
 
-    blas_error_if( C.size() == 1 && 
-                  (uplo.size()  > 1 || 
-                   trans.size() > 1 || 
-                   n.size()     > 1 || 
-                   k.size()     > 1 || 
-                   alpha.size() > 1 || 
-                   A.size()     > 1 || 
-                   lda.size()   > 1 || 
-                   beta.size()  > 1 || 
+    blas_error_if( C.size() == 1 &&
+                  (uplo.size()  > 1 ||
+                   trans.size() > 1 ||
+                   n.size()     > 1 ||
+                   k.size()     > 1 ||
+                   alpha.size() > 1 ||
+                   A.size()     > 1 ||
+                   lda.size()   > 1 ||
+                   beta.size()  > 1 ||
                    ldc.size()   > 1 ));
 
-    int64_t* internal_info; 
+    int64_t* internal_info;
     if (info.size() == 1) {
         internal_info = new int64_t[batchCount];
     }
@@ -666,7 +666,7 @@ void syrk_check(
         Uplo  uplo_ = extract<Uplo>(uplo , i);
         Op   trans_ = extract<Op>(trans , i);
 
-        int64_t n_ = extract<int64_t>(n, i); 
+        int64_t n_ = extract<int64_t>(n, i);
         int64_t k_ = extract<int64_t>(k, i);
 
         int64_t lda_ = extract<int64_t>(lda, i);
@@ -689,7 +689,7 @@ void syrk_check(
 
     if (info.size() == 1) {
         // do a reduction that finds the first argument to encounter an error
-        int64_t lerror = INTERNAL_INFO_DEFAULT; 
+        int64_t lerror = INTERNAL_INFO_DEFAULT;
         #pragma omp parallel for reduction(max:lerror)
         for (size_t i = 0; i < batchCount; ++i) {
             if (internal_info[i] == 0) continue;    // skip problems that passed error checks
@@ -698,7 +698,7 @@ void syrk_check(
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
 
         // delete the internal vector
-        delete[] internal_info; 
+        delete[] internal_info;
 
         // throw an exception if needed
          blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
@@ -717,16 +717,16 @@ void syrk_check(
 // batch her2k check
 template<typename T, typename scalarT>
 void her2k_check(
-        blas::Layout                   layout, 
-        std::vector<blas::Uplo> const &uplo, 
-        std::vector<blas::Op>   const &trans, 
-        std::vector<int64_t>    const &n, 
-        std::vector<int64_t>    const &k, 
-        std::vector<T>          const &alpha, 
-        std::vector<T*>         const &A, std::vector<int64_t> const &lda, 
-        std::vector<T*>         const &B, std::vector<int64_t> const &ldb, 
-        std::vector<scalarT>    const &beta, 
-        std::vector<T*>         const &C, std::vector<int64_t> const &ldc, 
+        blas::Layout                   layout,
+        std::vector<blas::Uplo> const &uplo,
+        std::vector<blas::Op>   const &trans,
+        std::vector<int64_t>    const &n,
+        std::vector<int64_t>    const &k,
+        std::vector<T>          const &alpha,
+        std::vector<T*>         const &A, std::vector<int64_t> const &lda,
+        std::vector<T*>         const &B, std::vector<int64_t> const &ldb,
+        std::vector<scalarT>    const &beta,
+        std::vector<T*>         const &C, std::vector<int64_t> const &ldc,
         const size_t batchCount, std::vector<int64_t> &info)
 {
     // size error checking
@@ -747,32 +747,32 @@ void her2k_check(
     blas_error_if( (alpha.size() != 1 && alpha.size() != batchCount) );
     blas_error_if( (beta.size()  != 1 && beta.size()  != batchCount) );
 
-    blas_error_if( A.size() == 1 && 
-                  (lda.size()    > 1                  || 
+    blas_error_if( A.size() == 1 &&
+                  (lda.size()    > 1                  ||
                    n.size()      > 1                  ||
                    k.size()      > 1                  ||
                    (trans.size() > 1 && n[0] != k[0]) ));
 
-    blas_error_if( B.size() == 1 && 
-                  (ldb.size()    > 1                  || 
+    blas_error_if( B.size() == 1 &&
+                  (ldb.size()    > 1                  ||
                    n.size()      > 1                  ||
                    k.size()      > 1                  ||
                    (trans.size() > 1 && n[0] != k[0]) ));
 
-    blas_error_if( C.size() == 1 && 
-                  (uplo.size()  > 1 || 
-                   trans.size() > 1 || 
-                   n.size()     > 1 || 
-                   k.size()     > 1 || 
-                   alpha.size() > 1 || 
-                   A.size()     > 1 || 
-                   lda.size()   > 1 || 
-                   B.size()     > 1 || 
-                   ldb.size()   > 1 || 
-                   beta.size()  > 1 || 
+    blas_error_if( C.size() == 1 &&
+                  (uplo.size()  > 1 ||
+                   trans.size() > 1 ||
+                   n.size()     > 1 ||
+                   k.size()     > 1 ||
+                   alpha.size() > 1 ||
+                   A.size()     > 1 ||
+                   lda.size()   > 1 ||
+                   B.size()     > 1 ||
+                   ldb.size()   > 1 ||
+                   beta.size()  > 1 ||
                    ldc.size()   > 1 ));
 
-    int64_t* internal_info; 
+    int64_t* internal_info;
     if (info.size() == 1) {
         internal_info = new int64_t[batchCount];
     }
@@ -785,7 +785,7 @@ void her2k_check(
         Uplo  uplo_ = extract<Uplo>(uplo , i);
         Op   trans_ = extract<Op>(trans , i);
 
-        int64_t n_ = extract<int64_t>(n, i); 
+        int64_t n_ = extract<int64_t>(n, i);
         int64_t k_ = extract<int64_t>(k, i);
 
         int64_t lda_ = extract<int64_t>(lda, i);
@@ -811,7 +811,7 @@ void her2k_check(
 
     if (info.size() == 1) {
         // do a reduction that finds the first argument to encounter an error
-        int64_t lerror = INTERNAL_INFO_DEFAULT; 
+        int64_t lerror = INTERNAL_INFO_DEFAULT;
         #pragma omp parallel for reduction(max:lerror)
         for (size_t i = 0; i < batchCount; ++i) {
             if (internal_info[i] == 0) continue;    // skip problems that passed error checks
@@ -820,7 +820,7 @@ void her2k_check(
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
 
         // delete the internal vector
-        delete[] internal_info; 
+        delete[] internal_info;
 
         // throw an exception if needed
          blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
@@ -839,16 +839,16 @@ void her2k_check(
 // batch syr2k check
 template<typename T>
 void syr2k_check(
-        blas::Layout                   layout, 
-        std::vector<blas::Uplo> const &uplo, 
-        std::vector<blas::Op>   const &trans, 
-        std::vector<int64_t>    const &n, 
-        std::vector<int64_t>    const &k, 
-        std::vector<T>          const &alpha, 
-        std::vector<T*>         const &A, std::vector<int64_t> const &lda, 
-        std::vector<T*>         const &B, std::vector<int64_t> const &ldb, 
-        std::vector<T>          const &beta, 
-        std::vector<T*>         const &C, std::vector<int64_t> const &ldc, 
+        blas::Layout                   layout,
+        std::vector<blas::Uplo> const &uplo,
+        std::vector<blas::Op>   const &trans,
+        std::vector<int64_t>    const &n,
+        std::vector<int64_t>    const &k,
+        std::vector<T>          const &alpha,
+        std::vector<T*>         const &A, std::vector<int64_t> const &lda,
+        std::vector<T*>         const &B, std::vector<int64_t> const &ldb,
+        std::vector<T>          const &beta,
+        std::vector<T*>         const &C, std::vector<int64_t> const &ldc,
         const size_t batchCount, std::vector<int64_t> &info)
 {
     // size error checking
@@ -869,32 +869,32 @@ void syr2k_check(
     blas_error_if( (alpha.size() != 1 && alpha.size() != batchCount) );
     blas_error_if( (beta.size()  != 1 && beta.size()  != batchCount) );
 
-    blas_error_if( A.size() == 1 && 
-                  (lda.size()    > 1                  || 
+    blas_error_if( A.size() == 1 &&
+                  (lda.size()    > 1                  ||
                    n.size()      > 1                  ||
                    k.size()      > 1                  ||
                    (trans.size() > 1 && n[0] != k[0]) ));
 
-    blas_error_if( B.size() == 1 && 
-                  (ldb.size()    > 1                  || 
+    blas_error_if( B.size() == 1 &&
+                  (ldb.size()    > 1                  ||
                    n.size()      > 1                  ||
                    k.size()      > 1                  ||
                    (trans.size() > 1 && n[0] != k[0]) ));
 
-    blas_error_if( C.size() == 1 && 
-                  (uplo.size()  > 1 || 
-                   trans.size() > 1 || 
-                   n.size()     > 1 || 
-                   k.size()     > 1 || 
-                   alpha.size() > 1 || 
-                   A.size()     > 1 || 
-                   lda.size()   > 1 || 
-                   B.size()     > 1 || 
-                   ldb.size()   > 1 || 
-                   beta.size()  > 1 || 
+    blas_error_if( C.size() == 1 &&
+                  (uplo.size()  > 1 ||
+                   trans.size() > 1 ||
+                   n.size()     > 1 ||
+                   k.size()     > 1 ||
+                   alpha.size() > 1 ||
+                   A.size()     > 1 ||
+                   lda.size()   > 1 ||
+                   B.size()     > 1 ||
+                   ldb.size()   > 1 ||
+                   beta.size()  > 1 ||
                    ldc.size()   > 1 ));
 
-    int64_t* internal_info; 
+    int64_t* internal_info;
     if (info.size() == 1) {
         internal_info = new int64_t[batchCount];
     }
@@ -907,7 +907,7 @@ void syr2k_check(
         Uplo  uplo_ = extract<Uplo>(uplo , i);
         Op   trans_ = extract<Op>(trans , i);
 
-        int64_t n_ = extract<int64_t>(n, i); 
+        int64_t n_ = extract<int64_t>(n, i);
         int64_t k_ = extract<int64_t>(k, i);
 
         int64_t lda_ = extract<int64_t>(lda, i);
@@ -933,7 +933,7 @@ void syr2k_check(
 
     if (info.size() == 1) {
         // do a reduction that finds the first argument to encounter an error
-        int64_t lerror = INTERNAL_INFO_DEFAULT; 
+        int64_t lerror = INTERNAL_INFO_DEFAULT;
         #pragma omp parallel for reduction(max:lerror)
         for (size_t i = 0; i < batchCount; ++i) {
             if (internal_info[i] == 0) continue;    // skip problems that passed error checks
@@ -942,7 +942,7 @@ void syr2k_check(
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
 
         // delete the internal vector
-        delete[] internal_info; 
+        delete[] internal_info;
 
         // throw an exception if needed
          blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );

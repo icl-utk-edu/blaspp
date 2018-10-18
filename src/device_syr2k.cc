@@ -15,7 +15,7 @@ void blas::syr2k(
     float const *dA, int64_t ldda,
     float const *dB, int64_t lddb,
     float beta,
-    float       *dC, int64_t lddc, 
+    float       *dC, int64_t lddc,
     blas::Queue &queue )
 {
     // check arguments
@@ -64,12 +64,12 @@ void blas::syr2k(
     device_uplo_t uplo_ = device_uplo_const( uplo );
     device_trans_t trans_ = device_trans_const( trans);
     blas::set_device( queue.device() );
-    DEVICE_ssyr2k( 
-            queue.handle(), 
-            uplo_, trans_, 
-            n_, k_, 
-            alpha, dA, ldda_, 
-                   dB, lddb_, 
+    DEVICE_ssyr2k(
+            queue.handle(),
+            uplo_, trans_,
+            n_, k_,
+            alpha, dA, ldda_,
+                   dB, lddb_,
             beta,  dC, lddc_ );
 }
 
@@ -84,7 +84,7 @@ void blas::syr2k(
     double const *dA, int64_t ldda,
     double const *dB, int64_t lddb,
     double beta,
-    double       *dC, int64_t lddc, 
+    double       *dC, int64_t lddc,
     blas::Queue &queue )
 {
     // check arguments
@@ -133,12 +133,12 @@ void blas::syr2k(
     device_uplo_t uplo_ = device_uplo_const( uplo );
     device_trans_t trans_ = device_trans_const( trans);
     blas::set_device( queue.device() );
-    DEVICE_dsyr2k( 
-            queue.handle(), 
-            uplo_, trans_, 
-            n_, k_, 
-            alpha, dA, ldda_, 
-                   dB, lddb_, 
+    DEVICE_dsyr2k(
+            queue.handle(),
+            uplo_, trans_,
+            n_, k_,
+            alpha, dA, ldda_,
+                   dB, lddb_,
             beta,  dC, lddc_ );
 }
 
@@ -153,7 +153,7 @@ void blas::syr2k(
     std::complex<float> const *dA, int64_t ldda,
     std::complex<float> const *dB, int64_t lddb,
     std::complex<float> beta,
-    std::complex<float>       *dC, int64_t lddc, 
+    std::complex<float>       *dC, int64_t lddc,
     blas::Queue &queue )
 {
     // check arguments
@@ -201,12 +201,12 @@ void blas::syr2k(
     device_uplo_t uplo_ = device_uplo_const( uplo );
     device_trans_t trans_ = device_trans_const( trans);
     blas::set_device( queue.device() );
-    DEVICE_csyr2k( 
-            queue.handle(), 
-            uplo_, trans_, 
-            n_, k_, 
-            alpha, dA, ldda_, 
-                   dB, lddb_, 
+    DEVICE_csyr2k(
+            queue.handle(),
+            uplo_, trans_,
+            n_, k_,
+            alpha, dA, ldda_,
+                   dB, lddb_,
             beta,  dC, lddc_ );
 }
 
@@ -221,7 +221,7 @@ void blas::syr2k(
     std::complex<double> const *dA, int64_t ldda,
     std::complex<double> const *dB, int64_t lddb,
     std::complex<double> beta,
-    std::complex<double>       *dC, int64_t lddc, 
+    std::complex<double>       *dC, int64_t lddc,
     blas::Queue &queue )
 {
     // check arguments
@@ -269,11 +269,11 @@ void blas::syr2k(
     device_uplo_t uplo_ = device_uplo_const( uplo );
     device_trans_t trans_ = device_trans_const( trans);
     blas::set_device( queue.device() );
-    DEVICE_zsyr2k( 
-            queue.handle(), 
-            uplo_, trans_, 
-            n_, k_, 
-            alpha, dA, ldda_, 
-                   dB, lddb_, 
+    DEVICE_zsyr2k(
+            queue.handle(),
+            uplo_, trans_,
+            n_, k_,
+            alpha, dA, ldda_,
+                   dB, lddb_,
             beta,  dC, lddc_ );
 }

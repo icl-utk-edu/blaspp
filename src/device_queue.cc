@@ -3,7 +3,7 @@
 /** queue member functions **/
 
 // -----------------------------------------------------------------------------
-// default constructor 
+// default constructor
 blas::Queue::Queue()
 {
     blas::get_device( &device_ );
@@ -17,7 +17,7 @@ blas::Queue::Queue()
 }
 
 // -----------------------------------------------------------------------------
-// constructor with batch init 
+// constructor with batch init
 blas::Queue::Queue(blas::Device device, int64_t batch_size)
 {
     device_ = device;
@@ -40,7 +40,7 @@ blas::Device   blas::Queue::device()          { return device_;   }
 // -----------------------------------------------------------------------------
 /// @return device blas handle associated with this queue
 device_blas_handle_t   blas::Queue::handle()   { return handle_;   }
-    
+
 // -----------------------------------------------------------------------------
 #ifdef BLASPP_WITH_CUBLAS
 /// @return CUDA stream associated with this queue; requires CUDA.
@@ -49,7 +49,7 @@ cudaStream_t     blas::Queue::stream()     { return stream_;   }
 // TODO: add similar functionality for rocBLAS, if required
 #endif
 
-    
+
 // -----------------------------------------------------------------------------
 /// synchronize with queue.
 void blas::Queue::sync()
@@ -60,7 +60,7 @@ void blas::Queue::sync()
     // TODO: sync with queue in rocBLAS
     #endif
 }
-    
+
 // -----------------------------------------------------------------------------
 // default destructor
 blas::Queue::~Queue()
