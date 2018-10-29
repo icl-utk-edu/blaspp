@@ -91,7 +91,7 @@ const char* device_error_string(device_blas_status_t status);
     #define device_blas_check( status ) \
         do { \
             device_blas_status_t s = status; \
-            blas::internal::throw_if( blas::is_device_error(s),
+            blas::internal::throw_if( blas::is_device_error(s), \
                                       blas::device_error_string(s), __func__ ); \
         } while(0)
 
