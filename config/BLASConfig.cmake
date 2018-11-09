@@ -32,7 +32,7 @@ foreach(fortran_name ${fortran_mangling_names})
     list(GET fortran_mangling ${j} fort_var)
 
     message ("  ${j} - Trying: ${fortran_name}")
-    message ("  ${j}: ${fort_var}")
+    #message ("  ${j}: ${fort_var}")
 
     try_run(run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
         SOURCES
@@ -48,8 +48,7 @@ foreach(fortran_name ${fortran_mangling_names})
     if (compile_res1 AND NOT ${run_res1} MATCHES "FAILED_TO_RUN")
         LIST(GET fortran_mangling_name ${j} mangling_name)
         message("  ${Blue}Found valid configuration:")
-        message("    Fortran convention: " ${mangling_name})
-        message(${ColourReset})
+        message("    Fortran convention: " ${mangling_name}${ColourReset})
 
         LIST(GET fortran_mangling_clean ${j} FORTRAN_MANGLING_DEFINES)
         set(BLAS_DEFINES "HAVE_BLAS")
@@ -57,8 +56,7 @@ foreach(fortran_name ${fortran_mangling_names})
 
         break()
     else()
-        message("  ${Red}No")
-        message(${ColourReset})
+        message("  ${Red}No${ColourReset}")
     endif()
 
     set(run_res1 "")
@@ -115,7 +113,7 @@ set(BLAS_lib_options
 
 list(LENGTH BLAS_lib_options blas_list_len)
 
-set(BLAS_cxx_flags_flags
+set(BLAS_cxx_flags_list
     "-fopenmp"
     "-fopenmp"
     "-fopenmp"
@@ -161,7 +159,7 @@ foreach(fortran_name ${fortran_mangling_names})
     foreach (lib_name ${BLAS_names})
         list(GET fortran_mangling ${j} fort_var)
         list(GET BLAS_lib_options ${i} lib_var)
-        list(GET BLAS_cxx_flags_flags ${i} cxx_flag)
+        list(GET BLAS_cxx_flags_list ${i} cxx_flag)
         list(GET BLAS_int_definition_list ${i} int_define_var)
 
         message ("  ${j},${i} - Trying: ${fortran_name} ${lib_name}")

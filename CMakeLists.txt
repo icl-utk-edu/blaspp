@@ -1,18 +1,26 @@
+# CMake script for BLAS++ library
+# repo: http://bitbucket.org/icl/blaspp
+# Requires Libtest testing library from http://bitbucket.org/icl/libtest
+
 cmake_minimum_required(VERSION 3.2)
-project(BLASPP CXX)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/modules)
+project(BLASPP
+    LANGUAGES CXX
+)
 
-# dependencies
-#option(USE_MKL            "Use Intel MKL libraries"               ON)
-option(BLASPP_BUILD_TESTS "Build BLAS++ testers, ON by default"   ON)
-#option(HAVE_DEVICE        "Enable GPU assisted routines"          ON)
+option(BLASPP_BUILD_TESTS "Build BLAS++ testers, ON by default" ON)
 
-#if (USE_MKL)
-#    if (NOT DEFINED ENV{MKLROOT})
-#        message(FATAL_ERROR "Environment variable MKL_ROOT is not found")
-#    endif()
-#endif(USE_MKL)
+# Enforce out of source builds
+string (TOLOWER "${CMAKE_CURRENT_SOURCE_DIR}" SOURCE_DIR_LOWER)
+string (TOLOWER "${CMAKE_CURRENT_BINARY_DIR}" BINARY_DIR_LOWER )
+if (SOURCE_DIR_LOWER STREQUAL BINARY_DIR_LOWER)
+    message (FATAL_ERROR "Compiling BLASPP with CMake requires an out-of-source build. To proceed:
+    rm -rf CMakeCache.txt CMakeFiles/   # delete files in ${CMAKE_CURRENT_SOURCE_DIR}
+    mkdir build
+    cd build
+    cmake ..
+    make")
+endif ()
 
 add_library(blaspp SHARED
     src/asum.cc
@@ -58,6 +66,7 @@ add_library(blaspp SHARED
     src/trsv.cc
 )
 
+# CUDA is not required
 find_package(CUDA)
 
 if(CUDA_FOUND)
@@ -99,6 +108,7 @@ if(CUDA_FOUND)
     )
 endif()
 
+# Finds BLAS library, only MKL for now, and configures
 include ("${CMAKE_CURRENT_SOURCE_DIR}/config/BLASConfig.cmake")
 include ("${CMAKE_CURRENT_SOURCE_DIR}/config/CBLASConfig.cmake")
 include ("${CMAKE_CURRENT_SOURCE_DIR}/config/LAPACKConfig.cmake")
@@ -129,8 +139,14 @@ target_link_libraries(blaspp PUBLIC
     ${BLAS_cxx_flags}
 )
 
+target_include_directories(blaspp
+    PUBLIC
+    $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
+
 target_compile_definitions(blaspp PUBLIC
-    #-fopenmp -DFORTRAN_ADD_ -DADD_ -DHAVE_BLAS -DBLAS_COMPLEX_RETURN_ARGUMENT -DHAVE_MKL -DHAVE_CBLAS -DHAVE_LAPACK
+    # example: -fopenmp -DFORTRAN_ADD_ -DADD_ -DHAVE_BLAS -DBLAS_COMPLEX_RETURN_ARGUMENT -DHAVE_MKL -DHAVE_CBLAS -DHAVE_LAPACK
     ${FORTRAN_MANGLING_DEFINES}
     ${BLAS_DEFINES}
     ${BLAS_RETURN}
@@ -140,18 +156,42 @@ target_compile_definitions(blaspp PUBLIC
     ${BLAS_int}
 )
 
-target_include_directories(blaspp PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
-
 set_target_properties(blaspp PROPERTIES
     CXX_STANDARD 11
     CXX_STANDARD_REQUIRED ON
     CXX_EXTENSIONS OFF
     POSITION_INDEPENDENT_CODE ON
+    )
+
+# Set default installation location
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX "/opt/slate"
+        CACHE PATH
+        "Install path prefix, prepended onto install directories."
+        FORCE
+        )
+endif()
+
+install (TARGETS blaspp
+    EXPORT blasppTargets
+    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/blaspp/lib
+    INCLUDES DESTINATION ${CMAKE_INSTALL_PREFIX}/blaspp/include
+)
+install(
+    DIRECTORY
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+    DESTINATION
+        ${CMAKE_INSTALL_PREFIX}/blaspp
 )
 
-install (TARGETS blaspp EXPORT blaspp DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+export(EXPORT blasppTargets
+    FILE ${CMAKE_INSTALL_PREFIX}/blaspp/blasppTargets.cmake
+)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/blasppConfig.cmake.in
+    ${CMAKE_INSTALL_PREFIX}/blaspp/blasppConfig.cmake
+    COPYONLY
+)
 
 if (BLASPP_BUILD_TESTS)
     message(STATUS "Blaspp tests will be built.")
@@ -228,10 +268,11 @@ if (BLASPP_BUILD_TESTS)
         )
     endif()
 
-    find_package(Libtest)
+    # Set -Dlibtest_DIR=/path/to/libtest
+    find_package(libtest)
 
     target_link_libraries(blaspp_test
-        Libtest
+        libtest
         blaspp
     )
 
@@ -239,7 +280,7 @@ if (BLASPP_BUILD_TESTS)
         PUBLIC
             ${CMAKE_CURRENT_SOURCE_DIR}/test
             ${CMAKE_CURRENT_SOURCE_DIR}/include
-            ${Libtest_INCLUDE_DIR}
+            #${Libtest_INCLUDE_DIR}
     )
 if(0)
     target_compile_definitions(blaspp_test PUBLIC
