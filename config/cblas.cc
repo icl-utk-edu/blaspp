@@ -1,6 +1,8 @@
 #include <stdio.h>
 
-#ifdef HAVE_MKL
+#if defined(HAVE_ESSL)
+    #include <essl.h>
+#elif defined(HAVE_MKL)
     #include <mkl_cblas.h>
 #else
     #include <cblas.h>
