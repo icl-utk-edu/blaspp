@@ -71,7 +71,23 @@ if(CUDA_FOUND)
 endif()
 
 # Set -Dlibtest_DIR=/path/to/libtest
+if(libtest_DIR)
+    message("Found libtest_DIR")
+else()
+    find_path(libtest_DIR libtestConfig.cmake
+        PATHS
+            ${CMAKE_INSTALL_PREFIX}/test
+    )
+    message("libtest_DIR: " ${libtest_DIR})
+endif()
+
 find_package(libtest)
+
+if(NOT BLASPP_BUILD_TESTS)
+    set_target_properties(blaspp_test
+        EXCLUDE_FROM_ALL
+    )
+endif()
 
 target_link_libraries(blaspp_test
     libtest
@@ -95,3 +111,20 @@ if(0)
         ${BLAS_int}
      )
 endif()
+
+# Since we can't do 'make test'...
+add_custom_target(testing DEPENDS blaspp_test)
+
+# Move test script to build directory
+add_custom_command(TARGET blaspp_test POST_BUILD
+    COMMAND
+        cp ${CMAKE_CURRENT_SOURCE_DIR}/run_tests.py
+           ${CMAKE_CURRENT_BINARY_DIR}/run_tests.py
+)
+
+#Move test script to build directory
+add_custom_command(TARGET blaspp_test POST_BUILD
+    COMMAND
+        cp ${CMAKE_CURRENT_BINARY_DIR}/blaspp_test
+           ${CMAKE_CURRENT_BINARY_DIR}/test
+)
