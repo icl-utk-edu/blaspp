@@ -269,7 +269,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/blasppConfig.cmake.in
 if (BLASPP_BUILD_TESTS)
     message(STATUS "Blaspp tests will be built.")
     add_subdirectory(test)
-    enable_testing()
 endif ()
 
 # To make this more user friendly, add 'make lib' option.

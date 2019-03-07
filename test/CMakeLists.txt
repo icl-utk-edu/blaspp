@@ -78,7 +78,6 @@ else()
         PATHS
             ${CMAKE_INSTALL_PREFIX}/test
     )
-    message("libtest_DIR: " ${libtest_DIR})
 endif()
 
 find_package(libtest)
