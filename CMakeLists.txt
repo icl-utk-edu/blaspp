@@ -99,6 +99,15 @@ add_library(blaspp SHARED
     src/trsv.cc
 )
 
+set_target_properties(blaspp
+    PROPERTIES
+        CXX_STANDARD 11
+        CXX_STANDARD_REQUIRED ON
+        CXX_EXTENSIONS OFF
+        POSITION_INDEPENDENT_CODE ON
+        INTERFACE_COMPILE_FEATURES cxx_std_11
+)
+
 # CUDA is not required
 find_package(CUDA)
 
@@ -141,16 +150,23 @@ if(CUDA_FOUND)
     )
 endif()
 
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(blaspp PUBLIC OpenMP::OpenMP_CXX)
+endif()
+
 # Check user supplied BLAS libraries
 if(BLAS_LIBRARIES)
     message("BLAS_LIBRARIES supplied by user: " ${BLAS_LIBRARIES})
-    include(CheckFortranFunctionExists)
+    include(CheckFunctionExists)
     set(CMAKE_REQUIRED_LIBRARIES ${BLAS_LIBRARIES})
-    CHECK_FORTRAN_FUNCTION_EXISTS("dgemm" BLAS_FOUND)
+    CHECK_FUNCTION_EXISTS("dgemm" BLAS_FOUND)
     unset(CMAKE_REQUIRED_LIBRARIES)
     if(BLAS_FOUND)
         message(STATUS "--> BLAS supplied by user is WORKING, will use ${BLAS_LIBRARIES}.")
-        target_link_libraries(blaspp ${BLAS_LIBRARIES})
+        target_link_libraries(blaspp PUBLIC ${BLAS_LIBRARIES})
+        set(BLAS_links ${BLAS_LIBRARIES})
+        set(BLAS_DEFINES "HAVE_BLAS")
     else()
         message(ERROR "--> BLAS supplied by user is not WORKING, CANNOT USE ${BLAS_LIBRARIES}.")
         message(ERROR "-->     Will use REFERENCE BLAS (by default)")
@@ -179,19 +195,26 @@ if(blas_config_found STREQUAL "TRUE")
 endif()
 
 # Check for CBLAS
+#message("check for cblas?")
 if(NOT CBLAS_DEFINES STREQUAL "")
     include ("cmake/CBLASConfig.cmake")
 endif()
 
 # Check for LAPACK
+#message("check for lapack?")
 if(NOT LAPACK_DEFINES STREQUAL "")
     include ("cmake/LAPACKConfig.cmake")
+endif()
+
+if(BLAS_links)
+string(REGEX REPLACE "\n$" "" ${BLAS_links} "${BLAS_links}")
 endif()
 
 # Some debug
 if(BLASPP_QUIET)
     message("BLAS DEFINES: " ${BLAS_DEFINES})
-    message("BLAS links: " ${BLAS_links})
+    message("LIB DEFINES: " ${LIB_DEFINES})
+    message("BLAS links: ${BLAS_links}")
     message("BLAS LIBRARIES: " ${BLAS_LIBRARIES})
     message("BLAS_cxx_flags: " ${BLAS_cxx_flags})
     message("BLAS INTS defines: " ${BLAS_INT_DEFINES})
@@ -208,14 +231,22 @@ endif()
 target_link_libraries(blaspp PUBLIC
     #LDFLAGS example = -fopenmp
     #LIBS example    = -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -lpthread -lm
-    ${BLAS_LIBRARIES}
+    ${BLAS_links}
     ${BLAS_cxx_flags}
 )
 
+if(is_accelerate)
+    set(blas_include_dir "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers/")
+    set(apple_inc_dir "-I${blas_include_dir}")
+else()
+    set(blas_include_dir "")
+endif()
+#message("blas_include_dir: ${blas_include_dir}")
 target_include_directories(blaspp
     PUBLIC
-    $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${blas_include_dir}
 )
 
 target_compile_definitions(blaspp PUBLIC
@@ -229,20 +260,14 @@ target_compile_definitions(blaspp PUBLIC
     ${BLAS_int}
 )
 
-set_target_properties(blaspp PROPERTIES
-    CXX_STANDARD 11
-    CXX_STANDARD_REQUIRED ON
-    CXX_EXTENSIONS OFF
-    POSITION_INDEPENDENT_CODE ON
-    )
-
 # Set default installation location
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    message(STATUS "Setting default CMAKE_INSTALL_PREFIX")
     set(CMAKE_INSTALL_PREFIX "/opt/slate"
         CACHE PATH
         "Install path prefix, prepended onto install directories."
         FORCE
-        )
+    )
 endif()
 
 install (TARGETS blaspp

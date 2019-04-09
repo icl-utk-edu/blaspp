@@ -3,10 +3,17 @@ if(NOT ${CBLAS_DEFINES} STREQUAL "")
     return()
 endif()
 
-string(ASCII 27 Esc)
-set(Red         "${Esc}[31m")
-set(Blue        "${Esc}[34m")
-set(ColourReset "${Esc}[m")
+if(NO_COLOR)
+    string(ASCII 27 Esc)
+    set(Red         "")
+    set(Blue        "")
+    set(ColourReset "")
+else()
+    string(ASCII 27 Esc)
+    set(Red         "${Esc}[31m")
+    set(Blue        "${Esc}[34m")
+    set(ColourReset "${Esc}[m")
+endif()
 
 message(STATUS "Checking for CBLAS...")
 
@@ -26,8 +33,17 @@ if(NOT "${LIB_DEFINES}" STREQUAL "")
 else()
     set(local_LIB_DEFINES "")
 endif()
+
 #message("local_LIB_DEFINES: " ${local_LIB_DEFINES})
 #message("local_BLAS_DEFINES: " ${local_BLAS_DEFINES})
+
+string(FIND "${BLAS_links}" "framework" is_accelerate)
+#message("is accelerate: ${is_accelerate}")
+if(NOT ${is_accelerate} STREQUAL "-1")
+    set(blas_include_dir "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers/")
+    set(blas_inc_dir "-I${blas_include_dir}")
+endif()
+#message("blas_inc_dir: ${blas_include_dir}")
 
 set(run_output1 "")
 set(compile_OUTPUT1 "")
@@ -39,6 +55,7 @@ try_run(run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
         ${BLAS_cxx_flags}
         ${BLAS_links}
     COMPILE_DEFINITIONS
+        ${blas_inc_dir}
         ${local_BLAS_DEFINES}
         ${local_LIB_DEFINES}
         ${BLAS_int}
@@ -48,10 +65,12 @@ try_run(run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
         run_output1
     )
 
+#message ('compile result: ' ${compile_res1})
+#message ('run result: ' ${run_res1})
 #message ('compile output: ' ${compile_OUTPUT1})
 #message ('run output: ' ${run_output1})
 
-if (compile_res1 AND NOT ${run_res1} MATCHES "FAILED_TO_RUN")
+if ("${compile_res1}" AND NOT "${run_res1}" MATCHES "FAILED_TO_RUN")
     message("${Blue}  Found CBLAS${ColourReset}")
     set(CBLAS_DEFINES "HAVE_CBLAS" CACHE INTERNAL "")
 else()

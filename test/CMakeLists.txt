@@ -70,15 +70,23 @@ if(CUDA_FOUND)
     )
 endif()
 
+set_target_properties(blaspp_test PROPERTIES
+    CXX_STANDARD 11
+    CXX_STANDARD_REQUIRED ON
+    CXX_EXTENSIONS OFF
+    POSITION_INDEPENDENT_CODE ON
+)
+
 # Set -Dlibtest_DIR=/path/to/libtest
 if(libtest_DIR)
-    message("Found libtest_DIR")
+    message(STATUS "Found using user supplied libtest_DIR to find libtest")
 else()
     find_path(libtest_DIR libtestConfig.cmake
         PATHS
             ${CMAKE_INSTALL_PREFIX}/test
     )
 endif()
+#message("libtest_DIR: ${libtest_DIR}")
 
 find_package(libtest)
 
@@ -91,13 +99,23 @@ endif()
 target_link_libraries(blaspp_test
     libtest
     blaspp
+    ${BLAS_links}
 )
-
+#if(is_accelerate)
+if(NOT ${is_accelerate} STREQUAL "-1")
+    set(blas_include_dir "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers/")
+    set(apple_inc_dir "-I${blas_include_dir}")
+else()
+    set(blas_include_dir "")
+endif()
+#message("blas_include_dir: ${blas_include_dir}")
 target_include_directories(blaspp_test
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
         #${CMAKE_CURRENT_SOURCE_DIR}/../include
-        #${Libtest_INCLUDE_DIR}
+        ${blas_include_dir}
+        #"/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers/"
+        #${libtest_DIR}/include
 )
 if(0)
     target_compile_definitions(blaspp_test PRIVATE
