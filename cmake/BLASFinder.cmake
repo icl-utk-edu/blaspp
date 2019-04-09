@@ -378,8 +378,6 @@ foreach(blas_name ${BLAS_name_list})
             set(BLAS_cxx_flags "${flag_var} ${fort_var}" CACHE INTERNAL "")
             string(STRIP ${BLAS_cxx_flags} BLAS_cxx_flags)
             string(STRIP ${BLAS_links} BLAS_links)
-            message("flags: x${BLAS_cxx_flags}x")
-            message("flags: x${BLAS_links}x")
 
             # Break out of MKL checks if we found a working config
             break()
