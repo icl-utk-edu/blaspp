@@ -18,6 +18,11 @@ endif()
 
 message(STATUS "Checking for BLAS library options")
 
+set(run_res1 "")
+set(compile_res1 "")
+set(run_output1 "")
+set(compile_output1 "")
+
 if(${BLAS_DEFINES} MATCHES "HAVE_BLAS")
     message(STATUS "Checking for library vendors ...")
 
@@ -30,7 +35,7 @@ if(${BLAS_DEFINES} MATCHES "HAVE_BLAS")
         COMPILE_DEFINITIONS
             ${BLAS_int}
         COMPILE_OUTPUT_VARIABLE
-            compile_OUTPUT1
+            compile_output1
         RUN_OUTPUT_VARIABLE
             run_output1
     )
@@ -41,6 +46,10 @@ if(${BLAS_DEFINES} MATCHES "HAVE_BLAS")
     else()
         set(LIB_DEFINES "")
     endif()
+    set(run_res1 "")
+    set(compile_res1 "")
+    set(run_output1 "")
+    set(compile_output1 "")
 endif()
 
 if(${BLAS_DEFINES} MATCHES "HAVE_BLAS" AND
@@ -54,7 +63,7 @@ if(${BLAS_DEFINES} MATCHES "HAVE_BLAS" AND
         COMPILE_DEFINITIONS
             ${BLAS_int}
         COMPILE_OUTPUT_VARIABLE
-            compile_OUTPUT1
+            compile_output1
         RUN_OUTPUT_VARIABLE
             run_output1
     )
@@ -65,6 +74,10 @@ if(${BLAS_DEFINES} MATCHES "HAVE_BLAS" AND
     else()
         set(LIB_DEFINES "" CACHE INTERNAL "")
     endif()
+    set(run_res1 "")
+    set(compile_res1 "")
+    set(run_output1 "")
+    set(compile_output1 "")
 endif()
 
 if(${BLAS_DEFINES} MATCHES "HAVE_BLAS" AND
@@ -78,7 +91,7 @@ if(${BLAS_DEFINES} MATCHES "HAVE_BLAS" AND
         COMPILE_DEFINITIONS
             ${BLAS_int}
         COMPILE_OUTPUT_VARIABLE
-            compile_OUTPUT1
+            compile_output1
         RUN_OUTPUT_VARIABLE
             run_output1
     )
@@ -89,6 +102,10 @@ if(${BLAS_DEFINES} MATCHES "HAVE_BLAS" AND
     else()
         set(LIB_DEFINES "" CACHE INTERNAL "")
     endif()
+    set(run_res1 "")
+    set(compile_res1 "")
+    set(run_output1 "")
+    set(compile_output1 "")
 endif()
 
 if(${BLAS_DEFINES} MATCHES "HAVE_BLAS" AND
@@ -102,7 +119,7 @@ if(${BLAS_DEFINES} MATCHES "HAVE_BLAS" AND
         COMPILE_DEFINITIONS
             ${BLAS_int}
         COMPILE_OUTPUT_VARIABLE
-            compile_OUTPUT1
+            compile_output1
         RUN_OUTPUT_VARIABLE
             run_output1
     )
@@ -113,32 +130,70 @@ if(${BLAS_DEFINES} MATCHES "HAVE_BLAS" AND
     else()
         set(LIB_DEFINES "" CACHE INTERNAL "")
     endif()
+    set(run_res1 "")
+    set(compile_res1 "")
+    set(run_output1 "")
+    set(compile_output1 "")
 endif()
 
 message(STATUS "Checking BLAS complex return type...")
 
 try_run(run_res1
     compile_res1
-    ${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_CURRENT_BINARY_DIR}
     SOURCES
-        ${CMAKE_CURRENT_SOURCE_DIR}/config/return_complex_argument.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/config/return_complex.cc
     LINK_LIBRARIES
         ${BLAS_links}
         ${BLAS_cxx_flags}
     COMPILE_DEFINITIONS
         ${BLAS_int}
     COMPILE_OUTPUT_VARIABLE
-        compile_OUTPUT1
+        compile_output1
     RUN_OUTPUT_VARIABLE
         run_output1
-)
+    )
 
-if (compile_res1 AND NOT ${run_res1} MATCHES "FAILED_TO_RUN")
-    message("${Blue}  BLAS (zdotc) returns complex as hidden argument (Intel ifort convention)${ColourReset}")
-    set(BLAS_RETURN "BLAS_COMPLEX_RETURN_ARGUMENT")
-else()
+#message ('compile result: ' ${compile_res1})
+#message ('run result: ' ${run_res1})
+#message ('compile output: ' ${compile_output1})
+#message ('run output: ' ${run_output1})
+
+if (compile_res1 AND ${run_output1} MATCHES "ok")
     message("${Blue}  BLAS (zdotc) returns complex (GNU gfortran convention) - no extra definitions needed${ColourReset}")
     set(BLAS_RETURN "")
+else()
+    set(run_res1 "")
+    set(compile_res1 "")
+    set(run_output1 "")
+    set(compile_output1 "")
+
+    try_run(run_res1
+        compile_res1
+            ${CMAKE_CURRENT_BINARY_DIR}
+        SOURCES
+            ${CMAKE_CURRENT_SOURCE_DIR}/config/return_complex_argument.cc
+        LINK_LIBRARIES
+            ${BLAS_links}
+            ${BLAS_cxx_flags}
+        COMPILE_DEFINITIONS
+            ${BLAS_int}
+        COMPILE_OUTPUT_VARIABLE
+            compile_output1
+        RUN_OUTPUT_VARIABLE
+            run_output1
+        )
+
+    if (compile_res1 AND ${run_output1} MATCHES "ok")
+        message("${Blue}  BLAS (zdotc) returns complex as hidden argument (Intel ifort convention)${ColourReset}")
+        set(BLAS_RETURN "BLAS_COMPLEX_RETURN_ARGUMENT")
+    else()
+        message(FATAL_ERROR "Error - Cannot detect zdotc return value. Please check the BLAS isntallation.")
+    endif()
+    set(run_res1 "")
+    set(compile_res1 "")
+    set(run_output1 "")
+    set(compile_output1 "")
 endif()
 
 message(STATUS "Checking BLAS float return type...")
@@ -152,16 +207,19 @@ try_run(run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
     COMPILE_DEFINITIONS
         ${BLAS_int}
     COMPILE_OUTPUT_VARIABLE
-        compile_OUTPUT1
+        compile_output1
     RUN_OUTPUT_VARIABLE
         run_output1
 )
 
 #if (compile_res1 AND run_output1 AND ${run_output1} MATCHES "ok")
 if (compile_res1 AND NOT ${run_res1} MATCHES "FAILED_TO_RUN")
-        message("${Blue}  BLAS (zdotc) returns complex as hidden argument (Intel ifort convention)${ColourReset}")
     message("${Blue}  BLAS (sdot) returns float as float (standard)${ColourReset}")
 else()
+    set(run_res1 "")
+    set(compile_res1 "")
+    set(run_output1 "")
+    set(compile_output1 "")
     try_run(run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
         SOURCES
             ${CMAKE_CURRENT_SOURCE_DIR}/config/return_float_f2c.cc
@@ -171,7 +229,7 @@ else()
         COMPILE_DEFINITIONS
             ${BLAS_int}
         COMPILE_OUTPUT_VARIABLE
-            compile_OUTPUT1
+            compile_output1
         RUN_OUTPUT_VARIABLE
             run_output1
     )
@@ -181,6 +239,10 @@ else()
         message("${Blue}  BLAS (sdot) returns float as double (f2c convention)${ColourReset}")
         set(BLAS_FLOAT_RETURN "HAVE_F2C")
     endif()
+    set(run_res1 "")
+    set(compile_res1 "")
+    set(run_output1 "")
+    set(compile_output1 "")
 endif()
 
 if(DEBUG)

@@ -101,7 +101,7 @@ message(STATUS "Configuring for BLAS libraries...")
 #default_int    = ['lp64', 'ilp64']
 #default_thread = ['sequential', 'threaded']
 
-set(def_lib_list "default;mkl;openb;essl;acml;accelerate;blas")
+set(def_lib_list "default;mkl;openblas;essl;acml;accelerate;blas")
 set(def_int_list "lp64;ilp64")
 set(def_thread_list "sequential;threaded")
 
@@ -158,16 +158,16 @@ if(does_contain)
             # icpc -fopenmp implies -liomp5: try mkl_intel_thread, NOT mkl_gnu_thread
             message("Trying Intel compiler with intel threads!")
             list(APPEND BLAS_name_list "Intel MKL lp64, Intel threads (iomp5), ifort")
-            list(APPEND BLAS_flag_list "-fiomp5")
+            list(APPEND BLAS_flag_list "${OpenMP_CXX_FLAGS}")
             list(APPEND BLAS_lib_list "-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -lpthread")
 
             #message("found Intel compiler with openmp!")
             list(APPEND BLAS_name_list "Intel MKL ilp64, Intel threads (iomp5), ifort")
-            list(APPEND BLAS_flag_list "-fiomp5 -DMKL_ILP64")
+            list(APPEND BLAS_flag_list "${OpenMP_CXX_FLAGS} -DMKL_ILP64")
             list(APPEND BLAS_lib_list "-lmkl_intel_ilp64 -lmkl_intel_thread -lmkl_core -lpthread")
         endif()
-    endif()
-        set(OpenMP_lib_str "")
+    else()
+        #set(OpenMP_lib_str "")
         #else if (not using OpenMP):
         #    if (compiler is Intel):
         #        try -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5
@@ -204,9 +204,7 @@ if(does_contain)
             list(APPEND BLAS_flag_list "-fiomp5 -DMKL_ILP64")
             list(APPEND BLAS_lib_list "-lmkl_intel_ilp64 -lmkl_intel_thread -lmkl_core -liomp5")
         endif()
-
-
-    #endif()
+    endif()
     # sequential
     #if (compiler is Intel):
     #    try -lmkl_intel_lp64 -lmkl_sequential -lmkl_core
@@ -268,7 +266,7 @@ if(does_contain)
     set(does_contain "")
 endif()
 
-list_contains(does_contain openb ${blas_list})
+list_contains(does_contain openblas ${blas_list})
 if(does_contain)
     list(APPEND BLAS_name_list "OpenBLAS")
     list(APPEND BLAS_lib_list "-lopenblas")
@@ -282,7 +280,7 @@ list_contains(does_contain accelerate ${blas_list})
 if(does_contain)
     message("** Adding default to blas list")
     list(APPEND BLAS_name_list "Apple Accelerate")
-    list(APPEND BLAS_flag_list "-I/System/Library/Frameworks/Accelerate.framework/Versions/Current/Frameworks/vecLib.framework/Versions/A/Headers")
+    list(APPEND BLAS_flag_list "x")
     list(APPEND BLAS_lib_list "-framework Accelerate")
     set(does_contain "")
 
@@ -316,10 +314,10 @@ foreach(blas_name ${BLAS_name_list})
     message("  flag: ${flag_var}")
     message("   lib: ${lib_var}")
 
-    set(run_result "1")
-    set(compile_result "2")
-    set(run_output "3")
-    set(compile_output "4")
+    set(run_result "")
+    set(compile_result "")
+    set(run_output "")
+    set(compile_output "")
 
     set(j 0)
     foreach(fortran_name ${fortran_mangling_names})

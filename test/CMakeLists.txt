@@ -101,14 +101,13 @@ target_link_libraries(blaspp_test
     blaspp
     ${BLAS_links}
 )
-#if(is_accelerate)
+
 if(NOT ${is_accelerate} STREQUAL "-1")
     set(blas_include_dir "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers/")
-    set(apple_inc_dir "-I${blas_include_dir}")
 else()
     set(blas_include_dir "")
 endif()
-#message("blas_include_dir: ${blas_include_dir}")
+
 target_include_directories(blaspp_test
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}

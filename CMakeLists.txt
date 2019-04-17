@@ -157,10 +157,10 @@ endif()
 
 # Check user supplied BLAS libraries
 if(BLAS_LIBRARIES)
-    message("BLAS_LIBRARIES supplied by user: " ${BLAS_LIBRARIES})
+    message("Checking BLAS_LIBRARIES supplied by user: " ${BLAS_LIBRARIES})
     include(CheckFunctionExists)
     set(CMAKE_REQUIRED_LIBRARIES ${BLAS_LIBRARIES})
-    CHECK_FUNCTION_EXISTS("dgemm" BLAS_FOUND)
+    CHECK_FUNCTION_EXISTS("dgemm" BLAS_FOUND) # TODO - check mangling, int sizes, etc - set it as blas lib list
     unset(CMAKE_REQUIRED_LIBRARIES)
     if(BLAS_FOUND)
         message(STATUS "--> BLAS supplied by user is WORKING, will use ${BLAS_LIBRARIES}.")
@@ -206,8 +206,11 @@ if(NOT LAPACK_DEFINES STREQUAL "")
     include ("cmake/LAPACKConfig.cmake")
 endif()
 
+if(BLAS_cxx_flags)
+    string(STRIP ${BLAS_cxx_flags} BLAS_cxx_flags)
+endif()
 if(BLAS_links)
-string(REGEX REPLACE "\n$" "" ${BLAS_links} "${BLAS_links}")
+    string(STRIP ${BLAS_links} BLAS_links)
 endif()
 
 # Some debug
@@ -235,18 +238,10 @@ target_link_libraries(blaspp PUBLIC
     ${BLAS_cxx_flags}
 )
 
-if(is_accelerate)
-    set(blas_include_dir "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers/")
-    set(apple_inc_dir "-I${blas_include_dir}")
-else()
-    set(blas_include_dir "")
-endif()
-#message("blas_include_dir: ${blas_include_dir}")
 target_include_directories(blaspp
     PUBLIC
         $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<BUILD_INTERFACE:${blas_include_dir}
 )
 
 target_compile_definitions(blaspp PUBLIC
