@@ -1,4 +1,4 @@
-message("blas config found: " ${blas_config_found})
+#message("blas config found: " ${blas_config_found})
 if(blas_config_found STREQUAL "TRUE")
     message("BLAS configuration already done!")
     return()
@@ -95,7 +95,7 @@ foreach(fortran_name ${fortran_mangling_names})
     math(EXPR j "${j}+1")
 endforeach ()
 
-message(STATUS "Configuring for BLAS libraries...")
+message(STATUS "Checking for BLAS libraries...")
 
 #default_libs   = ['default', 'mkl', 'openblas', 'essl', 'acml', 'accelerate', 'blas']
 #default_int    = ['lp64', 'ilp64']
@@ -125,7 +125,22 @@ function(print_list)
 endfunction()
 
 #set(blas_list "default;mkl;accelerate")
-set(blas_list ${def_lib_list})
+if(BLAS_LIBRARIES)
+    set(blas_list ${BLAS_LIBRARIES})
+    list(APPEND BLAS_name_list "User supplied")
+    list(APPEND BLAS_flag_list "x")
+    list(APPEND BLAS_lib_list ${BLAS_LIBRARIES})
+
+    if(OpenMP_CXX_FOUND)
+    list(APPEND BLAS_name_list "User supplied with OpenMP")
+    list(APPEND BLAS_flag_list ${OpenMP_CXX_FLAGS})
+    list(APPEND BLAS_lib_list ${BLAS_LIBRARIES})
+    endif()
+else()
+    set(blas_list ${def_lib_list})
+endif()
+
+#message("blas_list: ${blas_list}")
 #print_list()
 
 list_contains(does_contain mkl ${blas_list})

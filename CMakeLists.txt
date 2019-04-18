@@ -158,19 +158,14 @@ endif()
 # Check user supplied BLAS libraries
 if(BLAS_LIBRARIES)
     message("Checking BLAS_LIBRARIES supplied by user: " ${BLAS_LIBRARIES})
-    include(CheckFunctionExists)
-    set(CMAKE_REQUIRED_LIBRARIES ${BLAS_LIBRARIES})
-    CHECK_FUNCTION_EXISTS("dgemm" BLAS_FOUND) # TODO - check mangling, int sizes, etc - set it as blas lib list
-    unset(CMAKE_REQUIRED_LIBRARIES)
-    if(BLAS_FOUND)
+    # Check for valid libraries
+    include ("cmake/BLASFinder.cmake")
+    if(config_found)
         message(STATUS "--> BLAS supplied by user is WORKING, will use ${BLAS_LIBRARIES}.")
         target_link_libraries(blaspp PUBLIC ${BLAS_LIBRARIES})
-        set(BLAS_links ${BLAS_LIBRARIES})
-        set(BLAS_DEFINES "HAVE_BLAS")
     else()
         message(ERROR "--> BLAS supplied by user is not WORKING, CANNOT USE ${BLAS_LIBRARIES}.")
-        message(ERROR "-->     Will use REFERENCE BLAS (by default)")
-        message(ERROR "-->     Or Correct your BLAS_LIBRARIES entry ")
+        message(ERROR "-->     Correct your BLAS_LIBRARIES entry ")
         message(ERROR "-->     Or Consider checking USE_OPTIMIZED_BLAS")
     endif()
 # Search for system installed BLAS
@@ -181,9 +176,9 @@ elseif(USE_OPTIMIZED_BLAS)
         target_link_libraries(blaspp ${BLAS_LIBRARIES})
     endif()
 else()
-    message("BLAS_LIBRARIES not found, using custom search...")
+    message("BLAS_LIBRARIES not set, using custom search...")
 
-    # Custom BLAS library locator, if all else fails
+    # Use custom BLAS library locator, if all else fails
     include ("cmake/BLASFinder.cmake")
 endif()
 

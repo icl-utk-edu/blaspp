@@ -159,7 +159,7 @@ try_run(run_res1
 #message ('compile output: ' ${compile_output1})
 #message ('run output: ' ${run_output1})
 
-if (compile_res1 AND ${run_output1} MATCHES "ok")
+if (compile_res1 AND "${run_output1}" MATCHES "ok")
     message("${Blue}  BLAS (zdotc) returns complex (GNU gfortran convention) - no extra definitions needed${ColourReset}")
     set(BLAS_RETURN "")
 else()
@@ -184,7 +184,7 @@ else()
             run_output1
         )
 
-    if (compile_res1 AND ${run_output1} MATCHES "ok")
+    if (compile_res1 AND "${run_output1}" MATCHES "ok")
         message("${Blue}  BLAS (zdotc) returns complex as hidden argument (Intel ifort convention)${ColourReset}")
         set(BLAS_RETURN "BLAS_COMPLEX_RETURN_ARGUMENT")
     else()
@@ -234,7 +234,6 @@ else()
             run_output1
     )
 
-    #if (compile_res1 AND ${run_output1} MATCHES "ok")
     if (compile_res1 AND NOT ${run_res1} MATCHES "FAILED_TO_RUN")
         message("${Blue}  BLAS (sdot) returns float as double (f2c convention)${ColourReset}")
         set(BLAS_FLOAT_RETURN "HAVE_F2C")
@@ -256,5 +255,5 @@ endif()
 
 if(config_found STREQUAL "TRUE")
     set(blas_config_found "TRUE")
-    message("FOUND BLAS CONFIG")
+    #message("FOUND BLAS CONFIG")
 endif()
