@@ -1,5 +1,5 @@
 if(NOT ${LAPACK_DEFINES} STREQUAL "")
-    message('lapack defines: ' ${LAPACK_DEFINES})
+    message("CBLAS configuration already done!")
     return()
 endif()
 

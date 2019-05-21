@@ -1,5 +1,5 @@
 if(NOT ${CBLAS_DEFINES} STREQUAL "")
-    message('cblas defines: ' ${CBLAS_DEFINES})
+    message("CBLAS configuration already done!")
     return()
 endif()
 

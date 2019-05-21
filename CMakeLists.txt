@@ -43,6 +43,26 @@ set(BLAS_LIBRARY_THREADING "auto" CACHE STRING
 set_property(CACHE BLAS_LIBRARY_THREADING PROPERTY STRINGS
     "auto" "threaded" "sequential" )
 
+#check if user has changed options and they need to be revalidated.
+unset(do_library_search)
+if (NOT cached_blas_library MATCHES ${BLAS_LIBRARY})
+    set(do_library_search "TRUE")
+endif()
+if (NOT cached_blas_mkl MATCHES ${BLAS_LIBRARY_MKL})
+    set(do_library_search "TRUE")
+endif()
+if (NOT cached_blas_int MATCHES ${BLAS_LIBRARY_INTEGER})
+    set(do_library_search "TRUE")
+endif()
+if (NOT cached_blas_threading MATCHES ${BLAS_LIBRARY_THREADING})
+    set(do_library_search "TRUE")
+endif()
+
+set(cached_blas_library ${BLAS_LIBRARY} CACHE INTERNAL "")
+set(cached_blas_mkl ${BLAS_LIBRARY_MKL} CACHE INTERNAL "")
+set(cached_blas_int ${BLAS_LIBRARY_INTEGER} CACHE INTERNAL "")
+set(cached_blas_threading ${BLAS_LIBRARY_THREADING} CACHE INTERNAL "")
+
 # Enforce out of source builds
 string (TOLOWER "${CMAKE_CURRENT_SOURCE_DIR}" SOURCE_DIR_LOWER)
 string (TOLOWER "${CMAKE_CURRENT_BINARY_DIR}" BINARY_DIR_LOWER )
@@ -150,9 +170,14 @@ if(CUDA_FOUND)
     )
 endif()
 
-find_package(OpenMP)
-if(OpenMP_CXX_FOUND)
-    target_link_libraries(blaspp PUBLIC OpenMP::OpenMP_CXX)
+#message ("USE_OPENMP: ${USE_OPENMP}")
+if(USE_OPENMP MATCHES "FALSE")
+    message(STATUS "User has requested to NOT use OpenMP")
+else()
+    find_package(OpenMP)
+    if(OpenMP_CXX_FOUND)
+        target_link_libraries(blaspp PUBLIC OpenMP::OpenMP_CXX)
+    endif()
 endif()
 
 # Check user supplied BLAS libraries
@@ -179,7 +204,9 @@ else()
     message("BLAS_LIBRARIES not set, using custom search...")
 
     # Use custom BLAS library locator, if all else fails
-    include ("cmake/BLASFinder.cmake")
+    if(do_library_search)
+        include ("cmake/BLASFinder.cmake")
+    endif()
 endif()
 
 # Configure BLAS Libraries, determine return types and suck
