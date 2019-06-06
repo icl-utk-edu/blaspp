@@ -91,9 +91,11 @@ std::complex<float> dot(
         return value;
     #else
         // GNU gcc convention
-        return BLAS_cdotc( &n_,
+        blas_complex_float value
+             = BLAS_cdotc( &n_,
                            (blas_complex_float*) x, &incx_,
                            (blas_complex_float*) y, &incy_ );
+        return *reinterpret_cast< std::complex<float>* >( &value );
     #endif
 }
 
@@ -129,9 +131,11 @@ std::complex<double> dot(
         return value;
     #else
         // GNU gcc convention
-        return BLAS_zdotc( &n_,
+        blas_complex_double value
+             = BLAS_zdotc( &n_,
                            (blas_complex_double*) x, &incx_,
                            (blas_complex_double*) y, &incy_ );
+        return *reinterpret_cast< std::complex<double>* >( &value );
     #endif
 }
 
@@ -190,9 +194,11 @@ std::complex<float> dotu(
         return value;
     #else
         // GNU gcc convention
-        return BLAS_cdotu( &n_,
+        blas_complex_float value
+             = BLAS_cdotu( &n_,
                            (blas_complex_float*) x, &incx_,
                            (blas_complex_float*) y, &incy_ );
+        return *reinterpret_cast< std::complex<float>* >( &value );
     #endif
 }
 
@@ -228,9 +234,11 @@ std::complex<double> dotu(
         return value;
     #else
         // GNU gcc convention
-        return BLAS_zdotu( &n_,
+        blas_complex_double value
+             = BLAS_zdotu( &n_,
                            (blas_complex_double*) x, &incx_,
                            (blas_complex_double*) y, &incy_ );
+        return *reinterpret_cast< std::complex<double>* >( &value );
     #endif
 }
 
