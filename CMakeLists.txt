@@ -311,7 +311,7 @@ configure_file(
 )
 
 install (
-    FILE
+    FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/blasppConfig.cmake
     DESTINATION
         ${CMAKE_INSTALL_PREFIX}/blaspp/blasppConfig.cmake
