@@ -292,6 +292,7 @@ install (TARGETS blaspp
     LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/blaspp/lib
     INCLUDES DESTINATION ${CMAKE_INSTALL_PREFIX}/blaspp/include
 )
+
 install(
     DIRECTORY
         ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -303,9 +304,17 @@ export(EXPORT blasppTargets
     FILE ${CMAKE_INSTALL_PREFIX}/blaspp/blasppTargets.cmake
 )
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/blasppConfig.cmake.in
-    ${CMAKE_INSTALL_PREFIX}/blaspp/blasppConfig.cmake
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/blasppConfig.cmake.in
+    ${CMAKE_CURRENT_SOURCE_DIR}/blasppConfig.cmake
     COPYONLY
+)
+
+install (
+    FILE
+        ${CMAKE_CURRENT_SOURCE_DIR}/blasppConfig.cmake
+    DESTINATION
+        ${CMAKE_INSTALL_PREFIX}/blaspp/blasppConfig.cmake
 )
 
 if (BLASPP_BUILD_TESTS)
