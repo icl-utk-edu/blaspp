@@ -4,7 +4,10 @@
 #ifdef HAVE_MKL
     #include <mkl_cblas.h>
 #else
+    // Some ancient cblas.h don't include extern C. It's okay to nest.
+    extern "C" {
     #include <cblas.h>
+    }
 
     // Original cblas.h used CBLAS_ORDER; new uses CBLAS_LAYOUT and makes
     // CBLAS_ORDER a typedef. Make sure CBLAS_LAYOUT is defined.
