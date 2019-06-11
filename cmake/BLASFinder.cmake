@@ -321,7 +321,6 @@ if(does_contain)
     #print_list()
 endif()
 
-if(not_tested)
 list_contains(does_contain acml ${blas_list})
 if(does_contain)
     if(NOT ${BLAS_LIBRARY_THREADING} MATCHES "sequential")
@@ -381,7 +380,6 @@ if(does_contain)
     list(APPEND BLAS_flag_list "x")
     set(does_contain "")
 endif()
-endif()  # not_tested
 
 set(does_contain "")
 list_contains(does_contain accelerate ${blas_list})
