@@ -485,7 +485,7 @@ foreach(blas_name ${BLAS_name_list})
         #message("run_result: ${run_result}")
         #message("run_output: ${run_output}")
 
-        if(compile_result AND NOT "${run_result}" STREQUAL "FAILED_TO_RUN")
+        if(compile_result AND "${run_output}" MATCHES "ok")
             message("${Blue}  SUCCESSFUL compilation${ColourReset}")
             list(APPEND success_list "${blas_name}")
 

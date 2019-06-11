@@ -40,7 +40,7 @@ if(${BLAS_DEFINES} MATCHES "HAVE_BLAS")
             run_output1
     )
 
-    if (compile_res1 AND NOT ${run_res1} MATCHES "FAILED_TO_RUN")
+    if (compile_res1 AND "${run_output1}" MATCHES "ok")
         message("${Blue}  ${run_output1}${ColourReset}")
         set(LIB_DEFINES "HAVE_MKL" CACHE INTERNAL "")
     else()
@@ -68,7 +68,7 @@ if(${BLAS_DEFINES} MATCHES "HAVE_BLAS" AND
             run_output1
     )
 
-    if (compile_res1 AND NOT ${run_res1} MATCHES "FAILED_TO_RUN")
+    if (compile_res1 AND "${run_output1}" MATCHES "ok")
         message("${Blue}  ${run_output1}${ColourReset}")
         set(LIB_DEFINES "HAVE_ACML" CACHE INTERNAL "")
     else()
@@ -96,7 +96,7 @@ if(${BLAS_DEFINES} MATCHES "HAVE_BLAS" AND
             run_output1
     )
 
-    if (compile_res1 AND NOT ${run_res1} MATCHES "FAILED_TO_RUN")
+    if (compile_res1 AND "${run_output1}" MATCHES "ok")
         message("${Blue}  ${run_output1}${ColourReset}")
         set(LIB_DEFINES "HAVE_ESSL" CACHE INTERNAL "")
     else()
@@ -124,7 +124,7 @@ if(${BLAS_DEFINES} MATCHES "HAVE_BLAS" AND
             run_output1
     )
 
-    if (compile_res1 AND NOT ${run_res1} MATCHES "FAILED_TO_RUN")
+    if (compile_res1 AND "${run_output1}" MATCHES "ok")
         message("${Blue}  ${run_output1}${ColourReset}")
         set(LIB_DEFINES "HAVE_OPENBLAS" CACHE INTERNAL "")
     else()
@@ -212,8 +212,7 @@ try_run(run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
         run_output1
 )
 
-#if (compile_res1 AND run_output1 AND ${run_output1} MATCHES "ok")
-if (compile_res1 AND NOT ${run_res1} MATCHES "FAILED_TO_RUN")
+if (compile_res1 AND "${run_output1}" MATCHES "ok")
     message("${Blue}  BLAS (sdot) returns float as float (standard)${ColourReset}")
 else()
     set(run_res1 "")
@@ -234,7 +233,7 @@ else()
             run_output1
     )
 
-    if (compile_res1 AND NOT ${run_res1} MATCHES "FAILED_TO_RUN")
+    if (compile_res1 AND "${run_output1}" MATCHES "ok")
         message("${Blue}  BLAS (sdot) returns float as double (f2c convention)${ColourReset}")
         set(BLAS_FLOAT_RETURN "HAVE_F2C")
     endif()

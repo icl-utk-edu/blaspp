@@ -47,15 +47,15 @@ try_run(run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
         ${local_blas_defines}
         ${local_int}
     COMPILE_OUTPUT_VARIABLE
-        compile_OUTPUT1
+        compile_output1
     RUN_OUTPUT_VARIABLE
         run_output1
     )
 
-#message("compile_output: ${compile_OUTPUT1}")
+#message("compile_output: ${compile_output1}")
 
 # if it compiled and ran, then LAPACK is available
-if (compile_res1 AND NOT ${run_res1} MATCHES "FAILED_TO_RUN")
+if (compile_res1 AND "${run_output1}" MATCHES "ok")
     message("${Blue}  Found LAPACK${ColourReset}")
     set(LAPACK_DEFINES "HAVE_LAPACK" CACHE INTERNAL "")
 else()
@@ -86,7 +86,7 @@ try_run(run_res1 compile_res1
         run_output1
     )
 
-if (compile_res1 AND NOT ${run_res1} MATCHES "FAILED_TO_RUN")
+if (compile_res1 AND "${run_output1}" MATCHES "ok")
     message("${Blue}  Found LAPACKE${ColourReset}")
     set(LAPACKE_DEFINES "HAVE_LAPACKE")
 else()
@@ -117,7 +117,7 @@ try_run(run_res1 compile_res1
         run_output1
     )
 
-if (compile_res1 AND NOT ${run_res1} MATCHES "FAILED_TO_RUN")
+if (compile_res1 AND "${run_output1}" MATCHES "ok")
     message("${Blue}  Found XBLAS${ColourReset}")
     set(XBLAS_DEFINES "HAVE_XBLAS")
 else()
@@ -146,7 +146,7 @@ try_run(run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
         run_output1
     )
 
-if (compile_res1 AND NOT ${run_res1} MATCHES "FAILED_TO_RUN")
+if (compile_res1 AND "${run_output1}" MATCHES "ok")
     message("${Blue}  Found LAPACK version number.${ColourReset}")
 
     string(REPLACE "=" ";" run_out_list ${run_output1})

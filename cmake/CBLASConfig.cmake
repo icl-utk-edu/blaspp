@@ -60,17 +60,17 @@ try_run(run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
         ${local_LIB_DEFINES}
         ${BLAS_int}
     COMPILE_OUTPUT_VARIABLE
-        compile_OUTPUT1
+        compile_output1
     RUN_OUTPUT_VARIABLE
         run_output1
     )
 
 #message ('compile result: ' ${compile_res1})
 #message ('run result: ' ${run_res1})
-#message ('compile output: ' ${compile_OUTPUT1})
+#message ('compile output: ' ${compile_output1})
 #message ('run output: ' ${run_output1})
 
-if ("${compile_res1}" AND NOT "${run_res1}" MATCHES "FAILED_TO_RUN")
+if (compile_res1 AND "${run_output1}" MATCHES "ok")
     message("${Blue}  Found CBLAS${ColourReset}")
     set(CBLAS_DEFINES "HAVE_CBLAS" CACHE INTERNAL "")
 else()
