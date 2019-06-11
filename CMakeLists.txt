@@ -26,7 +26,7 @@ set(BLAS_LIBRARY "auto" CACHE STRING
     "Choose BLAS & LAPACK library: AMD, Apple, Cray, IBM, Intel, OpenBLAS" )
 set_property(CACHE BLAS_LIBRARY PROPERTY STRINGS
     "auto" "AMD ACML" "Apple Accelerate" "Cray LibSci" "IBM ESSL"
-    "Intel MKL" "OpenBLAS" )
+    "Intel MKL" "OpenBLAS" "generic")
 
 set(BLAS_LIBRARY_MKL "auto" CACHE STRING
     "For Intel MKL: use Intel ifort or GNU gfortran conventions?" )

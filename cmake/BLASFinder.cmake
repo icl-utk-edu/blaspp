@@ -17,7 +17,6 @@ else()
 endif()
 
 message(STATUS "Looking for BLAS libraries and options")
-message(STATUS "Configuring BLAS Fortran mangling...")
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "XL" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "VisualAge" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "zOS")
     set(fortran_mangling
@@ -76,52 +75,11 @@ set(BLAS_int_size_clean
 
 set(config_found "")
 
-set(j 0)
-foreach(fortran_name ${fortran_mangling_names})
-    list(GET fortran_mangling ${j} fort_var)
-
-    message ("  ${j} - Trying: ${fortran_name}")
-    message ("  ${j}: ${fort_var}")
-
-    try_run(run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
-        SOURCES
-            ${CMAKE_CURRENT_SOURCE_DIR}/config/blas.cc
-        COMPILE_DEFINITIONS
-            ${fort_var}
-        COMPILE_OUTPUT_VARIABLE
-            compile_OUTPUT1
-        RUN_OUTPUT_VARIABLE
-            run_output1
-    )
-
-    if (compile_res1 AND NOT ${run_res1} MATCHES "FAILED_TO_RUN")
-        LIST(GET fortran_mangling_name ${j} mangling_name)
-        message("  ${Blue}Found valid configuration:")
-        message("    Fortran convention: " ${mangling_name}${ColourReset})
-
-        LIST(GET fortran_mangling_clean ${j} FORTRAN_MANGLING_DEFINES)
-        set(BLAS_DEFINES "HAVE_BLAS")
-        set(config_found "TRUE")
-
-        break()
-    else()
-        message("  ${Red}No${ColourReset}")
-    endif()
-
-    set(run_res1 "")
-    set(compile_res1 "")
-    set(run_output1 "")
-
-    math(EXPR j "${j}+1")
-endforeach ()
-
-message(STATUS "Checking for BLAS libraries...")
-
 #default_libs   = ['default', 'mkl', 'openblas', 'essl', 'acml', 'accelerate', 'blas']
 #default_int    = ['lp64', 'ilp64']
 #default_thread = ['sequential', 'threaded']
 
-set(def_lib_list "default;mkl;openblas;essl;acml;accelerate;blas")
+set(def_lib_list "default;mkl;openblas;essl;acml;accelerate;generic")
 set(def_int_list "lp64;ilp64")
 set(def_thread_list "sequential;threaded")
 
@@ -183,6 +141,9 @@ elseif(${BLAS_LIBRARY} MATCHES "Intel MKL")
 # "OpenBLAS"
 elseif(${BLAS_LIBRARY} MATCHES "OpenBLAS")
     set(blas_list "openblas")
+# "generic"
+elseif(${BLAS_LIBRARY} MATCHES "generic")
+    set(blas_list "generic")
 else() # elseif(${BLAS_LIBRARY} MATCHES "auto")
     set(blas_list ${def_lib_list})
 endif()
@@ -194,6 +155,17 @@ endif()
 #message("BLAS_LIBRARY_THREADING: ${BLAS_LIBRARY_THREADING}")
 #message("*****************************************************")
 #print_list()
+
+list_contains(does_contain default ${blas_list})
+if(does_contain)
+    debug_output("** Adding default (no library needed) to blas list")
+    list(APPEND BLAS_name_list "default")
+    list(APPEND BLAS_flag_list "x")
+    list(APPEND BLAS_lib_list "x")
+    set(does_contain "")
+
+    #print_list()
+endif()
 
 list_contains(does_contain mkl ${blas_list})
 if(does_contain)
@@ -423,10 +395,10 @@ if(does_contain)
     #print_list()
 endif()
 
-list_contains(does_contain default ${blas_list})
+list_contains(does_contain generic ${blas_list})
 if(does_contain)
-    debug_output("** Adding default to blas list")
-    list(APPEND BLAS_name_list "blas")
+    debug_output("** Adding generic -lblas to blas list")
+    list(APPEND BLAS_name_list "generic")
     list(APPEND BLAS_flag_list "x")
     list(APPEND BLAS_lib_list "-lblas")
     set(does_contain "")
