@@ -409,7 +409,7 @@ if(does_contain)
     list(APPEND BLAS_flag_list "x")
     set(does_contain "")
 endif()
-endif()
+endif()  # not_tested
 
 set(does_contain "")
 list_contains(does_contain accelerate ${blas_list})
@@ -529,7 +529,7 @@ foreach(blas_name ${BLAS_name_list})
     if(BLAS_DEFINES STREQUAL "HAVE_BLAS")
         break()
     endif()
-    message("${Red}  Failed compilation${ColourReset}")
+    message("${Red}  No${ColourReset}")
 endforeach()
 
 if(NOT "${BLAS_DEFINES}" STREQUAL "HAVE_BLAS")
