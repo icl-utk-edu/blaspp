@@ -7,8 +7,8 @@
 #    Change installation directory, default: /opt/slate/
 #  -Dlibtest_DIR=path/to/libtest
 #    Point to testing framework used in tests
-#  -DBLASPP_BUILD_TESTS=ON
-#    Build BLASPP test suite
+#  -DBLASPP_BUILD_TESTS=OFF
+#    Diable building BLASPP test suite
 #  -DBLAS_LIBRARIES=<blas_libraries>
 #    Supply specific BLAS implementation, if not usable, CMake will error
 
@@ -18,7 +18,8 @@ project(BLASPP
     LANGUAGES CXX
 )
 
-option(BLASPP_BUILD_TESTS "Build BLAS++ testers, ON by default" OFF)
+option(BLASPP_BUILD_TESTS "Build BLAS++ testers, ON by default" ON)
+option(USE_OPENMP "ON by default" ON)
 
 # BLAS options
 # todo: Goto, BLIS, FLAME, others?
@@ -171,7 +172,7 @@ if(CUDA_FOUND)
 endif()
 
 #message ("USE_OPENMP: ${USE_OPENMP}")
-if(USE_OPENMP MATCHES "FALSE")
+if(NOT USE_OPENMP MATCHES "ON")
     message(STATUS "User has requested to NOT use OpenMP")
 else()
     find_package(OpenMP)
@@ -317,9 +318,26 @@ install (
         ${CMAKE_INSTALL_PREFIX}/blaspp/blasppConfig.cmake
 )
 
+# Testers are built by default, but will not be included if Libtest is not found
+# Set CMAKE_INSTALL_PREFIX during the installation of Libtest and BLAS++ or
+#   set libtest_DIR to the path containing libtestConfig.cmake
 if (BLASPP_BUILD_TESTS)
-    message(STATUS "Blaspp tests will be built.")
-    add_subdirectory(test)
+    if (libtest_DIR)
+        set (libtest_search_path ${libtest_DIR})
+        set (libtest_DIR "")
+    endif()
+    find_path(libtest_DIR libtestConfig.cmake
+        PATHS
+            ${CMAKE_INSTALL_PREFIX}/test
+            ${libtest_search_path}
+    )
+    if (NOT libtest_DIR MATCHES "NOTFOUND")
+        message(STATUS "Blaspp tests will be built.")
+        add_subdirectory(test)
+    else()
+        message(STATUS "BLAS++ testers were requested, but Libtest was not found")
+        # TODO: download Libtest here
+    endif()
 endif ()
 
 # To make this more user friendly, add 'make lib' option.

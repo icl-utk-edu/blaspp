@@ -84,6 +84,7 @@ else()
     find_path(libtest_DIR libtestConfig.cmake
         PATHS
             ${CMAKE_INSTALL_PREFIX}/test
+            ${libtest_search_path}
     )
 endif()
 #message("libtest_DIR: ${libtest_DIR}")

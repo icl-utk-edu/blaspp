@@ -24,7 +24,7 @@ set(run_output1 "")
 set(compile_output1 "")
 
 if(${BLAS_DEFINES} MATCHES "HAVE_BLAS")
-    message(STATUS "Checking for library vendors ...")
+    #message(STATUS "Checking for library vendors ...")
 
     try_run(run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
         SOURCES
