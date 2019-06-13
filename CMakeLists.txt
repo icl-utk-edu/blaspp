@@ -210,23 +210,27 @@ else()
     endif()
 endif()
 
-# Configure BLAS Libraries, determine return types and suck
-include ("cmake/BLASConfig.cmake")
-if(blas_config_found STREQUAL "TRUE")
-    # set blas_config so it the config script isn't run each time
-    set (blas_config_found "TRUE" CACHE STRING "Set TRUE if BLAS config is found")
-endif()
+if(${BLAS_DEFINES} MATCHES "HAVE_BLAS")
+    # Configure BLAS Libraries, determine return types and suck
+    include ("cmake/BLASConfig.cmake")
+    if(blas_config_found STREQUAL "TRUE")
+        # set blas_config so it the config script isn't run each time
+        set (blas_config_found "TRUE" CACHE STRING "Set TRUE if BLAS config is found")
+    endif()
 
-# Check for CBLAS
-#message("check for cblas?")
-if(NOT CBLAS_DEFINES STREQUAL "")
-    include ("cmake/CBLASConfig.cmake")
-endif()
+    # Check for CBLAS
+    #message("check for cblas?")
+    if(NOT CBLAS_DEFINES STREQUAL "")
+        include ("cmake/CBLASConfig.cmake")
+    endif()
 
-# Check for LAPACK
-#message("check for lapack?")
-if(NOT LAPACK_DEFINES STREQUAL "")
-    include ("cmake/LAPACKConfig.cmake")
+    # Check for LAPACK
+    #message("check for lapack?")
+    if(NOT LAPACK_DEFINES STREQUAL "")
+        include ("cmake/LAPACKConfig.cmake")
+    endif()
+else()
+    message ( FATAL_ERROR "BLAS++ requires a BLAS library and none was found.")
 endif()
 
 if(BLAS_cxx_flags)
