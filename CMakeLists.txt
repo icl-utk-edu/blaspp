@@ -267,7 +267,7 @@ target_link_libraries(blaspp PUBLIC
 
 target_include_directories(blaspp
     PUBLIC
-        $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        #$<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
@@ -330,7 +330,7 @@ install (
     FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/blasppConfig.cmake
     DESTINATION
-        ${CMAKE_INSTALL_PREFIX}/blaspp/blasppConfig.cmake
+        ${CMAKE_INSTALL_PREFIX}/blaspp
 )
 
 # Testers are built by default, but will not be included if Libtest is not found
