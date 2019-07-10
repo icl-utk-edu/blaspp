@@ -117,9 +117,10 @@ void lapack_lacpy( char const* uplo,
                      TA const *A, blas_int lda,
                      TB       *B, blas_int ldb )
 {
-    for (int j = 0; j < n; ++j) {
-        for (int i = 0; i < m; ++i) {
-            B[i + j + ldb] = A[i + j + lda];
+    assert( tolower(*uplo) == 'g' );
+    for (blas_int j = 0; j < n; ++j) {
+        for (blas_int i = 0; i < m; ++i) {
+            B[i + j * ldb] = A[i + j * lda];
         }
     }
 }
