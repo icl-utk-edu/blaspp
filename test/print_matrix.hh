@@ -70,7 +70,7 @@ void print_vector( int64_t n, T *x, int64_t incx,
         printf( format2, x[ix] );
         ix += incx;
     }
-    printf( " ]\n" );
+    printf( " ]';\n" );
 }
 
 // -----------------------------------------------------------------------------
@@ -89,7 +89,7 @@ void print_vector( int64_t n, std::complex<T>* x, int64_t incx,
         printf( format2, real(x[ix]), imag(x[ix]) );
         ix += incx;
     }
-    printf( " ];\n" );
+    printf( " ]';\n" );
 }
 
 #endif        //  #ifndef PRINT_HH

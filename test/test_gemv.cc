@@ -111,7 +111,7 @@ void test_gemv_work( Params& params, bool run )
     params.gbytes() = gbyte / time;
 
     if (verbose >= 2) {
-        printf( "y2   = " ); print_vector( n, y, incy );
+        printf( "y2   = " ); print_vector( Ym, y, incy );
     }
 
     if (params.ref() == 'y' || params.check() == 'y') {
