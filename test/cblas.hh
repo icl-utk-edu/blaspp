@@ -3,6 +3,8 @@
 
 #ifdef HAVE_MKL
     #include <mkl_cblas.h>
+#elif HAVE_ESSL
+    #include <essl.h>
 #else
     // Some ancient cblas.h don't include extern C. It's okay to nest.
     extern "C" {
@@ -14,11 +16,8 @@
     typedef CBLAS_ORDER CBLAS_LAYOUT;
 #endif
 
-#include <complex>
-
 #include "blas_util.hh"
-#include "blas_fortran.hh"
-
+#include <complex>
 
 // =============================================================================
 // constants
@@ -500,29 +499,15 @@ cblas_rotg(
 
 // CBLAS lacks [cz]rotg, but they're in Netlib BLAS.
 // Note c is real.
-inline void
+void
 cblas_rotg(
     std::complex<float> *a, std::complex<float> *b,
-    float *c, std::complex<float> *s )
-{
-    BLAS_crotg(
-        (blas_complex_float*) a,
-        (blas_complex_float*) b,
-        c,
-        (blas_complex_float*) s );
-}
+    float *c, std::complex<float> *s );
 
-inline void
+void
 cblas_rotg(
     std::complex<double> *a, std::complex<double> *b,
-    double *c, std::complex<double> *s )
-{
-    BLAS_zrotg(
-        (blas_complex_double*) a,
-        (blas_complex_double*) b,
-        c,
-        (blas_complex_double*) s );
-}
+    double *c, std::complex<double> *s );
 
 
 // -----------------------------------------------------------------------------
@@ -778,55 +763,6 @@ cblas_symv(
 }
 
 // LAPACK provides [cz]symv, CBLAS lacks them
-inline void
-cblas_symv(
-    CBLAS_LAYOUT layout, CBLAS_UPLO uplo, int n,
-    std::complex<float>  alpha,
-    std::complex<float> const *A, int lda,
-    std::complex<float> const *x, int incx,
-    std::complex<float>  beta,
-    std::complex<float>* y, int incy )
-{
-    char uplo_ = lapack_uplo_const( uplo );
-    if (layout == CblasRowMajor) {
-        uplo_ = (uplo == CblasUpper ? 'l' : 'u');  // switch upper <=> lower
-    }
-    blas_int n_    = n;
-    blas_int lda_  = lda;
-    blas_int incx_ = incx;
-    blas_int incy_ = incy;
-    BLAS_csymv( &uplo_, &n_,
-                (blas_complex_float*) &alpha,
-                (blas_complex_float*) A, &lda_,
-                (blas_complex_float*) x, &incx_,
-                (blas_complex_float*) &beta,
-                (blas_complex_float*) y, &incy_ );
-}
-
-inline void
-cblas_symv(
-    CBLAS_LAYOUT layout, CBLAS_UPLO uplo, int n,
-    std::complex<double>  alpha,
-    std::complex<double> const *A, int lda,
-    std::complex<double> const *x, int incx,
-    std::complex<double>  beta,
-    std::complex<double>* y, int incy )
-{
-    char uplo_ = lapack_uplo_const( uplo );
-    if (layout == CblasRowMajor) {
-        uplo_ = (uplo == CblasUpper ? 'l' : 'u');  // switch upper <=> lower
-    }
-    blas_int n_    = n;
-    blas_int lda_  = lda;
-    blas_int incx_ = incx;
-    blas_int incy_ = incy;
-    BLAS_zsymv( &uplo_, &n_,
-                (blas_complex_double*) &alpha,
-                (blas_complex_double*) A, &lda_,
-                (blas_complex_double*) x, &incx_,
-                (blas_complex_double*) &beta,
-                (blas_complex_double*) y, &incy_ );
-}
 
 
 // -----------------------------------------------------------------------------

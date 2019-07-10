@@ -153,15 +153,5 @@ void test_symv( Params& params, bool run )
         case libtest::DataType::Double:
             test_symv_work< double, double, double >( params, run );
             break;
-
-        case libtest::DataType::SingleComplex:
-            test_symv_work< std::complex<float>, std::complex<float>,
-                            std::complex<float> >( params, run );
-            break;
-
-        case libtest::DataType::DoubleComplex:
-            test_symv_work< std::complex<double>, std::complex<double>,
-                            std::complex<double> >( params, run );
-            break;
     }
 }

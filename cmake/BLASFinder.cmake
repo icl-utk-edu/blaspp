@@ -344,32 +344,47 @@ if(does_contain)
     #list(APPEND BLAS_flag_list "x")
     set(does_contain "")
 
-    # todo: similar logic to MKL: ESSL SMP works only with XL OpenMP
+    # Similar logic to MKL: ESSL SMP works only with XL OpenMP
     #if ('threaded' in blas):
     #if ('lp64' in blas):
-    if(NOT ${BLAS_LIBRARY_THREADING} MATCHES "sequential" AND NOT ${BLAS_LIBRARY_INTEGER} MATCHES "\\(ILP64")
-        list(APPEND BLAS_name_list "IBM ESSL lp64, multi-threaded" )
-        list(APPEND BLAS_flag_list "x" )
-        list(APPEND BLAS_lib_list "-lesslsmp -lxlf90_r -lxlfmath" )
-    endif()
-    #if ('ilp64' in blas):
-    if(NOT ${BLAS_LIBRARY_THREADING} MATCHES "sequential" AND NOT ${BLAS_LIBRARY_INTEGER} MATCHES "\\(LP64")
-        list(APPEND BLAS_name_list "IBM ESSL ilp64, multi-threaded" )
-        list(APPEND BLAS_flag_list "-D_ESV6464" )
-        list(APPEND BLAS_lib_list "-lesslsmp6464 -lxlf90_r -lxlfmath" )
+    if("${CMAKE_CXX_COMPILER_ID}" MATCHES "XL|VisualAge|zOS")
+        if(NOT ${BLAS_LIBRARY_THREADING} MATCHES "sequential" AND NOT ${BLAS_LIBRARY_INTEGER} MATCHES "\\(ILP64")
+            list(APPEND BLAS_name_list "IBM ESSL lp64, multi-threaded" )
+            list(APPEND BLAS_flag_list "x" )
+            list(APPEND BLAS_lib_list "-lesslsmp -lxlsmp" )
+            # ESSL manual says '-lxlf90_r -lxlfmath' also, but this doesn't work on Summit
+        endif()
+        #if ('ilp64' in blas):
+        if(NOT ${BLAS_LIBRARY_THREADING} MATCHES "sequential" AND NOT ${BLAS_LIBRARY_INTEGER} MATCHES "\\(LP64")
+            list(APPEND BLAS_name_list "IBM ESSL ilp64, multi-threaded" )
+            list(APPEND BLAS_flag_list "-D_ESV6464" )
+            list(APPEND BLAS_lib_list "-lesslsmp6464 -lxlsmp" )
+        endif()
+    elseif(OpenMP_CXX_FOUND)
+        if(NOT ${BLAS_LIBRARY_THREADING} MATCHES "sequential" AND NOT ${BLAS_LIBRARY_INTEGER} MATCHES "\\(ILP64")
+            list(APPEND BLAS_name_list "IBM ESSL lp64, multi-threaded, with OpenMP" )
+            list(APPEND BLAS_flag_list "${OpenMP_CXX_FLAGS}" )
+            list(APPEND BLAS_lib_list "-lesslsmp" )
+        endif()
+        #if ('ilp64' in blas):
+        if(NOT ${BLAS_LIBRARY_THREADING} MATCHES "sequential" AND NOT ${BLAS_LIBRARY_INTEGER} MATCHES "\\(LP64")
+            list(APPEND BLAS_name_list "IBM ESSL ilp64, multi-threaded, with OpenMP" )
+            list(APPEND BLAS_flag_list "${OpenMP_CXX_FLAGS} -D_ESV6464" )
+            list(APPEND BLAS_lib_list "-lesslsmp6464" )
+        endif()
     endif()
     #if ('sequential' in blas):
     #if ('lp64' in blas):
     if(NOT ${BLAS_LIBRARY_THREADING} MATCHES "threaded" AND NOT ${BLAS_LIBRARY_INTEGER} MATCHES "\\(ILP64")
         list(APPEND BLAS_name_list "IBM ESSL lp64, sequential" )
         list(APPEND BLAS_flag_list "x" )
-        list(APPEND BLAS_lib_list "-lessl -lxlf90_r -lxlfmath" )
+        list(APPEND BLAS_lib_list "-lessl" )
     endif()
     #if ('ilp64' in blas):
     if(NOT ${BLAS_LIBRARY_THREADING} MATCHES "threaded" AND NOT ${BLAS_LIBRARY_INTEGER} MATCHES "\\(LP64")
         list(APPEND BLAS_name_list "IBM ESSL ilp64, sequential" )
         list(APPEND BLAS_flag_list "-D_ESV6464" )
-        list(APPEND BLAS_lib_list "-lessl6464 -lxlf90_r -lxlfmath" )
+        list(APPEND BLAS_lib_list "-lessl6464" )
     endif()
 endif()
 
@@ -449,11 +464,6 @@ foreach(blas_name ${BLAS_name_list})
             RUN_OUTPUT_VARIABLE
                 run_output
         )
-
-        #message("compile_output: ${compile_output}")
-        #message("compile_result: ${compile_result}")
-        #message("run_result: ${run_result}")
-        #message("run_output: ${run_output}")
 
         if(compile_result AND "${run_output}" MATCHES "ok")
             message("${Blue}  SUCCESSFUL compilation${ColourReset}")

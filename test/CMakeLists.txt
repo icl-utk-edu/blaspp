@@ -44,6 +44,8 @@ add_executable(blaspp_test
     test_trmv.cc
     test_trsm.cc
     test_trsv.cc
+    cblas_wrappers.cc
+    lapack_wrappers.cc
 )
 
 if(CUDA_FOUND)

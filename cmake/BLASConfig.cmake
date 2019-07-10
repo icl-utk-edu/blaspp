@@ -40,7 +40,7 @@ if(${BLAS_DEFINES} MATCHES "HAVE_BLAS")
             run_output1
     )
 
-    if (compile_res1 AND "${run_output1}" MATCHES "ok")
+    if (compile_res1 AND "${run_output1}" MATCHES "MKL_VERSION")
         message("${Blue}  ${run_output1}${ColourReset}")
         set(LIB_DEFINES "HAVE_MKL" CACHE INTERNAL "")
     else()
@@ -96,7 +96,7 @@ if(${BLAS_DEFINES} MATCHES "HAVE_BLAS" AND
             run_output1
     )
 
-    if (compile_res1 AND "${run_output1}" MATCHES "ok")
+    if (compile_res1 AND "${run_output1}" MATCHES "ESSL_VERSION")
         message("${Blue}  ${run_output1}${ColourReset}")
         set(LIB_DEFINES "HAVE_ESSL" CACHE INTERNAL "")
     else()
