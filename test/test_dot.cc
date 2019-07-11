@@ -92,7 +92,7 @@ void test_dot_work( Params& params, bool run )
 
         params.ref_time()   = time * 1000;  // msec
         params.ref_gflops() = gflop / time;
-        params.ref_gbytes() = gflop / time;
+        params.ref_gbytes() = gbyte / time;
 
         if (verbose >= 1) {
             printf( "ref = %.4e + %.4ei\n", real(ref), imag(ref) );
