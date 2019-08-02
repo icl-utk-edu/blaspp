@@ -4,6 +4,8 @@
 namespace blas {
 
 typedef int64_t Device;
+#define DEV_QUEUE_DEFAULT_BATCH_LIMIT  (50000)
+#define DEV_QUEUE_FORK_SIZE            (10)
 
 // -----------------------------------------------------------------------------
 // device queue
@@ -17,6 +19,12 @@ public:
     blas::Device           device();
     device_blas_handle_t   handle();
     void                   sync();
+    size_t                 get_batch_limit();
+    void**                 get_devPtrArray();
+
+    void     fork();    // switch from default stream to parallel streams
+    void     join();    // switch back to the default stream
+    void     revolve(); // return the next-in-line stream (for both default and fork modes)
 
     #ifdef BLASPP_WITH_CUBLAS
     cudaStream_t     stream();
@@ -24,15 +32,21 @@ public:
     // TODO: add similar functionality for rocBLAS, if required
     #endif
 
-    void** devPtrArray;
-    void** hostPtrArray;
-
 private:
-    blas::Device          device_;      // associated device ID
-    device_blas_handle_t  handle_;      // associated device blas handle
+    blas::Device          device_;               // associated device ID
+    device_blas_handle_t  handle_;               // associated device blas handle
+    size_t                batch_limit_;          // max workspace allocated for a batch argument in a single call (e.g. a pointer array)
+    void**                devPtrArray;           // workspace for pointer arrays of batch routines
 
     #ifdef BLASPP_WITH_CUBLAS
-    cudaStream_t     stream_;      // associated CUDA stream; may be NULL
+    size_t           num_active_streams_;                       // the number of streams the queue is currently using for launching kernels (1 by default)
+    size_t           current_stream_index_;                     // an index to the current stream in use
+    cudaStream_t     *current_stream_;                          // pointer to current stream (default or fork mode)
+    cudaStream_t     default_stream_;                           // default CUDA stream for this queue; may be NULL
+    cudaStream_t     parallel_streams_[DEV_QUEUE_FORK_SIZE];    // parallel streams in fork mode
+
+    cudaEvent_t      default_event_;
+    cudaEvent_t      parallel_events_[DEV_QUEUE_FORK_SIZE];
     #elif defined(HAVE_ROCBLAS)
     // TODO: stream for rocBLAS
     #endif
