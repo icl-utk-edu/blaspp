@@ -65,19 +65,27 @@ void blas::batch::trsm(
         device_trans_t  trans_  = blas::device_trans_const( trans[0] );
         device_diag_t   diag_   = blas::device_diag_const( diag[0] );
 
-        // copy Aarray, Barray, and Carray to device
+        size_t batch_limit = queue.get_batch_limit();
         float **dAarray, **dBarray;
-        dAarray = (float**)queue.devPtrArray;
-        dBarray = dAarray + batch;
-        device_setvector<float*>(batch, (float**)&Aarray[0], 1, dAarray, 1, queue);
-        device_setvector<float*>(batch, (float**)&Barray[0], 1, dBarray, 1, queue);
-        DEVICE_BATCH_strsm( queue.handle(),
-                            side_, uplo_, trans_, diag_,
-                            m_, n_, alpha[0],
-                            dAarray, ldda_,
-                            dBarray, lddb_, batch);
+        dAarray = (float**)queue.get_devPtrArray();
+        dBarray = dAarray + batch_limit;
+
+        for( size_t ib = 0; ib < batch; ib += batch_limit ) { 
+            size_t ibatch = std::min( batch_limit, batch-ib );
+
+            // copy pointer array(s) to device
+            device_setvector<float*>(ibatch, (float**)&Aarray[ib], 1, dAarray, 1, queue);
+            device_setvector<float*>(ibatch, (float**)&Barray[ib], 1, dBarray, 1, queue);
+
+            DEVICE_BATCH_strsm( queue.handle(),
+                                side_, uplo_, trans_, diag_,
+                                m_, n_, alpha[0],
+                                dAarray, ldda_,
+                                dBarray, lddb_, ibatch);
+        }
     }
     else {
+        queue.fork();
         for (size_t i = 0; i < batch; ++i) {
             Side side_   = blas::batch::extract<Side>(side, i);
             Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
@@ -94,7 +102,9 @@ void blas::batch::trsm(
                 layout, side_, uplo_, trans_, diag_, m_, n_,
                 alpha_, dA_, lda_,
                         dB_, ldb_, queue );
+            queue.revolve();
         }
+        queue.join();
     }
 }
 
@@ -161,19 +171,27 @@ void blas::batch::trsm(
         device_trans_t  trans_  = blas::device_trans_const( trans[0] );
         device_diag_t   diag_   = blas::device_diag_const( diag[0] );
 
-        // copy Aarray, Barray, and Carray to device
+        size_t batch_limit = queue.get_batch_limit();
         double **dAarray, **dBarray;
-        dAarray = (double**)queue.devPtrArray;
-        dBarray = dAarray + batch;
-        device_setvector<double*>(batch, (double**)&Aarray[0], 1, dAarray, 1, queue);
-        device_setvector<double*>(batch, (double**)&Barray[0], 1, dBarray, 1, queue);
-        DEVICE_BATCH_dtrsm( queue.handle(),
-                            side_, uplo_, trans_, diag_,
-                            m_, n_, alpha[0],
-                            dAarray, ldda_,
-                            dBarray, lddb_, batch);
+        dAarray = (double**)queue.get_devPtrArray();
+        dBarray = dAarray + batch_limit;
+
+        for( size_t ib = 0; ib < batch; ib += batch_limit ) { 
+            size_t ibatch = std::min( batch_limit, batch-ib );
+
+            // copy pointer array(s) to device
+            device_setvector<double*>(ibatch, (double**)&Aarray[ib], 1, dAarray, 1, queue);
+            device_setvector<double*>(ibatch, (double**)&Barray[ib], 1, dBarray, 1, queue);
+
+            DEVICE_BATCH_dtrsm( queue.handle(),
+                                side_, uplo_, trans_, diag_,
+                                m_, n_, alpha[0],
+                                dAarray, ldda_,
+                                dBarray, lddb_, ibatch);
+        }
     }
     else {
+        queue.fork();
         for (size_t i = 0; i < batch; ++i) {
             Side side_   = blas::batch::extract<Side>(side, i);
             Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
@@ -190,7 +208,9 @@ void blas::batch::trsm(
                 layout, side_, uplo_, trans_, diag_, m_, n_,
                 alpha_, dA_, lda_,
                         dB_, ldb_, queue );
+            queue.revolve();
         }
+        queue.join();
     }
 }
 
@@ -257,19 +277,27 @@ void blas::batch::trsm(
         device_trans_t  trans_  = blas::device_trans_const( trans[0] );
         device_diag_t   diag_   = blas::device_diag_const( diag[0] );
 
-        // copy Aarray, Barray, and Carray to device
+        size_t batch_limit = queue.get_batch_limit();
         std::complex<float> **dAarray, **dBarray;
-        dAarray = (std::complex<float>**)queue.devPtrArray;
-        dBarray = dAarray + batch;
-        device_setvector<std::complex<float>*>(batch, (std::complex<float>**)&Aarray[0], 1, dAarray, 1, queue);
-        device_setvector<std::complex<float>*>(batch, (std::complex<float>**)&Barray[0], 1, dBarray, 1, queue);
-        DEVICE_BATCH_ctrsm( queue.handle(),
-                            side_, uplo_, trans_, diag_,
-                            m_, n_, alpha[0],
-                            dAarray, ldda_,
-                            dBarray, lddb_, batch);
+        dAarray = (std::complex<float>**)queue.get_devPtrArray();
+        dBarray = dAarray + batch_limit;
+
+        for( size_t ib = 0; ib < batch; ib += batch_limit ) { 
+            size_t ibatch = std::min( batch_limit, batch-ib );
+
+            // copy pointer array(s) to device
+            device_setvector< std::complex<float>* >(ibatch, (std::complex<float>**)&Aarray[ib], 1, dAarray, 1, queue);
+            device_setvector< std::complex<float>* >(ibatch, (std::complex<float>**)&Barray[ib], 1, dBarray, 1, queue);
+
+            DEVICE_BATCH_ctrsm( queue.handle(),
+                                side_, uplo_, trans_, diag_,
+                                m_, n_, alpha[0],
+                                dAarray, ldda_,
+                                dBarray, lddb_, ibatch);
+        }
     }
     else {
+        queue.fork();
         for (size_t i = 0; i < batch; ++i) {
             Side side_   = blas::batch::extract<Side>(side, i);
             Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
@@ -286,7 +314,9 @@ void blas::batch::trsm(
                 layout, side_, uplo_, trans_, diag_, m_, n_,
                 alpha_, dA_, lda_,
                         dB_, ldb_, queue );
+            queue.revolve();
         }
+        queue.join();
     }
 }
 
@@ -353,19 +383,27 @@ void blas::batch::trsm(
         device_trans_t  trans_  = blas::device_trans_const( trans[0] );
         device_diag_t   diag_   = blas::device_diag_const( diag[0] );
 
-        // copy Aarray, Barray, and Carray to device
+        size_t batch_limit = queue.get_batch_limit();
         std::complex<double> **dAarray, **dBarray;
-        dAarray = (std::complex<double>**)queue.devPtrArray;
-        dBarray = dAarray + batch;
-        device_setvector<std::complex<double>*>(batch, (std::complex<double>**)&Aarray[0], 1, dAarray, 1, queue);
-        device_setvector<std::complex<double>*>(batch, (std::complex<double>**)&Barray[0], 1, dBarray, 1, queue);
-        DEVICE_BATCH_ztrsm( queue.handle(),
-                            side_, uplo_, trans_, diag_,
-                            m_, n_, alpha[0],
-                            dAarray, ldda_,
-                            dBarray, lddb_, batch);
+        dAarray = (std::complex<double>**)queue.get_devPtrArray();
+        dBarray = dAarray + batch_limit;
+
+        for( size_t ib = 0; ib < batch; ib += batch_limit ) { 
+            size_t ibatch = std::min( batch_limit, batch-ib );
+
+            // copy pointer array(s) to device
+            device_setvector< std::complex<double>* >(ibatch, (std::complex<double>**)&Aarray[ib], 1, dAarray, 1, queue);
+            device_setvector< std::complex<double>* >(ibatch, (std::complex<double>**)&Barray[ib], 1, dBarray, 1, queue);
+
+            DEVICE_BATCH_ztrsm( queue.handle(),
+                                side_, uplo_, trans_, diag_,
+                                m_, n_, alpha[0],
+                                dAarray, ldda_,
+                                dBarray, lddb_, ibatch);
+        }
     }
     else {
+        queue.fork();
         for (size_t i = 0; i < batch; ++i) {
             Side side_   = blas::batch::extract<Side>(side, i);
             Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
@@ -382,6 +420,8 @@ void blas::batch::trsm(
                 layout, side_, uplo_, trans_, diag_, m_, n_,
                 alpha_, dA_, lda_,
                         dB_, ldb_, queue );
+            queue.revolve();
         }
+        queue.join();
     }
 }
