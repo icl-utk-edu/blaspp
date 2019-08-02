@@ -32,6 +32,8 @@ void blas::batch::trmm(
     }
 
     blas::set_device( queue.device() );
+
+    queue.fork();
     for (size_t i = 0; i < batch; ++i) {
         Side side_   = blas::batch::extract<Side>(side, i);
         Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
@@ -48,7 +50,9 @@ void blas::batch::trmm(
             layout, side_, uplo_, trans_, diag_, m_, n_,
             alpha_, dA_, lda_,
                     dB_, ldb_, queue );
+        queue.revolve();
     }
+    queue.join();
 }
 
 
@@ -81,6 +85,8 @@ void blas::batch::trmm(
     }
 
     blas::set_device( queue.device() );
+
+    queue.fork();
     for (size_t i = 0; i < batch; ++i) {
         Side side_   = blas::batch::extract<Side>(side, i);
         Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
@@ -97,7 +103,9 @@ void blas::batch::trmm(
             layout, side_, uplo_, trans_, diag_, m_, n_,
             alpha_, dA_, lda_,
                     dB_, ldb_, queue );
+        queue.revolve();
     }
+    queue.join();
 }
 
 
@@ -130,6 +138,8 @@ void blas::batch::trmm(
     }
 
     blas::set_device( queue.device() );
+
+    queue.fork();
     for (size_t i = 0; i < batch; ++i) {
         Side side_   = blas::batch::extract<Side>(side, i);
         Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
@@ -146,7 +156,9 @@ void blas::batch::trmm(
             layout, side_, uplo_, trans_, diag_, m_, n_,
             alpha_, dA_, lda_,
                     dB_, ldb_, queue );
+        queue.revolve();
     }
+    queue.join();
 }
 
 // -----------------------------------------------------------------------------
@@ -178,6 +190,8 @@ void blas::batch::trmm(
     }
 
     blas::set_device( queue.device() );
+
+    queue.fork();
     for (size_t i = 0; i < batch; ++i) {
         Side side_   = blas::batch::extract<Side>(side, i);
         Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
@@ -194,5 +208,7 @@ void blas::batch::trmm(
             layout, side_, uplo_, trans_, diag_, m_, n_,
             alpha_, dA_, lda_,
                     dB_, ldb_, queue );
+        queue.revolve();
     }
+    queue.join();
 }
