@@ -47,9 +47,11 @@ void gemm_check(
     blas_error_if( (ldb.size() != 1 && ldb.size() != batchCount) );
     blas_error_if( (ldc.size() != 1 && ldc.size() != batchCount) );
 
-    blas_error_if( (A.size() != 1 && A.size() != batchCount) );
-    blas_error_if( (B.size() != 1 && B.size() != batchCount) );
-    blas_error_if( (C.size() != batchCount) );
+    // to support checking errors for the group interface, batchCount will be equal to group_count
+    // but the data arrays are generally >= group_count
+    blas_error_if( (A.size() != 1 && A.size() < batchCount) );
+    blas_error_if( (B.size() != 1 && B.size() < batchCount) );
+    blas_error_if( (C.size() < batchCount) );
 
     blas_error_if( A.size() == 1 && (m.size() > 1 || k.size() > 1 || lda.size() > 1) );
     blas_error_if( B.size() == 1 && (k.size() > 1 || n.size() > 1 || ldb.size() > 1) );
@@ -157,8 +159,10 @@ void trsm_check(
     blas_error_if( (m.size() != 1 && m.size() != batchCount) );
     blas_error_if( (n.size() != 1 && n.size() != batchCount) );
 
-    blas_error_if( (A.size() != 1 && A.size() != batchCount) );
-    blas_error_if(  B.size() != batchCount );
+    // to support checking errors for the group interface, batchCount will be equal to group_count
+    // but the data arrays are generally >= group_count
+    blas_error_if( (A.size() != 1 && A.size() < batchCount) );
+    blas_error_if(  B.size() < batchCount );
 
     blas_error_if( (lda.size() != 1 && lda.size() != batchCount) );
     blas_error_if( (ldb.size() != 1 && ldb.size() != batchCount) );
@@ -269,8 +273,10 @@ void trmm_check(
     blas_error_if( (m.size() != 1 && m.size() != batchCount) );
     blas_error_if( (n.size() != 1 && n.size() != batchCount) );
 
-    blas_error_if( (A.size() != 1 && A.size() != batchCount) );
-    blas_error_if(  B.size() != batchCount );
+    // to support checking errors for the group interface, batchCount will be equal to group_count
+    // but the data arrays are generally >= group_count
+    blas_error_if( (A.size() != 1 && A.size() < batchCount) );
+    blas_error_if(  B.size() < batchCount );
 
     blas_error_if( (lda.size() != 1 && lda.size() != batchCount) );
     blas_error_if( (ldb.size() != 1 && ldb.size() != batchCount) );
@@ -379,9 +385,11 @@ void hemm_check(
     blas_error_if( (m.size() != 1 && m.size() != batchCount) );
     blas_error_if( (n.size() != 1 && n.size() != batchCount) );
 
-    blas_error_if( (A.size() != 1 && A.size() != batchCount) );
-    blas_error_if( (B.size() != 1 && B.size() != batchCount) );
-    blas_error_if(  C.size() != batchCount );
+    // to support checking errors for the group interface, batchCount will be equal to group_count
+    // but the data arrays are generally >= group_count
+    blas_error_if( (A.size() != 1 && A.size() < batchCount) );
+    blas_error_if( (B.size() != 1 && B.size() < batchCount) );
+    blas_error_if(  C.size() < batchCount );
 
     blas_error_if( (lda.size() != 1 && lda.size() != batchCount) );
     blas_error_if( (ldb.size() != 1 && ldb.size() != batchCount) );
@@ -500,8 +508,10 @@ void herk_check(
     blas_error_if( (n.size() != 1 && n.size() != batchCount) );
     blas_error_if( (k.size() != 1 && k.size() != batchCount) );
 
-    blas_error_if( (A.size() != 1 && A.size() != batchCount) );
-    blas_error_if(  C.size() != batchCount );
+    // to support checking errors for the group interface, batchCount will be equal to group_count
+    // but the data arrays are generally >= group_count
+    blas_error_if( (A.size() != 1 && A.size() < batchCount) );
+    blas_error_if(  C.size() < batchCount );
 
     blas_error_if( (lda.size() != 1 && lda.size() != batchCount) );
     blas_error_if( (ldc.size() != 1 && ldc.size() != batchCount) );
@@ -627,8 +637,10 @@ void syrk_check(
     blas_error_if( (n.size() != 1 && n.size() != batchCount) );
     blas_error_if( (k.size() != 1 && k.size() != batchCount) );
 
-    blas_error_if( (A.size() != 1 && A.size() != batchCount) );
-    blas_error_if(  C.size() != batchCount );
+    // to support checking errors for the group interface, batchCount will be equal to group_count
+    // but the data arrays are generally >= group_count
+    blas_error_if( (A.size() != 1 && A.size() < batchCount) );
+    blas_error_if(  C.size() < batchCount );
 
     blas_error_if( (lda.size() != 1 && lda.size() != batchCount) );
     blas_error_if( (ldc.size() != 1 && ldc.size() != batchCount) );
@@ -736,9 +748,11 @@ void her2k_check(
     blas_error_if( (n.size() != 1 && n.size() != batchCount) );
     blas_error_if( (k.size() != 1 && k.size() != batchCount) );
 
-    blas_error_if( (A.size() != 1 && A.size() != batchCount) );
-    blas_error_if( (B.size() != 1 && B.size() != batchCount) );
-    blas_error_if(  C.size() != batchCount );
+    // to support checking errors for the group interface, batchCount will be equal to group_count
+    // but the data arrays are generally >= group_count
+    blas_error_if( (A.size() != 1 && A.size() < batchCount) );
+    blas_error_if( (B.size() != 1 && B.size() < batchCount) );
+    blas_error_if(  C.size() < batchCount );
 
     blas_error_if( (lda.size() != 1 && lda.size() != batchCount) );
     blas_error_if( (ldb.size() != 1 && ldb.size() != batchCount) );
@@ -858,9 +872,11 @@ void syr2k_check(
     blas_error_if( (n.size() != 1 && n.size() != batchCount) );
     blas_error_if( (k.size() != 1 && k.size() != batchCount) );
 
-    blas_error_if( (A.size() != 1 && A.size() != batchCount) );
-    blas_error_if( (B.size() != 1 && B.size() != batchCount) );
-    blas_error_if(  C.size() != batchCount );
+    // to support checking errors for the group interface, batchCount will be equal to group_count
+    // but the data arrays are generally >= group_count
+    blas_error_if( (A.size() != 1 && A.size() < batchCount) );
+    blas_error_if( (B.size() != 1 && B.size() < batchCount) );
+    blas_error_if(  C.size() < batchCount );
 
     blas_error_if( (lda.size() != 1 && lda.size() != batchCount) );
     blas_error_if( (ldb.size() != 1 && ldb.size() != batchCount) );
