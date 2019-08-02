@@ -534,6 +534,66 @@ void gemm(
     const size_t batch,                                   std::vector<int64_t>       &info,
     blas::Queue &queue );
 
+void gemm(
+    blas::Layout                 layout,
+    std::vector<blas::Op> const &transA,
+    std::vector<blas::Op> const &transB,
+    std::vector<int64_t>  const &m,
+    std::vector<int64_t>  const &n,
+    std::vector<int64_t>  const &k,
+    std::vector<float >   const &alpha,
+    std::vector<float*>   const &Aarray,     std::vector<int64_t> const &ldda,
+    std::vector<float*>   const &Barray,     std::vector<int64_t> const &lddb,
+    std::vector<float >   const &beta,
+    std::vector<float*>   const &Carray,     std::vector<int64_t> const &lddc,
+    std::vector<size_t>   const &group_size, std::vector<int64_t>       &info,
+    blas::Queue &queue );
+
+void gemm(
+    blas::Layout                 layout,
+    std::vector<blas::Op> const &transA,
+    std::vector<blas::Op> const &transB,
+    std::vector<int64_t>  const &m,
+    std::vector<int64_t>  const &n,
+    std::vector<int64_t>  const &k,
+    std::vector<double >  const &alpha,
+    std::vector<double*>  const &Aarray,     std::vector<int64_t> const &ldda,
+    std::vector<double*>  const &Barray,     std::vector<int64_t> const &lddb,
+    std::vector<double >  const &beta,
+    std::vector<double*>  const &Carray,     std::vector<int64_t> const &lddc,
+    std::vector<size_t>   const &group_size, std::vector<int64_t>       &info,
+    blas::Queue &queue );
+
+void gemm(
+    blas::Layout                              layout,
+    std::vector<blas::Op>              const &transA,
+    std::vector<blas::Op>              const &transB,
+    std::vector<int64_t>               const &m,
+    std::vector<int64_t>               const &n,
+    std::vector<int64_t>               const &k,
+    std::vector<std::complex<float> >  const &alpha,
+    std::vector<std::complex<float>*>  const &Aarray,     std::vector<int64_t> const &ldda,
+    std::vector<std::complex<float>*>  const &Barray,     std::vector<int64_t> const &lddb,
+    std::vector<std::complex<float> >  const &beta,
+    std::vector<std::complex<float>*>  const &Carray,     std::vector<int64_t> const &lddc,
+    std::vector<size_t>   const &group_size, std::vector<int64_t>       &info,
+    blas::Queue &queue );
+
+void gemm(
+    blas::Layout                              layout,
+    std::vector<blas::Op>              const &transA,
+    std::vector<blas::Op>              const &transB,
+    std::vector<int64_t>               const &m,
+    std::vector<int64_t>               const &n,
+    std::vector<int64_t>               const &k,
+    std::vector<std::complex<double> >  const &alpha,
+    std::vector<std::complex<double>*>  const &Aarray,     std::vector<int64_t> const &ldda,
+    std::vector<std::complex<double>*>  const &Barray,     std::vector<int64_t> const &lddb,
+    std::vector<std::complex<double> >  const &beta,
+    std::vector<std::complex<double>*>  const &Carray,     std::vector<int64_t> const &lddc,
+    std::vector<size_t>   const &group_size, std::vector<int64_t>       &info,
+    blas::Queue &queue );
+
 // -----------------------------------------------------------------------------
 // batch trsm
 void trsm(
