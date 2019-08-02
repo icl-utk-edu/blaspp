@@ -32,6 +32,8 @@ void blas::batch::herk(
     }
 
     blas::set_device( queue.device() );
+
+    queue.fork();
     for (size_t i = 0; i < batch; ++i) {
         Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
         Op   trans_  = blas::batch::extract<Op>(trans, i);
@@ -47,7 +49,9 @@ void blas::batch::herk(
             layout, uplo_, trans_, n_, k_,
             alpha_, dA_, lda_ ,
             beta_,  dC_, ldc_ , queue );
+        queue.revolve();
     }
+    queue.join();
 }
 
 // -----------------------------------------------------------------------------
@@ -79,6 +83,8 @@ void blas::batch::herk(
     }
 
     blas::set_device( queue.device() );
+
+    queue.fork();
     for (size_t i = 0; i < batch; ++i) {
         Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
         Op   trans_  = blas::batch::extract<Op>(trans, i);
@@ -94,7 +100,9 @@ void blas::batch::herk(
             layout, uplo_, trans_, n_, k_,
             alpha_, dA_, lda_ ,
             beta_,  dC_, ldc_ , queue );
+        queue.revolve();
     }
+    queue.join();
 }
 
 // -----------------------------------------------------------------------------
@@ -126,6 +134,8 @@ void blas::batch::herk(
     }
 
     blas::set_device( queue.device() );
+
+    queue.fork();
     for (size_t i = 0; i < batch; ++i) {
         Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
         Op   trans_  = blas::batch::extract<Op>(trans, i);
@@ -141,7 +151,9 @@ void blas::batch::herk(
             layout, uplo_, trans_, n_, k_,
             alpha_, dA_, lda_ ,
             beta_,  dC_, ldc_ , queue );
+        queue.revolve();
     }
+    queue.join();
 }
 
 // -----------------------------------------------------------------------------
@@ -173,6 +185,8 @@ void blas::batch::herk(
     }
 
     blas::set_device( queue.device() );
+
+    queue.fork();
     for (size_t i = 0; i < batch; ++i) {
         Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
         Op   trans_  = blas::batch::extract<Op>(trans, i);
@@ -188,5 +202,7 @@ void blas::batch::herk(
             layout, uplo_, trans_, n_, k_,
             alpha_, dA_, lda_ ,
             beta_,  dC_, ldc_ , queue );
+        queue.revolve();
     }
+    queue.join();
 }
