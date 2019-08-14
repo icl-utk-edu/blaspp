@@ -29,6 +29,7 @@ void test_batch_herk_device_work( Params& params, bool run )
     int64_t verbose     = params.verbose();
 
     // mark non-standard output values
+    params.gflops();
     params.ref_time();
     params.ref_gflops();
 
