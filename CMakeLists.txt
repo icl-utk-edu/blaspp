@@ -295,16 +295,16 @@ endif()
 
 install (TARGETS blaspp
     EXPORT blasppTargets
-    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/blaspp/lib
-    INCLUDES DESTINATION ${CMAKE_INSTALL_PREFIX}/blaspp/include
+    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+    INCLUDES DESTINATION ${CMAKE_INSTALL_PREFIX}/include
     )
 
 #export(EXPORT blasppTargets
-  #FILE ${CMAKE_INSTALL_PREFIX}/blaspp/blasppTargets.cmake
+  #FILE ${CMAKE_INSTALL_PREFIX}/blasppTargets.cmake
 export(EXPORT blasppTargets
     FILE blasppTargets.cmake
 )
-#FILE ${CMAKE_INSTALL_PREFIX}/blaspp/blasppTargets.cmake
+#FILE ${CMAKE_INSTALL_PREFIX}/blasppTargets.cmake
 
 export (PACKAGE blaspp)
 
@@ -317,21 +317,21 @@ configure_file(
 
 install (EXPORT blasppTargets
     FILE blasppTargets.cmake
-    DESTINATION ${CMAKE_INSTALL_PREFIX}/blaspp
+    DESTINATION ${CMAKE_INSTALL_PREFIX}
 )
 
 install(
     DIRECTORY
         ${CMAKE_CURRENT_SOURCE_DIR}/include
     DESTINATION
-        ${CMAKE_INSTALL_PREFIX}/blaspp
+        ${CMAKE_INSTALL_PREFIX}
 )
 
 install (
     FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/blasppConfig.cmake
     DESTINATION
-        ${CMAKE_INSTALL_PREFIX}/blaspp
+        ${CMAKE_INSTALL_PREFIX}
 )
 
 # Testers are built by default, but will not be included if Libtest is not found
