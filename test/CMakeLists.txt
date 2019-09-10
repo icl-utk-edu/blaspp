@@ -80,18 +80,19 @@ set_target_properties(blaspp_test PROPERTIES
 )
 
 # Set -Dlibtest_DIR=/path/to/libtest
+if(0)
 if(libtest_DIR)
     message(STATUS "Found using user supplied libtest_DIR to find libtest")
 else()
     find_path(libtest_DIR libtestConfig.cmake
         PATHS
+            ${CMAKE_INSTALL_PREFIX}
             ${CMAKE_INSTALL_PREFIX}/test
             ${libtest_search_path}
     )
 endif()
+endif()
 #message("libtest_DIR: ${libtest_DIR}")
-
-find_package(libtest)
 
 if(NOT BLASPP_BUILD_TESTS)
     set_target_properties(blaspp_test
@@ -99,10 +100,11 @@ if(NOT BLASPP_BUILD_TESTS)
     )
 endif()
 
+find_package(libtest)
 target_link_libraries(blaspp_test
     libtest
     blaspp
-    ${BLAS_links}
+    #${BLAS_links}
 )
 
 if(NOT ${is_accelerate} STREQUAL "-1")
