@@ -317,22 +317,17 @@ configure_file(
 
 install (EXPORT blasppTargets
     FILE blasppTargets.cmake
-    DESTINATION ${CMAKE_INSTALL_PREFIX}
+    DESTINATION lib/blaspp
 )
 
 install(
-    DIRECTORY
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-    DESTINATION
-        #${CMAKE_INSTALL_PREFIX}
-        include
+    DIRECTORY include/
+    DESTINATION include
 )
 
 install (
-    FILES
-        ${CMAKE_CURRENT_SOURCE_DIR}/blasppConfig.cmake
-    DESTINATION
-        ${CMAKE_INSTALL_PREFIX}
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/blasppConfig.cmake
+    DESTINATION lib/blaspp
 )
 
 # Testers are built by default, but will not be included if Libtest is not found
