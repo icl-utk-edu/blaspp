@@ -296,6 +296,7 @@ endif()
 install (TARGETS blaspp
     EXPORT blasppTargets
     LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
     INCLUDES DESTINATION include
     )
 
