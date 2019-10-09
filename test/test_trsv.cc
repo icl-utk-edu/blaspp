@@ -73,7 +73,7 @@ void test_trsv_work( Params& params, bool run )
     for (int64_t i = 0; i < n; ++i) {
         A[ i + i*lda ] += n;
     }
-    blas_int info = 0;
+    int64_t info = 0;
     lapack_potrf( uplo2str(uplo), n, A, lda, &info );
     assert( info == 0 );
 

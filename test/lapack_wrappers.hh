@@ -1,9 +1,8 @@
-#ifndef LAPACK_TMP_HH
-#define LAPACK_TMP_HH
+#ifndef LAPACK_WRAPPERS_HH
+#define LAPACK_WRAPPERS_HH
 
 // get BLAS_FORTRAN_NAME and int64_t
-#include "blas_config.h"
-
+#include <cassert>
 #include <complex>
 
 // This is a temporary file giving simple LAPACK wrappers,
@@ -142,4 +141,4 @@ void lapack_potrf(  char const *uplo, int64_t n,
                     std::complex<double> *A, int64_t lda,
                     int64_t *info );
 
-#endif        //  #ifndef LAPACK_TMP_HH
+#endif        //  #ifndef LAPACK_WRAPPERS_HH

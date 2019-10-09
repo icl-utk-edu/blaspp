@@ -102,7 +102,7 @@ void test_batch_trsm_work( Params& params, bool run )
         for (int64_t i = 0; i < Am; ++i) {
             Aarray[s][ i + i*lda_ ] += Am;
         }
-        blas_int blas_info = 0;
+        int64_t blas_info = 0;
         lapack_potrf( uplo2str(uplo_), Am, Aarray[s], lda_, &blas_info );
         assert( blas_info == 0 );
     }
