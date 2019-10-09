@@ -6,7 +6,7 @@
 // get BLAS_FORTRAN_NAME and blas_int
 
 #include "blas_fortran.hh"
-#include "lapack_tmp.hh"
+#include "lapack_wrappers.hh"
 
 #include <complex>
 

@@ -2,7 +2,7 @@
 #define CHECK_GEMM_HH
 
 #include "blas_util.hh"
-#include "lapack_tmp.hh"
+#include "lapack_wrappers.hh"
 
 #include <limits>
 

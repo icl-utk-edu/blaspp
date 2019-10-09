@@ -1,8 +1,8 @@
 #ifndef LAPACK_TMP_HH
 #define LAPACK_TMP_HH
 
-// get BLAS_FORTRAN_NAME and blas_int
-#include "blas_fortran.hh"
+// get BLAS_FORTRAN_NAME and int64_t
+#include "blas_config.h"
 
 #include <complex>
 
@@ -11,135 +11,135 @@
 
 // -----------------------------------------------------------------------------
 template < typename TX > inline
-void lapack_larnv( blas_int idist, int iseed[4], blas_int size, TX *x )
+void lapack_larnv( int64_t idist, int iseed[4], int64_t size, TX *x )
 {
-    for (blas_int i = 0; i < size; ++i) {
+    for (int64_t i = 0; i < size; ++i) {
         x[i] = rand() / TX ( RAND_MAX );
     }
 }
 
 template < typename TX > inline
-void lapack_larnv( blas_int idist, int iseed[4], blas_int size, std::complex <TX> *x )
+void lapack_larnv( int64_t idist, int iseed[4], int64_t size, std::complex <TX> *x )
 {
-    for (blas_int i = 0; i < size; ++i) {
+    for (int64_t i = 0; i < size; ++i) {
         x[i] = std::complex <TX>( rand() / TX ( RAND_MAX ), rand() / TX ( RAND_MAX ));
     }
 }
 
 // -----------------------------------------------------------------------------
 float  lapack_lange( char const *norm,
-                     blas_int m, blas_int n,
-                     float const *A, blas_int lda,
+                     int64_t m, int64_t n,
+                     float const *A, int64_t lda,
                      float *work );
 
 double lapack_lange( char const *norm,
-                     blas_int m, blas_int n,
-                     double const *A, blas_int lda,
+                     int64_t m, int64_t n,
+                     double const *A, int64_t lda,
                      double *work );
 
 float  lapack_lange( char const *norm,
-                     blas_int m, blas_int n,
-                     std::complex<float> const *A, blas_int lda,
+                     int64_t m, int64_t n,
+                     std::complex<float> const *A, int64_t lda,
                      float *work );
 
 double lapack_lange( char const *norm,
-                     blas_int m, blas_int n,
-                     std::complex<double> const *A, blas_int lda,
+                     int64_t m, int64_t n,
+                     std::complex<double> const *A, int64_t lda,
                      double *work );
 
 // -----------------------------------------------------------------------------
 float  lapack_lansy( char const *norm, char const *uplo,
-                     blas_int n,
-                     float const *A, blas_int lda,
+                     int64_t n,
+                     float const *A, int64_t lda,
                      float *work );
 
 double lapack_lansy( char const *norm, char const *uplo,
-                     blas_int n,
-                     double const *A, blas_int lda,
+                     int64_t n,
+                     double const *A, int64_t lda,
                      double *work );
 
 float  lapack_lansy( char const *norm, char const *uplo,
-                     blas_int n,
-                     std::complex<float> const *A, blas_int lda,
+                     int64_t n,
+                     std::complex<float> const *A, int64_t lda,
                      float *work );
 
 double lapack_lansy( char const *norm, char const *uplo,
-                     blas_int n,
-                     std::complex<double> const *A, blas_int lda,
+                     int64_t n,
+                     std::complex<double> const *A, int64_t lda,
                      double *work );
 
 // -----------------------------------------------------------------------------
 float  lapack_lanhe( char const *norm, char const *uplo,
-                     blas_int n,
-                     float const *A, blas_int lda,
+                     int64_t n,
+                     float const *A, int64_t lda,
                      float *work );
 
 double lapack_lanhe( char const *norm, char const *uplo,
-                     blas_int n,
-                     double const *A, blas_int lda,
+                     int64_t n,
+                     double const *A, int64_t lda,
                      double *work );
 
 float  lapack_lanhe( char const *norm, char const *uplo,
-                     blas_int n,
-                     std::complex<float> const *A, blas_int lda,
+                     int64_t n,
+                     std::complex<float> const *A, int64_t lda,
                      float *work );
 
 double lapack_lanhe( char const *norm, char const *uplo,
-                     blas_int n,
-                     std::complex<double> const *A, blas_int lda,
+                     int64_t n,
+                     std::complex<double> const *A, int64_t lda,
                      double *work );
 
 // -----------------------------------------------------------------------------
 float  lapack_lantr( char const *norm, char const *uplo, char const *diag,
-                     blas_int m, blas_int n,
-                     float const *A, blas_int lda,
+                     int64_t m, int64_t n,
+                     float const *A, int64_t lda,
                      float *work );
 
 double lapack_lantr( char const *norm, char const *uplo, char const *diag,
-                     blas_int m, blas_int n,
-                     double const *A, blas_int lda,
+                     int64_t m, int64_t n,
+                     double const *A, int64_t lda,
                      double *work );
 
 float  lapack_lantr( char const *norm, char const *uplo, char const *diag,
-                     blas_int m, blas_int n,
-                     std::complex<float> const *A, blas_int lda,
+                     int64_t m, int64_t n,
+                     std::complex<float> const *A, int64_t lda,
                      float *work );
 
 double lapack_lantr( char const *norm, char const *uplo, char const *diag,
-                     blas_int m, blas_int n,
-                     std::complex<double> const *A, blas_int lda,
+                     int64_t m, int64_t n,
+                     std::complex<double> const *A, int64_t lda,
                      double *work );
 
 // -----------------------------------------------------------------------------
 template< typename TA, typename TB > inline
 void lapack_lacpy( char const* uplo,
-                     blas_int m, blas_int n,
-                     TA const *A, blas_int lda,
-                     TB       *B, blas_int ldb )
+                     int64_t m, int64_t n,
+                     TA const *A, int64_t lda,
+                     TB       *B, int64_t ldb )
 {
     assert( tolower(*uplo) == 'g' );
-    for (blas_int j = 0; j < n; ++j) {
-        for (blas_int i = 0; i < m; ++i) {
+    for (int64_t j = 0; j < n; ++j) {
+        for (int64_t i = 0; i < m; ++i) {
             B[i + j * ldb] = A[i + j * lda];
         }
     }
 }
 
 // -----------------------------------------------------------------------------
-void lapack_potrf(  char const *uplo, blas_int n,
-                    float *A, blas_int lda,
-                    blas_int *info );
+void lapack_potrf(  char const *uplo, int64_t n,
+                    float *A, int64_t lda,
+                    int64_t *info );
 
-void lapack_potrf(  char const *uplo, blas_int n,
-                    double *A, blas_int lda,
-                    blas_int *info );
+void lapack_potrf(  char const *uplo, int64_t n,
+                    double *A, int64_t lda,
+                    int64_t *info );
 
-void lapack_potrf(  char const *uplo, blas_int n,
-                    std::complex<float> *A, blas_int lda,
-                    blas_int *info );
+void lapack_potrf(  char const *uplo, int64_t n,
+                    std::complex<float> *A, int64_t lda,
+                    int64_t *info );
 
-void lapack_potrf(  char const *uplo, blas_int n,
-                    std::complex<double> *A, blas_int lda,
-                    blas_int *info );
+void lapack_potrf(  char const *uplo, int64_t n,
+                    std::complex<double> *A, int64_t lda,
+                    int64_t *info );
 
 #endif        //  #ifndef LAPACK_TMP_HH

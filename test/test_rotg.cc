@@ -1,6 +1,6 @@
 #include "test.hh"
 #include "cblas.hh"
-#include "lapack_tmp.hh"
+#include "lapack_wrappers.hh"
 
 // -----------------------------------------------------------------------------
 template< typename T >

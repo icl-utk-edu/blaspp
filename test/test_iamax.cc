@@ -1,6 +1,6 @@
 #include "test.hh"
 #include "cblas.hh"
-#include "lapack_tmp.hh"
+#include "lapack_wrappers.hh"
 #include "blas_flops.hh"
 #include "print_matrix.hh"
 
