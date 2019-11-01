@@ -185,6 +185,12 @@ template< typename T >
 inline double gbyte_symm( blas::Side side, double m, double n, T* x )
     { return gbyte_hemm( side, m, n, x ); }
 
+// -----------------------------------------------------------------------------
+inline double fmuls_hbmm( blas::Side side, double m, double n, double kd )
+    { return (side == blas::Side::Left ? (kd+1)*(kd+1)*n : m*(kd+1)*(kd+1)); }
+
+inline double fadds_hbmm( blas::Side side, double m, double n, double kd )
+    { return (side == blas::Side::Left ? (kd+1)*(kd+1)*n : m*(kd+1)*(kd+1)); }
 
 // -----------------------------------------------------------------------------
 inline double fmuls_herk( double n, double k )
@@ -469,6 +475,9 @@ public:
 
     static double hemm(blas::Side side, double m, double n)
         { return 1e-9 * (mul_ops*fmuls_hemm(side, m, n) + add_ops*fadds_hemm(side, m, n)); }
+
+    static double hbmm(blas::Side side, double m, double n, double kd)
+        { return 1e-9 * (mul_ops*fmuls_hbmm(side, m, n, kd) + add_ops*fadds_hbmm(side, m, n, kd)); }
 
     static double symm(blas::Side side, double m, double n)
         { return hemm( side, m, n ); }
