@@ -167,6 +167,13 @@ inline double gbyte_gemm( double m, double n, double k, T* x )
     { return (m*k + k*n + 2*m*n) * sizeof(T); } // read A, B, C; write C
 
 // -----------------------------------------------------------------------------
+inline double fmuls_gbmm( double m, double k, double kl, double ku )
+    { return (kl+ku+1)*m*k; }
+
+inline double fadds_gbmm( double m, double k, double kl, double ku )
+    { return (kl+ku+1)*m*k; }
+
+// -----------------------------------------------------------------------------
 inline double fmuls_hemm( blas::Side side, double m, double n )
     { return (side == blas::Side::Left ? m*m*n : m*n*n); }
 
@@ -185,12 +192,6 @@ template< typename T >
 inline double gbyte_symm( blas::Side side, double m, double n, T* x )
     { return gbyte_hemm( side, m, n, x ); }
 
-// -----------------------------------------------------------------------------
-inline double fmuls_hbmm( blas::Side side, double m, double n, double kd )
-    { return (side == blas::Side::Left ? (kd+1)*(kd+1)*n : m*(kd+1)*(kd+1)); }
-
-inline double fadds_hbmm( blas::Side side, double m, double n, double kd )
-    { return (side == blas::Side::Left ? (kd+1)*(kd+1)*n : m*(kd+1)*(kd+1)); }
 
 // -----------------------------------------------------------------------------
 inline double fmuls_herk( double n, double k )
@@ -473,11 +474,14 @@ public:
     static double gemm(double m, double n, double k)
         { return 1e-9 * (mul_ops*fmuls_gemm(m, n, k) + add_ops*fadds_gemm(m, n, k)); }
 
+    static double gbmm(double m, double k, double kl, double ku)
+        { return 1e-9 * (mul_ops*fmuls_gbmm(m, k, kl, ku) + add_ops*fadds_gemm(m, k, kl, ku)); }
+
     static double hemm(blas::Side side, double m, double n)
         { return 1e-9 * (mul_ops*fmuls_hemm(side, m, n) + add_ops*fadds_hemm(side, m, n)); }
 
-    static double hbmm(blas::Side side, double m, double n, double kd)
-        { return 1e-9 * (mul_ops*fmuls_hbmm(side, m, n, kd) + add_ops*fadds_hbmm(side, m, n, kd)); }
+    static double hbmm(double m, double n, double kd)
+        { return 1e-9 * (mul_ops*fmuls_gbmm(m, n, kd, kd) + add_ops*fadds_gbmm(m, n, kd, kd)); }
 
     static double symm(blas::Side side, double m, double n)
         { return hemm( side, m, n ); }
