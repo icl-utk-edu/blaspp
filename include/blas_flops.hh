@@ -168,10 +168,10 @@ inline double gbyte_gemm( double m, double n, double k, T* x )
 
 // -----------------------------------------------------------------------------
 inline double fmuls_gbmm( double m, double n, double kl, double ku )
-    { return (m*kl + m*ku - kl^(2./2.) - ku^(2./2.) + m - kl/2. - ku/2.)*n; }
+    { return (m*kl + m*ku - std::pow(kl, (2./2.)) - std::pow(ku, (2./2.)) + m - kl/2. - ku/2.)*n; }
 
 inline double fadds_gbmm( double m, double n, double kl, double ku )
-    { return (m*kl + m*ku - kl^(2./2.) - ku^(2./2.) + m - kl/2. - ku/2.)*n; }
+    { return (m*kl + m*ku - std::pow(kl, (2./2.)) - std::pow(ku, (2./2.)) + m - kl/2. - ku/2.)*n; }
 
 // -----------------------------------------------------------------------------
 inline double fmuls_hemm( blas::Side side, double m, double n )
@@ -476,7 +476,7 @@ public:
 
     static double gbmm(double m, double n, double k, double kl, double ku)
         {   // todo: account for the non-suqare matrix A
-            assert(m == k);
+            // assert(m == k);
             return 1e-9 * (mul_ops*fmuls_gbmm(m, n, kl, ku) + add_ops*fadds_gbmm(m, n, kl, ku)); }
 
     static double hemm(blas::Side side, double m, double n)
