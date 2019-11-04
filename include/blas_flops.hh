@@ -167,11 +167,11 @@ inline double gbyte_gemm( double m, double n, double k, T* x )
     { return (m*k + k*n + 2*m*n) * sizeof(T); } // read A, B, C; write C
 
 // -----------------------------------------------------------------------------
-inline double fmuls_gbmm( double m, double k, double kl, double ku )
-    { return (kl+ku+1)*m*k; }
+inline double fmuls_gbmm( double m, double n, double kl, double ku )
+    { return (m*kl + m*ku - kl^(2./2.) - ku^(2./2.) + m - kl/2. - ku/2.)*n; }
 
-inline double fadds_gbmm( double m, double k, double kl, double ku )
-    { return (kl+ku+1)*m*k; }
+inline double fadds_gbmm( double m, double n, double kl, double ku )
+    { return (m*kl + m*ku - kl^(2./2.) - ku^(2./2.) + m - kl/2. - ku/2.)*n; }
 
 // -----------------------------------------------------------------------------
 inline double fmuls_hemm( blas::Side side, double m, double n )
@@ -474,8 +474,10 @@ public:
     static double gemm(double m, double n, double k)
         { return 1e-9 * (mul_ops*fmuls_gemm(m, n, k) + add_ops*fadds_gemm(m, n, k)); }
 
-    static double gbmm(double m, double k, double kl, double ku)
-        { return 1e-9 * (mul_ops*fmuls_gbmm(m, k, kl, ku) + add_ops*fadds_gemm(m, k, kl, ku)); }
+    static double gbmm(double m, double n, double k, double kl, double ku)
+        {   // todo: account for the non-suqare matrix A
+            assert(m == k);
+            return 1e-9 * (mul_ops*fmuls_gbmm(m, n, kl, ku) + add_ops*fadds_gbmm(m, n, kl, ku)); }
 
     static double hemm(blas::Side side, double m, double n)
         { return 1e-9 * (mul_ops*fmuls_hemm(side, m, n) + add_ops*fadds_hemm(side, m, n)); }
