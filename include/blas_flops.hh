@@ -168,10 +168,10 @@ inline double gbyte_gemm( double m, double n, double k, T* x )
 
 // -----------------------------------------------------------------------------
 inline double fmuls_gbmm( double m, double n, double kl, double ku )
-    { return (m*kl + m*ku - std::pow(kl, 2.)/2. - std::pow(ku, 2.)/2. + m - kl/2. - ku/2.)*n; }
+    { return (m*kl + m*ku - kl*kl/2. - ku*ku/2. + m - kl/2. - ku/2.)*n; }
 
 inline double fadds_gbmm( double m, double n, double kl, double ku )
-    { return (m*kl + m*ku - std::pow(kl, 2.)/2. - std::pow(ku, 2.)/2. + m - kl/2. - ku/2.)*n; }
+    { return (m*kl + m*ku - kl*kl/2. - ku*ku/2. + m - kl/2. - ku/2.)*n; }
 
 // -----------------------------------------------------------------------------
 inline double fmuls_hemm( blas::Side side, double m, double n )
@@ -489,7 +489,6 @@ public:
         { return 1e-9 * (mul_ops*fmuls_hemm(side, m, n) + add_ops*fadds_hemm(side, m, n)); }
 
     static double hbmm(double m, double n, double kd)
-        // { return 1e-9 * (mul_ops*fmuls_gbmm(m, n, kd, kd) + add_ops*fadds_gbmm(m, n, kd, kd)); }
         { return gbmm(m, n, m, kd, kd); }
 
     static double symm(blas::Side side, double m, double n)
