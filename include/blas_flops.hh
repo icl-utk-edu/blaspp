@@ -274,66 +274,81 @@ class Gbyte
 public:
     // ----------------------------------------
     // Level 1 BLAS
+    // read x
     static double asum( double n )
-        { return 1e-9 * (n * sizeof(T)); } // read x
+        { return 1e-9 * (n * sizeof(T)); }
 
+    // read x, y; write y
     static double axpy( double n )
-        { return 1e-9 * (3*n * sizeof(T)); } // read x, y; write y
+        { return 1e-9 * (3*n * sizeof(T)); }
 
+    // read x; write y
     static double copy( double n )
-        { return 1e-9 * (2*n * sizeof(T)); } // read x; write y
+        { return 1e-9 * (2*n * sizeof(T)); }
 
+    // read x
     static double iamax( double n )
-        { return 1e-9 * (n * sizeof(T)); } // read x
+        { return 1e-9 * (n * sizeof(T)); }
 
+    // read x
     static double nrm2( double n )
-        { return 1e-9 * (n * sizeof(T)); } // read x
+        { return 1e-9 * (n * sizeof(T)); }
 
+    // read x, y
     static double dot( double n )
-        { return 1e-9 * (2*n * sizeof(T)); } // read x, y
+        { return 1e-9 * (2*n * sizeof(T)); }
 
+    // read x; write x
     static double scal( double n )
-        { return 1e-9 * (2*n * sizeof(T)); } // read x; write x
+        { return 1e-9 * (2*n * sizeof(T)); }
 
+    // read x, y; write x, y
     static double swap( double n )
-        { return 1e-9 * (4*n * sizeof(T)); } // read x, y; write x, y
+        { return 1e-9 * (4*n * sizeof(T)); }
 
     // ----------------------------------------
     // Level 2 BLAS
+    // read A, x; write y
     static double gemv( double m, double n )
-        { return 1e-9 * ((m*n + m + n) * sizeof(T)); } // read A, x; write y
+        { return 1e-9 * ((m*n + m + n) * sizeof(T)); }
 
+    // read A triangle, x; write y
     static double hemv( double n )
-        { return 1e-9 * ((0.5*(n+1)*n + 2*n) * sizeof(T)); } // read A triangle, x; write y
+        { return 1e-9 * ((0.5*(n+1)*n + 2*n) * sizeof(T)); }
 
     static double symv( double n )
         { return hemv( n ); }
 
+    // read A triangle, x; write x
     static double trmv( double n )
-        { return 1e-9 * ((0.5*(n+1)*n + 2*n) * sizeof(T)); } // read A triangle, x; write x
+        { return 1e-9 * ((0.5*(n+1)*n + 2*n) * sizeof(T)); }
 
     static double trsv( double n )
         { return trmv( n ); }
 
+    // read A, x, y; write A
     static double ger( double m, double n )
-        { return 1e-9 * ((2*m*n + m + n) * sizeof(T)); } // read A, x, y; write A
+        { return 1e-9 * ((2*m*n + m + n) * sizeof(T)); }
 
+    // read A triangle, x; write A triangle
     static double her( double n )
-        { return 1e-9 * (((n+1)*n + n) * sizeof(T)); } // read A triangle, x; write A triangle
+        { return 1e-9 * (((n+1)*n + n) * sizeof(T)); }
 
     static double syr( double n )
         { return her( n ); }
 
+    // read A triangle, x, y; write A triangle
     static double her2( double n )
-        { return 1e-9 * (((n+1)*n + n + n) * sizeof(T)); } // read A triangle, x, y; write A triangle
+        { return 1e-9 * (((n+1)*n + n + n) * sizeof(T)); }
 
     static double syr2( double n )
         { return her2( n ); }
 
     // ----------------------------------------
     // Level 3 BLAS
+    // read A, B, C; write C
     static double gemm( double m, double n, double k )
-        { return 1e-9 * ((m*k + k*n + 2*m*n) * sizeof(T)); } // read A, B, C; write C
+        { return 1e-9 * ((m*k + k*n + 2*m*n) * sizeof(T)); }
 
     static double hemm( blas::Side side, double m, double n )
     {
@@ -414,25 +429,31 @@ public:
     // ----------------------------------------
     // Level 1 BLAS
     static double asum( double n )
-        { return 1e-9 * (mul_ops*fmuls_asum(n) + add_ops*fadds_asum(n)); }
+        { return 1e-9 * (mul_ops*fmuls_asum(n) +
+                         add_ops*fadds_asum(n)); }
 
     static double axpy( double n )
-        { return (mul_ops*fmuls_axpy(n) + add_ops*fadds_axpy(n)) / 1e9; }
+        { return 1e-9 * (mul_ops*fmuls_axpy(n) +
+                         add_ops*fadds_axpy(n)); }
 
     static double copy( double n )
         { return 0; }
 
     static double iamax( double n )
-        { return (mul_ops*fmuls_iamax(n) + add_ops*fadds_iamax(n)) / 1e9; }
+        { return 1e-9 * (mul_ops*fmuls_iamax(n) +
+                         add_ops*fadds_iamax(n)); }
 
     static double nrm2( double n )
-        { return (mul_ops*fmuls_nrm2(n) + add_ops*fadds_nrm2(n)) / 1e9; }
+        { return 1e-9 * (mul_ops*fmuls_nrm2(n) +
+                         add_ops*fadds_nrm2(n)); }
 
     static double dot( double n )
-        { return (mul_ops*fmuls_dot(n) + add_ops*fadds_dot(n)) / 1e9; }
+        { return 1e-9 * (mul_ops*fmuls_dot(n) +
+                         add_ops*fadds_dot(n)); }
 
     static double scal( double n )
-        { return (mul_ops*fmuls_scal(n) + add_ops*fadds_scal(n)) / 1e9; }
+        { return 1e-9 * (mul_ops*fmuls_scal(n) +
+                         add_ops*fadds_scal(n)); }
 
     static double swap( double n )
         { return 0; }
@@ -440,7 +461,8 @@ public:
     // ----------------------------------------
     // Level 2 BLAS
     static double gemv(double m, double n)
-        { return 1e-9 * (mul_ops*fmuls_gemv(m, n) + add_ops*fadds_gemv(m, n)); }
+        { return 1e-9 * (mul_ops*fmuls_gemv(m, n) +
+                         add_ops*fadds_gemv(m, n)); }
 
     static double symv(double n)
         { return gemv( n, n ); }
@@ -449,7 +471,8 @@ public:
         { return symv( n ); }
 
     static double trmv( double n )
-        { return (mul_ops*fmuls_trmv(n) + add_ops*fadds_trmv(n)) / 1e9; }
+        { return 1e-9 * (mul_ops*fmuls_trmv(n) +
+                         add_ops*fadds_trmv(n)); }
 
     static double trsv( double n )
         { return trmv( n ); }
@@ -461,7 +484,8 @@ public:
         { return her( n ); }
 
     static double ger( double m, double n )
-        { return (mul_ops*fmuls_ger(m, n) + add_ops*fadds_ger(m, n)) / 1e9; }
+        { return 1e-9 * (mul_ops*fmuls_ger(m, n) +
+                         add_ops*fadds_ger(m, n)); }
 
     static double her2( double n )
         { return 2*ger( n, n ); }
@@ -472,21 +496,24 @@ public:
     // ----------------------------------------
     // Level 3 BLAS
     static double gemm(double m, double n, double k)
-        { return 1e-9 * (mul_ops*fmuls_gemm(m, n, k) + add_ops*fadds_gemm(m, n, k)); }
+        { return 1e-9 * (mul_ops*fmuls_gemm(m, n, k) +
+                         add_ops*fadds_gemm(m, n, k)); }
 
     static double gbmm(double m, double n, double k, double kl, double ku)
         {
             // gbmm works if and only if A is a square matrix: m == k.
             // todo: account for the non-suqare matrix A: m != k
             // assert(m == k);
-            if ( m != k )
+            if (m != k)
                 return nan("1234"); // use libtest's no_data_flag to print NA
             else
-                return 1e-9 * (mul_ops*fmuls_gbmm(m, n, kl, ku) + add_ops*fadds_gbmm(m, n, kl, ku));
+                return 1e-9 * (mul_ops*fmuls_gbmm(m, n, kl, ku) +
+                               add_ops*fadds_gbmm(m, n, kl, ku));
         }
 
     static double hemm(blas::Side side, double m, double n)
-        { return 1e-9 * (mul_ops*fmuls_hemm(side, m, n) + add_ops*fadds_hemm(side, m, n)); }
+        { return 1e-9 * (mul_ops*fmuls_hemm(side, m, n) +
+                         add_ops*fadds_hemm(side, m, n)); }
 
     static double hbmm(double m, double n, double kd)
         { return gbmm(m, n, m, kd, kd); }
@@ -495,19 +522,22 @@ public:
         { return hemm( side, m, n ); }
 
     static double herk(double n, double k)
-        { return 1e-9 * (mul_ops*fmuls_herk(n, k) + add_ops*fadds_herk(n, k)); }
+        { return 1e-9 * (mul_ops*fmuls_herk(n, k) +
+                         add_ops*fadds_herk(n, k)); }
 
     static double syrk(double n, double k)
         { return herk( n, k ); }
 
     static double her2k(double n, double k)
-        { return 1e-9 * (mul_ops*fmuls_her2k(n, k) + add_ops*fadds_her2k(n, k)); }
+        { return 1e-9 * (mul_ops*fmuls_her2k(n, k) +
+                         add_ops*fadds_her2k(n, k)); }
 
     static double syr2k(double n, double k)
         { return her2k( n, k ); }
 
     static double trmm(blas::Side side, double m, double n)
-        { return 1e-9 * (mul_ops*fmuls_trmm(side, m, n) + add_ops*fadds_trmm(side, m, n)); }
+        { return 1e-9 * (mul_ops*fmuls_trmm(side, m, n) +
+                         add_ops*fadds_trmm(side, m, n)); }
 
     static double trsm(blas::Side side, double m, double n)
         { return trmm( side, m, n ); }
