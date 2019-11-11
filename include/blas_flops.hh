@@ -15,25 +15,12 @@ inline double fmuls_asum( double n )
 inline double fadds_asum( double n )
     { return n-1; }
 
-template< typename T >
-inline double gbyte_asum( double n, T* x )
-    { return n * sizeof(T); } // read x
-
 // -----------------------------------------------------------------------------
 inline double fmuls_axpy( double n )
     { return n; }
 
 inline double fadds_axpy( double n )
     { return n; }
-
-template< typename T >
-inline double gbyte_axpy( double n, T* x )
-    { return 3*n * sizeof(T); } // read x, y; write y
-
-// -----------------------------------------------------------------------------
-template< typename T >
-inline double gbyte_copy( double n, T* x )
-    { return 2*n * sizeof(T); } // read x; write y
 
 // -----------------------------------------------------------------------------
 inline double fmuls_iamax( double n )
@@ -43,20 +30,12 @@ inline double fmuls_iamax( double n )
 inline double fadds_iamax( double n )
     { return n-1; }
 
-template< typename T >
-inline double gbyte_iamax( double n, T* x )
-    { return n * sizeof(T); } // read x
-
 // -----------------------------------------------------------------------------
 inline double fmuls_nrm2( double n )
     { return n; }
 
 inline double fadds_nrm2( double n )
     { return n-1; }
-
-template< typename T >
-inline double gbyte_nrm2( double n, T* x )
-    { return n * sizeof(T); } // read x
 
 // -----------------------------------------------------------------------------
 inline double fmuls_dot( double n )
@@ -65,25 +44,12 @@ inline double fmuls_dot( double n )
 inline double fadds_dot( double n )
     { return n-1; }
 
-template< typename T >
-inline double gbyte_dot( double n, T* x )
-    { return 2*n * sizeof(T); } // read x, y
-
 // -----------------------------------------------------------------------------
 inline double fmuls_scal( double n )
     { return n; }
 
 inline double fadds_scal( double n )
     { return 0; }
-
-template< typename T >
-inline double gbyte_scal( double n, T* x )
-    { return 2*n * sizeof(T); } // read x; write x
-
-// -----------------------------------------------------------------------------
-template< typename T >
-inline double gbyte_swap( double n, T* x )
-    { return 4*n * sizeof(T); } // read x, y; write x, y
 
 // =============================================================================
 // Level 2 BLAS
@@ -97,34 +63,12 @@ inline double fmuls_gemv( double m, double n )
 inline double fadds_gemv( double m, double n )
     { return m*n; }
 
-template< typename T >
-inline double gbyte_gemv( double m, double n, T* x )
-    { return (m*n + m + n) * sizeof(T); } // read A, x; write y
-
-// -----------------------------------------------------------------------------
-template< typename T >
-inline double gbyte_hemv( double n, T* x )
-    { return (0.5*(n+1)*n + 2*n) * sizeof(T); } // read A triangle, x; write y
-
-template< typename T >
-inline double gbyte_symv( double n, T* x )
-    { return gbyte_hemv( n, x ); }
-
 // -----------------------------------------------------------------------------
 inline double fmuls_trmv( double n )
     { return 0.5*n*(n + 1); }
 
 inline double fadds_trmv( double n )
     { return 0.5*n*(n - 1); }
-
-template< typename T >
-inline double gbyte_trmv( double n, T* x )
-    { return (0.5*(n+1)*n + 2*n) * sizeof(T); } // read A triangle, x; write x
-
-// -----------------------------------------------------------------------------
-template< typename T >
-inline double gbyte_trsv( double n, T* x )
-    { return gbyte_trmv( n, x ); }
 
 // -----------------------------------------------------------------------------
 inline double fmuls_ger( double m, double n )
@@ -133,38 +77,12 @@ inline double fmuls_ger( double m, double n )
 inline double fadds_ger( double m, double n )
     { return m*n; }
 
-template< typename T >
-inline double gbyte_ger( double m, double n, T* x )
-    { return (2*m*n + m + n) * sizeof(T); } // read A, x, y; write A
-
-// -----------------------------------------------------------------------------
-template< typename T >
-inline double gbyte_her( double n, T* x )
-    { return ((n+1)*n + n) * sizeof(T); } // read A triangle, x; write A triangle
-
-template< typename T >
-inline double gbyte_syr( double n, T* x )
-    { return gbyte_her( n, x ); }
-
-// -----------------------------------------------------------------------------
-template< typename T >
-inline double gbyte_her2( double n, T* x )
-    { return ((n+1)*n + n + n) * sizeof(T); } // read A triangle, x, y; write A triangle
-
-template< typename T >
-inline double gbyte_syr2( double n, T* x )
-    { return gbyte_her2( n, x ); }
-
 // -----------------------------------------------------------------------------
 inline double fmuls_gemm( double m, double n, double k )
     { return m*n*k; }
 
 inline double fadds_gemm( double m, double n, double k )
     { return m*n*k; }
-
-template< typename T >
-inline double gbyte_gemm( double m, double n, double k, T* x )
-    { return (m*k + k*n + 2*m*n) * sizeof(T); } // read A, B, C; write C
 
 // -----------------------------------------------------------------------------
 inline double fmuls_gbmm( double m, double n, double kl, double ku )
@@ -180,19 +98,6 @@ inline double fmuls_hemm( blas::Side side, double m, double n )
 inline double fadds_hemm( blas::Side side, double m, double n )
     { return (side == blas::Side::Left ? m*m*n : m*n*n); }
 
-template< typename T >
-inline double gbyte_hemm( blas::Side side, double m, double n, T* x )
-{
-    // read A, B, C; write C
-    double sizeA = (side == blas::Side::Left ? 0.5*m*(m+1) : 0.5*n*(n+1));
-    return (sizeA + 3*m*n) * sizeof(T);
-}
-
-template< typename T >
-inline double gbyte_symm( blas::Side side, double m, double n, T* x )
-    { return gbyte_hemm( side, m, n, x ); }
-
-
 // -----------------------------------------------------------------------------
 inline double fmuls_herk( double n, double k )
     { return 0.5*k*n*(n+1); }
@@ -200,36 +105,12 @@ inline double fmuls_herk( double n, double k )
 inline double fadds_herk( double n, double k )
     { return 0.5*k*n*(n+1); }
 
-template< typename T >
-inline double gbyte_herk( double n, double k, T* x )
-{
-    // read A, C; write C
-    double sizeC = 0.5*n*(n+1);
-    return (n*k + 2*sizeC) * sizeof(T);
-}
-
-template< typename T >
-inline double gbyte_syrk( double n, double k, T* x )
-    { return gbyte_herk( n, k, x ); }
-
 // -----------------------------------------------------------------------------
 inline double fmuls_her2k( double n, double k )
     { return k*n*n; }
 
 inline double fadds_her2k( double n, double k )
     { return k*n*n; }
-
-template< typename T >
-inline double gbyte_her2k( double n, double k, T* x )
-{
-    // read A, B, C; write C
-    double sizeC = 0.5*n*(n+1);
-    return (2*n*k + 2*sizeC) * sizeof(T);
-}
-
-template< typename T >
-inline double gbyte_syr2k( double n, double k, T* x )
-        { return gbyte_her2k( n, k, x ); }
 
 // -----------------------------------------------------------------------------
 inline double fmuls_trmm( blas::Side side, double m, double n )
@@ -247,21 +128,6 @@ inline double fadds_trmm( blas::Side side, double m, double n )
     else
         return 0.5*m*n*(n - 1);
 }
-
-template< typename T >
-inline double gbyte_trmm( blas::Side side, double m, double n, T* x )
-{
-    // read A triangle, x; write x
-    if (side == blas::Side::Left)
-        return (0.5*(m+1)*m + 2*m*n) * sizeof(T);
-    else
-        return (0.5*(n+1)*n + 2*m*n) * sizeof(T);
-}
-
-// -----------------------------------------------------------------------------
-template< typename T >
-inline double gbyte_trsm( blas::Side side, double m, double n, T* x )
-    { return gbyte_trmm( side, m, n, x ); }
 
 //==============================================================================
 // template class. Example:
