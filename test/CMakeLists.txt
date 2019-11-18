@@ -147,5 +147,5 @@ add_custom_command(TARGET blaspp_test POST_BUILD
 add_custom_command(TARGET blaspp_test POST_BUILD
     COMMAND
         cp ${CMAKE_CURRENT_BINARY_DIR}/blaspp_test
-           ${CMAKE_CURRENT_BINARY_DIR}/test
+           ${CMAKE_CURRENT_BINARY_DIR}/tester
 )
