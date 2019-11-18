@@ -31,7 +31,7 @@ parser = argparse.ArgumentParser()
 group_test = parser.add_argument_group( 'test' )
 group_test.add_argument( '-t', '--test', action='store',
     help='test command to run, e.g., --test "mpirun -np 4 ./test"; default "%(default)s"',
-    default='./test' )
+    default='./tester' )
 group_test.add_argument( '--xml', action='store_true', help='generate report.xml for jenkins' )
 
 group_size = parser.add_argument_group( 'matrix dimensions (default is medium)' )
