@@ -9,7 +9,7 @@
 template< typename TA, typename TB, typename TC >
 void test_device_batch_gemm_work( Params& params, bool run )
 {
-    using namespace libtest;
+    using namespace testsweeper;
     using namespace blas;
     using namespace blas::batch;
     using scalar_t = blas::scalar_type< TA, TB, TC >;
@@ -129,7 +129,7 @@ void test_device_batch_gemm_work( Params& params, bool run )
     // decide error checking mode
     info.resize( 0 );
     // run test
-    libtest::flush_cache( params.cache() );
+    testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
     blas::batch::gemm( layout, transA, transB, m, n, k,
                        alpha, dAarray, ldda, dBarray, lddb, beta, dCarray, lddc,
@@ -145,7 +145,7 @@ void test_device_batch_gemm_work( Params& params, bool run )
 
     if (params.ref() == 'y' || params.check() == 'y') {
         // run reference
-        libtest::flush_cache( params.cache() );
+        testsweeper::flush_cache( params.cache() );
         time = get_wtime();
         for (size_t s = 0; s < batch; ++s) {
             cblas_gemm( cblas_layout_const(layout),
@@ -188,25 +188,25 @@ void test_device_batch_gemm_work( Params& params, bool run )
 void test_batch_gemm_device( Params& params, bool run )
 {
     switch (params.datatype()) {
-        case libtest::DataType::Integer:
+        case testsweeper::DataType::Integer:
             //test_device_batch_gemm_work< int64_t >( params, run );
             throw std::exception();
             break;
 
-        case libtest::DataType::Single:
+        case testsweeper::DataType::Single:
             test_device_batch_gemm_work< float, float, float >( params, run );
             break;
 
-        case libtest::DataType::Double:
+        case testsweeper::DataType::Double:
             test_device_batch_gemm_work< double, double, double >( params, run );
             break;
 
-        case libtest::DataType::SingleComplex:
+        case testsweeper::DataType::SingleComplex:
             test_device_batch_gemm_work< std::complex<float>, std::complex<float>,
                             std::complex<float> >( params, run );
             break;
 
-        case libtest::DataType::DoubleComplex:
+        case testsweeper::DataType::DoubleComplex:
             test_device_batch_gemm_work< std::complex<double>, std::complex<double>,
                             std::complex<double> >( params, run );
             break;

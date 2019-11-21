@@ -8,7 +8,7 @@
 template< typename T >
 void test_iamax_work( Params& params, bool run )
 {
-    using namespace libtest;
+    using namespace testsweeper;
     using namespace blas;
     typedef real_type<T> real_t;
     typedef long long lld;
@@ -55,7 +55,7 @@ void test_iamax_work( Params& params, bool run )
     }
 
     // run test
-    libtest::flush_cache( params.cache() );
+    testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
     int64_t result = blas::iamax( n, x, incx );
     time = get_wtime() - time;
@@ -72,7 +72,7 @@ void test_iamax_work( Params& params, bool run )
 
     if (params.check() == 'y') {
         // run reference
-        libtest::flush_cache( params.cache() );
+        testsweeper::flush_cache( params.cache() );
         time = get_wtime();
         int64_t ref = cblas_iamax( n, x, incx );
         time = get_wtime() - time;
@@ -100,24 +100,24 @@ void test_iamax_work( Params& params, bool run )
 void test_iamax( Params& params, bool run )
 {
     switch (params.datatype()) {
-        case libtest::DataType::Integer:
+        case testsweeper::DataType::Integer:
             //test_iamax_work< int64_t >( params, run );
             throw std::exception();
             break;
 
-        case libtest::DataType::Single:
+        case testsweeper::DataType::Single:
             test_iamax_work< float >( params, run );
             break;
 
-        case libtest::DataType::Double:
+        case testsweeper::DataType::Double:
             test_iamax_work< double >( params, run );
             break;
 
-        case libtest::DataType::SingleComplex:
+        case testsweeper::DataType::SingleComplex:
             test_iamax_work< std::complex<float> >( params, run );
             break;
 
-        case libtest::DataType::DoubleComplex:
+        case testsweeper::DataType::DoubleComplex:
             test_iamax_work< std::complex<double> >( params, run );
             break;
     }

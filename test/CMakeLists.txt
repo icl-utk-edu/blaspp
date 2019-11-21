@@ -79,20 +79,20 @@ set_target_properties(blaspp_test PROPERTIES
     POSITION_INDEPENDENT_CODE ON
 )
 
-# Set -Dlibtest_DIR=/path/to/libtest
+# Set -Dtestsweeper_DIR=/path/to/testsweeper
 if(0)
-if(libtest_DIR)
-    message(STATUS "Found using user supplied libtest_DIR to find libtest")
+if(testsweeper_DIR)
+    message(STATUS "Found using user supplied testsweeper_DIR to find testsweeper")
 else()
-    find_path(libtest_DIR libtestConfig.cmake
+    find_path(testsweeper_DIR testsweeperConfig.cmake
         PATHS
             ${CMAKE_INSTALL_PREFIX}
             ${CMAKE_INSTALL_PREFIX}/test
-            ${libtest_search_path}
+            ${testsweeper_search_path}
     )
 endif()
 endif()
-#message("libtest_DIR: ${libtest_DIR}")
+#message("testsweeper_DIR: ${testsweeper_DIR}")
 
 if(NOT BLASPP_BUILD_TESTS)
     set_target_properties(blaspp_test
@@ -100,9 +100,9 @@ if(NOT BLASPP_BUILD_TESTS)
     )
 endif()
 
-find_package(libtest)
+find_package(testsweeper)
 target_link_libraries(blaspp_test
-    libtest
+    testsweeper
     blaspp
     #${BLAS_links}
 )
@@ -119,7 +119,7 @@ target_include_directories(blaspp_test
         #${CMAKE_CURRENT_SOURCE_DIR}/../include
         ${blas_include_dir}
         #"/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers/"
-        #${libtest_DIR}/include
+        #${testsweeper_DIR}/include
 )
 if(0)
     target_compile_definitions(blaspp_test PRIVATE

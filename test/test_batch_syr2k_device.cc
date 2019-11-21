@@ -9,7 +9,7 @@
 template< typename TA, typename TB, typename TC >
 void test_batch_syr2k_device_work( Params& params, bool run )
 {
-    using namespace libtest;
+    using namespace testsweeper;
     using namespace blas;
     typedef scalar_type<TA, TC> scalar_t;
     typedef real_type<scalar_t> real_t;
@@ -119,7 +119,7 @@ void test_batch_syr2k_device_work( Params& params, bool run )
     info.resize( 0 );
 
     // run test
-    libtest::flush_cache( params.cache() );
+    testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
     blas::batch::syr2k( layout, uplo, trans, n, k, alpha, dAarray, lda, dBarray, ldb, beta, dCarray, ldc,
                         batch, info, queue);
@@ -134,7 +134,7 @@ void test_batch_syr2k_device_work( Params& params, bool run )
 
     if (params.ref() == 'y' || params.check() == 'y') {
         // run reference
-        libtest::flush_cache( params.cache() );
+        testsweeper::flush_cache( params.cache() );
         time = get_wtime();
         for (size_t s = 0; s < batch; ++s) {
             cblas_syr2k( cblas_layout_const(layout),
@@ -179,25 +179,25 @@ void test_batch_syr2k_device_work( Params& params, bool run )
 void test_batch_syr2k_device( Params& params, bool run )
 {
     switch (params.datatype()) {
-        case libtest::DataType::Integer:
+        case testsweeper::DataType::Integer:
             //test_batch_syr2k_device_work< int64_t >( params, run );
             throw std::exception();
             break;
 
-        case libtest::DataType::Single:
+        case testsweeper::DataType::Single:
             test_batch_syr2k_device_work< float, float, float >( params, run );
             break;
 
-        case libtest::DataType::Double:
+        case testsweeper::DataType::Double:
             test_batch_syr2k_device_work< double, double, double >( params, run );
             break;
 
-        case libtest::DataType::SingleComplex:
+        case testsweeper::DataType::SingleComplex:
             test_batch_syr2k_device_work< std::complex<float>, std::complex<float>,
                              std::complex<float> >( params, run );
             break;
 
-        case libtest::DataType::DoubleComplex:
+        case testsweeper::DataType::DoubleComplex:
             test_batch_syr2k_device_work< std::complex<double>, std::complex<double>,
                              std::complex<double> >( params, run );
             break;

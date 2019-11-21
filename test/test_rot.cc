@@ -12,7 +12,7 @@
 template< typename TX, typename TS >
 void test_rot_work( Params& params, bool run )
 {
-    using namespace libtest;
+    using namespace testsweeper;
     using namespace blas;
     typedef real_type<TX> real_t;
     typedef long long lld;
@@ -77,7 +77,7 @@ void test_rot_work( Params& params, bool run )
     }
 
     // run test
-    libtest::flush_cache( params.cache() );
+    testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
     blas::rot( n, x, incx, y, incy, c, s );
     time = get_wtime() - time;
@@ -95,7 +95,7 @@ void test_rot_work( Params& params, bool run )
 
     if (params.ref() == 'y' || params.check() == 'y') {
         // run reference
-        libtest::flush_cache( params.cache() );
+        testsweeper::flush_cache( params.cache() );
         time = get_wtime();
         cblas_rot( n, xref, incx, yref, incy, c, s );
         time = get_wtime() - time;
@@ -140,42 +140,42 @@ void test_rot_work( Params& params, bool run )
 void test_rot( Params& params, bool run )
 {
     switch (params.datatype()) {
-        case libtest::DataType::Integer:
+        case testsweeper::DataType::Integer:
             //test_rot_work< int64_t >( params, run );  // todo: generic implementation
             throw std::exception();
             break;
 
-        case libtest::DataType::Single:
+        case testsweeper::DataType::Single:
             test_rot_work< float, float >( params, run );
             break;
 
-        case libtest::DataType::Double:
+        case testsweeper::DataType::Double:
             test_rot_work< double, double >( params, run );
             break;
 
         // // real sine
-        // case libtest::DataType::SingleComplex:
+        // case testsweeper::DataType::SingleComplex:
         //     //test_rot_work< std::complex<float>, float >
         //     //    ( params, run );
         //     throw std::exception();
         //     break;
         //
         // // real sine
-        // case libtest::DataType::DoubleComplex:
+        // case testsweeper::DataType::DoubleComplex:
         //     //test_rot_work< std::complex<double>, double >
         //     //    ( params, run );
         //     throw std::exception();
         //     break;
 
         // complex sine
-        case libtest::DataType::SingleComplex:
+        case testsweeper::DataType::SingleComplex:
             //test_rot_work< std::complex<float>, std::complex<float> >
             //    ( params, run );
             throw std::exception();
             break;
 
         // complex sine
-        case libtest::DataType::DoubleComplex:
+        case testsweeper::DataType::DoubleComplex:
             //test_rot_work< std::complex<double>, std::complex<double> >
             //    ( params, run );
             throw std::exception();

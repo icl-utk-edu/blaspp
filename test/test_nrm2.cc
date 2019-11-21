@@ -8,7 +8,7 @@
 template< typename T >
 void test_nrm2_work( Params& params, bool run )
 {
-    using namespace libtest;
+    using namespace testsweeper;
     using namespace blas;
     typedef T scalar_t;
     typedef real_type<T> real_t;
@@ -56,7 +56,7 @@ void test_nrm2_work( Params& params, bool run )
     }
 
     // run test
-    libtest::flush_cache( params.cache() );
+    testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
     real_t result = blas::nrm2( n, x, incx );
     time = get_wtime() - time;
@@ -73,7 +73,7 @@ void test_nrm2_work( Params& params, bool run )
 
     if (params.check() == 'y') {
         // run reference
-        libtest::flush_cache( params.cache() );
+        testsweeper::flush_cache( params.cache() );
         time = get_wtime();
         real_t ref = cblas_nrm2( n, x, std::abs(incx) );
         time = get_wtime() - time;
@@ -106,24 +106,24 @@ void test_nrm2_work( Params& params, bool run )
 void test_nrm2( Params& params, bool run )
 {
     switch (params.datatype()) {
-        case libtest::DataType::Integer:
+        case testsweeper::DataType::Integer:
             //test_nrm2_work< int64_t >( params, run );
             throw std::exception();
             break;
 
-        case libtest::DataType::Single:
+        case testsweeper::DataType::Single:
             test_nrm2_work< float >( params, run );
             break;
 
-        case libtest::DataType::Double:
+        case testsweeper::DataType::Double:
             test_nrm2_work< double >( params, run );
             break;
 
-        case libtest::DataType::SingleComplex:
+        case testsweeper::DataType::SingleComplex:
             test_nrm2_work< std::complex<float> >( params, run );
             break;
 
-        case libtest::DataType::DoubleComplex:
+        case testsweeper::DataType::DoubleComplex:
             test_nrm2_work< std::complex<double> >( params, run );
             break;
     }

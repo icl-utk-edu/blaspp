@@ -9,7 +9,7 @@
 template< typename TX >
 void test_rotm_work( Params& params, bool run )
 {
-    using namespace libtest;
+    using namespace testsweeper;
     using namespace blas;
     typedef real_type<TX> real_t;
     typedef long long lld;
@@ -78,7 +78,7 @@ void test_rotm_work( Params& params, bool run )
     }
 
     // run test
-    libtest::flush_cache( params.cache() );
+    testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
     blas::rotm( n, x, incx, y, incy, p );
     time = get_wtime() - time;
@@ -96,7 +96,7 @@ void test_rotm_work( Params& params, bool run )
 
     if (params.ref() == 'y' || params.check() == 'y') {
         // run reference
-        libtest::flush_cache( params.cache() );
+        testsweeper::flush_cache( params.cache() );
         time = get_wtime();
         cblas_rotm( n, xref, incx, yref, incy, p );  // todo
         time = get_wtime() - time;
@@ -141,25 +141,25 @@ void test_rotm_work( Params& params, bool run )
 void test_rotm( Params& params, bool run )
 {
     switch (params.datatype()) {
-        case libtest::DataType::Integer:
+        case testsweeper::DataType::Integer:
             //test_rotm_work< int64_t >( params, run );  // todo: generic implementation
             throw std::exception();
             break;
 
-        case libtest::DataType::Single:
+        case testsweeper::DataType::Single:
             test_rotm_work< float >( params, run );
             break;
 
-        case libtest::DataType::Double:
+        case testsweeper::DataType::Double:
             test_rotm_work< double >( params, run );
             break;
 
-        case libtest::DataType::SingleComplex:
+        case testsweeper::DataType::SingleComplex:
             //test_rotm_work< std::complex<float> >( params, run );  // not available for complex
             throw std::exception();
             break;
 
-        case libtest::DataType::DoubleComplex:
+        case testsweeper::DataType::DoubleComplex:
             //test_rotm_work< std::complex<double> >( params, run );
             throw std::exception();
             break;

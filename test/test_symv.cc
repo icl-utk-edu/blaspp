@@ -9,7 +9,7 @@
 template< typename TA, typename TX, typename TY >
 void test_symv_work( Params& params, bool run )
 {
-    using namespace libtest;
+    using namespace testsweeper;
     using namespace blas;
     typedef scalar_type<TA, TX, TY> scalar_t;
     typedef real_type<scalar_t> real_t;
@@ -90,7 +90,7 @@ void test_symv_work( Params& params, bool run )
     }
 
     // run test
-    libtest::flush_cache( params.cache() );
+    testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
     blas::symv( layout, uplo, n, alpha, A, lda, x, incx, beta, y, incy );
     time = get_wtime() - time;
@@ -107,7 +107,7 @@ void test_symv_work( Params& params, bool run )
 
     if (params.check() == 'y') {
         // run reference
-        libtest::flush_cache( params.cache() );
+        testsweeper::flush_cache( params.cache() );
         time = get_wtime();
         cblas_symv( cblas_layout_const(layout), cblas_uplo_const(uplo), n,
                     alpha, A, lda, x, incx, beta, yref, incy );
@@ -141,16 +141,16 @@ void test_symv_work( Params& params, bool run )
 void test_symv( Params& params, bool run )
 {
     switch (params.datatype()) {
-        case libtest::DataType::Integer:
+        case testsweeper::DataType::Integer:
             //test_symv_work< int64_t >( params, run );
             throw std::exception();
             break;
 
-        case libtest::DataType::Single:
+        case testsweeper::DataType::Single:
             test_symv_work< float, float, float >( params, run );
             break;
 
-        case libtest::DataType::Double:
+        case testsweeper::DataType::Double:
             test_symv_work< double, double, double >( params, run );
             break;
     }

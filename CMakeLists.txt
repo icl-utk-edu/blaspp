@@ -1,11 +1,11 @@
 # CMake script for BLAS++ library
 # repo: http://bitbucket.org/icl/blaspp
-# Tests require Libtest testing library from http://bitbucket.org/icl/libtest
+# Tests require Libtest testing library from http://bitbucket.org/icl/testsweeper
 
 # Options:
 #  -DCMAKE_INSTALL_PREFIX=<some_dir>
 #    Change installation directory, default: /opt/slate/
-#  -Dlibtest_DIR=path/to/libtest
+#  -Dtestsweeper_DIR=path/to/testsweeper
 #    Point to testing framework used in tests
 #  -DBLASPP_BUILD_TESTS=OFF
 #    Diable building BLASPP test suite
@@ -324,7 +324,7 @@ install (EXPORT blasppTargets
 install(
     DIRECTORY include/
     DESTINATION include
-    FILES_MATCHING PATTERN "GNUMakefile" EXCLUDE
+    #FILES_MATCHING PATTERN "GNUMakefile" EXCLUDE
 )
 
 install (
@@ -334,23 +334,23 @@ install (
 
 # Testers are built by default, but will not be included if Libtest is not found
 # Set CMAKE_INSTALL_PREFIX during the installation of Libtest and BLAS++ or
-#   set libtest_DIR to the path containing libtestConfig.cmake
+#   set testsweeper_DIR to the path containing testsweeperConfig.cmake
 if (BLASPP_BUILD_TESTS)
     if(0)
-    if (libtest_DIR)
-        set (libtest_search_path ${libtest_DIR})
-        set (libtest_DIR "")
+    if (testsweeper_DIR)
+        set (testsweeper_search_path ${testsweeper_DIR})
+        set (testsweeper_DIR "")
     endif()
-    find_path(libtest_DIR libtestConfig.cmake
+    find_path(testsweeper_DIR testsweeperConfig.cmake
         PATHS
             ${CMAKE_INSTALL_PREFIX}/test
-            ${libtest_search_path}
+            ${testsweeper_search_path}
     )
     endif()
-    find_package(libtest)
-    message("libtest_found: ${libtest_FOUND}")
-    if (libtest_FOUND)
-    #if (NOT libtest_DIR MATCHES "NOTFOUND" AND NOT libtest_FOUND)
+    find_package(testsweeper)
+    message("testsweeper_found: ${testsweeper_FOUND}")
+    if (testsweeper_FOUND)
+    #if (NOT testsweeper_DIR MATCHES "NOTFOUND" AND NOT testsweeper_FOUND)
         message(STATUS "Blaspp tests will be built.")
         add_subdirectory(test)
     else()

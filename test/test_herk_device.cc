@@ -9,7 +9,7 @@
 template< typename TA, typename TC >
 void test_herk_device_work( Params& params, bool run )
 {
-    using namespace libtest;
+    using namespace testsweeper;
     using namespace blas;
     typedef scalar_type<TA, TC> scalar_t;
     typedef real_type<scalar_t> real_t;
@@ -104,7 +104,7 @@ void test_herk_device_work( Params& params, bool run )
     }
 
     // run test
-    libtest::flush_cache( params.cache() );
+    testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
     blas::herk( layout, uplo, trans, n, k,
                 alpha, dA, lda, beta, dC, ldc, queue );
@@ -123,7 +123,7 @@ void test_herk_device_work( Params& params, bool run )
 
     if (params.ref() == 'y' || params.check() == 'y') {
         // run reference
-        libtest::flush_cache( params.cache() );
+        testsweeper::flush_cache( params.cache() );
         time = get_wtime();
         cblas_herk( cblas_layout_const(layout),
                     cblas_uplo_const(uplo),
@@ -159,25 +159,25 @@ void test_herk_device_work( Params& params, bool run )
 void test_herk_device( Params& params, bool run )
 {
     switch (params.datatype()) {
-        case libtest::DataType::Integer:
+        case testsweeper::DataType::Integer:
             //test_herk_device_work< int64_t >( params, run );
             throw std::exception();
             break;
 
-        case libtest::DataType::Single:
+        case testsweeper::DataType::Single:
             test_herk_device_work< float, float >( params, run );
             break;
 
-        case libtest::DataType::Double:
+        case testsweeper::DataType::Double:
             test_herk_device_work< double, double >( params, run );
             break;
 
-        case libtest::DataType::SingleComplex:
+        case testsweeper::DataType::SingleComplex:
             test_herk_device_work< std::complex<float>, std::complex<float> >
                 ( params, run );
             break;
 
-        case libtest::DataType::DoubleComplex:
+        case testsweeper::DataType::DoubleComplex:
             test_herk_device_work< std::complex<double>, std::complex<double> >
                 ( params, run );
             break;

@@ -7,7 +7,7 @@
 template< typename T >
 void test_rotmg_work( Params& params, bool run )
 {
-    using namespace libtest;
+    using namespace testsweeper;
     using blas::real;
     using blas::imag;
     typedef blas::real_type<T> real_t;
@@ -47,7 +47,7 @@ void test_rotmg_work( Params& params, bool run )
     ps_ref = ps;
 
     // run test
-    libtest::flush_cache( params.cache() );
+    testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
     for (int64_t i = 0; i < n; ++i) {
         blas::rotmg( &d1[i], &d2[i], &x1[i], y1[i], &ps[5*i] );
@@ -57,7 +57,7 @@ void test_rotmg_work( Params& params, bool run )
 
     if (params.check() == 'y') {
         // run reference
-        libtest::flush_cache( params.cache() );
+        testsweeper::flush_cache( params.cache() );
         time = get_wtime();
         for (int64_t i = 0; i < n; ++i) {
             cblas_rotmg( &d1_ref[i], &d2_ref[i], &x1_ref[i], y1_ref[i], &ps_ref[5*i] );
@@ -94,25 +94,25 @@ void test_rotmg_work( Params& params, bool run )
 void test_rotmg( Params& params, bool run )
 {
     switch (params.datatype()) {
-        case libtest::DataType::Integer:
+        case testsweeper::DataType::Integer:
             //test_rotmg_work< int64_t >( params, run );  // todo: generic implementation
             throw std::exception();
             break;
 
-        case libtest::DataType::Single:
+        case testsweeper::DataType::Single:
             test_rotmg_work< float >( params, run );
             break;
 
-        case libtest::DataType::Double:
+        case testsweeper::DataType::Double:
             test_rotmg_work< double >( params, run );
             break;
 
         // modified Givens not available for complex
-        case libtest::DataType::SingleComplex:
+        case testsweeper::DataType::SingleComplex:
             throw std::exception();
             break;
 
-        case libtest::DataType::DoubleComplex:
+        case testsweeper::DataType::DoubleComplex:
             throw std::exception();
             break;
     }

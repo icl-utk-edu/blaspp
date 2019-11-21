@@ -603,7 +603,7 @@ def get_package( name, directories, repo_url, tar_url, tar_filename ):
                 # end
 
                 # rename directory,
-                # e.g., from icl-libtest-dbd960ebf706 to libtest
+                # e.g., from icl-testsweeper-dbd960ebf706 to testsweeper
                 # todo: os.path.sep intsead of '/'?
                 dirs = re.split( '/', lastfile )
                 print( 'rename', dirs[0], directory, file=log )

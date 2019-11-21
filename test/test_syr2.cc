@@ -9,7 +9,7 @@
 template< typename TA, typename TX, typename TY >
 void test_syr2_work( Params& params, bool run )
 {
-    using namespace libtest;
+    using namespace testsweeper;
     using namespace blas;
     typedef scalar_type<TA, TX, TY> scalar_t;
     typedef real_type<scalar_t> real_t;
@@ -91,7 +91,7 @@ void test_syr2_work( Params& params, bool run )
     }
 
     // run test
-    libtest::flush_cache( params.cache() );
+    testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
     blas::syr2( layout, uplo, n, alpha, x, incx, y, incy, A, lda );
     time = get_wtime() - time;
@@ -123,7 +123,7 @@ void test_syr2_work( Params& params, bool run )
         }
 
         // run reference
-        libtest::flush_cache( params.cache() );
+        testsweeper::flush_cache( params.cache() );
         time = get_wtime();
 
         cblas_syr2k( cblas_layout_const(layout), cblas_uplo_const(uplo), CblasNoTrans,
@@ -161,25 +161,25 @@ void test_syr2_work( Params& params, bool run )
 void test_syr2( Params& params, bool run )
 {
     switch (params.datatype()) {
-        case libtest::DataType::Integer:
+        case testsweeper::DataType::Integer:
             //test_syr2_work< int64_t >( params, run );
             throw std::exception();
             break;
 
-        case libtest::DataType::Single:
+        case testsweeper::DataType::Single:
             test_syr2_work< float, float, float >( params, run );
             break;
 
-        case libtest::DataType::Double:
+        case testsweeper::DataType::Double:
             test_syr2_work< double, double, double >( params, run );
             break;
 
-        case libtest::DataType::SingleComplex:
+        case testsweeper::DataType::SingleComplex:
             test_syr2_work< std::complex<float>, std::complex<float>,
                             std::complex<float> >( params, run );
             break;
 
-        case libtest::DataType::DoubleComplex:
+        case testsweeper::DataType::DoubleComplex:
             test_syr2_work< std::complex<double>, std::complex<double>,
                             std::complex<double> >( params, run );
             break;

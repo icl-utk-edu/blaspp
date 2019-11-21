@@ -371,7 +371,7 @@ public:
             // todo: account for the non-suqare matrix A: m != k
             // assert(m == k);
             if (m != k)
-                return nan("1234"); // use libtest's no_data_flag to print NA
+                return nan("1234"); // use testsweeper's no_data_flag to print NA
             else
                 return 1e-9 * (mul_ops*fmuls_gbmm(m, n, kl, ku) +
                                add_ops*fadds_gbmm(m, n, kl, ku));

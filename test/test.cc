@@ -7,14 +7,14 @@
 #include "test.hh"
 
 // -----------------------------------------------------------------------------
-using libtest::ParamType;
-using libtest::DataType;
-using libtest::char2datatype;
-using libtest::datatype2char;
-using libtest::datatype2str;
-using libtest::ansi_bold;
-using libtest::ansi_red;
-using libtest::ansi_normal;
+using testsweeper::ParamType;
+using testsweeper::DataType;
+using testsweeper::char2datatype;
+using testsweeper::datatype2char;
+using testsweeper::datatype2str;
+using testsweeper::ansi_bold;
+using testsweeper::ansi_red;
+using testsweeper::ansi_normal;
 
 // -----------------------------------------------------------------------------
 // each section must have a corresponding entry in section_names
@@ -38,7 +38,7 @@ const char* section_names[] = {
 };
 
 // { "", nullptr, Section::newline } entries force newline in help
-std::vector< libtest::routines_t > routines = {
+std::vector< testsweeper::routines_t > routines = {
     // Level 1 BLAS
     { "asum",   test_asum,   Section::blas1   },
     { "axpy",   test_axpy,   Section::blas1   },
@@ -195,14 +195,14 @@ Params::Params():
     // ----- output parameters
     // min, max are ignored
     //          name,                w, p, type,              default,               min, max, help
-    error     ( "BLAS++\nerror",    11, 4, ParamType::Output, libtest::no_data_flag,   0,   0, "numerical error" ),
-    time      ( "BLAS++\ntime (s)", 11, 4, ParamType::Output, libtest::no_data_flag,   0,   0, "time to solution" ),
-    gflops    ( "BLAS++\nGflop/s",  11, 4, ParamType::Output, libtest::no_data_flag,   0,   0, "Gflop/s rate" ),
-    gbytes    ( "BLAS++\nGbyte/s",  11, 4, ParamType::Output, libtest::no_data_flag,   0,   0, "Gbyte/s rate" ),
+    error     ( "BLAS++\nerror",    11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "numerical error" ),
+    time      ( "BLAS++\ntime (s)", 11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "time to solution" ),
+    gflops    ( "BLAS++\nGflop/s",  11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "Gflop/s rate" ),
+    gbytes    ( "BLAS++\nGbyte/s",  11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "Gbyte/s rate" ),
 
-    ref_time  ( "Ref.\ntime (s)",   11, 4, ParamType::Output, libtest::no_data_flag,   0,   0, "reference time to solution" ),
-    ref_gflops( "Ref.\nGflop/s",    11, 4, ParamType::Output, libtest::no_data_flag,   0,   0, "reference Gflop/s rate" ),
-    ref_gbytes( "Ref.\nGbyte/s",    11, 4, ParamType::Output, libtest::no_data_flag,   0,   0, "reference Gbyte/s rate" ),
+    ref_time  ( "Ref.\ntime (s)",   11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "reference time to solution" ),
+    ref_gflops( "Ref.\nGflop/s",    11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "reference Gflop/s rate" ),
+    ref_gbytes( "Ref.\nGbyte/s",    11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "reference Gbyte/s rate" ),
 
     // default -1 means "no check"
     okay      ( "status",              6,    ParamType::Output,  -1,   0,   0, "success indicator" )
@@ -225,7 +225,7 @@ Params::Params():
 // -----------------------------------------------------------------------------
 int main( int argc, char** argv )
 {
-    using libtest::QuitException;
+    using testsweeper::QuitException;
 
     // check that all sections have names
     assert( sizeof(section_names)/sizeof(*section_names) == Section::num_sections );
@@ -250,7 +250,7 @@ int main( int argc, char** argv )
 
         // find routine to test
         const char* routine = argv[1];
-        libtest::test_func_ptr test_routine = find_tester( routine, routines );
+        testsweeper::test_func_ptr test_routine = find_tester( routine, routines );
         if (test_routine == nullptr) {
             usage( argc, argv, routines, section_names );
             throw std::runtime_error(
@@ -277,7 +277,7 @@ int main( int argc, char** argv )
 
         // run tests
         int repeat = params.repeat();
-        libtest::DataType last = params.datatype();
+        testsweeper::DataType last = params.datatype();
         params.header();
         do {
             if (params.datatype() != last) {

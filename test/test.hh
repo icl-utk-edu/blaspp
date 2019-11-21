@@ -1,11 +1,11 @@
 #ifndef TEST_HH
 #define TEST_HH
 
-#include "libtest.hh"
+#include "testsweeper.hh"
 #include "blas.hh"
 
 // -----------------------------------------------------------------------------
-class Params: public libtest::ParamsBase
+class Params: public testsweeper::ParamsBase
 {
 public:
     const double inf = std::numeric_limits<double>::infinity();
@@ -18,43 +18,43 @@ public:
     // Field members are explicitly public.
     // Order here determines output order.
     // ----- test framework parameters
-    libtest::ParamChar   check;
-    libtest::ParamChar   ref;
-    //libtest::ParamDouble tol;  // stricter bounds don't need arbitrary tol
-    libtest::ParamInt    repeat;
-    libtest::ParamInt    verbose;
-    libtest::ParamInt    cache;
+    testsweeper::ParamChar   check;
+    testsweeper::ParamChar   ref;
+    //testsweeper::ParamDouble tol;  // stricter bounds don't need arbitrary tol
+    testsweeper::ParamInt    repeat;
+    testsweeper::ParamInt    verbose;
+    testsweeper::ParamInt    cache;
 
     // ----- routine parameters
-    libtest::ParamEnum< libtest::DataType > datatype;
-    libtest::ParamEnum< blas::Layout >      layout;
-    libtest::ParamEnum< blas::Side >        side;
-    libtest::ParamEnum< blas::Uplo >        uplo;
-    libtest::ParamEnum< blas::Op >          trans;
-    libtest::ParamEnum< blas::Op >          transA;
-    libtest::ParamEnum< blas::Op >          transB;
-    libtest::ParamEnum< blas::Diag >        diag;
+    testsweeper::ParamEnum< testsweeper::DataType > datatype;
+    testsweeper::ParamEnum< blas::Layout >      layout;
+    testsweeper::ParamEnum< blas::Side >        side;
+    testsweeper::ParamEnum< blas::Uplo >        uplo;
+    testsweeper::ParamEnum< blas::Op >          trans;
+    testsweeper::ParamEnum< blas::Op >          transA;
+    testsweeper::ParamEnum< blas::Op >          transB;
+    testsweeper::ParamEnum< blas::Diag >        diag;
 
-    libtest::ParamInt3   dim;
-    libtest::ParamDouble alpha;
-    libtest::ParamDouble beta;
-    libtest::ParamInt    incx;
-    libtest::ParamInt    incy;
-    libtest::ParamInt    align;
-    libtest::ParamInt    batch;
-    libtest::ParamInt    device;
+    testsweeper::ParamInt3   dim;
+    testsweeper::ParamDouble alpha;
+    testsweeper::ParamDouble beta;
+    testsweeper::ParamInt    incx;
+    testsweeper::ParamInt    incy;
+    testsweeper::ParamInt    align;
+    testsweeper::ParamInt    batch;
+    testsweeper::ParamInt    device;
 
     // ----- output parameters
-    libtest::ParamScientific error;
-    libtest::ParamDouble     time;
-    libtest::ParamDouble     gflops;
-    libtest::ParamDouble     gbytes;
+    testsweeper::ParamScientific error;
+    testsweeper::ParamDouble     time;
+    testsweeper::ParamDouble     gflops;
+    testsweeper::ParamDouble     gbytes;
 
-    libtest::ParamDouble     ref_time;
-    libtest::ParamDouble     ref_gflops;
-    libtest::ParamDouble     ref_gbytes;
+    testsweeper::ParamDouble     ref_time;
+    testsweeper::ParamDouble     ref_gflops;
+    testsweeper::ParamDouble     ref_gbytes;
 
-    libtest::ParamOkay       okay;
+    testsweeper::ParamOkay       okay;
 };
 
 // -----------------------------------------------------------------------------

@@ -9,7 +9,7 @@
 template< typename TA, typename TX >
 void test_her_work( Params& params, bool run )
 {
-    using namespace libtest;
+    using namespace testsweeper;
     using namespace blas;
     typedef scalar_type<TA, TX> scalar_t;
     typedef real_type<scalar_t> real_t;
@@ -78,7 +78,7 @@ void test_her_work( Params& params, bool run )
     }
 
     // run test
-    libtest::flush_cache( params.cache() );
+    testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
     blas::her( layout, uplo, n, alpha, x, incx, A, lda );
     time = get_wtime() - time;
@@ -95,7 +95,7 @@ void test_her_work( Params& params, bool run )
 
     if (params.check() == 'y') {
         // run reference
-        libtest::flush_cache( params.cache() );
+        testsweeper::flush_cache( params.cache() );
         time = get_wtime();
         cblas_her( cblas_layout_const(layout), cblas_uplo_const(uplo),
                    n, alpha, x, incx, Aref, lda );
@@ -128,25 +128,25 @@ void test_her_work( Params& params, bool run )
 void test_her( Params& params, bool run )
 {
     switch (params.datatype()) {
-        case libtest::DataType::Integer:
+        case testsweeper::DataType::Integer:
             //test_her_work< int64_t >( params, run );
             throw std::exception();
             break;
 
-        case libtest::DataType::Single:
+        case testsweeper::DataType::Single:
             test_her_work< float, float >( params, run );
             break;
 
-        case libtest::DataType::Double:
+        case testsweeper::DataType::Double:
             test_her_work< double, double >( params, run );
             break;
 
-        case libtest::DataType::SingleComplex:
+        case testsweeper::DataType::SingleComplex:
             test_her_work< std::complex<float>, std::complex<float> >
                 ( params, run );
             break;
 
-        case libtest::DataType::DoubleComplex:
+        case testsweeper::DataType::DoubleComplex:
             test_her_work< std::complex<double>, std::complex<double> >
                 ( params, run );
             break;

@@ -9,7 +9,7 @@
 template< typename TA, typename TB >
 void test_device_batch_trsm_work( Params& params, bool run )
 {
-    using namespace libtest;
+    using namespace testsweeper;
     using namespace blas;
     using namespace blas::batch;
     typedef scalar_type<TA, TB> scalar_t;
@@ -149,7 +149,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
     info.resize( 0 );
 
     // run test
-    libtest::flush_cache( params.cache() );
+    testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
     blas::batch::trsm( layout, side, uplo, trans, diag, m, n, alpha, dAarray, ldda, dBarray, lddb,
                        batch, info, queue );
@@ -165,7 +165,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
 
     if (params.check() == 'y') {
         // run reference
-        libtest::flush_cache( params.cache() );
+        testsweeper::flush_cache( params.cache() );
         time = get_wtime();
         for (size_t i = 0; i < batch; ++i) {
             cblas_trsm( cblas_layout_const(layout),
@@ -209,25 +209,25 @@ void test_device_batch_trsm_work( Params& params, bool run )
 void test_batch_trsm_device( Params& params, bool run )
 {
     switch (params.datatype()) {
-        case libtest::DataType::Integer:
+        case testsweeper::DataType::Integer:
             //test_device_batch_trsm_work< int64_t >( params, run );
             throw std::exception();
             break;
 
-        case libtest::DataType::Single:
+        case testsweeper::DataType::Single:
             test_device_batch_trsm_work< float, float >( params, run );
             break;
 
-        case libtest::DataType::Double:
+        case testsweeper::DataType::Double:
             test_device_batch_trsm_work< double, double >( params, run );
             break;
 
-        case libtest::DataType::SingleComplex:
+        case testsweeper::DataType::SingleComplex:
             test_device_batch_trsm_work< std::complex<float>, std::complex<float> >
                 ( params, run );
             break;
 
-        case libtest::DataType::DoubleComplex:
+        case testsweeper::DataType::DoubleComplex:
             test_device_batch_trsm_work< std::complex<double>, std::complex<double> >
                 ( params, run );
             break;

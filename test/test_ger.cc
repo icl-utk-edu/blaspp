@@ -9,7 +9,7 @@
 template< typename TA, typename TX, typename TY >
 void test_ger_work( Params& params, bool run )
 {
-    using namespace libtest;
+    using namespace testsweeper;
     using namespace blas;
     typedef scalar_type<TA, TX, TY> scalar_t;
     typedef real_type<scalar_t> real_t;
@@ -93,7 +93,7 @@ void test_ger_work( Params& params, bool run )
     }
 
     // run test
-    libtest::flush_cache( params.cache() );
+    testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
     blas::ger( layout, m, n, alpha, x, incx, y, incy, A, lda );
     time = get_wtime() - time;
@@ -110,7 +110,7 @@ void test_ger_work( Params& params, bool run )
 
     if (params.check() == 'y') {
         // run reference
-        libtest::flush_cache( params.cache() );
+        testsweeper::flush_cache( params.cache() );
         time = get_wtime();
         cblas_ger( cblas_layout_const(layout), m, n, alpha, x, incx, y, incy, Aref, lda );
         time = get_wtime() - time;
@@ -143,25 +143,25 @@ void test_ger_work( Params& params, bool run )
 void test_ger( Params& params, bool run )
 {
     switch (params.datatype()) {
-        case libtest::DataType::Integer:
+        case testsweeper::DataType::Integer:
             //test_ger_work< int64_t >( params, run );
             throw std::exception();
             break;
 
-        case libtest::DataType::Single:
+        case testsweeper::DataType::Single:
             test_ger_work< float, float, float >( params, run );
             break;
 
-        case libtest::DataType::Double:
+        case testsweeper::DataType::Double:
             test_ger_work< double, double, double >( params, run );
             break;
 
-        case libtest::DataType::SingleComplex:
+        case testsweeper::DataType::SingleComplex:
             test_ger_work< std::complex<float>, std::complex<float>,
                            std::complex<float> >( params, run );
             break;
 
-        case libtest::DataType::DoubleComplex:
+        case testsweeper::DataType::DoubleComplex:
             test_ger_work< std::complex<double>, std::complex<double>,
                            std::complex<double> >( params, run );
             break;

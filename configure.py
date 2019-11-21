@@ -77,14 +77,14 @@ def main():
     except Error:
         print( ansi_red + 'LAPACK++ needs LAPACKE only in testers.' + ansi_normal )
 
-    libtest = config.get_package(
-        'libtest',
-        ['../libtest', './libtest'],
-        'https://bitbucket.org/icl/libtest',
-        'https://bitbucket.org/icl/libtest/get/tip.tar.gz',
-        'libtest.tar.gz' )
-    if (not libtest):
-        print( ansi_red + 'BLAS++ needs libtest to compile testers.' + ansi_normal )
+    testsweeper = config.get_package(
+        'testsweeper',
+        ['../testsweeper', './testsweeper'],
+        'https://bitbucket.org/icl/testsweeper',
+        'https://bitbucket.org/icl/testsweeper/get/tip.tar.gz',
+        'testsweeper.tar.gz' )
+    if (not testsweeper):
+        print( ansi_red + 'BLAS++ needs testsweeper to compile testers.' + ansi_normal )
 
     config.extract_defines_from_flags( 'CXXFLAGS' )
     config.output_files( ['make.inc', 'blas_defines.h'] )
