@@ -105,9 +105,9 @@ endif
 
 testsweeper_src = $(wildcard $(testsweeper_dir)/testsweeper.cc $(testsweeper_dir)/testsweeper.hh)
 ifeq ($(static),1)
-	testsweeper = $(testsweeper_dir)/testsweeper.a
+	testsweeper = $(testsweeper_dir)/libtestsweeper.a
 else
-	testsweeper = $(testsweeper_dir)/testsweeper.so
+	testsweeper = $(testsweeper_dir)/libtestsweeper.so
 endif
 
 lib_a  = ./lib/libblaspp.a
