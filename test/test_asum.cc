@@ -107,11 +107,6 @@ void test_asum_work( Params& params, bool run )
 void test_asum( Params& params, bool run )
 {
     switch (params.datatype()) {
-        case testsweeper::DataType::Integer:
-            //test_asum_work< int64_t >( params, run );
-            throw std::exception();
-            break;
-
         case testsweeper::DataType::Single:
             test_asum_work< float >( params, run );
             break;
@@ -126,6 +121,10 @@ void test_asum( Params& params, bool run )
 
         case testsweeper::DataType::DoubleComplex:
             test_asum_work< std::complex<double> >( params, run );
+            break;
+
+        default:
+            throw std::exception();
             break;
     }
 }

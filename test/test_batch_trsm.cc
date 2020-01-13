@@ -185,11 +185,6 @@ void test_batch_trsm_work( Params& params, bool run )
 void test_batch_trsm( Params& params, bool run )
 {
     switch (params.datatype()) {
-        case testsweeper::DataType::Integer:
-            //test_batch_trsm_work< int64_t >( params, run );
-            throw std::exception();
-            break;
-
         case testsweeper::DataType::Single:
             test_batch_trsm_work< float, float >( params, run );
             break;
@@ -206,6 +201,10 @@ void test_batch_trsm( Params& params, bool run )
         case testsweeper::DataType::DoubleComplex:
             test_batch_trsm_work< std::complex<double>, std::complex<double> >
                 ( params, run );
+            break;
+
+        default:
+            throw std::exception();
             break;
     }
 }

@@ -141,11 +141,6 @@ void test_rotm_work( Params& params, bool run )
 void test_rotm( Params& params, bool run )
 {
     switch (params.datatype()) {
-        case testsweeper::DataType::Integer:
-            //test_rotm_work< int64_t >( params, run );  // todo: generic implementation
-            throw std::exception();
-            break;
-
         case testsweeper::DataType::Single:
             test_rotm_work< float >( params, run );
             break;
@@ -154,13 +149,9 @@ void test_rotm( Params& params, bool run )
             test_rotm_work< double >( params, run );
             break;
 
-        case testsweeper::DataType::SingleComplex:
-            //test_rotm_work< std::complex<float> >( params, run );  // not available for complex
-            throw std::exception();
-            break;
+        // modified Givens not available for complex
 
-        case testsweeper::DataType::DoubleComplex:
-            //test_rotm_work< std::complex<double> >( params, run );
+        default:
             throw std::exception();
             break;
     }

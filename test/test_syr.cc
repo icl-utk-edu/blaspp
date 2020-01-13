@@ -129,11 +129,6 @@ void test_syr_work( Params& params, bool run )
 void test_syr( Params& params, bool run )
 {
     switch (params.datatype()) {
-        case testsweeper::DataType::Integer:
-            //test_syr_work< int64_t >( params, run );
-            throw std::exception();
-            break;
-
         case testsweeper::DataType::Single:
             test_syr_work< float, float >( params, run );
             break;
@@ -143,15 +138,12 @@ void test_syr( Params& params, bool run )
             break;
 
         case testsweeper::DataType::SingleComplex:
-            throw blas::Error( "syr< complex > in LAPACK++", __func__ );
-            //test_syr_work< std::complex<float>, std::complex<float> >
-            //    ( params, run );
+        case testsweeper::DataType::DoubleComplex:
+            throw blas::Error( "See syr< complex > in LAPACK++", __func__ );
             break;
 
-        case testsweeper::DataType::DoubleComplex:
-            throw blas::Error( "syr< complex > in LAPACK++", __func__ );
-            //test_syr_work< std::complex<double>, std::complex<double> >
-            //    ( params, run );
+        default:
+            throw std::exception();
             break;
     }
 }

@@ -143,11 +143,6 @@ void test_ger_work( Params& params, bool run )
 void test_ger( Params& params, bool run )
 {
     switch (params.datatype()) {
-        case testsweeper::DataType::Integer:
-            //test_ger_work< int64_t >( params, run );
-            throw std::exception();
-            break;
-
         case testsweeper::DataType::Single:
             test_ger_work< float, float, float >( params, run );
             break;
@@ -164,6 +159,10 @@ void test_ger( Params& params, bool run )
         case testsweeper::DataType::DoubleComplex:
             test_ger_work< std::complex<double>, std::complex<double>,
                            std::complex<double> >( params, run );
+            break;
+
+        default:
+            throw std::exception();
             break;
     }
 }

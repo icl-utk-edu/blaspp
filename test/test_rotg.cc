@@ -85,11 +85,6 @@ void test_rotg_work( Params& params, bool run )
 void test_rotg( Params& params, bool run )
 {
     switch (params.datatype()) {
-        case testsweeper::DataType::Integer:
-            //test_rotg_work< int64_t >( params, run );  // todo: generic implementation
-            throw std::exception();
-            break;
-
         case testsweeper::DataType::Single:
             test_rotg_work< float >( params, run );
             break;
@@ -104,6 +99,10 @@ void test_rotg( Params& params, bool run )
 
         case testsweeper::DataType::DoubleComplex:
             test_rotg_work< std::complex<double> >( params, run );
+            break;
+
+        default:
+            throw std::exception();
             break;
     }
 }

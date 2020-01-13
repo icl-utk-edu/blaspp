@@ -141,17 +141,21 @@ void test_symv_work( Params& params, bool run )
 void test_symv( Params& params, bool run )
 {
     switch (params.datatype()) {
-        case testsweeper::DataType::Integer:
-            //test_symv_work< int64_t >( params, run );
-            throw std::exception();
-            break;
-
         case testsweeper::DataType::Single:
             test_symv_work< float, float, float >( params, run );
             break;
 
         case testsweeper::DataType::Double:
             test_symv_work< double, double, double >( params, run );
+            break;
+
+        case testsweeper::DataType::SingleComplex:
+        case testsweeper::DataType::DoubleComplex:
+            throw blas::Error( "See symv< complex > in LAPACK++", __func__ );
+            break;
+
+        default:
+            throw std::exception();
             break;
     }
 }

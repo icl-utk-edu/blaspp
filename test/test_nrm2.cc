@@ -106,11 +106,6 @@ void test_nrm2_work( Params& params, bool run )
 void test_nrm2( Params& params, bool run )
 {
     switch (params.datatype()) {
-        case testsweeper::DataType::Integer:
-            //test_nrm2_work< int64_t >( params, run );
-            throw std::exception();
-            break;
-
         case testsweeper::DataType::Single:
             test_nrm2_work< float >( params, run );
             break;
@@ -125,6 +120,10 @@ void test_nrm2( Params& params, bool run )
 
         case testsweeper::DataType::DoubleComplex:
             test_nrm2_work< std::complex<double> >( params, run );
+            break;
+
+        default:
+            throw std::exception();
             break;
     }
 }

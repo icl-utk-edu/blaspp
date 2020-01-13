@@ -165,11 +165,6 @@ void test_batch_gemm_work( Params& params, bool run )
 void test_batch_gemm( Params& params, bool run )
 {
     switch (params.datatype()) {
-        case testsweeper::DataType::Integer:
-            //test_batch_gemm_work< int64_t >( params, run );
-            throw std::exception();
-            break;
-
         case testsweeper::DataType::Single:
             test_batch_gemm_work< float, float, float >( params, run );
             break;
@@ -186,6 +181,10 @@ void test_batch_gemm( Params& params, bool run )
         case testsweeper::DataType::DoubleComplex:
             test_batch_gemm_work< std::complex<double>, std::complex<double>,
                             std::complex<double> >( params, run );
+            break;
+
+        default:
+            throw std::exception();
             break;
     }
 }

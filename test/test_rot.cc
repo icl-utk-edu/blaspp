@@ -140,11 +140,6 @@ void test_rot_work( Params& params, bool run )
 void test_rot( Params& params, bool run )
 {
     switch (params.datatype()) {
-        case testsweeper::DataType::Integer:
-            //test_rot_work< int64_t >( params, run );  // todo: generic implementation
-            throw std::exception();
-            break;
-
         case testsweeper::DataType::Single:
             test_rot_work< float, float >( params, run );
             break;
@@ -153,31 +148,10 @@ void test_rot( Params& params, bool run )
             test_rot_work< double, double >( params, run );
             break;
 
-        // // real sine
-        // case testsweeper::DataType::SingleComplex:
-        //     //test_rot_work< std::complex<float>, float >
-        //     //    ( params, run );
-        //     throw std::exception();
-        //     break;
-        //
-        // // real sine
-        // case testsweeper::DataType::DoubleComplex:
-        //     //test_rot_work< std::complex<double>, double >
-        //     //    ( params, run );
-        //     throw std::exception();
-        //     break;
+        // todo: real sine
+        // todo: complex sine
 
-        // complex sine
-        case testsweeper::DataType::SingleComplex:
-            //test_rot_work< std::complex<float>, std::complex<float> >
-            //    ( params, run );
-            throw std::exception();
-            break;
-
-        // complex sine
-        case testsweeper::DataType::DoubleComplex:
-            //test_rot_work< std::complex<double>, std::complex<double> >
-            //    ( params, run );
+        default:
             throw std::exception();
             break;
     }

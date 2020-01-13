@@ -94,11 +94,6 @@ void test_rotmg_work( Params& params, bool run )
 void test_rotmg( Params& params, bool run )
 {
     switch (params.datatype()) {
-        case testsweeper::DataType::Integer:
-            //test_rotmg_work< int64_t >( params, run );  // todo: generic implementation
-            throw std::exception();
-            break;
-
         case testsweeper::DataType::Single:
             test_rotmg_work< float >( params, run );
             break;
@@ -108,11 +103,8 @@ void test_rotmg( Params& params, bool run )
             break;
 
         // modified Givens not available for complex
-        case testsweeper::DataType::SingleComplex:
-            throw std::exception();
-            break;
 
-        case testsweeper::DataType::DoubleComplex:
+        default:
             throw std::exception();
             break;
     }

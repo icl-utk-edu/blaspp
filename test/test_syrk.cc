@@ -142,11 +142,6 @@ void test_syrk_work( Params& params, bool run )
 void test_syrk( Params& params, bool run )
 {
     switch (params.datatype()) {
-        case testsweeper::DataType::Integer:
-            //test_syrk_work< int64_t >( params, run );
-            throw std::exception();
-            break;
-
         case testsweeper::DataType::Single:
             test_syrk_work< float, float >( params, run );
             break;
@@ -163,6 +158,10 @@ void test_syrk( Params& params, bool run )
         case testsweeper::DataType::DoubleComplex:
             test_syrk_work< std::complex<double>, std::complex<double> >
                 ( params, run );
+            break;
+
+        default:
+            throw std::exception();
             break;
     }
 }
