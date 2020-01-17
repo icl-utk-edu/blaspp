@@ -13,22 +13,32 @@ def get_fortran_manglings():
     '''
     Returns list of flags to test different Fortran name manglings.
     Setting one or more of:
-        fortran_add_=1, fortran_lower=1, fortran_upper=1
+        fortran_mangling=add_, fortran_mangling=lower, fortran_mangling=upper
     limits which manglings are returned.
 
     Ex: get_fortran_manglings()
     returns ['-DFORTRAN_ADD_', '-DFORTRAN_LOWER', '-DFORTRAN_UPPER']
     '''
+    # Warn about obsolete settings.
+    if (config.environ['fortran_add_']):
+        print_warn('Variable `fortran_add_`  is obsolete; use fortran_mangling=add_')
+    if (config.environ['fortran_lower']):
+        print_warn('Variable `fortran_lower` is obsolete; use fortran_mangling=lower')
+    if (config.environ['fortran_upper']):
+        print_warn('Variable `fortran_upper` is obsolete; use fortran_mangling=upper')
+
     # ADD_, NOCHANGE, UPCASE are traditional in lapack
     # FORTRAN_ADD_, FORTRAN_LOWER, DFORTRAN_UPPER are BLAS++/LAPACK++.
     manglings = []
-    if (config.environ['fortran_add_'] == '1'):
+    if ('add_'  in config.environ['fortran_mangling']):
         manglings.append('-DFORTRAN_ADD_ -DADD_')
-    if (config.environ['fortran_lower'] == '1'):
+    if ('lower' in config.environ['fortran_mangling']):
         manglings.append('-DFORTRAN_LOWER -DNOCHANGE')
-    if (config.environ['fortran_upper'] == '1'):
+    if ('upper' in config.environ['fortran_mangling']):
         manglings.append('-DFORTRAN_UPPER -DUPCASE')
     if (not manglings):
+        if (config.environ['fortran_mangling']):
+            print_warn('Unknown fortran_mangling: '+ config.environ['fortran_mangling'])
         manglings = ['-DFORTRAN_ADD_ -DADD_',
                      '-DFORTRAN_LOWER -DNOCHANGE',
                      '-DFORTRAN_UPPER -DUPCASE']
@@ -115,19 +125,31 @@ def blas():
     Checks FORTRAN_ADD_, FORTRAN_LOWER, FORTRAN_UPPER.
     Checks int (LP64) and int64_t (ILP64).
     Setting one or more of:
-        mkl=1, acml=1, essl=1, openblas=1, accelerate=1;
-        fortran_add_=1, fortran_lower=1, fortran_upper=1;
+        blas=mkl, blas=acml, blas=essl, blas=openblas, blas=accelerate;
+        fortran_mangling=add_, fortran_mangling=lower, fortran_mangling=upper;
         lp64=1, ilp64=1
     in the environment or on the command line, limits the search space.
     '''
     print_header( 'BLAS library' )
-    print( 'Also detects Fortran name mangling and BLAS integer size.' )
+    print_msg( 'Also detects Fortran name mangling and BLAS integer size.' )
 
-    test_mkl        = (config.environ['mkl']        == '1')
-    test_acml       = (config.environ['acml']       == '1')
-    test_essl       = (config.environ['essl']       == '1')
-    test_openblas   = (config.environ['openblas']   == '1')
-    test_accelerate = (config.environ['accelerate'] == '1')
+    # Warn about obsolete settings.
+    if (config.environ['mkl']):
+        print_warn('Variable `mkl`  is obsolete; use blas=mkl')
+    if (config.environ['acml']):
+        print_warn('Variable `acml` is obsolete; use blas=acml')
+    if (config.environ['essl']):
+        print_warn('Variable `essl` is obsolete; use blas=essl')
+    if (config.environ['openblas']):
+        print_warn('Variable `openblas` is obsolete; use blas=openblas')
+    if (config.environ['accelerate']):
+        print_warn('Variable `accelerate` is obsolete; use blas=accelerate')
+
+    test_mkl        = ('mkl'        in config.environ['blas'])
+    test_acml       = ('acml'       in config.environ['blas'])
+    test_essl       = ('essl'       in config.environ['blas'])
+    test_openblas   = ('openblas'   in config.environ['blas'])
+    test_accelerate = ('accelerate' in config.environ['blas'])
     # otherwise, test all
     test_all = not (test_mkl or test_acml or test_essl or test_openblas or
                     test_accelerate)

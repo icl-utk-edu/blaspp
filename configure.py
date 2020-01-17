@@ -26,18 +26,27 @@ give you a choice:
 
 If you have multiple compilers, we suggest specifying your desired compiler by
 setting CXX, as the automated search may prefer a different compiler. To limit
-which versions of BLAS and LAPACK to search for, set one or more of:
-    mkl=1, acml=1, essl=1, openblas=1, accelerate=1;
-    lp64=1, ilp64=1.
+which versions of BLAS and LAPACK to search for, set one of:
+    blas=mkl
+    blas=acml
+    blas=essl
+    blas=openblas
+    blas=accelerate
 For instance,
-    ''' + ansi_blue + 'make config CXX=xlc++ essl=1' + ansi_normal + '''
+    ''' + ansi_blue + 'make config CXX=xlc++ blas=essl' + ansi_normal + '''
+
+Some BLAS libraries have 32-bit int (lp64) or 64-bit int (ilp64) variants.
+Configure will auto-detect a scheme, but you can also specify it by setting:
+    lp64=1
+    ilp64=1
 
 BLAS and LAPACK are written in Fortran, which has a compiler-specific name
 mangling scheme: routine DGEMM is called dgemm_, dgemm, or DGEMM in the
 library. (Some libraries like MKL and ESSL support multiple schemes.)
-Configure will auto-detect the scheme, but you can also specify it by
-setting one or more of the corresponding options:
-    fortran_add_=1, fortran_lower=1, fortran_upper=1.
+Configure will auto-detect a scheme, but you can also specify it by setting:
+    fortran_mangling=add_
+    fortran_mangling=lower
+    fortran_mangling=upper
 
 Configure assumes environment variables CPATH, LIBRARY_PATH, and LD_LIBRARY_PATH
 are set so your compiler can find libraries. See INSTALL.txt for more details.
