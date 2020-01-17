@@ -142,13 +142,31 @@ def print_subhead( subhead ):
 # end
 
 #-------------------------------------------------------------------------------
-def print_line( label ):
+def print_msg( msg ):
+    '''
+    Prints msg, both to console and the log.
+    '''
+    print( msg, file=log )
+    print( msg )
+# end
+
+#-------------------------------------------------------------------------------
+def print_warn( msg ):
+    '''
+    Prints warning msg, with bold red font, both to console and the log.
+    '''
+    print( ansi_bold + ansi_red + 'Warning: ' + msg + ansi_normal, file=log )
+    print( ansi_bold + ansi_red + 'Warning: ' + msg + ansi_normal )
+# end
+
+#-------------------------------------------------------------------------------
+def print_test( label ):
     '''
     If label is given, prints the label, both to console and the log.
     On the console, it doesn't print the trailing newline; a subsequent
     print_result() will print it.
-    If not label, does nothing. This simplifies functions like compile_obj
-    that take an optional label to print.
+    If no label is given, does nothing. This simplifies functions like
+    compile_obj that take an optional label to print.
     '''
     if (label):
         print( '-'*20 + '\n' + label, file=log )
@@ -160,8 +178,9 @@ def print_line( label ):
 def print_result( label, rc, extra='' ):
     '''
     If label is given, prints either "yes" (if rc == 0) or "no" (otherwise).
-    If not label, does nothing.
-    @see print_line().
+    Extra is printed after yes or no.
+    If no label is given, does nothing.
+    @see print_test().
     '''
     if (label):
         if (rc == 0):
@@ -385,7 +404,7 @@ def compile_obj( src, env=None, label=None ):
     '''
     environ.push( env )
 
-    print_line( label )
+    print_test( label )
     (base, ext) = os.path.splitext( src )
     obj      = base + '.o'
     lang     = lang_map[ ext ]
@@ -412,7 +431,7 @@ def link_exe( src, env=None, label=None ):
     '''
     environ.push( env )
 
-    print_line( label )
+    print_test( label )
     (base, ext) = os.path.splitext( src )
     obj      = base + '.o'
     lang     = lang_map[ ext ]
@@ -438,7 +457,7 @@ def compile_exe( src, env=None, label=None ):
     '''
     environ.push( env )
 
-    print_line( label )
+    print_test( label )
     (base, ext) = os.path.splitext( src )
     obj      = base + '.o'
     lang     = lang_map[ ext ]
@@ -469,7 +488,7 @@ def compile_run( src, env=None, label=None ):
     '''
     environ.push( env )
 
-    print_line( label )
+    print_test( label )
     (base, ext) = os.path.splitext( src )
     (rc, stdout, stderr) = compile_exe( src )
     if (rc == 0):
@@ -491,7 +510,7 @@ def run_exe( src, env=None, label=None ):
     '''
     environ.push( env )
 
-    print_line( label )
+    print_test( label )
     (base, ext) = os.path.splitext( src )
     (rc, stdout, stderr) = run( './' + base )
     print_result( label, rc )
@@ -515,7 +534,7 @@ def prog_cxx( choices=['g++', 'c++', 'CC', 'cxx', 'icpc', 'xlc++', 'clang++'] ):
 
     passed = []
     for cxx in choices:
-        print_line( cxx )
+        print_test( cxx )
         (rc, out, err) = compile_run( 'config/compiler_cxx.cc', {'CXX': cxx} )
         # print (g++), (clang++), etc., as output by compiler_cxx, after yes
         if (rc == 0):
@@ -537,7 +556,7 @@ def prog_cxx_flags( flags ):
     '''
     print_header( 'C++ compiler flags' )
     for flag in flags:
-        print_line( flag )
+        print_test( flag )
         (rc, out, err) = compile_obj( 'config/compiler_cxx.cc', {'CXXFLAGS': flag} )
         # assume a mention of the flag in stderr means it isn't supported
         if (flag in err):
@@ -557,7 +576,7 @@ def openmp( flags=['-fopenmp', '-qopenmp', '-openmp', '-omp', ''] ):
     print_header( 'OpenMP support' )
     src = 'config/openmp.cc'
     for flag in flags:
-        print_line( flag )
+        print_test( flag )
         env = {'CXXFLAGS': flag, 'LDFLAGS': flag}
         (rc, out, err) = compile_run( src, env )
         print_result( flag, rc )
@@ -580,7 +599,7 @@ def get_package( name, directories, repo_url, tar_url, tar_filename ):
     print_header( name )
 
     for directory in directories:
-        print_line( directory )
+        print_test( directory )
         err = not os.path.exists( directory )
         print_result( directory, err )
         if (not err):
@@ -594,7 +613,7 @@ def get_package( name, directories, repo_url, tar_url, tar_filename ):
             i = input().lower()
         if (not interactive() or i in ('', 'y', 'yes')):
             cmd = 'hg clone '+ repo_url +' '+ directory
-            print_line( 'download: ' + cmd )
+            print_test( 'download: ' + cmd )
             (err, stdout, stderr) = run( cmd )
             print_result( 'download', err )
             if (not err):
@@ -608,7 +627,7 @@ def get_package( name, directories, repo_url, tar_url, tar_filename ):
             i = input().lower()
         if (not interactive() or i in ('', 'y', 'yes')):
             try:
-                print_line( 'download: '+ tar_url +' as '+ tar_filename )
+                print_test( 'download: '+ tar_url +' as '+ tar_filename )
                 urlretrieve( tar_url, tar_filename )
 
                 print( 'untar', tar_filename, file=log )

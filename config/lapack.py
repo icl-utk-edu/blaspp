@@ -4,7 +4,7 @@ import os
 import re
 import config
 from   config import ansi_bold, ansi_red, ansi_normal
-from   config import print_header, print_subhead, print_line, print_result
+from   config import print_header, print_subhead, print_msg, print_warn, print_test, print_result
 from   config import get
 from   config import Error
 
@@ -77,7 +77,7 @@ def compile_with_manglings( src, env, manglings, int_sizes ):
     rc = -1
     for mangling in manglings:
         for size in int_sizes:
-            print_line( '    ' + mangling +' '+ size )
+            print_test( '    ' + mangling +' '+ size )
             # modify a copy to save in passed
             env2 = env.copy()
             env2['CXXFLAGS'] = get(env2, 'CXXFLAGS') +' '+ mangling +' '+ size
@@ -267,7 +267,7 @@ def test_lapack( src, label, append=False ):
     Rechecks Fortran name mangling if -llapack exists but linking fails.
     '''
     # try in BLAS library
-    print_line( label + ' available' )
+    print_test( label + ' available' )
     (rc, out, err) = config.compile_obj( src )
     if (rc != 0):
         raise Error
@@ -282,7 +282,7 @@ def test_lapack( src, label, append=False ):
     else:
         # Default failed, try with -llapack
         print_result( 'label', rc )
-        print_line( label + ' in -llapack' )
+        print_test( label + ' in -llapack' )
         env = {'LIBS': '-llapack'}
         (rc, out, err) = config.compile_exe( 'config/hello.cc', env )
         if (rc == 0):
@@ -476,7 +476,7 @@ def lapack_version():
     '''
     Check for LAPACK version using ilaver().
     '''
-    config.print_line( 'LAPACK version' )
+    config.print_test( 'LAPACK version' )
     (rc, out, err) = config.compile_run( 'config/lapack_version.cc' )
     s = re.search( r'^LAPACK_VERSION=((\d+)\.(\d+)\.(\d+))', out )
     if (rc == 0 and s):
@@ -525,7 +525,7 @@ def mkl_version():
     '''
     Check for MKL version via MKL_Get_Version().
     '''
-    config.print_line( 'MKL version' )
+    config.print_test( 'MKL version' )
     (rc, out, err) = config.compile_run( 'config/mkl_version.cc' )
     s = re.search( r'^MKL_VERSION=((\d+)\.(\d+)\.(\d+))', out )
     if (rc == 0 and s):
@@ -540,7 +540,7 @@ def acml_version():
     '''
     Check for ACML version via acmlversion().
     '''
-    config.print_line( 'ACML version' )
+    config.print_test( 'ACML version' )
     (rc, out, err) = config.compile_run( 'config/acml_version.cc' )
     s = re.search( r'^ACML_VERSION=((\d+)\.(\d+)\.(\d+)\.(\d+))', out )
     if (rc == 0 and s):
@@ -555,7 +555,7 @@ def essl_version():
     '''
     Check for ESSL version via iessl().
     '''
-    config.print_line( 'ESSL version' )
+    config.print_test( 'ESSL version' )
     (rc, out, err) = config.compile_run( 'config/essl_version.cc' )
     s = re.search( r'^ESSL_VERSION=((\d+)\.(\d+)\.(\d+)\.(\d+))', out )
     if (rc == 0 and s):
@@ -570,7 +570,7 @@ def openblas_version():
     '''
     Check for OpenBLAS version via OPENBLAS_VERSION constant.
     '''
-    config.print_line( 'OpenBLAS version' )
+    config.print_test( 'OpenBLAS version' )
     (rc, out, err) = config.compile_run( 'config/openblas_version.cc' )
     s = re.search( r'^OPENBLAS_VERSION=((\d+)\.(\d+)\.(\d+))', out )
     if (rc == 0 and s):
