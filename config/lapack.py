@@ -205,13 +205,6 @@ def blas():
         ])
     # end
 
-    if (test_all or test_acml):
-        choices.extend([
-            ['AMD ACML (threaded)', {'LIBS': '-lacml_mp'}],
-            ['AMD ACML (sequential)', {'LIBS': '-lacml'}],
-        ])
-    # end
-
     if (test_all or test_essl):
         choices.extend([
             ['IBM ESSL', {'LIBS': '-lessl'}],
@@ -230,6 +223,15 @@ def blas():
         choices.extend([
             ['MacOS Accelerate',
                 {'LIBS': '-framework Accelerate', 'CXXFLAGS': inc}],
+        ])
+    # end
+
+    #--------------------
+    # Deprecated libraries last.
+    if (test_all or test_acml):
+        choices.extend([
+            ['AMD ACML (threaded)', {'LIBS': '-lacml_mp'}],
+            ['AMD ACML (sequential)', {'LIBS': '-lacml'}],
         ])
     # end
 
