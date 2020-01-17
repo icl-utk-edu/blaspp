@@ -816,6 +816,9 @@ python in /usr/bin), will allow $DYLD_LIBRARY_PATH to be inherited.'''
     for arg in sys.argv[1:]:
         if (arg == '--interactive' or arg == '-i'):
             interactive( True )
+        elif (arg == '--help' or arg == '-h'):
+            # just print help and exit
+            exit(0)
         else:
             s = re.search( '^(\w+)=(.*)', arg )
             if (s):

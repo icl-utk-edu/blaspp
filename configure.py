@@ -25,8 +25,9 @@ give you a choice:
     ''' + ansi_blue + 'make config interactive=1' + ansi_normal + '''
 
 If you have multiple compilers, we suggest specifying your desired compiler by
-setting CXX, as the automated search may prefer a different compiler. To limit
-which versions of BLAS and LAPACK to search for, set one of:
+setting CXX, as the automated search may prefer a different compiler.
+
+To limit which versions of BLAS and LAPACK to search for, set one of:
     blas=mkl
     blas=acml
     blas=essl

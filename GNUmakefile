@@ -1,16 +1,4 @@
-# Usage:
-# make by default:
-#    - Runs configure.py to create make.inc, if it doesn't exist.
-#    - Compiles lib/libblaspp.so, or lib/libblaspp.a (if static=1).
-#    - Compiles the tester, test/tester.
-#
-# make config    - Runs configure.py to create make.inc.
-# make lib       - Compiles lib/libblaspp.so, or libblaspp.a (if static=1).
-# make tester      - Compiles the tester, test/tester.
-# make docs      - Compiles Doxygen documentation.
-# make install   - Installs the library and headers to $prefix.
-# make clean     - Deletes all objects, libraries, and the tester.
-# make distclean - Also deletes make.inc and dependency files (*.d).
+# See INSTALL.txt for usage.
 
 #-------------------------------------------------------------------------------
 # Configuration
