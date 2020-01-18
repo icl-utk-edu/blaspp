@@ -378,14 +378,16 @@ def run( cmd, env=None ):
 
         rc = proc.wait()
         log.write( stdout )
-        log.write( ansi_red )
-        log.write( stderr )
-        log.write( ansi_normal )
+        if (stderr):
+            log.write( ansi_red )
+            log.write( stderr )
+            log.write( ansi_normal )
         print( 'exit status = %d' % rc, file=log )
-    except Exception as err:
+    except Exception as ex:
+        print( 'Exception:', str(ex), file=log )
         rc = -1
         stdout = ''
-        stderr = str(err)
+        stderr = str(ex)
 
     environ.pop()
     return (rc, stdout, stderr)
@@ -650,8 +652,8 @@ def get_package( name, directories, repo_url, tar_url, tar_filename ):
                 print( 'rename', dirs[0], directory, file=log )
                 os.rename( dirs[0], directory )
                 err = 0
-            except Exception as err:
-                print( 'Exception:', str(err), file=log )
+            except Exception as ex:
+                print( 'Exception:', str(ex), file=log )
             # end
             print_result( 'download', err )
             if (not err):
