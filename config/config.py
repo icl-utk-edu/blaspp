@@ -284,6 +284,7 @@ def choose( prompt, choices ):
     Returns the index of the chosen item in the range [0, len(choices)-1],
     or raises Error or Quit exceptions.
     '''
+    choices = list( choices )
     n = len( choices )
     if (n == 0):
         print( ansi_bold + ansi_red + 'none found' + ansi_normal )
@@ -335,6 +336,9 @@ def run( cmd, env=None ):
     try:
         proc = subprocess.Popen( cmd_list, stdout=PIPE, stderr=PIPE )
         (stdout, stderr) = proc.communicate()
+        stdout = stdout.decode('utf-8')
+        stderr = stderr.decode('utf-8')
+
         rc = proc.wait()
         log.write( stdout )
         log.write( ansi_red )

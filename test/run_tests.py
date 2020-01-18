@@ -23,6 +23,7 @@ import re
 import argparse
 import subprocess
 import xml.etree.ElementTree as ET
+import io
 
 # ------------------------------------------------------------------------------
 # command line arguments
@@ -32,7 +33,7 @@ group_test = parser.add_argument_group( 'test' )
 group_test.add_argument( '-t', '--test', action='store',
     help='test command to run, e.g., --test "mpirun -np 4 ./test"; default "%(default)s"',
     default='./tester' )
-group_test.add_argument( '--xml', action='store_true', help='generate report.xml for jenkins' )
+group_test.add_argument( '--xml', help='generate report.xml for jenkins' )
 
 group_size = parser.add_argument_group( 'matrix dimensions (default is medium)' )
 group_size.add_argument( '-x', '--xsmall', action='store_true', help='run x-small tests' )
@@ -52,10 +53,12 @@ categories = [
     group_cat.add_argument( '--blas3', action='store_true', help='run Level 3 BLAS tests' ),
     group_cat.add_argument( '--batch-blas3', action='store_true', help='run Level 3 Batch BLAS tests' ),
 ]
-categories = map( lambda x: x.dest, categories ) # map to names: ['blas1', ...]
+# map category objects to category names: ['lu', 'chol', ...]
+categories = list( map( lambda x: x.dest, categories ) )
 
 group_opt = parser.add_argument_group( 'options' )
 # BLAS and LAPACK
+# Empty defaults (check, ref, etc.) use the default in test.cc.
 group_opt.add_argument( '--type',   action='store', help='default=%(default)s', default='s,d,c,z' )
 group_opt.add_argument( '--layout', action='store', help='default=%(default)s', default='c,r' )
 group_opt.add_argument( '--transA', action='store', help='default=%(default)s', default='n,t,c' )
@@ -192,7 +195,7 @@ ref    = ' --ref '    + opts.ref    if (opts.ref)    else ''
 # filters a comma separated list csv based on items in list values.
 # if no items from csv are in values, returns first item in values.
 def filter_csv( values, csv ):
-    f = filter( lambda x: x in values, csv.split( ',' ))
+    f = list( filter( lambda x: x in values, csv.split( ',' ) ) )
     if (not f):
         return values[0]
     return ','.join( f )
@@ -202,6 +205,7 @@ def filter_csv( values, csv ):
 # limit options to specific values
 dtype_real    = ' --type ' + filter_csv( ('s', 'd'), opts.type )
 dtype_complex = ' --type ' + filter_csv( ('c', 'z'), opts.type )
+dtype_double  = ' --type ' + filter_csv( ('d', 'z'), opts.type )
 
 trans_nt = ' --trans ' + filter_csv( ('n', 't'), opts.trans )
 trans_nc = ' --trans ' + filter_csv( ('n', 'c'), opts.trans )
@@ -287,51 +291,69 @@ if (opts.batch_blas3):
 output_redirected = not sys.stdout.isatty()
 
 # ------------------------------------------------------------------------------
+# if output is redirected, prints to both stderr and stdout;
+# otherwise prints to just stdout.
+def print_tee( *args ):
+    global output_redirected
+    print( *args )
+    if (output_redirected):
+        print( *args, file=sys.stderr )
+# end
+
+# ------------------------------------------------------------------------------
 # cmd is a pair of strings: (function, args)
 
 def run_test( cmd ):
     cmd = opts.test +' '+ cmd[0] +' '+ cmd[1]
-    print( cmd, file=sys.stderr )
+    print_tee( cmd )
     output = ''
     p = subprocess.Popen( cmd.split(), stdout=subprocess.PIPE,
                                        stderr=subprocess.STDOUT )
+    p_out = p.stdout
+    if (sys.version_info.major >= 3):
+        p_out = io.TextIOWrapper(p.stdout, encoding='utf-8')
     # Read unbuffered ("for line in p.stdout" will buffer).
-    for line in iter(p.stdout.readline, b''):
+    for line in iter(p_out.readline, ''):
         print( line, end='' )
         output += line
     err = p.wait()
-    if (err < 0):
-        print( 'FAILED: exit with signal', -err )
+    if (err != 0):
+        print_tee( 'FAILED: exit code', err )
+    else:
+        print_tee( 'pass' )
     return (err, output)
 # end
 
 # ------------------------------------------------------------------------------
+# run each test
 failed_tests = []
 passed_tests = []
 ntests = len(opts.tests)
 run_all = (ntests == 0)
 
+seen = set()
 for cmd in cmds:
     if (run_all or cmd[0] in opts.tests):
-        if (not run_all):
-            opts.tests.remove( cmd[0] )
+        seen.add( cmd[0] )
         (err, output) = run_test( cmd )
         if (err):
             failed_tests.append( (cmd[0], err, output) )
         else:
             passed_tests.append( cmd[0] )
-if (opts.tests):
-    print( 'Warning: unknown routines:', ' '.join( opts.tests ))
+not_seen = list( filter( lambda x: x not in seen, opts.tests ) )
+
+if (not_seen):
+    print_tee( 'Warning: unknown routines:', ' '.join( not_seen ))
 
 # print summary of failures
 nfailed = len( failed_tests )
 if (nfailed > 0):
-    print( '\n' + str(nfailed) + ' routines FAILED:',
-           ', '.join( [x[0] for x in failed_tests] ),
-           file=sys.stderr )
+    print_tee( '\n' + str(nfailed) + ' routines FAILED:',
+               ', '.join( [x[0] for x in failed_tests] ) )
 
 # generate jUnit compatible test report
 if opts.xml:
+    print( 'writing XML file', opts.xml )
     root = ET.Element("testsuites")
     doc = ET.SubElement(root, "testsuite",
                         name="blaspp_suite",
@@ -357,7 +379,7 @@ if opts.xml:
         testcase.text = 'PASSED'
 
     tree = ET.ElementTree(root)
-    tree.write("report.xml")
+    tree.write( opts.xml )
 # end
 
 exit( nfailed )
