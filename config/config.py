@@ -11,6 +11,10 @@ import re
 import tarfile
 import urllib
 
+# Python 3 renames raw_input => input.
+if (sys.version_info.major < 3):
+    input = raw_input
+
 #-------------------------------------------------------------------------------
 def urlretrieve( url, filename ):
     '''
@@ -295,12 +299,12 @@ def choose( prompt, choices ):
     else:
         width = int( math.log10( n ) + 1 )
         print( '\n' + prompt )
-        for i in xrange( n ):
+        for i in range( n ):
             print( '[%*d] %s' % (width, i+1, choices[i]) )
         while (True):
             print( 'Enter [1-%d] or quit: ' % (n), end='' )
             sys.stdout.flush()
-            i = raw_input()
+            i = input()
             if (i == 'q' or i == 'quit'):
                 raise Quit
             try:
@@ -573,7 +577,7 @@ def get_package( name, directories, repo_url, tar_url, tar_filename ):
         if (not auto):
             print( name +' not found; hg clone '+ repo_url +'? [Y/n] ', end='' )
             sys.stdout.flush()
-            i = raw_input().lower()
+            i = input().lower()
         if (auto or i in ('', 'y', 'yes')):
             cmd = 'hg clone '+ repo_url +' '+ directory
             print_line( 'download: ' + cmd )
@@ -587,7 +591,7 @@ def get_package( name, directories, repo_url, tar_url, tar_filename ):
         if (not auto):
             print( name +' not found; download from '+ tar_url +'? [Y/n] ', end='' )
             sys.stdout.flush()
-            i = raw_input().lower()
+            i = input().lower()
         if (auto or i in ('', 'y', 'yes')):
             try:
                 print_line( 'download: '+ tar_url +' as '+ tar_filename )
