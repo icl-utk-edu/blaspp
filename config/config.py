@@ -27,6 +27,20 @@ def urlretrieve( url, filename ):
         urllib.urlretrieve( url, filename )
 # end
 
+#-------------------------------------------------------------------------------
+interactive_ = False
+
+# Function to get and set interactive flag. If True, config finds all possible
+# values and gives user a choice. If False, config picks the first valid value.
+# value = interactive() returns value of interactive.
+# interactive( value ) sets value of interactive.
+def interactive( value=None ):
+    global interactive_
+    if (value is not None):
+        interactive_ = value
+    return interactive_
+# end
+
 # ------------------------------------------------------------------------------
 # variables to replace instead of appending/prepending
 replace_vars = ['CC', 'CXX', 'NVCC', 'FC', 'AR', 'RANLIB', 'prefix']
@@ -509,7 +523,7 @@ def prog_cxx( choices=['g++', 'c++', 'CC', 'cxx', 'icpc', 'xlc++', 'clang++'] ):
         print_result( cxx, rc, out )
         if (rc == 0):
             passed.append( cxx )
-            if (auto): break
+            if (not interactive()): break
         # end
     # end
     i = choose( 'Choose C++ compiler:', passed )
@@ -574,11 +588,11 @@ def get_package( name, directories, repo_url, tar_url, tar_filename ):
     # end
 
     if (repo_url):
-        if (not auto):
+        if (interactive()):
             print( name +' not found; hg clone '+ repo_url +'? [Y/n] ', end='' )
             sys.stdout.flush()
             i = input().lower()
-        if (auto or i in ('', 'y', 'yes')):
+        if (not interactive() or i in ('', 'y', 'yes')):
             cmd = 'hg clone '+ repo_url +' '+ directory
             print_line( 'download: ' + cmd )
             (err, stdout, stderr) = run( cmd )
@@ -588,11 +602,11 @@ def get_package( name, directories, repo_url, tar_url, tar_filename ):
     # end
 
     if (tar_url):
-        if (not auto):
+        if (interactive()):
             print( name +' not found; download from '+ tar_url +'? [Y/n] ', end='' )
             sys.stdout.flush()
             i = input().lower()
-        if (auto or i in ('', 'y', 'yes')):
+        if (not interactive() or i in ('', 'y', 'yes')):
             try:
                 print_line( 'download: '+ tar_url +' as '+ tar_filename )
                 urlretrieve( tar_url, tar_filename )
@@ -739,7 +753,7 @@ def init( prefix='/usr/local' ):
     Opens the logfile, deals with OS-specific issues, and parses command line
     options.
     '''
-    global environ, log, auto
+    global environ, log
 
     environ['prefix'] = prefix
 
@@ -780,7 +794,7 @@ python in /usr/bin), will allow $DYLD_LIBRARY_PATH to be inherited.'''
     # parse command line
     for arg in sys.argv[1:]:
         if (arg == '--interactive' or arg == '-i'):
-            auto = False
+            interactive( True )
         else:
             s = re.search( '^(\w+)=(.*)', arg )
             if (s):
@@ -791,7 +805,7 @@ python in /usr/bin), will allow $DYLD_LIBRARY_PATH to be inherited.'''
     # end
 
     if (environ['interactive'] == '1'):
-        auto = False
+        interactive( True )
 # end
 
 # ------------------------------------------------------------------------------
@@ -802,5 +816,3 @@ environ['argv'] = ' '.join( sys.argv )
 environ['datetime'] = time.ctime()
 
 defines = {}
-
-auto = True

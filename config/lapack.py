@@ -223,7 +223,7 @@ def blas():
             'config/blas.cc', env, manglings, int_sizes )
         if (rc == 0):
             passed.append( (label, env2) )
-            if (config.auto):
+            if (not config.interactive()):
                 break
     # end
 
