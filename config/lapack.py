@@ -596,7 +596,7 @@ def openblas_version():
     '''
     config.print_test( 'OpenBLAS version' )
     (rc, out, err) = config.compile_run( 'config/openblas_version.cc' )
-    s = re.search( r'^OPENBLAS_VERSION=((\d+)\.(\d+)\.(\d+))', out )
+    s = re.search( r'^OPENBLAS_VERSION=.*?((\d+)\.(\d+)\.(\d+))', out )
     if (rc == 0 and s):
         config.environ.append( 'CXXFLAGS', '-DHAVE_OPENBLAS' )
         config.print_result( 'OpenBLAS', rc, '(' + s.group(1) + ')' )
