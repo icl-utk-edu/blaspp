@@ -87,6 +87,13 @@ def main():
     except Error:
         print_warn( 'BLAS++ needs LAPACK only in testers.' )
 
+    try:
+        config.cublas_library()
+        config.environ.merge({'devtarget': 'cuda'})
+        config.environ.append( 'CXXFLAGS', '-DBLASPP_WITH_CUBLAS' )
+    except Error:
+        print_warn( 'BLAS++ CUDA wrappers will not be compiled.' )
+
     testsweeper = config.get_package(
         'testsweeper',
         ['../testsweeper', './testsweeper'],

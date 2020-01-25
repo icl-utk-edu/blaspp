@@ -14,3 +14,5 @@ LDFLAGS  = @LDFLAGS@
 LIBS     = @LIBS@
 
 prefix   = @prefix@
+
+devtarget = @devtarget@
