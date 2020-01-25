@@ -116,7 +116,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
         for (int64_t i = 0; i < Am; ++i) {
             pA[ i + i*lda_ ] += Am;
         }
-        blas_int potrf_info = 0;
+        int64_t potrf_info = 0;
         lapack_potrf( uplo2str(uplo_), Am, pA, lda_, &potrf_info );
         assert( potrf_info == 0 );
     }

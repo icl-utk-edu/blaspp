@@ -83,7 +83,7 @@ void test_trsm_device_work( Params& params, bool run )
     for (int64_t i = 0; i < Am; ++i) {
         A[ i + i*lda ] += Am;
     }
-    blas_int info = 0;
+    int64_t info = 0;
     lapack_potrf( uplo2str(uplo), Am, A, lda, &info );
     assert( info == 0 );
 
