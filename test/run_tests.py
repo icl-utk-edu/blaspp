@@ -242,7 +242,7 @@ if (opts.blas2):
     [ 'hemv',  dtype      + layout + align + uplo + n + incx + incy ],
     [ 'her',   dtype      + layout + align + uplo + n + incx ],
     [ 'her2',  dtype      + layout + align + uplo + n + incx + incy ],
-    [ 'symv',  dtype      + layout + align + uplo + n + incx + incy ],
+    [ 'symv',  dtype_real + layout + align + uplo + n + incx + incy ], # complex is in lapack++
     [ 'syr',   dtype_real + layout + align + uplo + n + incx ], # complex is in lapack++
     [ 'syr2',  dtype      + layout + align + uplo + n + incx + incy ],
     [ 'trmv',  dtype      + layout + align + uplo + trans + diag + n + incx ],
