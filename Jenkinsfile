@@ -6,7 +6,7 @@ parallel {
 stage ('Build - Caffeine'){
   agent { node ('caffeine.icl.utk.edu')}
   steps {
-    sh ```
+    sh '''
       #!/bin/sh +x
       echo "BLASPP Building..."
       hostname && pwd
@@ -17,13 +17,13 @@ stage ('Build - Caffeine'){
       spack load cuda
       spack load intel-mkl
       spack load intel-mpi
-    ```
+    '''
   }
 }
 stage ('Build - Lips'){
   agent { node ('lips.icl.utk.edu')}
   steps {
-    sh ```
+    sh '''
       #!/bin/sh +x
       echo "BLASPP Building..."
       hostname && pwd
