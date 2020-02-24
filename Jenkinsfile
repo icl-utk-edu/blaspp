@@ -34,7 +34,7 @@ stage ('Build - Lips'){
       spack load cuda
       spack load intel-mkl
       spack load intel-mpi
-    ```
+    '''
   }
 }
 }
