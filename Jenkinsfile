@@ -2,6 +2,7 @@ pipeline {
 agent none
 triggers { cron ('H H(0-2) * * *') }
 stages {
+stage ('Build'){
 parallel {
 stage ('Build - Caffeine'){
   agent { node ('caffeine.icl.utk.edu')}
@@ -36,6 +37,7 @@ stage ('Build - Lips'){
       spack load intel-mpi
     '''
   }
+}
 }
 }
 }
