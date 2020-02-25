@@ -15,9 +15,22 @@ stage ('Build - Caffeine'){
       source /home/jmfinney/spack/share/spack/setup-env.sh
       spack load cmake
       spack load gcc@6.4.0
-      spack load cuda
       spack load intel-mkl
       spack load intel-mpi
+
+      rm -rf *
+
+      hg clone http://bitbucket.org/icl/testsweeper
+      cd testsweeper
+      make config
+      sed -i '/CXXFLAGS/s/$/ -DNO_COLOR/' make.inc
+      make
+      cd ..
+
+      hg clone http://bitbucket.org/icl/blaspp
+      cd blaspp
+      make config
+      make -j4
     '''
   }
 }
@@ -35,6 +48,20 @@ stage ('Build - Lips'){
       spack load cuda
       spack load intel-mkl
       spack load intel-mpi
+
+      rm -rf *
+
+      hg clone http://bitbucket.org/icl/testsweeper
+      cd testsweeper
+      make config
+      sed -i '/CXXFLAGS/s/$/ -DNO_COLOR/' make.inc
+      make
+      cd ..
+
+      hg clone http://bitbucket.org/icl/blaspp
+      cd blaspp
+      make config
+      make -j4
     '''
   }
 }
