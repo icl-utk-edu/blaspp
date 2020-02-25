@@ -10,6 +10,10 @@ import time
 import re
 import tarfile
 import urllib
+import argparse
+
+# This relative import syntax works in both python2 and 3.
+from .ansicodes import font
 
 # Python 3 renames raw_input => input.
 if (sys.version_info.major < 3):
@@ -106,29 +110,15 @@ def get( dictionary, key ):
         return ''
 # end
 
-# ------------------------------------------------------------------------------
-# ANSI codes
-ansi_esc     = chr(0x1B) + '['
-
-ansi_red     = ansi_esc + '31m'
-ansi_green   = ansi_esc + '32m'
-ansi_yellow  = ansi_esc + '33m'
-ansi_blue    = ansi_esc + '34m'
-ansi_magenta = ansi_esc + '35m'
-ansi_cyan    = ansi_esc + '36m'
-ansi_white   = ansi_esc + '37m'
-
-ansi_bold    = ansi_esc + '1m'
-ansi_normal  = ansi_esc + '0m';
-
 #-------------------------------------------------------------------------------
 def print_header( header ):
     '''
     Prints a header, with bold font, both to console and the log.
     '''
+    txt = font.bold( header )
     print( '\n' + '-'*80 +
-           '\n' + ansi_bold + header + ansi_normal, file=log )
-    print( '\n' + ansi_bold + header + ansi_normal )
+           '\n' + txt, file=log )
+    print( '\n' + txt )
 # end
 
 #-------------------------------------------------------------------------------
@@ -155,8 +145,9 @@ def print_warn( msg ):
     '''
     Prints warning msg, with bold red font, both to console and the log.
     '''
-    print( ansi_bold + ansi_red + 'Warning: ' + msg + ansi_normal, file=log )
-    print( ansi_bold + ansi_red + 'Warning: ' + msg + ansi_normal )
+    txt = font.bold( font.red( 'Warning: ' + msg ) )
+    print( txt, file=log )
+    print( txt )
 # end
 
 #-------------------------------------------------------------------------------
@@ -184,11 +175,11 @@ def print_result( label, rc, extra='' ):
     '''
     if (label):
         if (rc == 0):
-            print( ansi_blue + 'yes'  + ansi_normal, extra, file=log )
-            print( ansi_blue + ' yes' + ansi_normal, extra )
+            print( font.blue( 'yes'  ), extra, file=log )
+            print( font.blue( ' yes' ), extra )
         else:
-            print( ansi_red + 'no'  + ansi_normal, extra, file=log )
-            print( ansi_red + ' no' + ansi_normal, extra )
+            print( font.red( 'no'  ), extra, file=log )
+            print( font.red( ' no' ), extra )
 # end
 
 # ------------------------------------------------------------------------------
@@ -324,7 +315,7 @@ def choose( prompt, choices ):
     choices = list( choices )
     n = len( choices )
     if (n == 0):
-        print( ansi_bold + ansi_red + 'none found' + ansi_normal )
+        print( font.bold( font.red( 'none found' ) ) )
         raise Error
     elif (n == 1):
         ##print()
@@ -379,9 +370,7 @@ def run( cmd, env=None ):
         rc = proc.wait()
         log.write( stdout )
         if (stderr):
-            log.write( ansi_red )
-            log.write( stderr )
-            log.write( ansi_normal )
+            log.write( font.red( stderr ) )
         print( 'exit status = %d' % rc, file=log )
     except Exception as ex:
         print( 'Exception:', str(ex), file=log )
@@ -768,13 +757,54 @@ def output_files( files ):
 # end
 
 #-------------------------------------------------------------------------------
+def parse_args():
+    '''
+    Parses command line options.
+    Sets if interactive and if ansicodes are enabled.
+    '''
+    global opts, parser
+
+    #--------------------
+    # Parse command line. We'll handle help ourselves.
+    parser = argparse.ArgumentParser( add_help=False )
+    parser.add_argument( '-i', '--interactive', action='store_true',
+                         help='Find all available choices and ask user which to use;'
+                             +' otherwise use first choice found.' )
+    parser.add_argument( '--color', action='store', default='auto',
+                         help='Use ANSI colors: yes, no, or auto; default %(default)s.' )
+    parser.add_argument( '-h', '--help', action='store_true',
+                         help='Print help and exit.' )
+    parser.add_argument( 'options', nargs=argparse.REMAINDER,
+                         help='name=value pairs of options to define.' )
+    opts = parser.parse_args()
+
+    # Parse name=value pairs.
+    for arg in opts.options:
+        s = re.search( '^(\w+)=(.*)', arg )
+        if (s):
+            environ[ s.group(1) ] = s.group(2)
+        else:
+            print( 'Unknown argument:', arg )
+            exit(1)
+    # end
+
+    if (environ['color']):
+        opts.color = environ['color']
+    font.set_enabled( opts.color )
+    
+    if (environ['interactive']):
+        opts.interactive = environ['interactive']
+    if (opts.interactive):
+        interactive( True )
+# end
+
+#-------------------------------------------------------------------------------
 def init( prefix='/usr/local' ):
     '''
     Initializes config.
-    Opens the logfile, deals with OS-specific issues, and parses command line
-    options.
+    Opens the logfile and deals with OS-specific issues.
     '''
-    global environ, log
+    global log
 
     environ['prefix'] = prefix
 
@@ -788,55 +818,42 @@ def init( prefix='/usr/local' ):
     if (sys.platform.startswith('darwin') and
         'LD_LIBRARY_PATH' not in os.environ and
         'DYLD_LIBRARY_PATH' not in os.environ):
-        print( ansi_bold + ansi_red +
-               'NOTICE: $DYLD_LIBRARY_PATH was not inherited (or not set).' )
+
+        txt = font.bold( 'NOTICE: $DYLD_LIBRARY_PATH was not set or not inherited.\n' )
         if ('LIBRARY_PATH' in os.environ):
-            print( 'Setting $DYLD_LIBRARY_PATH = $LIBRARY_PATH to run test programs.' )
             os.environ['DYLD_LIBRARY_PATH'] = os.environ['LIBRARY_PATH']
-            print( ansi_red + 'set $DYLD_LIBRARY_PATH = $LIBRARY_PATH =',
-                   os.environ['LIBRARY_PATH'] + ansi_normal, file=log )
+            txt += 'Setting $DYLD_LIBRARY_PATH = $LIBRARY_PATH to run test programs.\n'
+            txt += '$LIBRARY_PATH = ' + os.environ['LIBRARY_PATH'] + '\n'
         else:
-            print( '$LIBRARY_PATH is also not set. Leaving $DYLD_LIBRARY_PATH unset.' )
-            print( ansi_red +
-                   '$LIBRARY_PATH is also not set. Leaving $DYLD_LIBRARY_PATH unset.'
-                   + ansi_normal,
-                   file=log )
+            txt += '$LIBRARY_PATH is not set. Leaving $DYLD_LIBRARY_PATH unset.\n'
         # end
-        print( ansi_normal + ansi_red + '''\
+        txt += '''
 MacOS System Integrity Protection (SIP) prevents configure.py from inheriting
 $DYLD_LIBRARY_PATH. Using
     python configure.py
-directly (not via make), with python installed from python.org (not Apple's
-python in /usr/bin), will allow $DYLD_LIBRARY_PATH to be inherited.'''
-+ ansi_normal )
+directly (not via make), with a 3rd party python from python.org, Homebrew, etc.
+(i.e., not /usr/bin/python), will allow $DYLD_LIBRARY_PATH to be inherited.
+'''
+        txt = font.red( txt )
+        txt += '-'*80
+        print( txt )
+        print( txt, file=log )
     # end
 
     #--------------------
-    # parse command line
-    for arg in sys.argv[1:]:
-        if (arg == '--interactive' or arg == '-i'):
-            interactive( True )
-        elif (arg == '--help' or arg == '-h'):
-            # just print help and exit
-            exit(0)
-        else:
-            s = re.search( '^(\w+)=(.*)', arg )
-            if (s):
-                environ[ s.group(1) ] = s.group(2)
-            else:
-                print( 'Unknown argument:', arg )
-                exit(1)
-    # end
-
-    if (environ['interactive'] == '1'):
-        interactive( True )
+    if (opts.help):
+        parser.print_help()
+        exit(0)
 # end
 
 # ------------------------------------------------------------------------------
 # Initialize global variables here, rather than in init(),
-# so they are exported to __init__.py.
+# so they are imported by __init__.py.
 environ = Environments()
 environ['argv'] = ' '.join( sys.argv )
 environ['datetime'] = time.ctime()
 
 defines = {}
+
+# Parse command line early, so ANSI codes are enabled or disabled early on.
+parse_args()

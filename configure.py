@@ -7,22 +7,20 @@ from __future__ import print_function
 import sys
 import re
 import config
-from   config import ansi_bold, ansi_red, ansi_blue, ansi_normal
-from   config import Error
+from   config import Error, font, print_warn
 import config.lapack
-import os
 
 #-------------------------------------------------------------------------------
 # header
 
 print( '-'*80 + '\n' +
-ansi_bold + ansi_red + '                              Welcome to BLAS++.' +
-ansi_normal + '''
+font.bold( font.blue( '                              Welcome to BLAS++.' ) ) +
+'''
 
 By default, configure will automatically choose the first valid value it finds
 for each option. You can set it to interactive to find all possible values and
 give you a choice:
-    ''' + ansi_blue + 'make config interactive=1' + ansi_normal + '''
+    ''' + font.blue( 'make config interactive=1' ) + '''
 
 If you have multiple compilers, we suggest specifying your desired compiler by
 setting CXX, as the automated search may prefer a different compiler.
@@ -34,7 +32,7 @@ To limit which versions of BLAS and LAPACK to search for, set one of:
     blas=openblas
     blas=accelerate
 For instance,
-    ''' + ansi_blue + 'make config CXX=xlc++ blas=essl' + ansi_normal + '''
+    ''' + font.blue( 'make config CXX=xlc++ blas=essl' ) + '''
 
 Some BLAS libraries have 32-bit int (lp64) or 64-bit int (ilp64) variants.
 Configure will auto-detect a scheme, but you can also specify it by setting:
@@ -48,6 +46,8 @@ Configure will auto-detect a scheme, but you can also specify it by setting:
     fortran_mangling=add_
     fortran_mangling=lower
     fortran_mangling=upper
+
+For ANSI colors, set color=auto (when output is TTY), color=yes, or color=no.
 
 Configure assumes environment variables CPATH, LIBRARY_PATH, and LD_LIBRARY_PATH
 are set so your compiler can find libraries. See INSTALL.txt for more details.
@@ -80,12 +80,12 @@ def main():
     try:
         config.lapack.cblas()
     except Error:
-        print( ansi_red + 'BLAS++ needs CBLAS only in testers.' + ansi_normal )
+        print_warn( 'BLAS++ needs CBLAS only in testers.' )
 
     try:
         config.lapack.lapack()
     except Error:
-        print( ansi_red + 'LAPACK++ needs LAPACKE only in testers.' + ansi_normal )
+        print_warn( 'BLAS++ needs LAPACK only in testers.' )
 
     testsweeper = config.get_package(
         'testsweeper',
@@ -94,7 +94,7 @@ def main():
         'https://bitbucket.org/icl/testsweeper/get/tip.tar.gz',
         'testsweeper.tar.gz' )
     if (not testsweeper):
-        print( ansi_red + 'BLAS++ needs TestSweeper to compile testers.' + ansi_normal )
+        print_warn( 'BLAS++ needs TestSweeper to compile testers.' )
 
     config.extract_defines_from_flags( 'CXXFLAGS' )
     config.output_files( ['make.inc', 'blas_defines.h'] )
@@ -107,6 +107,6 @@ def main():
 try:
     main()
 except Error as ex:
-    print( ansi_bold + ansi_red + 'A fatal error occurred. ' + str(ex) + '\n'
-           'BLAS++ could not be configured. Log in config/log.txt' + ansi_normal )
+    print_warn( 'A fatal error occurred. ' + str(ex) +
+                '\nBLAS++ could not be configured. Log in config/log.txt' )
     exit(1)
