@@ -86,7 +86,7 @@ stage ('Test - Caffeine') {
       ./run_tests.py --blas1 --blas2 --blas3 --small --xml report1.xml
       ./run_tests.py --batch-blas3 --xsmall --xml report2.xml
     '''
-    junit 'test/*.xml'
+    junit 'blaspp/test/*.xml'
   } // steps
 } // stage test caffeine
 stage ('Test - Lips') {
@@ -107,7 +107,7 @@ stage ('Test - Lips') {
       ./run_tests.py --blas1 --blas2 --blas3 --small --xml report1.xml
       ./run_tests.py --batch-blas3 --xsmall --xml report2.xml
     '''
-    junit 'test/*.xml'
+    junit 'blaspp/test/*.xml'
   } // steps
 } // stage test lips
 } // parallel
