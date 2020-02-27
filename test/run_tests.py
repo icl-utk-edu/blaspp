@@ -325,6 +325,26 @@ def run_test( cmd ):
 # end
 
 # ------------------------------------------------------------------------------
+# Utility to pretty print XML.
+# See https://stackoverflow.com/a/33956544/1655607
+#
+def indent_xml( elem, level=0 ):
+    i = "\n" + level*"  "
+    if len(elem):
+        if not elem.text or not elem.text.strip():
+            elem.text = i + "  "
+        if not elem.tail or not elem.tail.strip():
+            elem.tail = i
+        for elem in elem:
+            indent_xml( elem, level+1 )
+        if not elem.tail or not elem.tail.strip():
+            elem.tail = i
+    else:
+        if level and (not elem.tail or not elem.tail.strip()):
+            elem.tail = i
+# end
+
+# ------------------------------------------------------------------------------
 # run each test
 failed_tests = []
 passed_tests = []
@@ -379,6 +399,7 @@ if opts.xml:
         testcase.text = 'PASSED'
 
     tree = ET.ElementTree(root)
+    indent_xml( root )
     tree.write( opts.xml )
 # end
 
