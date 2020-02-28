@@ -1,7 +1,9 @@
 #ifndef CHECK_GEMM_HH
 #define CHECK_GEMM_HH
 
-#include "blas_util.hh"
+#include "blas/util.hh"
+
+// Test headers.
 #include "lapack_wrappers.hh"
 
 #include <limits>

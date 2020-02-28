@@ -1,4 +1,4 @@
-#include "device_blas.hh"
+#include "blas/device_blas.hh"
 #include <limits>
 
 // =============================================================================

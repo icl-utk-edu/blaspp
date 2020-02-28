@@ -112,13 +112,15 @@ TEST_LIBS    += -lblaspp -ltestsweeper
 all: lib tester
 
 install: lib
-	mkdir -p $(DESTDIR)$(prefix)/include
+	mkdir -p $(DESTDIR)$(prefix)/include/blas
 	mkdir -p $(DESTDIR)$(prefix)/lib$(LIB_SUFFIX)
-	cp include/*.{h,hh} $(DESTDIR)$(prefix)/include
+	cp include/*.hh $(DESTDIR)$(prefix)/include
+	cp include/blas/*.{h,hh} $(DESTDIR)$(prefix)/include/blas
 	cp $(lib) $(DESTDIR)$(prefix)/lib$(LIB_SUFFIX)
 
 uninstall:
 	$(RM) $(addprefix $(DESTDIR)$(prefix)/, $(headers))
+	$(RM) -r $(DESTDIR)$(prefix)/include/blas
 	$(RM) $(DESTDIR)$(prefix)/lib$(LIB_SUFFIX)/libblaspp.*
 
 #-------------------------------------------------------------------------------
@@ -171,7 +173,7 @@ test/clean:
 #-------------------------------------------------------------------------------
 # headers
 # precompile headers to verify self-sufficiency
-headers     = $(wildcard include/*.h include/*.hh test/*.hh)
+headers     = $(wildcard include/blas.hh include/blas/*.h include/blas/*.hh test/*.hh)
 headers_gch = $(addsuffix .gch, $(basename $(headers)))
 
 headers: $(headers_gch)

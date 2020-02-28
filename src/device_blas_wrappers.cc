@@ -1,4 +1,4 @@
-#include "device.hh"
+#include "blas/device.hh"
 
 // =============================================================================
 // Level 1 BLAS - Device Interfaces

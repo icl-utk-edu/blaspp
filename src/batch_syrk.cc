@@ -1,6 +1,6 @@
 #include <limits>
 #include <cstring>
-#include "batch_common.hh"
+#include "blas/batch_common.hh"
 #include "blas.hh"
 
 // -----------------------------------------------------------------------------

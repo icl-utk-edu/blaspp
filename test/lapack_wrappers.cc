@@ -1,11 +1,8 @@
-#ifndef LAPACK_TMP_HH
-#define LAPACK_TMP_HH
-
-// Moved from lapack_tmp.hh for ESSL compatability
+// Moved from lapack_wrappers.hh for ESSL compatability
 
 // get BLAS_FORTRAN_NAME and blas_int
+#include "blas/fortran.h"
 
-#include "blas_fortran.hh"
 #include "lapack_wrappers.hh"
 
 #include <complex>
@@ -368,6 +365,3 @@ void lapack_potrf(  char const *uplo, int64_t n,
     blas_int *info_ = (blas_int *) info;
     lapack_zpotrf( uplo, &n_, A, &lda_, info_ );
 }
-
-#endif        //  #ifndef LAPACK_TMP_HH
-

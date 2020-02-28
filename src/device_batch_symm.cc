@@ -1,7 +1,7 @@
 #include <limits>
 #include <cstring>
-#include "batch_common.hh"
-#include "device_blas.hh"
+#include "blas/batch_common.hh"
+#include "blas/device_blas.hh"
 
 // -----------------------------------------------------------------------------
 /// @ingroup symm

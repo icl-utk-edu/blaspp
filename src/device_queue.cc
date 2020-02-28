@@ -1,4 +1,4 @@
-#include "device.hh"
+#include "blas/device.hh"
 
 /** queue member functions **/
 
