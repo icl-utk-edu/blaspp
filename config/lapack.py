@@ -3,10 +3,8 @@ from __future__ import print_function
 import os
 import re
 import config
-from   config import ansi_bold, ansi_red, ansi_normal
 from   config import print_header, print_subhead, print_msg, print_warn, print_test, print_result
-from   config import get
-from   config import Error
+from   config import Error, get
 
 #-------------------------------------------------------------------------------
 def get_fortran_manglings():
@@ -352,9 +350,9 @@ def test_lapack( src, label, append=False ):
                         new_mangling_sizes = re.findall(
                             r'-D(FORTRAN_(?:ADD_|LOWER|UPPER)|\w*ILP64)\b',
                             env['CXXFLAGS'])
-                        print( ansi_red +
+                        print( font.red(
                                'Changing Fortran name mangling for both BLAS and LAPACK to '
-                               + ' '.join( new_mangling_sizes ) + ansi_normal )
+                               + ' '.join( new_mangling_sizes ) ) )
                         config.environ.merge( env )
 
                     else:
@@ -471,7 +469,7 @@ def blas_float_return():
     if (rc == 0):
         config.environ.append( 'CXXFLAGS', '-DHAVE_F2C' )
     else:
-        print( ansi_bold + ansi_red + 'unexpected error!' + ansi_normal )
+        print_warn( 'unexpected error!' )
 # end
 
 #-------------------------------------------------------------------------------
@@ -492,7 +490,7 @@ def blas_complex_return():
     if (rc == 0):
         config.environ.append( 'CXXFLAGS', '-DBLAS_COMPLEX_RETURN_ARGUMENT' )
     else:
-        print( ansi_bold + ansi_red + 'unexpected error!' + ansi_normal )
+        print_warn( 'unexpected error!' )
 # end
 
 #-------------------------------------------------------------------------------

@@ -304,7 +304,7 @@ def print_tee( *args ):
 # cmd is a pair of strings: (function, args)
 
 def run_test( cmd ):
-    cmd = opts.test +' '+ cmd[0] +' '+ cmd[1]
+    cmd = opts.test +' '+ cmd[1] +' '+ cmd[0]
     print_tee( cmd )
     output = ''
     p = subprocess.Popen( cmd.split(), stdout=subprocess.PIPE,
@@ -322,6 +322,26 @@ def run_test( cmd ):
     else:
         print_tee( 'pass' )
     return (err, output)
+# end
+
+# ------------------------------------------------------------------------------
+# Utility to pretty print XML.
+# See https://stackoverflow.com/a/33956544/1655607
+#
+def indent_xml( elem, level=0 ):
+    i = "\n" + level*"  "
+    if len(elem):
+        if not elem.text or not elem.text.strip():
+            elem.text = i + "  "
+        if not elem.tail or not elem.tail.strip():
+            elem.tail = i
+        for elem in elem:
+            indent_xml( elem, level+1 )
+        if not elem.tail or not elem.tail.strip():
+            elem.tail = i
+    else:
+        if level and (not elem.tail or not elem.tail.strip()):
+            elem.tail = i
 # end
 
 # ------------------------------------------------------------------------------
@@ -379,6 +399,7 @@ if opts.xml:
         testcase.text = 'PASSED'
 
     tree = ET.ElementTree(root)
+    indent_xml( root )
     tree.write( opts.xml )
 # end
 
