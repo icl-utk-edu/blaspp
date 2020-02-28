@@ -52,16 +52,16 @@ def get_int_sizes():
     limits which sizes are returned.
 
     Ex: get_int_sizes()
-    returns ['', '-DBLAS_ILP64']
+    returns ['', '-DBLAS_ILP64 -DLAPACK_ILP64']
     where '' is compiler's default, usually 32-bit int in LP64.
     '''
     int_sizes = []
     if (config.environ['lp64'] == '1'):
         int_sizes.append('') # i.e., default int
     if (config.environ['ilp64'] == '1'):
-        int_sizes.append('-DBLAS_ILP64')
+        int_sizes.append('-DBLAS_ILP64 -DLAPACK_ILP64')
     if (not int_sizes):
-        int_sizes = ['', '-DBLAS_ILP64']
+        int_sizes = ['', '-DBLAS_ILP64 -DLAPACK_ILP64']
     return int_sizes
 # end
 

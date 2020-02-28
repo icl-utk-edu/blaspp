@@ -214,6 +214,14 @@ distclean: clean
 %.i: %.cc
 	$(CXX) $(CXXFLAGS) -I$(testsweeper_dir) -E $< -o $@
 
+# preprocess source
+%.i: %.h
+	$(CXX) $(CXXFLAGS) -I$(testsweeper_dir) -E $< -o $@
+
+# preprocess source
+%.i: %.hh
+	$(CXX) $(CXXFLAGS) -I$(testsweeper_dir) -E $< -o $@
+
 # precompile header to check for errors
 %.gch: %.h
 	$(CXX) $(CXXFLAGS) -I$(testsweeper_dir) -c $< -o $@

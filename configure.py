@@ -101,7 +101,7 @@ def main():
         'https://bitbucket.org/icl/testsweeper/get/tip.tar.gz',
         'testsweeper.tar.gz' )
     if (not testsweeper):
-        print_warn( 'BLAS++ needs TestSweeper to compile testers.' )
+        print_warn( 'BLAS++ needs TestSweeper only in testers.' )
 
     config.extract_defines_from_flags( 'CXXFLAGS' )
     config.output_files( ['make.inc', 'blas_defines.h'] )

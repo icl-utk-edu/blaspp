@@ -13,7 +13,7 @@
     #elif defined(FORTRAN_LOWER)
         #define BLAS_FORTRAN_NAME( lower, UPPER ) lower
     #else
-        #define BLAS_FORTRAN_NAME( lower, UPPER ) lower ## _
+        #define BLAS_FORTRAN_NAME( lower, UPPER ) lower##_
     #endif
 #endif
 
