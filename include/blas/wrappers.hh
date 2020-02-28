@@ -8,6 +8,56 @@ namespace blas {
 // Level 1 BLAS
 
 // -----------------------------------------------------------------------------
+/// @ingroup asum
+float asum(
+    int64_t n,
+    float const *x, int64_t incx );
+
+/// @ingroup asum
+double asum(
+    int64_t n,
+    double const *x, int64_t incx );
+
+/// @ingroup asum
+float asum(
+    int64_t n,
+    std::complex<float> const *x, int64_t incx );
+
+/// @ingroup asum
+double asum(
+    int64_t n,
+    std::complex<double> const *x, int64_t incx );
+
+// -----------------------------------------------------------------------------
+/// @ingroup axpy
+void axpy(
+    int64_t n,
+    float alpha,
+    float const *x, int64_t incx,
+    float       *y, int64_t incy );
+
+/// @ingroup axpy
+void axpy(
+    int64_t n,
+    double alpha,
+    double const *x, int64_t incx,
+    double       *y, int64_t incy );
+
+/// @ingroup axpy
+void axpy(
+    int64_t n,
+    std::complex<float> alpha,
+    std::complex<float> const *x, int64_t incx,
+    std::complex<float>       *y, int64_t incy );
+
+/// @ingroup axpy
+void axpy(
+    int64_t n,
+    std::complex<double> alpha,
+    std::complex<double> const *x, int64_t incx,
+    std::complex<double>       *y, int64_t incy );
+
+// -----------------------------------------------------------------------------
 /// @ingroup copy
 void copy(
     int64_t n,
