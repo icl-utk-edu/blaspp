@@ -15,13 +15,13 @@ ifeq ($(MAKECMDGOALS),config)
     config: make.inc
 
     make.inc: force
-
-    force: ;
 else ifneq ($(findstring clean,$(MAKECMDGOALS)),clean)
     # For `make clean` or `make distclean`, don't include make.inc,
     # which could generate it. Otherwise, include make.inc.
     include make.inc
 endif
+
+force: ;
 
 make.inc:
 	python configure.py
@@ -32,7 +32,7 @@ prefix   ?= /usr/local/blaspp
 
 # auto-detect OS
 # $OSTYPE may not be exported from the shell, so echo it
-ostype = $(shell echo $${OSTYPE})
+ostype := $(shell echo $${OSTYPE})
 ifneq ($(findstring darwin, $(ostype)),)
     # MacOS is darwin
     macos = 1
@@ -90,6 +90,24 @@ endif
 testsweeper_src = $(wildcard $(testsweeper_dir)/testsweeper.cc $(testsweeper_dir)/testsweeper.hh)
 
 testsweeper = $(testsweeper_dir)/libtestsweeper.$(lib_ext)
+
+#-------------------------------------------------------------------------------
+# Get Mercurial id, and make version.o depend on it via .id file.
+
+ifneq ($(wildcard .hg),)
+    id := $(shell hg id -i)
+    src/version.o: CXXFLAGS += -DBLASPP_ID='"$(id)"'
+endif
+
+last_id := $(shell [ -e .id ] && cat .id || echo 'NA')
+ifneq ($(id),$(last_id))
+    .id: force
+endif
+
+.id:
+	echo $(id) > .id
+
+src/version.o: .id
 
 #-------------------------------------------------------------------------------
 # BLAS++ specific flags and libraries
@@ -235,6 +253,8 @@ distclean: clean
 # debugging
 echo:
 	@echo "static        = '$(static)'"
+	@echo "id            = '$(id)'"
+	@echo "last_id       = '$(last_id)'"
 	@echo
 	@echo "lib_a         = $(lib_a)"
 	@echo "lib_so        = $(lib_so)"

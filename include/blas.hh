@@ -1,6 +1,17 @@
 #ifndef BLAS_HH
 #define BLAS_HH
 
+// Version is updated by make_release.py; DO NOT EDIT.
+// Version 0000.00.00
+#define BLASPP_VERSION 00000000
+
+namespace blas {
+
+int blaspp_version();
+const char* blaspp_id();
+
+}  // namespace blas
+
 #include "blas/wrappers.hh"
 
 // =============================================================================
