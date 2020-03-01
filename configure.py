@@ -55,7 +55,7 @@ Configure will auto-detect a scheme, but you can also specify it by setting:
 For ANSI colors, set color=auto (when output is TTY), color=yes, or color=no.
 
 Configure assumes environment variables CPATH, LIBRARY_PATH, and LD_LIBRARY_PATH
-are set so your compiler can find libraries. See INSTALL.txt for more details.
+are set so your compiler can find libraries. See INSTALL.md for more details.
 ''' + '-'*80 )
 
 #-------------------------------------------------------------------------------

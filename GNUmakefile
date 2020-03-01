@@ -1,4 +1,4 @@
-# See INSTALL.txt for usage.
+# See INSTALL.md for usage.
 
 #-------------------------------------------------------------------------------
 # Configuration
