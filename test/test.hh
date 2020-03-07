@@ -165,5 +165,6 @@ void test_batch_syr2k_device( Params& params, bool run );
 // auxiliary
 void test_error ( Params& params, bool run );
 void test_max   ( Params& params, bool run );
+void test_util  ( Params& params, bool run );
 
 #endif  //  #ifndef TEST_HH
