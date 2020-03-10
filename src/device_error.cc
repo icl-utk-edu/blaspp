@@ -1,4 +1,4 @@
-#include "device.hh"
+#include "blas/device.hh"
 
 // -----------------------------------------------------------------------------
 // return true on runtime errors

@@ -16,7 +16,8 @@
     typedef CBLAS_ORDER CBLAS_LAYOUT;
 #endif
 
-#include "blas_util.hh"
+#include "blas/util.hh"
+
 #include <complex>
 
 // =============================================================================

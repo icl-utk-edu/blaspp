@@ -1,5 +1,5 @@
 #include "test.hh"
-#include "blas_util.hh"
+#include "blas/util.hh"
 
 void test_error( Params& params, bool run )
 {

@@ -1,6 +1,7 @@
 // Function definitions moved from cblas.hh for ESSL compatability.
 
-#include "blas_fortran.hh"
+#include "blas/fortran.h"
+
 #include <complex>
 
 void
