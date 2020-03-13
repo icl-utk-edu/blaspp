@@ -77,6 +77,9 @@ dep       += $(addsuffix .d, $(basename $(tester_src)))
 
 tester     = test/tester
 
+#-------------------------------------------------------------------------------
+# TestSweeper
+
 testsweeper_dir = $(wildcard ../testsweeper)
 ifeq ($(testsweeper_dir),)
     testsweeper_dir = $(wildcard ./testsweeper)
@@ -90,6 +93,8 @@ endif
 testsweeper_src = $(wildcard $(testsweeper_dir)/testsweeper.cc $(testsweeper_dir)/testsweeper.hh)
 
 testsweeper = $(testsweeper_dir)/libtestsweeper.$(lib_ext)
+
+testsweeper: $(testsweeper)
 
 #-------------------------------------------------------------------------------
 # Get Mercurial id, and make version.o depend on it via .id file.
