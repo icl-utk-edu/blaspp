@@ -236,8 +236,10 @@ int main( int argc, char** argv )
 
     int status = 0;
     try {
-        printf( "BLAS++ version %d, id %s\n",
-                blas::blaspp_version(), blas::blaspp_id() );
+        int version = blas::blaspp_version();
+        printf( "BLAS++ version %d.%02d.%02d, id %s\n",
+                version / 10000, (version % 10000) / 100, version % 100,
+                blas::blaspp_id() );
 
         // print input so running `test [input] > out.txt` documents input
         printf( "input: %s", argv[0] );
