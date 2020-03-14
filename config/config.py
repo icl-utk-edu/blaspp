@@ -14,7 +14,6 @@ import sys
 import time
 import re
 import tarfile
-import urllib
 import argparse
 
 # This relative import syntax works in both python2 and 3.
@@ -31,9 +30,10 @@ def urlretrieve( url, filename ):
     Works for both Python 2 and 3, which differ in where urlretrieve is located.
     '''
     if (sys.version_info.major >= 3):
-        urllib.requests.urlretrieve( url, filename )
+        import urllib.request as urllib_request
     else:
-        urllib.urlretrieve( url, filename )
+        import urllib as urllib_request
+    urllib_request.urlretrieve( url, filename )
 # end
 
 #-------------------------------------------------------------------------------
