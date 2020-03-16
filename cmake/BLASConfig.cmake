@@ -1,3 +1,8 @@
+# Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause
+# This program is free software: you can redistribute it and/or modify it under
+# the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
+
 #message("blas config found: " ${blas_config_found})
 if(blas_config_found STREQUAL "TRUE")
     message("BLAS configuration already done!")

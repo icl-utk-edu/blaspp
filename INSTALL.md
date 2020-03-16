@@ -1,15 +1,20 @@
-Welcome to BLAS++.
+BLAS++ Installation Notes
+================================================================================
 
-#-------------------------------------------------------------------------------
-Synopsis:
+[TOC]
+
+Synopsis
+--------------------------------------------------------------------------------
 
     make && make install
 
 will configure and compile the BLAS++ library and its tester,
 then install the headers and library.
 
-#-------------------------------------------------------------------------------
-Overview:
+There is a CMake option as well.
+
+Overview
+--------------------------------------------------------------------------------
 
     make           - configures (if make.inc is missing),
                      then compiles the library and tester.
@@ -23,19 +28,19 @@ Overview:
     make distclean - also deletes make.inc and dependency files (*.d).
     If static=1, makes .a instead of .so library.
 
-#-------------------------------------------------------------------------------
-Details:
+Details
+--------------------------------------------------------------------------------
 
     make config [options]
 
-Runs configure.py script to detect your compiler and library properties,
+Runs the `configure.py` script to detect your compiler and library properties,
 then creates a make.inc configuration file. You can also manually edit the
 make.inc file. Options are name=value pairs to set variables. The configure.py
 script can be invoked directly:
 
     python configure.py [options]
 
-Running configure.py -h will print a help message with the current options.
+Running `configure.py -h` will print a help message with the current options.
 Variables that affect configure.py include:
 
     CXX                C++ compiler
@@ -69,8 +74,8 @@ On some systems, loading the appropriate module will set these flags:
 
     module load my-blas
 
-#------------------------------
-Vendor notes:
+Vendor notes
+--------------------------------------------------------------------------------
 
 Intel MKL provides scripts to set these flags, e.g.:
 
@@ -80,7 +85,9 @@ or
 
     source /opt/intel/mkl/bin/mklvars.sh intel64
 
-#------------------------------
+Manual configuration
+--------------------------------------------------------------------------------
+
 If you have a specific configuration that you want, set CXX, CXXFLAGS, LDFLAGS,
 and LIBS, e.g.:
 

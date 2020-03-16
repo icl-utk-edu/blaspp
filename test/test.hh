@@ -1,3 +1,8 @@
+// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// SPDX-License-Identifier: BSD-3-Clause
+// This program is free software: you can redistribute it and/or modify it under
+// the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
+
 #ifndef TEST_HH
 #define TEST_HH
 
@@ -160,5 +165,6 @@ void test_batch_syr2k_device( Params& params, bool run );
 // auxiliary
 void test_error ( Params& params, bool run );
 void test_max   ( Params& params, bool run );
+void test_util  ( Params& params, bool run );
 
 #endif  //  #ifndef TEST_HH

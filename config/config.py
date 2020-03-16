@@ -1,3 +1,8 @@
+# Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause
+# This program is free software: you can redistribute it and/or modify it under
+# the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
+
 from __future__ import print_function
 
 import os
@@ -9,7 +14,6 @@ import sys
 import time
 import re
 import tarfile
-import urllib
 import argparse
 
 # This relative import syntax works in both python2 and 3.
@@ -26,9 +30,10 @@ def urlretrieve( url, filename ):
     Works for both Python 2 and 3, which differ in where urlretrieve is located.
     '''
     if (sys.version_info.major >= 3):
-        urllib.requests.urlretrieve( url, filename )
+        import urllib.request as urllib_request
     else:
-        urllib.urlretrieve( url, filename )
+        import urllib as urllib_request
+    urllib_request.urlretrieve( url, filename )
 # end
 
 #-------------------------------------------------------------------------------

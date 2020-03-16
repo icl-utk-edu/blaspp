@@ -1,3 +1,8 @@
+// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// SPDX-License-Identifier: BSD-3-Clause
+// This program is free software: you can redistribute it and/or modify it under
+// the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
+
 #include <complex>
 
 #include <stdio.h>
@@ -148,6 +153,7 @@ std::vector< testsweeper::routines_t > routines = {
     // auxiliary
     { "error",  test_error,  Section::aux     },
     { "max",    test_max,    Section::aux     },
+    { "util",   test_util,   Section::aux     },
 };
 
 // -----------------------------------------------------------------------------
@@ -230,6 +236,11 @@ int main( int argc, char** argv )
 
     int status = 0;
     try {
+        int version = blas::blaspp_version();
+        printf( "BLAS++ version %d.%02d.%02d, id %s\n",
+                version / 10000, (version % 10000) / 100, version % 100,
+                blas::blaspp_id() );
+
         // print input so running `test [input] > out.txt` documents input
         printf( "input: %s", argv[0] );
         for (int i = 1; i < argc; ++i) {

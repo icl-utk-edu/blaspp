@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 #
+# Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause
+# This program is free software: you can redistribute it and/or modify it under
+# the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
+#
 # Usage: python configure.py [--interactive]
 
 from __future__ import print_function
@@ -50,7 +55,7 @@ Configure will auto-detect a scheme, but you can also specify it by setting:
 For ANSI colors, set color=auto (when output is TTY), color=yes, or color=no.
 
 Configure assumes environment variables CPATH, LIBRARY_PATH, and LD_LIBRARY_PATH
-are set so your compiler can find libraries. See INSTALL.txt for more details.
+are set so your compiler can find libraries. See INSTALL.md for more details.
 ''' + '-'*80 )
 
 #-------------------------------------------------------------------------------
