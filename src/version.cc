@@ -32,4 +32,4 @@ const char* blaspp_id()
     return BLASPP_ID;
 }
 
-}  // namespace testsweeper
+}  // namespace blas
