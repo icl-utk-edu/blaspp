@@ -118,6 +118,7 @@ add_library(blaspp SHARED
     src/trmv.cc
     src/trsm.cc
     src/trsv.cc
+    src/version.cc
 )
 
 set_target_properties(blaspp

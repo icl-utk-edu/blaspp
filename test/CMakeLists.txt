@@ -1,5 +1,6 @@
 add_executable(blaspp_test
     test.cc
+    test_util.cc
     test_asum.cc
     test_axpy.cc
     test_batch_gemm.cc
