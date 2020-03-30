@@ -1,6 +1,6 @@
 # CMake script for BLAS++ library
 # repo: http://bitbucket.org/icl/blaspp
-# Tests require Libtest testing library from http://bitbucket.org/icl/testsweeper
+# Tests require Testsweeper testing library from http://bitbucket.org/icl/testsweeper
 
 # Options:
 #  -DCMAKE_INSTALL_PREFIX=<some_dir>
@@ -333,8 +333,8 @@ install (
     DESTINATION lib/blaspp
 )
 
-# Testers are built by default, but will not be included if Libtest is not found
-# Set CMAKE_INSTALL_PREFIX during the installation of Libtest and BLAS++ or
+# Testers are built by default, but will not be included if Testsweeper is not found
+# Set CMAKE_INSTALL_PREFIX during the installation of Testsweeper and BLAS++ or
 #   set testsweeper_DIR to the path containing testsweeperConfig.cmake
 if (BLASPP_BUILD_TESTS)
     if(0)
@@ -355,8 +355,8 @@ if (BLASPP_BUILD_TESTS)
         message(STATUS "Blaspp tests will be built.")
         add_subdirectory(test)
     else()
-        message(STATUS "BLAS++ testers were requested, but Libtest was not found")
-        # TODO: download Libtest here
+        message(STATUS "BLAS++ testers were requested, but Testsweeper was not found")
+        # TODO: download Testsweeper here
     endif()
 endif ()
 
