@@ -320,10 +320,10 @@ int main( int argc, char** argv )
         } while( params.next() );
 
         if (status) {
-            printf( "%d tests FAILED.\n", status );
+            printf( "%d tests FAILED for %s.\n", status, routine );
         }
         else {
-            printf( "All tests passed.\n" );
+            printf( "All tests passed for %s.\n", routine );
         }
     }
     catch (const QuitException& ex) {

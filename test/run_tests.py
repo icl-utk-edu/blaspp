@@ -29,6 +29,7 @@ import argparse
 import subprocess
 import xml.etree.ElementTree as ET
 import io
+import time
 
 # ------------------------------------------------------------------------------
 # command line arguments
@@ -41,6 +42,7 @@ group_test.add_argument( '-t', '--test', action='store',
 group_test.add_argument( '--xml', help='generate report.xml for jenkins' )
 
 group_size = parser.add_argument_group( 'matrix dimensions (default is medium)' )
+group_size.add_argument(       '--quick',  action='store_true', help='run quick "sanity check" of few, small tests' )
 group_size.add_argument( '-x', '--xsmall', action='store_true', help='run x-small tests' )
 group_size.add_argument( '-s', '--small',  action='store_true', help='run small tests' )
 group_size.add_argument( '-m', '--medium', action='store_true', help='run medium tests' )
@@ -76,6 +78,7 @@ group_opt.add_argument( '--alpha',  action='store', help='default=%(default)s', 
 group_opt.add_argument( '--beta',   action='store', help='default=%(default)s', default='' )
 group_opt.add_argument( '--incx',   action='store', help='default=%(default)s', default='1,2,-1,-2' )
 group_opt.add_argument( '--incy',   action='store', help='default=%(default)s', default='1,2,-1,-2' )
+group_opt.add_argument( '--batch',  action='store', help='default=%(default)s', default='' )
 group_opt.add_argument( '--align',  action='store', help='default=%(default)s', default='32' )
 group_opt.add_argument( '--check',  action='store', help='default=y', default='' )  # default in test.cc
 group_opt.add_argument( '--ref',    action='store', help='default=y', default='' )  # default in test.cc
@@ -91,7 +94,7 @@ for t in opts.tests:
         exit(1)
 
 # by default, run medium sizes
-if (not (opts.xsmall or opts.small or opts.medium or opts.large)):
+if (not (opts.quick or opts.xsmall or opts.small or opts.medium or opts.large)):
     opts.medium = True
 
 # by default, run all shapes
@@ -122,6 +125,17 @@ nk_wide  = dim
 nk       = dim
 
 if (not opts.dim):
+    if (opts.quick):
+        n        = ' --dim 100'
+        tall     = ' --dim 100x50'  # 2:1
+        wide     = ' --dim 50x100'  # 1:2
+        mnk      = ' --dim 25x50x75'
+        nk_tall  = ' --dim 1x100x50'  # 2:1
+        nk_wide  = ' --dim 1x50x100'  # 1:2
+        opts.incx  = '1,-1'
+        opts.incy  = '1,-1'
+        opts.batch = '10'
+
     if (opts.xsmall):
         n       += ' --dim 10'
         tall    += ' --dim 20x10'
@@ -192,6 +206,7 @@ a      = ' --alpha '  + opts.alpha  if (opts.alpha)  else ''
 ab     = a+' --beta ' + opts.beta   if (opts.beta)   else a
 incx   = ' --incx '   + opts.incx   if (opts.incx)   else ''
 incy   = ' --incy '   + opts.incy   if (opts.incy)   else ''
+batch  = ' --batch '  + opts.batch  if (opts.batch)  else ''
 align  = ' --align '  + opts.align  if (opts.align)  else ''
 check  = ' --check '  + opts.check  if (opts.check)  else ''
 ref    = ' --ref '    + opts.ref    if (opts.ref)    else ''
@@ -275,19 +290,19 @@ if (opts.blas3):
 # Batch Level 3
 if (opts.batch_blas3):
     cmds += [
-    [ 'batch-gemm',  dtype         + layout + align + transA + transB + mnk ],
-    [ 'batch-hemm',  dtype         + layout + align + side + uplo + mn ],
-    [ 'batch-symm',  dtype         + layout + align + side + uplo + mn ],
-    [ 'batch-trmm',  dtype         + layout + align + side + uplo + trans + diag + mn ],
-    [ 'batch-trsm',  dtype         + layout + align + side + uplo + trans + diag + mn ],
-    [ 'batch-herk',  dtype_real    + layout + align + uplo + trans    + mn ],
-    [ 'batch-herk',  dtype_complex + layout + align + uplo + trans_nc + mn ],
-    [ 'batch-syrk',  dtype_real    + layout + align + uplo + trans    + mn ],
-    [ 'batch-syrk',  dtype_complex + layout + align + uplo + trans_nt + mn ],
-    [ 'batch-her2k', dtype_real    + layout + align + uplo + trans    + mn ],
-    [ 'batch-her2k', dtype_complex + layout + align + uplo + trans_nc + mn ],
-    [ 'batch-syr2k', dtype_real    + layout + align + uplo + trans    + mn ],
-    [ 'batch-syr2k', dtype_complex + layout + align + uplo + trans_nt + mn ],
+    [ 'batch-gemm',  dtype         + batch + layout + align + transA + transB + mnk ],
+    [ 'batch-hemm',  dtype         + batch + layout + align + side + uplo + mn ],
+    [ 'batch-symm',  dtype         + batch + layout + align + side + uplo + mn ],
+    [ 'batch-trmm',  dtype         + batch + layout + align + side + uplo + trans + diag + mn ],
+    [ 'batch-trsm',  dtype         + batch + layout + align + side + uplo + trans + diag + mn ],
+    [ 'batch-herk',  dtype_real    + batch + layout + align + uplo + trans    + mn ],
+    [ 'batch-herk',  dtype_complex + batch + layout + align + uplo + trans_nc + mn ],
+    [ 'batch-syrk',  dtype_real    + batch + layout + align + uplo + trans    + mn ],
+    [ 'batch-syrk',  dtype_complex + batch + layout + align + uplo + trans_nt + mn ],
+    [ 'batch-her2k', dtype_real    + batch + layout + align + uplo + trans    + mn ],
+    [ 'batch-her2k', dtype_complex + batch + layout + align + uplo + trans_nc + mn ],
+    [ 'batch-syr2k', dtype_real    + batch + layout + align + uplo + trans    + mn ],
+    [ 'batch-syr2k', dtype_complex + batch + layout + align + uplo + trans_nt + mn ],
     ]
 
 # ------------------------------------------------------------------------------
@@ -351,6 +366,10 @@ def indent_xml( elem, level=0 ):
 
 # ------------------------------------------------------------------------------
 # run each test
+
+start = time.time()
+print_tee( time.ctime() )
+
 failed_tests = []
 passed_tests = []
 ntests = len(opts.tests)
@@ -375,6 +394,8 @@ nfailed = len( failed_tests )
 if (nfailed > 0):
     print_tee( '\n' + str(nfailed) + ' routines FAILED:',
                ', '.join( [x[0] for x in failed_tests] ) )
+else:
+    print_tee( '\n' + 'All routines passed.' )
 
 # generate jUnit compatible test report
 if opts.xml:
@@ -407,5 +428,9 @@ if opts.xml:
     indent_xml( root )
     tree.write( opts.xml )
 # end
+
+elapsed = time.time() - start
+print_tee( 'Elapsed %.2f sec' % elapsed )
+print_tee( time.ctime() )
 
 exit( nfailed )
