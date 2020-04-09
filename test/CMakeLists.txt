@@ -49,8 +49,12 @@ add_executable(blaspp_test
     lapack_wrappers.cc
 )
 
-if(CUDA_FOUND)
-    message(STATUS "Building accelerated CUDA wrappers.")
+include(CheckLanguage)
+check_language(CUDA)
+if(CMAKE_CUDA_COMPILER)
+    enable_language(CUDA)
+
+    message(STATUS "Building CUDA wrapper testers.")
     target_sources(blaspp_test PRIVATE
         test_batch_gemm_device.cc
         test_batch_hemm_device.cc
@@ -71,6 +75,8 @@ if(CUDA_FOUND)
         test_trmm_device.cc
         test_trsm_device.cc
     )
+else()
+  message(STATUS "No CUDA support")
 endif()
 
 set_target_properties(blaspp_test PROPERTIES

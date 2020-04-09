@@ -130,10 +130,12 @@ set_target_properties(blaspp
         INTERFACE_COMPILE_FEATURES cxx_std_11
 )
 
-# CUDA is not required
-#find_package(CUDA)
+# CUDA is not required, use if it is available
+include(CheckLanguage)
+check_language(CUDA)
+if(CMAKE_CUDA_COMPILER)
+    enable_language(CUDA)
 
-if(CUDA_FOUND)
     # todo: check for cuda 10.0+ and force newer CMake version - if possible
     message(STATUS "Building accelerated CUDA wrappers.")
     target_sources(blaspp PRIVATE
@@ -165,12 +167,11 @@ if(CUDA_FOUND)
         BLASPP_WITH_CUBLAS
     )
     target_link_libraries(blaspp PUBLIC
-        ${CUDA_LIBRARIES}
-        ${CUDA_CUBLAS_LIBRARIES}
+        cudart
+        cublas
     )
-    target_include_directories(blaspp PUBLIC
-        ${CUDA_INCLUDE_DIRS}
-    )
+else()
+    message(STATUS "No CUDA support")
 endif()
 
 #message ("USE_OPENMP: ${USE_OPENMP}")
@@ -349,13 +350,13 @@ if (BLASPP_BUILD_TESTS)
     )
     endif()
     find_package(testsweeper)
-    message("testsweeper_found: ${testsweeper_FOUND}")
+    #message("testsweeper_found: ${testsweeper_FOUND}")
     if (testsweeper_FOUND)
     #if (NOT testsweeper_DIR MATCHES "NOTFOUND" AND NOT testsweeper_FOUND)
         message(STATUS "Blaspp tests will be built.")
         add_subdirectory(test)
     else()
-        message(STATUS "BLAS++ testers were requested, but Testsweeper was not found")
+        message(FATAL_ERROR "BLAS++ testers were requested, but Testsweeper was not found")
         # TODO: download Testsweeper here
     endif()
 endif ()
