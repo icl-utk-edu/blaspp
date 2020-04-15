@@ -31,6 +31,7 @@ stage ('Build - Caffeine'){
       cd blaspp
       make config
       make -j4
+      ldd test/tester >> ldd_output.txt
     '''
   } // steps
 } // build - caffeine
@@ -62,6 +63,7 @@ stage ('Build - Lips'){
       cd blaspp
       make config
       make -j4
+      ldd test/tester >> ldd_output.txt
     '''
   } // steps
 } // build - lips
