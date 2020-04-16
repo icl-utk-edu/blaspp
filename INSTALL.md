@@ -6,14 +6,20 @@ BLAS++ Installation Notes
 Synopsis
 --------------------------------------------------------------------------------
 
-    make && make install
-
-will configure and compile the BLAS++ library and its tester,
+Configure and compile the BLAS++ library and its tester,
 then install the headers and library.
 
-There is a CMake option as well.
+Option 1: Makefile
 
-Overview
+    make && make install
+
+Option 2: CMake
+
+    mkdir build && cd build
+    cmake ..
+    make && make install
+
+Makefile Installation
 --------------------------------------------------------------------------------
 
     make           - configures (if make.inc is missing),
@@ -28,8 +34,8 @@ Overview
     make distclean - also deletes make.inc and dependency files (*.d).
     If static=1, makes .a instead of .so library.
 
-Details
---------------------------------------------------------------------------------
+
+### Details
 
     make config [options]
 
@@ -74,8 +80,8 @@ On some systems, loading the appropriate module will set these flags:
 
     module load my-blas
 
-Vendor notes
---------------------------------------------------------------------------------
+
+### Vendor notes
 
 Intel MKL provides scripts to set these flags, e.g.:
 
@@ -85,8 +91,8 @@ or
 
     source /opt/intel/mkl/bin/mklvars.sh intel64
 
-Manual configuration
---------------------------------------------------------------------------------
+
+### Manual configuration
 
 If you have a specific configuration that you want, set CXX, CXXFLAGS, LDFLAGS,
 and LIBS, e.g.:
