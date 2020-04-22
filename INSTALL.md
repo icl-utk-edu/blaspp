@@ -116,3 +116,81 @@ If you experience unexpected problems, please see config/log.txt to diagnose the
 issue. The log shows the option being tested, the exact command run, the
 command's standard output (stdout), error output (stderr), and exit status. All
 test files are in the config directory.
+
+CMake Installation
+--------------------------------------------------------------------------------
+
+The CMake script enforces an out of source build. The simplest way to accomplish
+this is to create a build directory off the BLAS++ root directory:
+
+    cd /my/blaspp/dir
+    mkdir build && cd build
+
+### Options
+
+By default BLAS++ is set to install into `/opt/slate/`. If you wish to
+change this, CMake needs to be told where to install the BLAS++ library.
+You can do this by defining CMAKE_INSTALL_PREFIX variable via the CMake
+command line:
+
+    # Assuming the working dir is still /my/blaspp/dir/build
+    cmake -DCMAKE_INSTALL_PREFIX=/path/to/my/dir ..
+    
+By default BLAS++ builds a testing suite located in `blaspp/test`.  To disable,
+define `BLASPP_BUILD_TESTS` as `OFF`, as follows:
+
+    # Disable building BLASPP test suite
+    cmake -DBLASPP_BUILD_TESTS=OFF ..
+
+If `BLASPP_BUILD_TESTS` is enabled, the build will require the TestSweeper
+library to be installed via CMake prior to compilation.  Information and 
+installation instructions can be found at https://bitbucket.org/icl/testsweeper.
+
+#### BLAS library options
+
+In order the BLAS++ CMake script will:
+ 1. If `BLAS_LIBRARIES` is set, try the user defined BLAS library.
+ 2. If `USE_OPTIMIZED_BLAS` is set, try the CMake default `find_package(BLAS)`.
+ 3. Query the system to find a usable backend.
+
+To specify a particular BLAS backend library, one can define `BLAS_LIBRARIES`
+and the configuration script will attempt to link against the explicitly 
+provided library.  If this is unsuccessful, this wil generate a CMake error
+and exit configuration.
+
+If `USE_OPTIMIZE_BLAS` is set, then `find_package(BLAS)` will be called and, 
+if successful, BLAS++ will link against the CMake provided BLAS library.  If
+unsuccessful, the last option will be attempted. 
+
+If no other options are selected, or the second is unsuccessful, the BLAS++
+CMake script will query the system for a BLAS library by compiling and 
+executing several small executables during its configuration.  In order of
+precedence, it will find:
+ 1. Intel MKL
+ 2. AMD ACML
+ 3. IBM ESSL
+ 4. OpenBLAS
+ 5. Accelerate
+ 6. BLAS - generically named BLAS library found in the system path
+ 
+If one wishes to limit those options, one can define`BLAS_LIBRARY` as
+one of the following strings:
+
+    "Intel MKL"
+    "AMD ACML"
+    "Cray LibSci"
+    "IBM ESSL"
+    "OpenBLAS"
+    "Apple Accelerate"
+    "generic"
+
+This will limit the search to only that library.
+
+### CMake build
+Once CMake generates the required makefiles, BLAS++ can be built
+and installed using the following:
+
+    # Assuming the working dir is still /my/blaspp/dir/build
+    make
+    make install
+
