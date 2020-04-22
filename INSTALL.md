@@ -149,6 +149,7 @@ installation instructions can be found at https://bitbucket.org/icl/testsweeper.
 #### BLAS library options
 
 In order the BLAS++ CMake script will:
+
  1. If `BLAS_LIBRARIES` is set, try the user defined BLAS library.
  2. If `USE_OPTIMIZED_BLAS` is set, try the CMake default `find_package(BLAS)`.
  3. Query the system to find a usable backend.
@@ -166,6 +167,7 @@ If no other options are selected, or the second is unsuccessful, the BLAS++
 CMake script will query the system for a BLAS library by compiling and 
 executing several small executables during its configuration.  In order of
 precedence, it will find:
+
  1. Intel MKL
  2. AMD ACML
  3. IBM ESSL
