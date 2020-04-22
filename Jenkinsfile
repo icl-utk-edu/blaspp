@@ -30,7 +30,7 @@ stage ('Build - Caffeine'){
       hg clone http://bitbucket.org/icl/blaspp
       cd blaspp
       make config
-      make -j4
+      make -j4 CXXFLAGS='-Werror'
       ldd test/tester | tee ldd_output.txt
     '''
   } // steps
@@ -62,7 +62,7 @@ stage ('Build - Lips'){
       hg clone http://bitbucket.org/icl/blaspp
       cd blaspp
       make config
-      make -j4
+      make -j4 CXXFLAGS='-Werror'
       ldd test/tester | tee ldd_output.txt
     '''
   } // steps
