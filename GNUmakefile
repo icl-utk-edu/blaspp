@@ -134,17 +134,22 @@ TEST_LIBS    += -lblaspp -ltestsweeper
 
 all: lib tester
 
-install: lib
+pkg = lib/pkgconfig/blas++.pc
+
+install: lib $(pkg)
 	mkdir -p $(DESTDIR)$(prefix)/include/blas
 	mkdir -p $(DESTDIR)$(prefix)/lib$(LIB_SUFFIX)
-	cp include/*.hh $(DESTDIR)$(prefix)/include
-	cp include/blas/*.{h,hh} $(DESTDIR)$(prefix)/include/blas
-	cp $(lib) $(DESTDIR)$(prefix)/lib$(LIB_SUFFIX)
+	mkdir -p $(DESTDIR)$(prefix)/lib$(LIB_SUFFIX)/pkgconfig
+	cp include/*.hh $(DESTDIR)$(prefix)/include/
+	cp include/blas/*.{h,hh} $(DESTDIR)$(prefix)/include/blas/
+	cp -R lib/lib* $(DESTDIR)$(prefix)/lib$(LIB_SUFFIX)/
+	cp $(pkg) $(DESTDIR)$(prefix)/lib$(LIB_SUFFIX)/pkgconfig/
 
 uninstall:
-	$(RM) $(addprefix $(DESTDIR)$(prefix)/, $(headers))
+	$(RM)    $(DESTDIR)$(prefix)/include/blas.hh
 	$(RM) -r $(DESTDIR)$(prefix)/include/blas
 	$(RM) $(DESTDIR)$(prefix)/lib$(LIB_SUFFIX)/libblaspp.*
+	$(RM) $(DESTDIR)$(prefix)/lib$(LIB_SUFFIX)/pkgconfig/blas++.pc
 
 #-------------------------------------------------------------------------------
 # if re-configured, recompile everything
@@ -208,6 +213,23 @@ headers/clean:
 include: headers
 
 include/clean: headers/clean
+
+#-------------------------------------------------------------------------------
+# pkgconfig
+# Keep -std=c++11 in CXXFLAGS. Keep -fopenmp in LDFLAGS.
+CXXFLAGS_clean = $(filter-out -O% -W% -pedantic -D% -I./include -MMD -fPIC -fopenmp, $(CXXFLAGS))
+CPPFLAGS_clean = $(filter-out -O% -W% -pedantic -D% -I./include -MMD -fPIC -fopenmp, $(CPPFLAGS))
+LDFLAGS_clean  = $(filter-out -fPIC, $(LDFLAGS))
+
+.PHONY: $(pkg)
+$(pkg):
+	perl -pe 's:#VERSION:2020.04.00:; \
+	          s:#PREFIX:${prefix}:; \
+	          s:#CXXFLAGS:${CXXFLAGS_clean}:; \
+	          s:#CPPFLAGS:${CPPFLAGS_clean}:; \
+	          s:#LDFLAGS:${LDFLAGS_clean}:; \
+	          s:#LIBS:${LIBS}:;' \
+	          $@.in > $@
 
 #-------------------------------------------------------------------------------
 # documentation

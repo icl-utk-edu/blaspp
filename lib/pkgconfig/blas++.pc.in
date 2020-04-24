@@ -1,0 +1,13 @@
+prefix=#PREFIX
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: BLAS++
+Description: C++ API to BLAS (basic linear algebra subroutines)
+Version: #VERSION
+Cflags: #CXXFLAGS -I${includedir}
+Libs: -L${libdir} -Wl,-rpath,${libdir} -lblaspp
+Libs.private: #LDFLAGS #LIBS
+Requires:
+Requires.private:

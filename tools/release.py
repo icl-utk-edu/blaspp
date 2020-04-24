@@ -129,6 +129,11 @@ def make( project, version_h, version_c ):
               r'// Version \d\d\d\d.\d\d.\d\d\n(#define \w+_VERSION) \d+',
               r'// Version %s\n\1 %s' % (tag, version), count=1 )
 
+    print( '\n>> Updating version in: GNUmakefile' )
+    file_sub( 'GNUmakefile',
+              r'VERSION:\d\d\d\d.\d\d.\d\d',
+              r'VERSION:%s' % (tag), count=1 )
+
     # Update copyright in all files.
     files = myrun( 'hg status -acmn', stdout=PIPE, text=True ).rstrip().split( '\n' )
     print( '\n>> Updating copyright in:', end=' ' )
