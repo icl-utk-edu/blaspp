@@ -8,7 +8,7 @@
 #  -Dtestsweeper_DIR=path/to/testsweeper
 #    Point to testing framework used in tests
 #  -DBLASPP_BUILD_TESTS=OFF
-#    Diable building BLASPP test suite
+#    Disable building BLAS++ test suite
 #  -DBLAS_LIBRARIES=<blas_libraries>
 #    Supply specific BLAS implementation, if not usable, CMake will error
 
@@ -68,7 +68,7 @@ set(cached_blas_threading ${BLAS_LIBRARY_THREADING} CACHE INTERNAL "")
 string (TOLOWER "${CMAKE_CURRENT_SOURCE_DIR}" SOURCE_DIR_LOWER)
 string (TOLOWER "${CMAKE_CURRENT_BINARY_DIR}" BINARY_DIR_LOWER )
 if (SOURCE_DIR_LOWER STREQUAL BINARY_DIR_LOWER)
-    message (FATAL_ERROR "Compiling BLASPP with CMake requires an out-of-source build. To proceed:
+    message (FATAL_ERROR "Compiling BLAS++ with CMake requires an out-of-source build. To proceed:
     rm -rf CMakeCache.txt CMakeFiles/   # delete files in ${CMAKE_CURRENT_SOURCE_DIR}
     mkdir build
     cd build
@@ -302,12 +302,9 @@ install (TARGETS blaspp
     INCLUDES DESTINATION include
     )
 
-#export(EXPORT blasppTargets
-  #FILE ${CMAKE_INSTALL_PREFIX}/blaspp/blasppTargets.cmake
 export(EXPORT blasppTargets
     FILE blasppTargets.cmake
 )
-#FILE ${CMAKE_INSTALL_PREFIX}/blaspp/blasppTargets.cmake
 
 export (PACKAGE blaspp)
 
@@ -353,7 +350,7 @@ if (BLASPP_BUILD_TESTS)
     #message("testsweeper_found: ${testsweeper_FOUND}")
     if (testsweeper_FOUND)
     #if (NOT testsweeper_DIR MATCHES "NOTFOUND" AND NOT testsweeper_FOUND)
-        message(STATUS "Blaspp tests will be built.")
+        message(STATUS "BLAS++ tests will be built.")
         add_subdirectory(test)
     else()
         message(FATAL_ERROR "BLAS++ testers were requested, but Testsweeper was not found")

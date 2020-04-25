@@ -9,7 +9,7 @@ stage ('Build - Caffeine'){
   steps {
     sh '''
       #!/bin/sh +x
-      echo "BLASPP Building..."
+      echo "BLAS++ Building..."
       hostname && pwd
 
       source /home/jmfinney/spack/share/spack/setup-env.sh
@@ -40,7 +40,7 @@ stage ('Build - Lips'){
   steps {
     sh '''
       #!/bin/sh +x
-      echo "BLASPP Building..."
+      echo "BLAS++ Building..."
       hostname && pwd
 
       source /home/jmfinney/spack/share/spack/setup-env.sh
@@ -76,7 +76,7 @@ stage ('Test - Caffeine') {
   steps {
     sh '''
       #!/bin/sh +x
-      echo "BLASPP Building..."
+      echo "BLAS++ Building..."
       hostname && pwd
 
       source /home/jmfinney/spack/share/spack/setup-env.sh
@@ -96,7 +96,7 @@ stage ('Test - Lips') {
   steps {
     sh '''
       #!/bin/sh +x
-      echo "BLASPP Building..."
+      echo "BLAS++ Building..."
       hostname && pwd
 
       source /home/jmfinney/spack/share/spack/setup-env.sh
