@@ -3,8 +3,8 @@
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
-#ifndef DEVICE_INTERNALS_HH
-#define DEVICE_INTERNALS_HH
+#ifndef BLAS_DEVICE_INTERNALS_HH
+#define BLAS_DEVICE_INTERNALS_HH
 
 namespace blas {
 
@@ -229,4 +229,4 @@ void device_getvector(int64_t n,
 }        //  namespace blas
 
 
-#endif        //  #ifndef DEVICE_INTERNALS_HH
+#endif        //  #ifndef BLAS_DEVICE_INTERNALS_HH

@@ -3,8 +3,8 @@
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
-#ifndef BATCH_COMMON_HH
-#define BATCH_COMMON_HH
+#ifndef BLAS_BATCH_COMMON_HH
+#define BLAS_BATCH_COMMON_HH
 
 #include "blas/util.hh"
 #include <vector>
@@ -981,4 +981,4 @@ void syr2k_check(
 }        // namespace batch
 }        // namespace blas
 
-#endif    // BATCH_COMMON_HH
+#endif    // BLAS_BATCH_COMMON_HH
