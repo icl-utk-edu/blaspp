@@ -1,29 +1,29 @@
 /**
     ------------------------------------------------------------
     @defgroup blas1            Level 1: vectors operations, O(n) work
-    @brief    Vector operations that perform \f$ O(n) \f$ work on \f$ O(n) \f$ data.
+    @brief    Vector operations that perform $O(n)$ work on $O(n)$ data.
               These are memory bound, since every operation requires a memory read or write.
     @{
         @defgroup asum         asum:  Vector 1 norm (sum)
-        @brief    \f$ \sum_i |Re(x_i)| + |Im(x_i)| \f$
+        @brief    $\sum_i |Re(x_i)| + |Im(x_i)|$
 
         @defgroup axpy         axpy:  Add vectors
-        @brief    \f$ y = \alpha x + y \f$
+        @brief    $y = \alpha x + y$
 
         @defgroup copy         copy:  Copy vector
-        @brief    \f$ y = x \f$
+        @brief    $y = x$
 
         @defgroup dot          dot:   Dot (inner) product
-        @brief    \f$ x^H y \f$
+        @brief    $x^H y$
 
         @defgroup dotu         dotu:  Dot (inner) product, unconjugated
-        @brief    \f$ x^T y \f$
+        @brief    $x^T y$
 
         @defgroup iamax        iamax: Find max element
-        @brief    \f$ \text{argmax}_i\; |x_i| \f$
+        @brief    $\text{argmax}_i\; |x_i|$
 
         @defgroup nrm2         nrm2:  Vector 2 norm
-        @brief    \f$ ||x||_2 \f$
+        @brief    $||x||_2$
 
         @defgroup rot          rot:   Apply Givens plane rotation
 
@@ -34,83 +34,83 @@
         @defgroup rotmg        rotmg: Generate modified (fast) Givens plane rotation
 
         @defgroup scal         scal:  Scale vector
-        @brief    \f$ x = \alpha x \f$
+        @brief    $x = \alpha x$
 
         @defgroup swap         swap:  Swap vectors
-        @brief    \f$ x \leftrightarrow y \f$
+        @brief    $x \leftrightarrow y$
     @}
 
     ------------------------------------------------------------
     @defgroup blas2            Level 2: matrix-vector operations, O(n^2) work
-    @brief    Matrix operations that perform \f$ O(n^2) \f$ work on \f$ O(n^2) \f$ data.
+    @brief    Matrix operations that perform $O(n^2)$ work on $O(n^2)$ data.
               These are memory bound, since every operation requires a memory read or write.
     @{
         @defgroup gemv         gemv:       General matrix-vector multiply
-        @brief    \f$ y = \alpha Ax + \beta y \f$
+        @brief    $y = \alpha Ax + \beta y$
 
         @defgroup ger          ger:        General matrix rank 1 update
-        @brief    \f$ A = \alpha xy^T + A \f$
+        @brief    $A = \alpha xy^T + A$
 
         @defgroup hemv         hemv:    Hermitian matrix-vector multiply
-        @brief    \f$ y = \alpha Ax + \beta y \f$
+        @brief    $y = \alpha Ax + \beta y$
 
         @defgroup her          her:     Hermitian rank 1 update
-        @brief    \f$ A = \alpha xx^T + A \f$
+        @brief    $A = \alpha xx^T + A$
 
         @defgroup her2         her2:    Hermitian rank 2 update
-        @brief    \f$ A = \alpha xy^T + \alpha yx^T + A \f$
+        @brief    $A = \alpha xy^T + \alpha yx^T + A$
 
         @defgroup symv         symv:    Symmetric matrix-vector multiply
-        @brief    \f$ y = \alpha Ax + \beta y \f$
+        @brief    $y = \alpha Ax + \beta y$
 
         @defgroup syr          syr:     Symmetric rank 1 update
-        @brief    \f$ A = \alpha xx^T + A \f$
+        @brief    $A = \alpha xx^T + A$
 
         @defgroup syr2         syr2:    Symmetric rank 2 update
-        @brief    \f$ A = \alpha xy^T + \alpha yx^T + A \f$
+        @brief    $A = \alpha xy^T + \alpha yx^T + A$
 
         @defgroup trmv         trmv:       Triangular matrix-vector multiply
-        @brief    \f$ x = Ax \f$
+        @brief    $x = Ax$
 
         @defgroup trsv         trsv:       Triangular matrix-vector solve
-        @brief    \f$ x = op(A^{-1})\; b \f$
+        @brief    $x = op(A^{-1})\; b$
     @}
 
     ------------------------------------------------------------
     @defgroup blas3            Level 3: matrix-matrix operations, O(n^3) work
-    @brief    Matrix-matrix operations that perform \f$ O(n^3) \f$ work on \f$ O(n^2) \f$ data.
+    @brief    Matrix-matrix operations that perform $O(n^3)$ work on $O(n^2)$ data.
               These benefit from cache reuse, since many operations can be
               performed for every read from main memory.
     @{
         @defgroup gemm         gemm:  General matrix multiply: C = AB + C
-        @brief    \f$ C = \alpha \;op(A) \;op(B) + \beta C \f$
+        @brief    $C = \alpha \;op(A) \;op(B) + \beta C$
 
         @defgroup hemm         hemm:  Hermitian matrix multiply
-        @brief    \f$ C = \alpha A B + \beta C \f$
-               or \f$ C = \alpha B A + \beta C \f$ where \f$ A \f$ is Hermitian
+        @brief    $C = \alpha A B + \beta C$
+               or $C = \alpha B A + \beta C$ where $A$ is Hermitian
 
         @defgroup herk         herk:  Hermitian rank k update
-        @brief    \f$ C = \alpha A A^T + \beta C \f$ where \f$ C \f$ is Hermitian
+        @brief    $C = \alpha A A^T + \beta C$ where $C$ is Hermitian
 
         @defgroup her2k        her2k: Hermitian rank 2k update
-        @brief    \f$ C = \alpha A B^T + \alpha B A^T + \beta C \f$ where \f$ C \f$ is Hermitian
+        @brief    $C = \alpha A B^T + \alpha B A^T + \beta C$ where $C$ is Hermitian
 
         @defgroup symm         symm:  Symmetric matrix multiply
-        @brief    \f$ C = \alpha A B + \beta C \f$
-               or \f$ C = \alpha B A + \beta C \f$ where \f$ A \f$ is symmetric
+        @brief    $C = \alpha A B + \beta C$
+               or $C = \alpha B A + \beta C$ where $A$ is symmetric
 
         @defgroup syrk         syrk:  Symmetric rank k update
-        @brief    \f$ C = \alpha A A^T + \beta C \f$ where \f$ C \f$ is symmetric
+        @brief    $C = \alpha A A^T + \beta C$ where $C$ is symmetric
 
         @defgroup syr2k        syr2k: Symmetric rank 2k update
-        @brief    \f$ C = \alpha A B^T + \alpha B A^T + \beta C \f$ where \f$ C \f$ is symmetric
+        @brief    $C = \alpha A B^T + \alpha B A^T + \beta C$ where $C$ is symmetric
 
         @defgroup trmm         trmm:  Triangular matrix multiply
-        @brief    \f$ B = \alpha \;op(A)\; B \f$
-               or \f$ B = \alpha B \;op(A)   \f$ where \f$ A \f$ is triangular
+        @brief    $B = \alpha \;op(A)\; B$
+               or $B = \alpha B \;op(A)$ where $A$ is triangular
 
         @defgroup trsm         trsm:  Triangular solve matrix
-        @brief    \f$ C = op(A)^{-1} B   \f$
-               or \f$ C = B \;op(A)^{-1} \f$ where \f$ A \f$ is triangular
+        @brief    $C = op(A)^{-1} B  $
+               or $C = B \;op(A)^{-1}$ where $A$ is triangular
     @}
 */

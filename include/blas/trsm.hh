@@ -14,13 +14,17 @@ namespace blas {
 
 // =============================================================================
 /// Solve the triangular matrix-vector equation
-///     \f[ op(A) X = \alpha B, \f]
+/// \[
+///     op(A) X = \alpha B,
+/// \]
 /// or
-///     \f[ X op(A) = \alpha B, \f]
+/// \[
+///     X op(A) = \alpha B,
+/// \]
 /// where op(A) is one of
-///     \f[ op(A) = A,   \f]
-///     \f[ op(A) = A^T, \f]
-///     \f[ op(A) = A^H, \f]
+///     $op(A) = A,$
+///     $op(A) = A^T,$
+///     $op(A) = A^H,$
 /// X and B are m-by-n matrices, and A is an m-by-m or n-by-n, unit or non-unit,
 /// upper or lower triangular matrix.
 ///
@@ -36,8 +40,8 @@ namespace blas {
 ///
 /// @param[in] side
 ///     Whether op(A) is on the left or right of X:
-///     - Side::Left:  \f$ op(A) X = B. \f$
-///     - Side::Right: \f$ X op(A) = B. \f$
+///     - Side::Left:  $op(A) X = B.$
+///     - Side::Right: $X op(A) = B.$
 ///
 /// @param[in] uplo
 ///     What part of the matrix A is referenced,
@@ -47,9 +51,9 @@ namespace blas {
 ///
 /// @param[in] trans
 ///     The form of op(A):
-///     - Op::NoTrans:   \f$ op(A) = A.   \f$
-///     - Op::Trans:     \f$ op(A) = A^T. \f$
-///     - Op::ConjTrans: \f$ op(A) = A^H. \f$
+///     - Op::NoTrans:   $op(A) = A.  $
+///     - Op::Trans:     $op(A) = A^T.$
+///     - Op::ConjTrans: $op(A) = A^H.$
 ///
 /// @param[in] diag
 ///     Whether A has a unit or non-unit diagonal:

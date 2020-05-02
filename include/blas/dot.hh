@@ -13,8 +13,8 @@
 namespace blas {
 
 // =============================================================================
-/// @return unconjugated dot product, \f$ x^T y. \f$
-/// @see dot for conjugated version, \f$ x^H y. \f$
+/// @return unconjugated dot product, $x^T y.$
+/// @see dot for conjugated version, $x^H y.$
 ///
 /// Generic implementation for arbitrary data types.
 ///

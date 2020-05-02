@@ -15,7 +15,9 @@ namespace blas {
 
 // =============================================================================
 /// Hermitian matrix rank-1 update,
-///     \f[ A = \alpha x x^H + A, \f]
+/// \[
+///     A = \alpha x x^H + A,
+/// \]
 /// where alpha is a scalar, x is a vector,
 /// and A is an n-by-n Hermitian matrix.
 ///

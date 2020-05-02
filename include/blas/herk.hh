@@ -15,9 +15,13 @@ namespace blas {
 
 // =============================================================================
 /// Hermitian rank-k update,
-///     \f[ C = \alpha A A^H + \beta C, \f]
+/// \[
+///     C = \alpha A A^H + \beta C,
+/// \]
 /// or
-///     \f[ C = \alpha A^H A + \beta C, \f]
+/// \[
+///     C = \alpha A^H A + \beta C,
+/// \]
 /// where alpha and beta are scalars, C is an n-by-n Hermitian matrix,
 /// and A is an n-by-k or k-by-n matrix.
 ///
@@ -35,8 +39,8 @@ namespace blas {
 ///
 /// @param[in] trans
 ///     The operation to be performed:
-///     - Op::NoTrans:   \f$ C = \alpha A A^H + \beta C. \f$
-///     - Op::ConjTrans: \f$ C = \alpha A^H A + \beta C. \f$
+///     - Op::NoTrans:   $C = \alpha A A^H + \beta C.$
+///     - Op::ConjTrans: $C = \alpha A^H A + \beta C.$
 ///     - In the real    case, Op::Trans is interpreted as Op::ConjTrans.
 ///       In the complex case, Op::Trans is illegal (see @ref syrk instead).
 ///

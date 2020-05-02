@@ -14,11 +14,13 @@ namespace blas {
 
 // =============================================================================
 /// General matrix-vector multiply,
-///     \f[ y = \alpha op(A) x + \beta y, \f]
+/// \[
+///     y = \alpha op(A) x + \beta y,
+/// \]
 /// where op(A) is one of
-///     \f[ op(A) = A,   \f]
-///     \f[ op(A) = A^T, \f]
-///     \f[ op(A) = A^H, \f]
+///     $op(A) = A,$
+///     $op(A) = A^T,$
+///     $op(A) = A^H,$
 /// alpha and beta are scalars, x and y are vectors,
 /// and A is an m-by-n matrix.
 ///
@@ -29,9 +31,9 @@ namespace blas {
 ///
 /// @param[in] trans
 ///     The operation to be performed:
-///     - Op::NoTrans:   \f$ y = \alpha A   x + \beta y, \f$
-///     - Op::Trans:     \f$ y = \alpha A^T x + \beta y, \f$
-///     - Op::ConjTrans: \f$ y = \alpha A^H x + \beta y. \f$
+///     - Op::NoTrans:   $y = \alpha A   x + \beta y,$
+///     - Op::Trans:     $y = \alpha A^T x + \beta y,$
+///     - Op::ConjTrans: $y = \alpha A^H x + \beta y.$
 ///
 /// @param[in] m
 ///     Number of rows of the matrix A. m >= 0.

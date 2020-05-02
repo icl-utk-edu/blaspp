@@ -14,8 +14,7 @@ namespace blas {
 
 // =============================================================================
 /// @return 2-norm of vector,
-///     \f$ || x ||_2
-///         = (\sum_{i=0}^{n-1} |x_i|^2)^{1/2}. \f$
+///     $|| x ||_2 = (\sum_{i=0}^{n-1} |x_i|^2)^{1/2}.$
 ///
 /// Generic implementation for arbitrary data types.
 /// TODO: generic implementation does not currently scale to avoid over- or underflow.

@@ -15,7 +15,9 @@ namespace blas {
 
 // =============================================================================
 /// Hermitian matrix-vector multiply,
-///     \f[ y = \alpha A x + \beta y, \f]
+/// \[
+///     y = \alpha A x + \beta y,
+/// \]
 /// where alpha and beta are scalars, x and y are vectors,
 /// and A is an n-by-n Hermitian matrix.
 ///

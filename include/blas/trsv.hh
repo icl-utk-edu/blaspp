@@ -14,11 +14,13 @@ namespace blas {
 
 // =============================================================================
 /// Solve the triangular matrix-vector equation
-///     \f[ op(A) x = b, \f]
+/// \[
+///     op(A) x = b,
+/// \]
 /// where op(A) is one of
-///     \f[ op(A) = A,   \f]
-///     \f[ op(A) = A^T, \f]
-///     \f[ op(A) = A^H, \f]
+///     $op(A) = A,$
+///     $op(A) = A^T,$
+///     $op(A) = A^H,$
 /// x and b are vectors,
 /// and A is an n-by-n, unit or non-unit, upper or lower triangular matrix.
 ///
@@ -39,9 +41,9 @@ namespace blas {
 ///
 /// @param[in] trans
 ///     The equation to be solved:
-///     - Op::NoTrans:   \f$ A   x = b, \f$
-///     - Op::Trans:     \f$ A^T x = b, \f$
-///     - Op::ConjTrans: \f$ A^H x = b. \f$
+///     - Op::NoTrans:   $A   x = b,$
+///     - Op::Trans:     $A^T x = b,$
+///     - Op::ConjTrans: $A^H x = b.$
 ///
 /// @param[in] diag
 ///     Whether A has a unit or non-unit diagonal:

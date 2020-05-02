@@ -14,7 +14,9 @@ namespace blas {
 
 // =============================================================================
 /// General matrix rank-1 update,
-///     \f[ A = \alpha x y^H + A, \f]
+/// \[
+///     A = \alpha x y^H + A,
+/// \]
 /// where alpha is a scalar, x and y are vectors,
 /// and A is an m-by-n matrix.
 ///

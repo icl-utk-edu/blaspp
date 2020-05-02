@@ -14,9 +14,13 @@ namespace blas {
 
 // =============================================================================
 /// Symmetric matrix-matrix multiply,
-///     \f[ C = \alpha A B + \beta C, \f]
+/// \[
+///     C = \alpha A B + \beta C,
+/// \]
 /// or
-///     \f[ C = \alpha B A + \beta C, \f]
+/// \[
+///     C = \alpha B A + \beta C,
+/// \]
 /// where alpha and beta are scalars, A is an m-by-m or n-by-n symmetric matrix,
 /// and B and C are m-by-n matrices.
 ///
@@ -28,8 +32,8 @@ namespace blas {
 ///
 /// @param[in] side
 ///     The side the matrix A appears on:
-///     - Side::Left:  \f$ C = \alpha A B + \beta C, \f$
-///     - Side::Right: \f$ C = \alpha B A + \beta C. \f$
+///     - Side::Left:  $C = \alpha A B + \beta C,$
+///     - Side::Right: $C = \alpha B A + \beta C.$
 ///
 /// @param[in] uplo
 ///     What part of the matrix A is referenced:

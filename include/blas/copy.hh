@@ -13,7 +13,7 @@
 namespace blas {
 
 // =============================================================================
-/// Copy vector, \f$ y = x. \f$
+/// Copy vector, $y = x.$
 ///
 /// Generic implementation for arbitrary data types.
 ///

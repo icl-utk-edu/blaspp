@@ -17,9 +17,11 @@ namespace blas {
 //      [ x^T ]   [  c  s ] [ x^T ]
 //      [ y^T ] = [ -s  c ] [ y^T ]
 //
-///     \f[ \begin{bmatrix} x^T   \\ y^T    \end{bmatrix} =
-///         \begin{bmatrix} c & s \\ -s & c \end{bmatrix}
-///         \begin{bmatrix} x^T   \\ y^T    \end{bmatrix} \f]
+/// \[
+///     \begin{bmatrix} x^T   \\ y^T    \end{bmatrix} =
+///     = \begin{bmatrix} c & s \\ -s & c \end{bmatrix}
+///       \begin{bmatrix} x^T   \\ y^T    \end{bmatrix}
+/// \]
 ///
 /// @see rotg to generate the rotation.
 ///

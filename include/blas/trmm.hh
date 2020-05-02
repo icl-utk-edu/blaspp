@@ -14,13 +14,17 @@ namespace blas {
 
 // =============================================================================
 /// Triangular matrix-matrix multiply,
-///     \f[ B = \alpha op(A) B, \f]
+/// \[
+///     B = \alpha op(A) B,
+/// \]
 /// or
-///     \f[ B = \alpha B op(A), \f]
+/// \[
+///     B = \alpha B op(A),
+/// \]
 /// where op(A) is one of
-///     \f[ op(A) = A,   \f]
-///     \f[ op(A) = A^T, \f]
-///     \f[ op(A) = A^H, \f]
+///     $op(A) = A,$
+///     $op(A) = A^T,$
+///     $op(A) = A^H,$
 /// B is an m-by-n matrix, and A is an m-by-m or n-by-n, unit or non-unit,
 /// upper or lower triangular matrix.
 ///
@@ -32,8 +36,8 @@ namespace blas {
 ///
 /// @param[in] side
 ///     Whether op(A) is on the left or right of B:
-///     - Side::Left:  \f$ B = \alpha op(A) B. \f$
-///     - Side::Right: \f$ B = \alpha B op(A). \f$
+///     - Side::Left:  $B = \alpha op(A) B.$
+///     - Side::Right: $B = \alpha B op(A).$
 ///
 /// @param[in] uplo
 ///     What part of the matrix A is referenced,
@@ -43,9 +47,9 @@ namespace blas {
 ///
 /// @param[in] trans
 ///     The form of op(A):
-///     - Op::NoTrans:   \f$ op(A) = A.   \f$
-///     - Op::Trans:     \f$ op(A) = A^T. \f$
-///     - Op::ConjTrans: \f$ op(A) = A^H. \f$
+///     - Op::NoTrans:   $op(A) = A.  $
+///     - Op::Trans:     $op(A) = A^T.$
+///     - Op::ConjTrans: $op(A) = A^H.$
 ///
 /// @param[in] diag
 ///     Whether A has a unit or non-unit diagonal:

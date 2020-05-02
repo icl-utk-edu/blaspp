@@ -13,7 +13,7 @@
 namespace blas {
 
 // =============================================================================
-/// Scale vector by constant, \f$ x = \alpha x. \f$
+/// Scale vector by constant, $x = \alpha x.$
 ///
 /// Generic implementation for arbitrary data types.
 ///

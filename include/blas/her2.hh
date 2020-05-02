@@ -15,7 +15,9 @@ namespace blas {
 
 // =============================================================================
 /// Hermitian matrix rank-2 update,
-///     \f[ A = \alpha x y^H + \text{conj}(\alpha) y x^H + A, \f]
+/// \[
+///     A = \alpha x y^H + \text{conj}(\alpha) y x^H + A,
+/// \]
 /// where alpha is a scalar, x and y are vectors,
 /// and A is an n-by-n Hermitian matrix.
 ///

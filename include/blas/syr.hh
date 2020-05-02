@@ -14,7 +14,9 @@ namespace blas {
 
 // =============================================================================
 /// Symmetric matrix rank-1 update,
-///     \f[ A = \alpha x x^T + A, \f]
+/// \[
+///     A = \alpha x x^T + A,
+/// \]
 /// where alpha is a scalar, x is a vector,
 /// and A is an n-by-n symmetric matrix.
 ///

@@ -17,9 +17,11 @@ namespace blas {
 //      [ x^T ] = H [ x^T ]
 //      [ y^T ]     [ y^T ]
 //
-///     \f[ \begin{bmatrix} x^T \\ y^T \end{bmatrix} =
-///         H
-///         \begin{bmatrix} x^T \\ y^T \end{bmatrix} \f]
+/// \[
+///     \begin{bmatrix} x^T \\ y^T \end{bmatrix}
+///     = H
+///       \begin{bmatrix} x^T \\ y^T \end{bmatrix}
+/// \]
 ///
 /// @see rotmg to generate the rotation, and for fuller description.
 ///

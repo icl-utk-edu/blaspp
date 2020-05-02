@@ -17,9 +17,11 @@ namespace blas {
 //      [ z ] = [  c  s ] [ a ]
 //      [ 0 ]   [ -s  c ] [ b ]
 //
-///     \f[ \begin{bmatrix} z     \\ 0      \end{bmatrix} =
-///         \begin{bmatrix} c & s \\ -s & c \end{bmatrix}
-///         \begin{bmatrix} a     \\ b      \end{bmatrix} \f]
+/// \[
+///     \begin{bmatrix} z     \\ 0      \end{bmatrix} =
+///     = \begin{bmatrix} c & s \\ -s & c \end{bmatrix}
+///       \begin{bmatrix} a     \\ b      \end{bmatrix}
+/// \]
 ///
 /// @see rot to apply the rotation.
 ///

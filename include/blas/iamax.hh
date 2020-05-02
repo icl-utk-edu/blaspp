@@ -14,9 +14,9 @@ namespace blas {
 
 // =============================================================================
 /// @return Index of infinity-norm of vector,
-///     \f$ || x ||_{inf}
-///         = \text{argmax}_{i=0}^{n-1} |Re(x_i)| + |Im(x_i)|. \f$
-///     Returns -1 if n = 0.
+///     $|| x ||_{inf}
+///         = \text{argmax}_{i=0}^{n-1} |Re(x_i)| + |Im(x_i)|.$
+/// Returns -1 if n = 0.
 ///
 /// Generic implementation for arbitrary data types.
 ///

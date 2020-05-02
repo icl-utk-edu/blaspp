@@ -13,7 +13,7 @@
 namespace blas {
 
 // =============================================================================
-/// Add scaled vector, \f$ y = \alpha x + y. \f$
+/// Add scaled vector, $y = \alpha x + y.$
 ///
 /// Generic implementation for arbitrary data types.
 ///

@@ -14,11 +14,13 @@ namespace blas {
 
 // =============================================================================
 /// General matrix-matrix multiply,
-///     \f[ C = \alpha op(A) \times op(B) + \beta C, \f]
+/// \[
+///     C = \alpha op(A) \times op(B) + \beta C,
+/// \]
 /// where op(X) is one of
-///     \f[ op(X) = X,   \f]
-///     \f[ op(X) = X^T, \f]
-///     \f[ op(X) = X^H, \f]
+///     $op(X) = X,$
+///     $op(X) = X^T,$
+///     $op(X) = X^H,$
 /// alpha and beta are scalars, and A, B, and C are matrices, with
 /// op(A) an m-by-k matrix, op(B) a k-by-n matrix, and C an m-by-n matrix.
 ///
@@ -30,15 +32,15 @@ namespace blas {
 ///
 /// @param[in] transA
 ///     The operation op(A) to be used:
-///     - Op::NoTrans:   \f$ op(A) = A.   \f$
-///     - Op::Trans:     \f$ op(A) = A^T. \f$
-///     - Op::ConjTrans: \f$ op(A) = A^H. \f$
+///     - Op::NoTrans:   $op(A) = A.  $
+///     - Op::Trans:     $op(A) = A^T.$
+///     - Op::ConjTrans: $op(A) = A^H.$
 ///
 /// @param[in] transB
 ///     The operation op(B) to be used:
-///     - Op::NoTrans:   \f$ op(B) = B.   \f$
-///     - Op::Trans:     \f$ op(B) = B^T. \f$
-///     - Op::ConjTrans: \f$ op(B) = B^H. \f$
+///     - Op::NoTrans:   $op(B) = B.  $
+///     - Op::Trans:     $op(B) = B^T.$
+///     - Op::ConjTrans: $op(B) = B^H.$
 ///
 /// @param[in] m
 ///     Number of rows of the matrix C and op(A). m >= 0.
