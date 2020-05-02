@@ -13,7 +13,7 @@
 namespace blas {
 
 // =============================================================================
-/// Symmetric matrix rank-2 update,
+/// Symmetric matrix rank-2 update:
 /// \[
 ///     A = \alpha x y^T + \alpha y x^T + A,
 /// \]

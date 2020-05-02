@@ -13,14 +13,14 @@
 namespace blas {
 
 // =============================================================================
-/// Triangular matrix-vector multiply,
+/// Triangular matrix-vector multiply:
 /// \[
 ///     x = op(A) x,
 /// \]
-/// where op(A) is one of
-///     $op(A) = A,$
-///     $op(A) = A^T,$
-///     $op(A) = A^H,$
+/// where $op(A)$ is one of
+///     $op(A) = A$,
+///     $op(A) = A^T$, or
+///     $op(A) = A^H$,
 /// x is a vector,
 /// and A is an n-by-n, unit or non-unit, upper or lower triangular matrix.
 ///
@@ -37,9 +37,9 @@ namespace blas {
 ///
 /// @param[in] trans
 ///     The operation to be performed:
-///     - Op::NoTrans:   $x = A   x,$
-///     - Op::Trans:     $x = A^T x,$
-///     - Op::ConjTrans: $x = A^H x.$
+///     - Op::NoTrans:   $x = A   x$,
+///     - Op::Trans:     $x = A^T x$,
+///     - Op::ConjTrans: $x = A^H x$.
 ///
 /// @param[in] diag
 ///     Whether A has a unit or non-unit diagonal:

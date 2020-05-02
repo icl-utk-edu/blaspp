@@ -14,22 +14,16 @@ namespace blas {
 
 // =============================================================================
 /// Construct modified (fast) plane rotation, H, that eliminates b, such that
-//      [ z ] = H [ sqrt(d1)    0  ] [ a ]
-//      [ 0 ]     [  0    sqrt(d2) ] [ b ]
-//
 /// \[
-///     \begin{bmatrix} z \\ 0 \end{bmatrix}
+///       \begin{bmatrix} z \\ 0 \end{bmatrix}
 ///     = H
 ///       \begin{bmatrix} \sqrt{d_1} & 0 \\ 0 & \sqrt{d_2} \end{bmatrix}
-///       \begin{bmatrix} a \\ b \end{bmatrix}
+///       \begin{bmatrix} a \\ b \end{bmatrix}.
 /// \]
 ///
 /// @see rotm to apply the rotation.
 ///
 /// With modified plane rotations, vectors u and v are held in factored form as
-//      [ u^T ] = [ sqrt(d1)    0  ] [ x^T ]
-//      [ v^T ] = [  0    sqrt(d2) ] [ y^T ]
-///
 /// \[
 ///     \begin{bmatrix} u^T \\ v^T \end{bmatrix} =
 ///     \begin{bmatrix} \sqrt{d_1} & 0 \\ 0 & \sqrt{d_2} \end{bmatrix}

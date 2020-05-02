@@ -13,7 +13,7 @@
 namespace blas {
 
 // =============================================================================
-/// General matrix rank-1 update,
+/// General matrix rank-1 update:
 /// \[
 ///     A = \alpha x y^H + A,
 /// \]

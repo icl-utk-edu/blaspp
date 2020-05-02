@@ -13,7 +13,7 @@
 namespace blas {
 
 // =============================================================================
-/// Swap vectors, $x <=> y.$
+/// Swap vectors, $x <=> y$.
 ///
 /// Generic implementation for arbitrary data types.
 ///

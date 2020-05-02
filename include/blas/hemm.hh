@@ -14,7 +14,7 @@
 namespace blas {
 
 // =============================================================================
-/// Hermitian matrix-matrix multiply,
+/// Hermitian matrix-matrix multiply:
 /// \[
 ///     C = \alpha A B + \beta C,
 /// \]
@@ -33,8 +33,8 @@ namespace blas {
 ///
 /// @param[in] side
 ///     The side the matrix A appears on:
-///     - Side::Left:  $C = \alpha A B + \beta C,$
-///     - Side::Right: $C = \alpha B A + \beta C.$
+///     - Side::Left:  $C = \alpha A B + \beta C$,
+///     - Side::Right: $C = \alpha B A + \beta C$.
 ///
 /// @param[in] uplo
 ///     What part of the matrix A is referenced:

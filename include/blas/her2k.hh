@@ -14,7 +14,7 @@
 namespace blas {
 
 // =============================================================================
-/// Hermitian rank-k update,
+/// Hermitian rank-k update:
 /// \[
 ///     C = \alpha A B^H + conj(\alpha) A^H B + \beta C,
 /// \]
@@ -39,8 +39,8 @@ namespace blas {
 ///
 /// @param[in] trans
 ///     The operation to be performed:
-///     - Op::NoTrans:   $C = \alpha A B^H + conj(\alpha) A^H B + \beta C.$
-///     - Op::ConjTrans: $C = \alpha A^H B + conj(\alpha) B A^H + \beta C.$
+///     - Op::NoTrans:   $C = \alpha A B^H + conj(\alpha) A^H B + \beta C$.
+///     - Op::ConjTrans: $C = \alpha A^H B + conj(\alpha) B A^H + \beta C$.
 ///     - In the real    case, Op::Trans is interpreted as Op::ConjTrans.
 ///       In the complex case, Op::Trans is illegal (see @ref syr2k instead).
 ///

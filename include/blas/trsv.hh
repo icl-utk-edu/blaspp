@@ -17,16 +17,16 @@ namespace blas {
 /// \[
 ///     op(A) x = b,
 /// \]
-/// where op(A) is one of
-///     $op(A) = A,$
-///     $op(A) = A^T,$
-///     $op(A) = A^H,$
+/// where $op(A)$ is one of
+///     $op(A) = A$,
+///     $op(A) = A^T$, or
+///     $op(A) = A^H$,
 /// x and b are vectors,
 /// and A is an n-by-n, unit or non-unit, upper or lower triangular matrix.
 ///
 /// No test for singularity or near-singularity is included in this
 /// routine. Such tests must be performed before calling this routine.
-/// @see latrs for a more numerically robust implementation.
+/// @see LAPACK's latrs for a more numerically robust implementation.
 ///
 /// Generic implementation for arbitrary data types.
 ///
@@ -41,9 +41,9 @@ namespace blas {
 ///
 /// @param[in] trans
 ///     The equation to be solved:
-///     - Op::NoTrans:   $A   x = b,$
-///     - Op::Trans:     $A^T x = b,$
-///     - Op::ConjTrans: $A^H x = b.$
+///     - Op::NoTrans:   $A   x = b$,
+///     - Op::Trans:     $A^T x = b$,
+///     - Op::ConjTrans: $A^H x = b$.
 ///
 /// @param[in] diag
 ///     Whether A has a unit or non-unit diagonal:

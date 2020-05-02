@@ -14,7 +14,7 @@
 namespace blas {
 
 // =============================================================================
-/// Hermitian matrix rank-2 update,
+/// Hermitian matrix rank-2 update:
 /// \[
 ///     A = \alpha x y^H + \text{conj}(\alpha) y x^H + A,
 /// \]

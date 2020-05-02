@@ -15,7 +15,7 @@ namespace blas {
 // =============================================================================
 /// @return 1-norm of vector,
 ///     $|| Re(x) ||_1 + || Im(x) ||_1
-///         = \sum_{i=0}^{n-1} |Re(x_i)| + |Im(x_i)|.$
+///         = \sum_{i=0}^{n-1} |Re(x_i)| + |Im(x_i)|$.
 ///
 /// Generic implementation for arbitrary data types.
 ///

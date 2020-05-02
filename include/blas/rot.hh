@@ -14,13 +14,10 @@ namespace blas {
 
 // =============================================================================
 /// Apply plane rotation:
-//      [ x^T ]   [  c  s ] [ x^T ]
-//      [ y^T ] = [ -s  c ] [ y^T ]
-//
 /// \[
-///     \begin{bmatrix} x^T   \\ y^T    \end{bmatrix} =
-///     = \begin{bmatrix} c & s \\ -s & c \end{bmatrix}
 ///       \begin{bmatrix} x^T   \\ y^T    \end{bmatrix}
+///     = \begin{bmatrix} c & s \\ -s & c \end{bmatrix}
+///       \begin{bmatrix} x^T   \\ y^T    \end{bmatrix}.
 /// \]
 ///
 /// @see rotg to generate the rotation.

@@ -13,7 +13,7 @@
 namespace blas {
 
 // =============================================================================
-/// Symmetric matrix-vector multiply,
+/// Symmetric matrix-vector multiply:
 /// \[
 ///     y = \alpha A x + \beta y,
 /// \]

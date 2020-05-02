@@ -21,10 +21,10 @@ namespace blas {
 /// \[
 ///     X op(A) = \alpha B,
 /// \]
-/// where op(A) is one of
-///     $op(A) = A,$
-///     $op(A) = A^T,$
-///     $op(A) = A^H,$
+/// where $op(A)$ is one of
+///     $op(A) = A$,
+///     $op(A) = A^T$, or
+///     $op(A) = A^H$,
 /// X and B are m-by-n matrices, and A is an m-by-m or n-by-n, unit or non-unit,
 /// upper or lower triangular matrix.
 ///
@@ -39,9 +39,9 @@ namespace blas {
 ///     Matrix storage, Layout::ColMajor or Layout::RowMajor.
 ///
 /// @param[in] side
-///     Whether op(A) is on the left or right of X:
-///     - Side::Left:  $op(A) X = B.$
-///     - Side::Right: $X op(A) = B.$
+///     Whether $op(A)$ is on the left or right of X:
+///     - Side::Left:  $op(A) X = B$.
+///     - Side::Right: $X op(A) = B$.
 ///
 /// @param[in] uplo
 ///     What part of the matrix A is referenced,
@@ -50,10 +50,10 @@ namespace blas {
 ///     - Uplo::Upper: A is upper triangular.
 ///
 /// @param[in] trans
-///     The form of op(A):
-///     - Op::NoTrans:   $op(A) = A.  $
-///     - Op::Trans:     $op(A) = A^T.$
-///     - Op::ConjTrans: $op(A) = A^H.$
+///     The form of $op(A)$:
+///     - Op::NoTrans:   $op(A) = A$.
+///     - Op::Trans:     $op(A) = A^T$.
+///     - Op::ConjTrans: $op(A) = A^H$.
 ///
 /// @param[in] diag
 ///     Whether A has a unit or non-unit diagonal:

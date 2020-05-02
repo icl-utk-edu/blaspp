@@ -14,7 +14,7 @@
 namespace blas {
 
 // =============================================================================
-/// Hermitian matrix-vector multiply,
+/// Hermitian matrix-vector multiply:
 /// \[
 ///     y = \alpha A x + \beta y,
 /// \]

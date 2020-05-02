@@ -14,13 +14,10 @@ namespace blas {
 
 // =============================================================================
 /// Apply modified (fast) plane rotation, H:
-//      [ x^T ] = H [ x^T ]
-//      [ y^T ]     [ y^T ]
-//
 /// \[
-///     \begin{bmatrix} x^T \\ y^T \end{bmatrix}
-///     = H
 ///       \begin{bmatrix} x^T \\ y^T \end{bmatrix}
+///     = H
+///       \begin{bmatrix} x^T \\ y^T \end{bmatrix}.
 /// \]
 ///
 /// @see rotmg to generate the rotation, and for fuller description.

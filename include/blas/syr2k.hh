@@ -13,7 +13,7 @@
 namespace blas {
 
 // =============================================================================
-/// Symmetric rank-k update,
+/// Symmetric rank-k update:
 /// \[
 ///     C = \alpha A B^T + \alpha B A^T + \beta C,
 /// \]
@@ -38,8 +38,8 @@ namespace blas {
 ///
 /// @param[in] trans
 ///     The operation to be performed:
-///     - Op::NoTrans: $C = \alpha A B^T + \alpha B A^T + \beta C.$
-///     - Op::Trans:   $C = \alpha A^T B + \alpha B^T A + \beta C.$
+///     - Op::NoTrans: $C = \alpha A B^T + \alpha B A^T + \beta C$.
+///     - Op::Trans:   $C = \alpha A^T B + \alpha B^T A + \beta C$.
 ///     - In the real    case, Op::ConjTrans is interpreted as Op::Trans.
 ///       In the complex case, Op::ConjTrans is illegal (see @ref her2k instead).
 ///
