@@ -3,8 +3,8 @@
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
-#ifndef BLAS_DOT_HH
-#define BLAS_DOT_HH
+#ifndef BLAS_DOTU_HH
+#define BLAS_DOTU_HH
 
 #include "blas/util.hh"
 
@@ -13,8 +13,8 @@
 namespace blas {
 
 // =============================================================================
-/// @return dot product, $x^H y$.
-/// @see dotu for unconjugated version, $x^T y$.
+/// @return unconjugated dot product, $x^T y$.
+/// @see dot for conjugated version, $x^H y$.
 ///
 /// Generic implementation for arbitrary data types.
 ///
@@ -35,10 +35,10 @@ namespace blas {
 ///     Stride between elements of y. incy must not be zero.
 ///     If incy < 0, uses elements of y in reverse order: y(n-1), ..., y(0).
 ///
-/// @ingroup dot
+/// @ingroup dotu
 
 template< typename TX, typename TY >
-scalar_type<TX, TY> dot(
+scalar_type<TX, TY> dotu(
     int64_t n,
     TX const *x, int64_t incx,
     TY const *y, int64_t incy )
@@ -54,7 +54,7 @@ scalar_type<TX, TY> dot(
     if (incx == 1 && incy == 1) {
         // unit stride
         for (int64_t i = 0; i < n; ++i) {
-            result += conj(x[i]) * y[i];
+            result += x[i] * y[i];
         }
     }
     else {
@@ -62,7 +62,7 @@ scalar_type<TX, TY> dot(
         int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
         int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
         for (int64_t i = 0; i < n; ++i) {
-            result += conj(x[ix]) * y[iy];
+            result += x[ix] * y[iy];
             ix += incx;
             iy += incy;
         }
@@ -72,4 +72,4 @@ scalar_type<TX, TY> dot(
 
 }  // namespace blas
 
-#endif        //  #ifndef BLAS_DOT_HH
+#endif        //  #ifndef BLAS_DOTU_HH
