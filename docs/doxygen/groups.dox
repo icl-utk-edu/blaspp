@@ -49,16 +49,19 @@
         @brief    $y = \alpha Ax + \beta y$
 
         @defgroup ger          ger:        General matrix rank 1 update
+        @brief    $A = \alpha xy^H + A$
+
+        @defgroup geru         geru:       General matrix rank 1 update, unconjugated
         @brief    $A = \alpha xy^T + A$
 
         @defgroup hemv         hemv:    Hermitian matrix-vector multiply
         @brief    $y = \alpha Ax + \beta y$
 
         @defgroup her          her:     Hermitian rank 1 update
-        @brief    $A = \alpha xx^T + A$
+        @brief    $A = \alpha xx^H + A$
 
         @defgroup her2         her2:    Hermitian rank 2 update
-        @brief    $A = \alpha xy^T + \alpha yx^T + A$
+        @brief    $A = \alpha xy^H + conj(\alpha) yx^H + A$
 
         @defgroup symv         symv:    Symmetric matrix-vector multiply
         @brief    $y = \alpha Ax + \beta y$
@@ -90,10 +93,10 @@
                or $C = \alpha B A + \beta C$ where $A$ is Hermitian
 
         @defgroup herk         herk:  Hermitian rank k update
-        @brief    $C = \alpha A A^T + \beta C$ where $C$ is Hermitian
+        @brief    $C = \alpha A A^H + \beta C$ where $C$ is Hermitian
 
         @defgroup her2k        her2k: Hermitian rank 2k update
-        @brief    $C = \alpha A B^T + \alpha B A^T + \beta C$ where $C$ is Hermitian
+        @brief    $C = \alpha A B^H + conj(\alpha) B A^H + \beta C$ where $C$ is Hermitian
 
         @defgroup symm         symm:  Symmetric matrix multiply
         @brief    $C = \alpha A B + \beta C$
