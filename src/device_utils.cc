@@ -98,7 +98,7 @@ device_side_t    blas::device_side_const(blas::Side side)
 }
 
 // -----------------------------------------------------------------------------
-/// @free a device pointer
+/// free a device pointer
 void blas::device_free(void* ptr)
 {
     #ifdef BLASPP_WITH_CUBLAS
@@ -109,7 +109,7 @@ void blas::device_free(void* ptr)
 }
 
 // -----------------------------------------------------------------------------
-/// @free a pinned memory space
+/// free a pinned memory space
 void blas::device_free_pinned(void* ptr)
 {
     #ifdef BLASPP_WITH_CUBLAS
