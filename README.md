@@ -53,10 +53,13 @@ Documentation
 Getting Help
 --------------------------------------------------------------------------------
 
-For assistance with SLATE, email *slate-user@icl.utk.edu*.
-You can also join the *SLATE User* Google group by going to
-https://groups.google.com/a/icl.utk.edu/forum/#!forum/slate-user
-signing in with your Google credentials, and then clicking `Join group`.
+For assistance, visit the *SLATE User Forum* at
+<https://groups.google.com/a/icl.utk.edu/forum/#!forum/slate-user>.
+Join by signing in with your Google credentials, then clicking
+*Join group to post*.
+
+Bug reports can be filed directly on Bitbucket's issue tracker:
+<http://bitbucket.org/icl/lapackpp/issues>.
 
 * * *
 

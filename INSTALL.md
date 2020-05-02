@@ -195,4 +195,3 @@ and installed using the following:
     # Assuming the working dir is still /my/blaspp/dir/build
     make
     make install
-
