@@ -1,118 +1,166 @@
 pipeline {
-agent none
-triggers { cron ('H H(0-2) * * *') }
-stages {
-stage ('Build'){
-parallel {
-stage ('Build - Caffeine'){
-  agent { node ('caffeine.icl.utk.edu')}
-  steps {
-    sh '''
-      #!/bin/sh +x
-      echo "BLAS++ Building..."
-      hostname && pwd
+    agent none
+    triggers { cron ('H H(0-2) * * *') }
+    stages {
+        //======================================================================
+        stage('Parallel Build') {
+            parallel {
+                //--------------------------------------------------------------
+                stage('Build - Caffeine (gcc 6.4, MKL)') {
+                    agent { node 'caffeine.icl.utk.edu' }
+                    steps {
+                        sh '''
+                        #!/bin/sh +x
+                        echo "BLAS++ Building"
+                        hostname && pwd
 
-      source /home/jmfinney/spack/share/spack/setup-env.sh
-      spack load cmake
-      spack load gcc@6.4.0
-      spack load intel-mkl
-      spack load intel-mpi
+                        source /home/jmfinney/spack/share/spack/setup-env.sh
+                        spack load gcc@6.4.0
+                        spack load intel-mkl
 
-      rm -rf *
+                        export color=no
+                        make config CXXFLAGS="-Werror"
+                        make -j4
+                        ldd test/tester
+                        '''
+                    } // steps
+                    post {
+                        unstable {
+                            slackSend channel: '#slate_ci',
+                                color: 'warning',
+                                message: "${currentBuild.fullDisplayName} Caffeine build unstable (<${env.BUILD_URL}|Open>)"
+                        }
+                        failure {
+                            slackSend channel: '#slate_ci',
+                                color: 'danger',
+                                message: "${currentBuild.fullDisplayName} Caffeine build failed (<${env.BUILD_URL}|Open>)"
+                            mail to: 'slate-dev@icl.utk.edu',
+                                subject: "${currentBuild.fullDisplayName} Caffeine build failed",
+                                body: "See more at ${env.BUILD_URL}"
+                        }
+                    } // post
+                } // stage(Build - Caffeine)
 
-      hg clone http://bitbucket.org/icl/testsweeper
-      cd testsweeper
-      make config
-      sed -i '/CXXFLAGS/s/$/ -DNO_COLOR/' make.inc
-      make
-      cd ..
+                //--------------------------------------------------------------
+                stage('Build - Lips (gcc 6.4, CUDA, MKL)') {
+                    agent { node 'lips.icl.utk.edu' }
+                    steps {
+                        sh '''
+                        #!/bin/sh +x
+                        echo "BLAS++ Building"
+                        hostname && pwd
 
-      hg clone http://bitbucket.org/icl/blaspp
-      cd blaspp
-      make config CXXFLAGS="-Werror"
-      make -j4
-      ldd test/tester | tee ldd_output.txt
-    '''
-  } // steps
-} // build - caffeine
-stage ('Build - Lips'){
-  agent { node ('lips.icl.utk.edu')}
-  steps {
-    sh '''
-      #!/bin/sh +x
-      echo "BLAS++ Building..."
-      hostname && pwd
+                        source /home/jmfinney/spack/share/spack/setup-env.sh
+                        spack load gcc@6.4.0
+                        spack load cuda
+                        spack load intel-mkl
 
-      source /home/jmfinney/spack/share/spack/setup-env.sh
-      spack load cmake
-      spack load gcc@6.4.0
-      spack load cuda
-      spack load intel-mkl
-      spack load intel-mpi
+                        export color=no
+                        make config CXXFLAGS="-Werror"
+                        make -j4
+                        ldd test/tester
+                        '''
+                    } // steps
+                    post {
+                        unstable {
+                            slackSend channel: '#slate_ci',
+                                color: 'warning',
+                                message: "${currentBuild.fullDisplayName} Lips build unstable (<${env.BUILD_URL}|Open>)"
+                        }
+                        failure {
+                            slackSend channel: '#slate_ci',
+                                color: 'danger',
+                                message: "${currentBuild.fullDisplayName} Lips build failed (<${env.BUILD_URL}|Open>)"
+                            mail to: 'slate-dev@icl.utk.edu',
+                                subject: "${currentBuild.fullDisplayName} Lips build failed",
+                                body: "See more at ${env.BUILD_URL}"
+                        }
+                    } // post
+                } // stage(Build - Lips)
+            } // parallel
+        } // stage(Parallel Build)
 
-      rm -rf *
+        //======================================================================
+        stage('Parallel Test') {
+            parallel {
+                //--------------------------------------------------------------
+                stage('Test - Caffeine') {
+                    agent { node 'caffeine.icl.utk.edu' }
+                    steps {
+                        sh '''
+                        #!/bin/sh +x
+                        echo "BLAS++ Testing"
+                        hostname && pwd
 
-      hg clone http://bitbucket.org/icl/testsweeper
-      cd testsweeper
-      make config
-      sed -i '/CXXFLAGS/s/$/ -DNO_COLOR/' make.inc
-      make
-      cd ..
+                        source /home/jmfinney/spack/share/spack/setup-env.sh
+                        spack load gcc@6.4.0
+                        spack load intel-mkl
 
-      hg clone http://bitbucket.org/icl/blaspp
-      cd blaspp
-      make config CXXFLAGS="-Werror"
-      make -j4
-      ldd test/tester | tee ldd_output.txt
-    '''
-  } // steps
-} // build - lips
-} // parallel
-} // stage (build)
-stage ('Test') {
-parallel {
-stage ('Test - Caffeine') {
-  agent { node ('caffeine.icl.utk.edu')}
-  steps {
-    sh '''
-      #!/bin/sh +x
-      echo "BLAS++ Building..."
-      hostname && pwd
+                        cd test
+                        ./run_tests.py --blas1 --blas2 --blas3 --small --xml report.xml
+                        ./run_tests.py --batch-blas3 --xsmall --xml report-batch.xml
+                        '''
+                    } // steps
+                    post {
+                        unstable {
+                            slackSend channel: '#slate_ci',
+                                color: 'warning',
+                                message: "${currentBuild.fullDisplayName} Caffeine test unstable (<${env.BUILD_URL}|Open>)"
+                        }
+                        failure {
+                            slackSend channel: '#slate_ci',
+                                color: 'danger',
+                                message: "${currentBuild.fullDisplayName} Caffeine test failed (<${env.BUILD_URL}|Open>)"
+                            mail to: 'slate-dev@icl.utk.edu',
+                                subject: "${currentBuild.fullDisplayName} Caffeine test failed",
+                                body: "See more at ${env.BUILD_URL}"
+                        }
+                        always {
+                            junit 'test/*.xml'
+                        }
+                    } // post
+                } // stage(Test - Caffeine)
 
-      source /home/jmfinney/spack/share/spack/setup-env.sh
-      spack load gcc@6.4.0
-      spack load intel-mkl
-      spack load intel-mpi
+                //--------------------------------------------------------------
+                stage('Test - Lips') {
+                    agent { node 'lips.icl.utk.edu' }
+                    steps {
+                        sh '''
+                        #!/bin/sh +x
+                        echo "BLAS++ Testing"
+                        hostname && pwd
 
-      cd blaspp/test
-      ./run_tests.py --blas1 --blas2 --blas3 --small --xml report1.xml
-      ./run_tests.py --batch-blas3 --xsmall --xml report2.xml
-    '''
-    junit 'blaspp/test/*.xml'
-  } // steps
-} // stage test caffeine
-stage ('Test - Lips') {
-  agent { node ('lips.icl.utk.edu')}
-  steps {
-    sh '''
-      #!/bin/sh +x
-      echo "BLAS++ Building..."
-      hostname && pwd
+                        source /home/jmfinney/spack/share/spack/setup-env.sh
+                        spack load gcc@6.4.0
+                        spack load cuda
+                        spack load intel-mkl
 
-      source /home/jmfinney/spack/share/spack/setup-env.sh
-      spack load gcc@6.4.0
-      spack load cuda
-      spack load intel-mkl
-      spack load intel-mpi
-
-      cd blaspp/test
-      ./run_tests.py --blas1 --blas2 --blas3 --small --xml report1.xml
-      ./run_tests.py --batch-blas3 --xsmall --xml report2.xml
-    '''
-    junit 'blaspp/test/*.xml'
-  } // steps
-} // stage test lips
-} // parallel
-} // stage (test)
-} // stages
+                        cd test
+                        ./run_tests.py --blas1 --blas2 --blas3 --small --xml report.xml
+                        ./run_tests.py --batch-blas3 --xsmall --xml report-batch.xml
+                        '''
+                    } // steps
+                    post {
+                        unstable {
+                            slackSend channel: '#slate_ci',
+                                color: 'warning',
+                                message: "${currentBuild.fullDisplayName} Lips test unstable (<${env.BUILD_URL}|Open>)"
+                        }
+                        // Lips currently has spurious errors; don't email them.
+                        failure {
+                            slackSend channel: '#slate_ci',
+                                color: 'danger',
+                                message: "${currentBuild.fullDisplayName} Lips test failed (<${env.BUILD_URL}|Open>)"
+                            mail to: 'slate-dev@icl.utk.edu',
+                                subject: "${currentBuild.fullDisplayName} Lips test failed",
+                                body: "See more at ${env.BUILD_URL}"
+                        }
+                        always {
+                            junit 'test/*.xml'
+                        }
+                    } // post
+                } // stage(Test - Lips)
+            } // parallel
+        } // stage(Parallel Test)
+    } // stages
 } // pipeline
