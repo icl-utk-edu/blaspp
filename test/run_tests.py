@@ -59,6 +59,8 @@ categories = [
     group_cat.add_argument( '--blas2', action='store_true', help='run Level 2 BLAS tests' ),
     group_cat.add_argument( '--blas3', action='store_true', help='run Level 3 BLAS tests' ),
     group_cat.add_argument( '--batch-blas3', action='store_true', help='run Level 3 Batch BLAS tests' ),
+    group_cat.add_argument( '--blas3-device', action='store_true', help='run Level 3 BLAS on devices (GPUs)' ),
+    group_cat.add_argument( '--batch-blas3-device', action='store_true', help='run Level 3 Batch BLAS on devices (GPUs)' ),
 ]
 # map category objects to category names: ['lu', 'chol', ...]
 categories = list( map( lambda x: x.dest, categories ) )
@@ -107,7 +109,8 @@ if (not (opts.square or opts.tall or opts.wide or opts.mnk)):
 # by default, run all categories
 if (opts.tests or not any( map( lambda c: opts.__dict__[ c ], categories ))):
     for c in categories:
-        opts.__dict__[ c ] = True
+        if (not c.endswith('device')):
+            opts.__dict__[ c ] = True
 
 # ------------------------------------------------------------------------------
 # parameters
@@ -305,6 +308,41 @@ if (opts.batch_blas3):
     [ 'batch-syr2k', dtype_complex + batch + layout + align + uplo + trans_nt + mn ],
     ]
 
+if (opts.blas3_device):
+    cmds += [
+    [ 'dev-gemm',  dtype         + layout + align + transA + transB + mnk ],
+    [ 'dev-hemm',  dtype         + layout + align + side + uplo + mn ],
+    [ 'dev-symm',  dtype         + layout + align + side + uplo + mn ],
+    [ 'dev-trmm',  dtype         + layout + align + side + uplo + trans + diag + mn ],
+    [ 'dev-trsm',  dtype         + layout + align + side + uplo + trans + diag + mn ],
+    [ 'dev-herk',  dtype_real    + layout + align + uplo + trans    + mn ],
+    [ 'dev-herk',  dtype_complex + layout + align + uplo + trans_nc + mn ],
+    [ 'dev-syrk',  dtype_real    + layout + align + uplo + trans    + mn ],
+    [ 'dev-syrk',  dtype_complex + layout + align + uplo + trans_nt + mn ],
+    [ 'dev-her2k', dtype_real    + layout + align + uplo + trans    + mn ],
+    [ 'dev-her2k', dtype_complex + layout + align + uplo + trans_nc + mn ],
+    [ 'dev-syr2k', dtype_real    + layout + align + uplo + trans    + mn ],
+    [ 'dev-syr2k', dtype_complex + layout + align + uplo + trans_nt + mn ],
+    ]
+
+if (opts.batch_blas3_device):
+    cmds += [
+    [ 'dev-batch-gemm',  dtype         + layout + align + transA + transB + mnk ],
+    [ 'dev-batch-hemm',  dtype         + layout + align + side + uplo + mn ],
+    [ 'dev-batch-symm',  dtype         + layout + align + side + uplo + mn ],
+    [ 'dev-batch-trmm',  dtype         + layout + align + side + uplo + trans + diag + mn ],
+    [ 'dev-batch-trsm',  dtype         + layout + align + side + uplo + trans + diag + mn ],
+    [ 'dev-batch-herk',  dtype_real    + layout + align + uplo + trans    + mn ],
+    [ 'dev-batch-herk',  dtype_complex + layout + align + uplo + trans_nc + mn ],
+    [ 'dev-batch-syrk',  dtype_real    + layout + align + uplo + trans    + mn ],
+    [ 'dev-batch-syrk',  dtype_complex + layout + align + uplo + trans_nt + mn ],
+    [ 'dev-batch-her2k', dtype_real    + layout + align + uplo + trans    + mn ],
+    [ 'dev-batch-her2k', dtype_complex + layout + align + uplo + trans_nc + mn ],
+    [ 'dev-batch-syr2k', dtype_real    + layout + align + uplo + trans    + mn ],
+    [ 'dev-batch-syr2k', dtype_complex + layout + align + uplo + trans_nt + mn ],
+    ]
+
+
 # ------------------------------------------------------------------------------
 # when output is redirected to file instead of TTY console,
 # print extra messages to stderr on TTY console.
@@ -379,6 +417,7 @@ seen = set()
 for cmd in cmds:
     if (run_all or cmd[0] in opts.tests):
         seen.add( cmd[0] )
+        print( cmd )
         (err, output) = run_test( cmd )
         if (err):
             failed_tests.append( (cmd[0], err, output) )
