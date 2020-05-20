@@ -417,7 +417,6 @@ seen = set()
 for cmd in cmds:
     if (run_all or cmd[0] in opts.tests):
         seen.add( cmd[0] )
-        print( cmd )
         (err, output) = run_test( cmd )
         if (err):
             failed_tests.append( (cmd[0], err, output) )
