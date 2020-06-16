@@ -137,7 +137,9 @@ pipeline {
 
                         cd test
                         ./run_tests.py --blas1 --blas2 --blas3 --small --xml report.xml
-                        ./run_tests.py --batch-blas3 --xsmall --xml report-batch.xml
+                        ./run_tests.py --batch-blas3          --xsmall --xml report-batch.xml
+                        ./run_tests.py --blas3-device          --small --xml report-device.xml
+                        ./run_tests.py --batch-blas3-device   --xsmall --xml report-batch-device.xml
                         '''
                     } // steps
                     post {
@@ -146,7 +148,6 @@ pipeline {
                                 color: 'warning',
                                 message: "${currentBuild.fullDisplayName} Lips test unstable (<${env.BUILD_URL}|Open>)"
                         }
-                        // Lips currently has spurious errors; don't email them.
                         failure {
                             slackSend channel: '#slate_ci',
                                 color: 'danger',
