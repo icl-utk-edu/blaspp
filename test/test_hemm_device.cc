@@ -44,7 +44,6 @@ void test_hemm_device_work( Params& params, bool run )
     int64_t An = (side == Side::Left ? m : n);
     int64_t Cm = m;
     int64_t Cn = n;
-    int64_t Bm = Cm, Bn = Cn;
     if (layout == Layout::RowMajor)
         std::swap( Cm, Cn );
     int64_t lda = roundup( An, align );
@@ -76,7 +75,7 @@ void test_hemm_device_work( Params& params, bool run )
     lapack_lacpy( "g", Cm, Cn, C, ldc, Cref, ldc );
 
     blas::device_setmatrix(An, An, A, lda, dA, lda, queue);
-    blas::device_setmatrix(Bm, Bn, B, ldb, dB, ldb, queue);
+    blas::device_setmatrix(Cm, Cn, B, ldb, dB, ldb, queue);
     blas::device_setmatrix(Cm, Cn, C, ldc, dC, ldc, queue);
     queue.sync();
 
