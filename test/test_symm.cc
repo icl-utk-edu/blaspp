@@ -36,10 +36,6 @@ void test_symm_work( Params& params, bool run )
     params.ref_time();
     params.ref_gflops();
 
-    // adjust header to msec
-    params.time.name( "BLAS++\ntime (ms)" );
-    params.ref_time.name( "Ref.\ntime (ms)" );
-
     if (! run)
         return;
 
@@ -117,7 +113,7 @@ void test_symm_work( Params& params, bool run )
     time = get_wtime() - time;
 
     double gflop = Gflop < scalar_t >::symm( side, m, n );
-    params.time()   = time * 1000;  // msec
+    params.time()   = time;
     params.gflops() = gflop / time;
 
     if (verbose >= 2) {
@@ -134,7 +130,7 @@ void test_symm_work( Params& params, bool run )
                     m, n, alpha, A, lda, B, ldb, beta, Cref, ldc );
         time = get_wtime() - time;
 
-        params.ref_time()   = time * 1000;  // msec
+        params.ref_time()   = time;
         params.ref_gflops() = gflop / time;
 
         if (verbose >= 2) {

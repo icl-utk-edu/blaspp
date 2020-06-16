@@ -36,10 +36,6 @@ void test_batch_symm_work( Params& params, bool run )
     params.ref_time();
     params.ref_gflops();
 
-    // adjust header to msec
-    params.time.name( "BLAS++\ntime (ms)" );
-    params.ref_time.name( "Ref.\ntime (ms)" );
-
     if (! run)
         return;
 
@@ -117,7 +113,7 @@ void test_batch_symm_work( Params& params, bool run )
     time = get_wtime() - time;
 
     double gflop = batch * Gflop < scalar_t >::symm( side_, m_, n_ );
-    params.time()   = time * 1000;  // msec
+    params.time()   = time;
     params.gflops() = gflop / time;
 
     if (params.ref() == 'y' || params.check() == 'y') {
@@ -132,7 +128,7 @@ void test_batch_symm_work( Params& params, bool run )
         }
         time = get_wtime() - time;
 
-        params.ref_time()   = time * 1000;  // msec
+        params.ref_time()   = time;
         params.ref_gflops() = gflop / time;
 
         // check error compared to reference

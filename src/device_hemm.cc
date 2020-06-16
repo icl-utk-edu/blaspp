@@ -107,10 +107,10 @@ void blas::hemm(
 
     device_side_t side_ = device_side_const( side );
     device_uplo_t uplo_ = device_uplo_const( uplo );
-
     blas::set_device( queue.device() );
     DEVICE_chemm(
-            queue.handle(), side_, uplo_, m_, n_,
+            queue.handle(),
+            side_, uplo_, m_, n_,
             alpha, dA, ldda_,
                    dB, lddb_,
             beta,  dC, lddc_ );
@@ -180,10 +180,10 @@ void blas::hemm(
 
     device_side_t side_ = device_side_const( side );
     device_uplo_t uplo_ = device_uplo_const( uplo );
-
     blas::set_device( queue.device() );
     DEVICE_zhemm(
-            queue.handle(), side_, uplo_, m_, n_,
+            queue.handle(),
+            side_, uplo_, m_, n_,
             alpha, dA, ldda_,
                    dB, lddb_,
             beta,  dC, lddc_ );
