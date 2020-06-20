@@ -606,7 +606,7 @@ def get_package( name, directories, repo_url, tar_url, tar_filename ):
     '''
     Searches for a package, generally used for internal packages.
     Looks for a directory in directories; if found return directory.
-    If not found, tries to 'hg clone repo_url' to the last directory.
+    If not found, tries to 'git clone repo_url' to the last directory.
     If that fails, tries to download tar_url and unpack it to the last directory.
     '''
     global log
@@ -623,11 +623,11 @@ def get_package( name, directories, repo_url, tar_url, tar_filename ):
 
     if (repo_url):
         if (interactive()):
-            print( name +' not found; hg clone '+ repo_url +'? [Y/n] ', end='' )
+            print( name +' not found; git clone '+ repo_url +'? [Y/n] ', end='' )
             sys.stdout.flush()
             i = input().lower()
         if (not interactive() or i in ('', 'y', 'yes')):
-            cmd = 'hg clone '+ repo_url +' '+ directory
+            cmd = 'git clone '+ repo_url +' '+ directory
             print_test( 'download: ' + cmd )
             (err, stdout, stderr) = run( cmd )
             print_result( 'download', err )

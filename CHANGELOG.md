@@ -1,4 +1,4 @@
-2020.03.00
+2020.06.00
   - Initial release. Functionality:
     - Level 1, 2, 3 BLAS for CPU
     - Level 3 BLAS for GPU

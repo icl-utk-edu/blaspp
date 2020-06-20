@@ -60,7 +60,7 @@ are set so your compiler can find libraries. See INSTALL.md for more details.
 
 #-------------------------------------------------------------------------------
 def main():
-    config.init( prefix='/usr/local/blaspp' )
+    config.init( prefix='/opt/slate' )
     config.prog_cxx()
     config.prog_cxx_flags([
         '-O2', '-std=c++11', '-MMD',
@@ -103,7 +103,7 @@ def main():
         'testsweeper',
         ['../testsweeper', './testsweeper'],
         'https://bitbucket.org/icl/testsweeper',
-        'https://bitbucket.org/icl/testsweeper/get/tip.tar.gz',
+        'https://bitbucket.org/icl/testsweeper/get/master.tar.gz',
         'testsweeper.tar.gz' )
     if (not testsweeper):
         print_warn( 'BLAS++ needs TestSweeper only in testers.' )

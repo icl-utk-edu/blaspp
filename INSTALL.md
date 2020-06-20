@@ -19,23 +19,40 @@ Option 2: CMake
     cmake ..
     make && make install
 
+
+Environment variables (Makefile and CMake)
+--------------------------------------------------------------------------------
+
+Standard environment variables affect both Makefile (configure.py) and CMake.
+These include:
+
+CXX                 C++ compiler
+CXXFLAGS            C++ compiler flags
+LDFLAGS             linker flags
+CPATH               compiler include search path
+LIBRARY_PATH        compile-time library search path
+LD_LIBRARY_PATH     runtime library search path
+DYLD_LIBRARY_PATH   runtime library search path on macOS
+
+
 Makefile Installation
 --------------------------------------------------------------------------------
 
+Available targets:
+
     make           - configures (if make.inc is missing),
-                     then compiles the library and tester.
-    make config    - configures BLAS++, creating a make.inc file.
-    make lib       - compiles the library (lib/libblaspp.so).
-    make tester    - compiles test/tester.
+                     then compiles the library and tester
+    make config    - configures BLAS++, creating a make.inc file
+    make lib       - compiles the library (lib/libblaspp.so)
+    make tester    - compiles test/tester
     make docs      - generates documentation in docs/html/index.html
-    make install   - installs the library and headers to ${prefix}.
-    make uninstall - remove installed library and headers from ${prefix}.
-    make clean     - deletes object (*.o) and library (*.a, *.so) files.
-    make distclean - also deletes make.inc and dependency files (*.d).
-    If static=1, makes .a instead of .so library.
+    make install   - installs the library and headers to ${prefix}
+    make uninstall - remove installed library and headers from ${prefix}
+    make clean     - deletes object (*.o) and library (*.a, *.so) files
+    make distclean - also deletes make.inc and dependency files (*.d)
 
 
-### Details
+### Options
 
     make config [options]
 
@@ -47,18 +64,13 @@ script can be invoked directly:
     python configure.py [options]
 
 Running `configure.py -h` will print a help message with the current options.
-Variables that affect configure.py include:
+In addition to those listed in the Environment variables section above,
+options include:
 
-    CXX                C++ compiler
-    CXXFLAGS           C++ compiler flags
-    LDFLAGS            linker flags
-    CPATH              compiler include search path
-    LIBRARY_PATH       compile time library search path
-    LD_LIBRARY_PATH    runtime library search path
-    DYLD_LIBRARY_PATH  runtime library search path on macOS
-    prefix             where to install:
-                       headers go   in ${prefix}/include,
-                       library goes in ${prefix}/lib${LIB_SUFFIX}
+    static={0,1}        build as shared (default) or static library
+    prefix              where to install, default /opt/slate.
+                        headers go   in ${prefix}/include,
+                        library goes in ${prefix}/lib${LIB_SUFFIX}
 
 These can be set in your environment or on the command line, e.g.,
 
@@ -117,24 +129,39 @@ issue. The log shows the option being tested, the exact command run, the
 command's standard output (stdout), error output (stderr), and exit status. All
 test files are in the config directory.
 
+
 CMake Installation
 --------------------------------------------------------------------------------
 
-The CMake script enforces an out of source build. The simplest way to accomplish
-this is to create a build directory off the BLAS++ root directory:
+The CMake script enforces an out-of-source build. Create a build
+directory under the BLAS++ root directory:
 
-    cd /my/blaspp/dir
+    cd /path/to/blaspp
     mkdir build && cd build
+    cmake [options] ..
+    make
+    make install
+
 
 ### Options
 
-By default BLAS++ is set to install into `/opt/slate/`. If you wish to
-change this, CMake needs to be told where to install the BLAS++ library.
-You can do this by defining CMAKE_INSTALL_PREFIX variable via the CMake
-command line:
+CMake uses the settings in the Environment variables section above.
+Additionally, options include:
 
-    # Assuming the working dir is still /my/blaspp/dir/build
-    cmake -DCMAKE_INSTALL_PREFIX=/path/to/my/dir ..
+    USE_OPENMP={on,off}         use OpenMP, if available
+    BLASPP_BUILD_TESTS={on,off} build test executable (example)
+    CMAKE_INSTALL_PREFIX        where to install, default /opt/slate
+
+These options are defined on the command line using `-D`, e.g.,
+
+# in build directory
+cmake -DCOLOR=off -DCMAKE_INSTALL_PREFIX=/usr/local ..
+
+Alternatively, use the `ccmake` text-based interface or the CMake app GUI.
+
+# in build directory
+ccmake ..
+Type 'c' to configure, then 'g' to generate Makefile
     
 By default BLAS++ builds a testing suite located in `blaspp/test`.  To disable,
 define `BLASPP_BUILD_TESTS` as `OFF`, as follows:
@@ -188,10 +215,14 @@ one of the following strings:
 
 This will limit the search to only that library.
 
-### CMake build
-Once CMake generates the required makefiles, BLAS++ can be built
-and installed using the following:
+To re-configure CMake, you may need to delete CMake's cache:
 
-    # Assuming the working dir is still /my/blaspp/dir/build
-    make
-    make install
+# in build directory
+rm CMakeCache.txt
+# or
+rm -rf *
+
+To debug the build, set `VERBOSE`:
+
+# in build directory, after running cmake
+make VERBOSE=1
