@@ -26,13 +26,13 @@ Environment variables (Makefile and CMake)
 Standard environment variables affect both Makefile (configure.py) and CMake.
 These include:
 
-CXX                 C++ compiler
-CXXFLAGS            C++ compiler flags
-LDFLAGS             linker flags
-CPATH               compiler include search path
-LIBRARY_PATH        compile-time library search path
-LD_LIBRARY_PATH     runtime library search path
-DYLD_LIBRARY_PATH   runtime library search path on macOS
+    CXX                 C++ compiler
+    CXXFLAGS            C++ compiler flags
+    LDFLAGS             linker flags
+    CPATH               compiler include search path
+    LIBRARY_PATH        compile-time library search path
+    LD_LIBRARY_PATH     runtime library search path
+    DYLD_LIBRARY_PATH   runtime library search path on macOS
 
 
 Makefile Installation
@@ -146,83 +146,78 @@ directory under the BLAS++ root directory:
 ### Options
 
 CMake uses the settings in the Environment variables section above.
-Additionally, options include:
+Standard CMake options include:
 
-    USE_OPENMP={on,off}         use OpenMP, if available
-    BLASPP_BUILD_TESTS={on,off} build test executable (example)
+    BUILD_SHARED_LIBS={ON,off}  build as shared (default) or static library
     CMAKE_INSTALL_PREFIX        where to install, default /opt/slate
+    BLA_VENDOR
+        use CMake's FindBLAS, instead of BLAS++ search. For values, see:
+        https://cmake.org/cmake/help/v3.14/module/FindBLAS.html
+
+BLAS++ specific options include (all values case insensitive):
+
+    blas
+        BLAS libraries to search for. One or more of:
+        auto            search for all libraries (default)
+        LibSci          Cray LibSci
+        MKL             Intel MKL
+        ESSL            IBM ESSL
+        OpenBLAS        OpenBLAS
+        Accelerate      Apple Accelerate framework
+        ACML            AMD ACML (deprecated)
+        generic         -lblas
+
+    blas_int
+        BLAS integer size to search for. One or more of:
+        auto            search for both sizes (default)
+        int             32-bit int (LP64 model)
+        int64           64-bit int (ILP64 model)
+
+    blas_threaded
+        Whether to search for multi-threaded or sequential BLAS. One or more of:
+        auto            search for both threaded and sequential BLAS (default)
+        on              multi-threaded BLAS
+        off             sequential BLAS
+
+    blas_fortran
+        Fortran interface to use. Currently applies only to Intel MKL.
+        auto            search for both interfaces (default)
+        ifort           use Intel ifort interfaces (e.g., libmkl_intel_lp64)
+        gfortran        use GNU gfortran interfaces (e.g., libmkl_gf_lp64)
+
+    BLAS_LIBRARIES
+        Specify the exact library, overriding the built-in search. E.g.,
+        cmake -DBLAS_LIBRARIES='-lopenblas' ..
+
+    color={ON,off}                use ANSI colors in output
+    use_openmp={ON,off}           use OpenMP, if available
+    build_tests={ON,off}          build test suite (test/tester)
+    use_cmake_find_blas={on,OFF}  use CMake's FindBLAS, instead of BLAS++ search
+
+If `build_tests` is enabled, the build will require the TestSweeper
+library to be installed via CMake prior to compilation. Information and
+installation instructions can be found at https://bitbucket.org/icl/testsweeper.
+Tests also require CBLAS and LAPACK.
 
 These options are defined on the command line using `-D`, e.g.,
 
-# in build directory
-cmake -DCOLOR=off -DCMAKE_INSTALL_PREFIX=/usr/local ..
+    # in build directory
+    cmake -Dblas=mkl -Dbuild_tests=off -DCMAKE_INSTALL_PREFIX=/usr/local ..
 
 Alternatively, use the `ccmake` text-based interface or the CMake app GUI.
 
-# in build directory
-ccmake ..
-Type 'c' to configure, then 'g' to generate Makefile
-    
-By default BLAS++ builds a testing suite located in `blaspp/test`.  To disable,
-define `BLASPP_BUILD_TESTS` as `OFF`, as follows:
-
-    # Disable building BLASPP test suite
-    cmake -DBLASPP_BUILD_TESTS=OFF ..
-
-If `BLASPP_BUILD_TESTS` is enabled, the build will require the TestSweeper
-library to be installed via CMake prior to compilation.  Information and 
-installation instructions can be found at https://bitbucket.org/icl/testsweeper.
-
-#### BLAS library options
-
-In order the BLAS++ CMake script will:
-
- 1. If `BLAS_LIBRARIES` is set, try the user defined BLAS library.
- 2. If `USE_OPTIMIZED_BLAS` is set, try the CMake default `find_package(BLAS)`.
- 3. Query the system to find a usable backend.
-
-To specify a particular BLAS backend library, one can define `BLAS_LIBRARIES`
-and the configuration script will attempt to link against the explicitly 
-provided library.  If this is unsuccessful, this wil generate a CMake error
-and exit configuration.
-
-If `USE_OPTIMIZE_BLAS` is set, then `find_package(BLAS)` will be called and, 
-if successful, BLAS++ will link against the CMake provided BLAS library.  If
-unsuccessful, the last option will be attempted. 
-
-If no other options are selected, or the second is unsuccessful, the BLAS++
-CMake script will query the system for a BLAS library by compiling and 
-executing several small executables during its configuration.  In order of
-precedence, it will find:
-
- 1. Intel MKL
- 2. AMD ACML
- 3. IBM ESSL
- 4. OpenBLAS
- 5. Accelerate
- 6. BLAS - generically named BLAS library found in the system path
- 
-If one wishes to limit those options, one can define`BLAS_LIBRARY` as
-one of the following strings:
-
-    "Intel MKL"
-    "AMD ACML"
-    "Cray LibSci"
-    "IBM ESSL"
-    "OpenBLAS"
-    "Apple Accelerate"
-    "generic"
-
-This will limit the search to only that library.
+    # in build directory
+    ccmake ..
+    Type 'c' to configure, then 'g' to generate Makefile
 
 To re-configure CMake, you may need to delete CMake's cache:
 
-# in build directory
-rm CMakeCache.txt
-# or
-rm -rf *
+    # in build directory
+    rm CMakeCache.txt
+    # or
+    rm -rf *
 
 To debug the build, set `VERBOSE`:
 
-# in build directory, after running cmake
-make VERBOSE=1
+    # in build directory, after running cmake
+    make VERBOSE=1
