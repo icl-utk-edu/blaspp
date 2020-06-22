@@ -1,4 +1,5 @@
-add_executable(blaspp_test
+add_executable(
+    blaspp_test
     test.cc
     test_util.cc
     test_asum.cc
@@ -49,13 +50,15 @@ add_executable(blaspp_test
     lapack_wrappers.cc
 )
 
-include(CheckLanguage)
-check_language(CUDA)
-if(CMAKE_CUDA_COMPILER)
-    enable_language(CUDA)
+include( CheckLanguage )
+check_language( CUDA )
+if (CMAKE_CUDA_COMPILER)
+    enable_language( CUDA )
 
-    message(STATUS "Building CUDA wrapper testers.")
-    target_sources(blaspp_test PRIVATE
+    message( STATUS "Building CUDA wrapper testers." )
+    target_sources(
+        blaspp_test
+        PRIVATE
         test_batch_gemm_device.cc
         test_batch_hemm_device.cc
         test_batch_her2k_device.cc
@@ -76,22 +79,25 @@ if(CMAKE_CUDA_COMPILER)
         test_trsm_device.cc
     )
 else()
-  message(STATUS "No CUDA support")
+    message( STATUS "No CUDA support" )
 endif()
 
-set_target_properties(blaspp_test PROPERTIES
-    CXX_STANDARD 11
-    CXX_STANDARD_REQUIRED ON
-    CXX_EXTENSIONS OFF
-    POSITION_INDEPENDENT_CODE ON
+set_target_properties(
+    blaspp_test
+    PROPERTIES
+        CXX_STANDARD 11
+        CXX_STANDARD_REQUIRED ON
+        CXX_EXTENSIONS OFF
+        POSITION_INDEPENDENT_CODE ON
 )
 
 # Set -Dtestsweeper_DIR=/path/to/testsweeper
-if(0)
-if(testsweeper_DIR)
-    message(STATUS "Found using user supplied testsweeper_DIR to find testsweeper")
+if (0)
+if (testsweeper_DIR)
+    message( STATUS "Found using user supplied testsweeper_DIR to find testsweeper" )
 else()
-    find_path(testsweeper_DIR testsweeperConfig.cmake
+    find_path(
+        testsweeper_DIR testsweeperConfig.cmake
         PATHS
             ${CMAKE_INSTALL_PREFIX}
             ${CMAKE_INSTALL_PREFIX}/test
@@ -99,28 +105,28 @@ else()
     )
 endif()
 endif()
-#message("testsweeper_DIR: ${testsweeper_DIR}")
+#message( "testsweeper_DIR: ${testsweeper_DIR}" )
 
-if(NOT BLASPP_BUILD_TESTS)
-    set_target_properties(blaspp_test
-        EXCLUDE_FROM_ALL
-    )
+if (NOT BUILD_TESTS)
+    set_target_properties( blaspp_test EXCLUDE_FROM_ALL )
 endif()
 
-find_package(testsweeper)
-target_link_libraries(blaspp_test
+find_package( testsweeper )
+target_link_libraries(
+    blaspp_test
     testsweeper
     blaspp
     #${BLAS_links}
 )
 
-if(NOT ${is_accelerate} STREQUAL "-1")
-    set(blas_include_dir "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers/")
+if (NOT ${is_accelerate} STREQUAL "-1")
+    set( blas_include_dir "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers/" )
 else()
-    set(blas_include_dir "")
+    set( blas_include_dir "" )
 endif()
 
-target_include_directories(blaspp_test
+target_include_directories(
+    blaspp_test
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
         #${CMAKE_CURRENT_SOURCE_DIR}/../include
@@ -128,30 +134,34 @@ target_include_directories(blaspp_test
         #"/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers/"
         #${testsweeper_DIR}/include
 )
-if(0)
-    target_compile_definitions(blaspp_test PRIVATE
-        ${FORTRAN_MANGLING_DEFINES}
-        ${BLAS_DEFINES}
-        ${BLAS_RETURN}
-        ${MKL_DEFINES}
-        ${CBLAS_DEFINES}
-        ${LAPACK_DEFINES}
-        ${BLAS_int}
+if (0)
+    target_compile_definitions(
+        blaspp_test
+        PRIVATE
+            ${FORTRAN_MANGLING_DEFINES}
+            ${BLAS_DEFINES}
+            ${BLAS_RETURN}
+            ${MKL_DEFINES}
+            ${CBLAS_DEFINES}
+            ${LAPACK_DEFINES}
+            ${BLAS_int}
      )
 endif()
 
 # Since we can't do 'make test'...
-add_custom_target(testing DEPENDS blaspp_test)
+add_custom_target( testing DEPENDS blaspp_test )
 
 # Move test script to build directory
-add_custom_command(TARGET blaspp_test POST_BUILD
+add_custom_command(
+    TARGET blaspp_test POST_BUILD
     COMMAND
         cp ${CMAKE_CURRENT_SOURCE_DIR}/run_tests.py
            ${CMAKE_CURRENT_BINARY_DIR}/run_tests.py
 )
 
 #Move test script to build directory
-add_custom_command(TARGET blaspp_test POST_BUILD
+add_custom_command(
+    TARGET blaspp_test POST_BUILD
     COMMAND
         cp ${CMAKE_CURRENT_BINARY_DIR}/blaspp_test
            ${CMAKE_CURRENT_BINARY_DIR}/tester

@@ -3,13 +3,13 @@
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
-#message("blas config found: " ${blas_config_found})
-if(blas_config_found STREQUAL "TRUE")
-    message("BLAS configuration already done!")
+#message( "blas config found: " ${blas_config_found} )
+if (blas_config_found STREQUAL "TRUE")
+    message( "BLAS configuration already done!" )
     return()
 endif()
 
-if(COLOR)
+if (COLOR)
     string(ASCII 27 Esc)
     set(Red         "${Esc}[31m")
     set(Blue        "${Esc}[34m")
@@ -21,17 +21,18 @@ else()
     set(ColourReset "")
 endif()
 
-message(STATUS "Checking for BLAS library options")
+message( STATUS "Checking for BLAS library options" )
 
-set(run_res1 "")
-set(compile_res1 "")
-set(run_output1 "")
-set(compile_output1 "")
+set( run_res1 "" )
+set( compile_res1 "" )
+set( run_output1 "" )
+set( compile_output1 "" )
 
-if(${BLAS_DEFINES} MATCHES "HAVE_BLAS")
-    #message(STATUS "Checking for library vendors ...")
+if (${BLAS_DEFINES} MATCHES "HAVE_BLAS")
+    #message( STATUS "Checking for library vendors ..." )
 
-    try_run(run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
+    try_run(
+        run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
         SOURCES
             ${CMAKE_CURRENT_SOURCE_DIR}/config/mkl_version.cc
         LINK_LIBRARIES
@@ -46,20 +47,21 @@ if(${BLAS_DEFINES} MATCHES "HAVE_BLAS")
     )
 
     if (compile_res1 AND "${run_output1}" MATCHES "MKL_VERSION")
-        message("${Blue}  ${run_output1}${ColourReset}")
-        set(LIB_DEFINES "HAVE_MKL" CACHE INTERNAL "")
+        message( "${Blue}  ${run_output1}${ColourReset}" )
+        set( LIB_DEFINES "HAVE_MKL" CACHE INTERNAL "" )
     else()
-        set(LIB_DEFINES "")
+        set( LIB_DEFINES "" )
     endif()
-    set(run_res1 "")
-    set(compile_res1 "")
-    set(run_output1 "")
-    set(compile_output1 "")
+    set( run_res1 "" )
+    set( compile_res1 "" )
+    set( run_output1 "" )
+    set( compile_output1 "" )
 endif()
 
-if(${BLAS_DEFINES} MATCHES "HAVE_BLAS" AND
-   "${LIB_DEFINES}" STREQUAL "")
-    try_run(run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
+if (BLAS_DEFINES MATCHES "HAVE_BLAS"
+    AND LIB_DEFINES STREQUAL "")
+    try_run(
+        run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
         SOURCES
             ${CMAKE_CURRENT_SOURCE_DIR}/config/acml_version.cc
         LINK_LIBRARIES
@@ -74,20 +76,21 @@ if(${BLAS_DEFINES} MATCHES "HAVE_BLAS" AND
     )
 
     if (compile_res1 AND "${run_output1}" MATCHES "ok")
-        message("${Blue}  ${run_output1}${ColourReset}")
-        set(LIB_DEFINES "HAVE_ACML" CACHE INTERNAL "")
+        message( "${Blue}  ${run_output1}${ColourReset}" )
+        set( LIB_DEFINES "HAVE_ACML" CACHE INTERNAL "" )
     else()
-        set(LIB_DEFINES "" CACHE INTERNAL "")
+        set( LIB_DEFINES "" CACHE INTERNAL "" )
     endif()
-    set(run_res1 "")
-    set(compile_res1 "")
-    set(run_output1 "")
-    set(compile_output1 "")
+    set( run_res1 "" )
+    set( compile_res1 "" )
+    set( run_output1 "" )
+    set( compile_output1 "" )
 endif()
 
-if(${BLAS_DEFINES} MATCHES "HAVE_BLAS" AND
+if (${BLAS_DEFINES} MATCHES "HAVE_BLAS" AND
    "${LIB_DEFINES}" STREQUAL "")
-    try_run(run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
+    try_run(
+        run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
         SOURCES
             ${CMAKE_CURRENT_SOURCE_DIR}/config/essl_version.cc
         LINK_LIBRARIES
@@ -102,20 +105,21 @@ if(${BLAS_DEFINES} MATCHES "HAVE_BLAS" AND
     )
 
     if (compile_res1 AND "${run_output1}" MATCHES "ESSL_VERSION")
-        message("${Blue}  ${run_output1}${ColourReset}")
-        set(LIB_DEFINES "HAVE_ESSL" CACHE INTERNAL "")
+        message( "${Blue}  ${run_output1}${ColourReset}" )
+        set( LIB_DEFINES "HAVE_ESSL" CACHE INTERNAL "" )
     else()
-        set(LIB_DEFINES "" CACHE INTERNAL "")
+        set( LIB_DEFINES "" CACHE INTERNAL "" )
     endif()
-    set(run_res1 "")
-    set(compile_res1 "")
-    set(run_output1 "")
-    set(compile_output1 "")
+    set( run_res1 "" )
+    set( compile_res1 "" )
+    set( run_output1 "" )
+    set( compile_output1 "" )
 endif()
 
-if(${BLAS_DEFINES} MATCHES "HAVE_BLAS" AND
+if (${BLAS_DEFINES} MATCHES "HAVE_BLAS" AND
     "${LIB_DEFINES}" STREQUAL "")
-    try_run(run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
+    try_run(
+        run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
         SOURCES
             ${CMAKE_CURRENT_SOURCE_DIR}/config/openblas_version.cc
         LINK_LIBRARIES
@@ -130,20 +134,21 @@ if(${BLAS_DEFINES} MATCHES "HAVE_BLAS" AND
     )
 
     if (compile_res1 AND "${run_output1}" MATCHES "ok")
-        message("${Blue}  ${run_output1}${ColourReset}")
-        set(LIB_DEFINES "HAVE_OPENBLAS" CACHE INTERNAL "")
+        message( "${Blue}  ${run_output1}${ColourReset}" )
+        set( LIB_DEFINES "HAVE_OPENBLAS" CACHE INTERNAL "" )
     else()
-        set(LIB_DEFINES "" CACHE INTERNAL "")
+        set( LIB_DEFINES "" CACHE INTERNAL "" )
     endif()
-    set(run_res1 "")
-    set(compile_res1 "")
-    set(run_output1 "")
-    set(compile_output1 "")
+    set( run_res1 "" )
+    set( compile_res1 "" )
+    set( run_output1 "" )
+    set( compile_output1 "" )
 endif()
 
-message(STATUS "Checking BLAS complex return type...")
+message( STATUS "Checking BLAS complex return type..." )
 
-try_run(run_res1
+try_run(
+    run_res1
     compile_res1
         ${CMAKE_CURRENT_BINARY_DIR}
     SOURCES
@@ -157,7 +162,7 @@ try_run(run_res1
         compile_output1
     RUN_OUTPUT_VARIABLE
         run_output1
-    )
+)
 
 #message ('compile result: ' ${compile_res1})
 #message ('run result: ' ${run_res1})
@@ -165,17 +170,16 @@ try_run(run_res1
 #message ('run output: ' ${run_output1})
 
 if (compile_res1 AND "${run_output1}" MATCHES "ok")
-    message("${Blue}  BLAS (zdotc) returns complex (GNU gfortran convention)${ColourReset}")
-    set(BLAS_COMPLEX_RETURN "")
+    message( "${Blue}  BLAS (zdotc) returns complex (GNU gfortran convention)${ColourReset}" )
+    set( BLAS_COMPLEX_RETURN "" )
 else()
-    set(run_res1 "")
-    set(compile_res1 "")
-    set(run_output1 "")
-    set(compile_output1 "")
+    set( run_res1 "" )
+    set( compile_res1 "" )
+    set( run_output1 "" )
+    set( compile_output1 "" )
 
-    try_run(run_res1
-        compile_res1
-            ${CMAKE_CURRENT_BINARY_DIR}
+    try_run(
+        run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
         SOURCES
             ${CMAKE_CURRENT_SOURCE_DIR}/config/return_complex_argument.cc
         LINK_LIBRARIES
@@ -190,20 +194,21 @@ else()
         )
 
     if (compile_res1 AND "${run_output1}" MATCHES "ok")
-        message("${Blue}  BLAS (zdotc) returns complex as hidden argument (Intel ifort convention)${ColourReset}")
-        set(BLAS_COMPLEX_RETURN "BLAS_COMPLEX_RETURN_ARGUMENT")
+        message( "${Blue}  BLAS (zdotc) returns complex as hidden argument (Intel ifort convention)${ColourReset}" )
+        set( BLAS_COMPLEX_RETURN "BLAS_COMPLEX_RETURN_ARGUMENT" )
     else()
-        message(FATAL_ERROR "Error - Cannot detect zdotc return value. Please check the BLAS installation.")
+        message( FATAL_ERROR "Error - Cannot detect zdotc return value. Please check the BLAS installation." )
     endif()
-    set(run_res1 "")
-    set(compile_res1 "")
-    set(run_output1 "")
-    set(compile_output1 "")
+    set( run_res1 "" )
+    set( compile_res1 "" )
+    set( run_output1 "" )
+    set( compile_output1 "" )
 endif()
 
-message(STATUS "Checking BLAS float return type...")
+message( STATUS "Checking BLAS float return type..." )
 
-try_run(run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
+try_run(
+    run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
     SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/config/return_float.cc
     LINK_LIBRARIES
@@ -218,13 +223,14 @@ try_run(run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 if (compile_res1 AND "${run_output1}" MATCHES "ok")
-    message("${Blue}  BLAS (sdot) returns float as float (standard)${ColourReset}")
+    message( "${Blue}  BLAS (sdot) returns float as float (standard)${ColourReset}" )
 else()
-    set(run_res1 "")
-    set(compile_res1 "")
-    set(run_output1 "")
-    set(compile_output1 "")
-    try_run(run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
+    set( run_res1 "" )
+    set( compile_res1 "" )
+    set( run_output1 "" )
+    set( compile_output1 "" )
+    try_run(
+        run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
         SOURCES
             ${CMAKE_CURRENT_SOURCE_DIR}/config/return_float_f2c.cc
         LINK_LIBRARIES
@@ -239,27 +245,27 @@ else()
     )
 
     if (compile_res1 AND "${run_output1}" MATCHES "ok")
-        message("${Blue}  BLAS (sdot) returns float as double (f2c convention)${ColourReset}")
-        set(BLAS_FLOAT_RETURN "HAVE_F2C")
+        message( "${Blue}  BLAS (sdot) returns float as double (f2c convention)${ColourReset}" )
+        set( BLAS_FLOAT_RETURN "HAVE_F2C" )
     endif()
-    set(run_res1 "")
-    set(compile_res1 "")
-    set(run_output1 "")
-    set(compile_output1 "")
+    set( run_res1 "" )
+    set( compile_res1 "" )
+    set( run_output1 "" )
+    set( compile_output1 "" )
 endif()
 
-if(DEBUG)
-    message("lib defines: " ${LIB_DEFINES})
-    message("blas defines: " ${BLAS_DEFINES})
-    message("mkl int defines: " ${BLAS_int})
-    message("fortran mangling defines: " ${FORTRAN_MANGLING_DEFINES})
-    message("blas complex return: " ${BLAS_COMPLEX_RETURN})
-    message("blas float return: " ${BLAS_FLOAT_RETURN})
-    message("config_found: " ${config_found})
+if (DEBUG)
+    message( "lib defines: " ${LIB_DEFINES} )
+    message( "blas defines: " ${BLAS_DEFINES} )
+    message( "mkl int defines: " ${BLAS_int} )
+    message( "fortran mangling defines: " ${FORTRAN_MANGLING_DEFINES} )
+    message( "blas complex return: " ${BLAS_COMPLEX_RETURN} )
+    message( "blas float return: " ${BLAS_FLOAT_RETURN} )
+    message( "config_found: " ${config_found} )
 endif()
 
-if(config_found STREQUAL "TRUE")
-    #set(blas_config_found "TRUE")
-    #message("FOUND BLAS CONFIG")
-    set (blas_config_found "TRUE" CACHE STRING "Set TRUE if BLAS config is found")
+if (config_found STREQUAL "TRUE")
+    #set( blas_config_found "TRUE" )
+    #message( "FOUND BLAS CONFIG" )
+    set( blas_config_found "TRUE" CACHE STRING "Set TRUE if BLAS config is found" )
 endif()
