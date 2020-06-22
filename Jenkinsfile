@@ -52,12 +52,12 @@ stages {
 
                         echo "========================================"
                         cd test
-                        ./run_tests.py --blas1 --blas2 --blas3 --small --xml ${top}/report-{maker}.xml
-                        ./run_tests.py --batch-blas3          --xsmall --xml ${top}/report-{maker}-batch.xml
+                        ./run_tests.py --blas1 --blas2 --blas3 --small --xml ${top}/report-${maker}.xml
+                        ./run_tests.py --batch-blas3          --xsmall --xml ${top}/report-${maker}-batch.xml
 
                         if [ "${host}" = "lips" ]; then
-                            ./run_tests.py --blas3-device        --small --xml ${top}/report-{maker}-device.xml
-                            ./run_tests.py --batch-blas3-device --xsmall --xml ${top}/report-{maker}-batch-device.xml
+                            ./run_tests.py --blas3-device        --small --xml ${top}/report-${maker}-device.xml
+                            ./run_tests.py --batch-blas3-device --xsmall --xml ${top}/report-${maker}-batch-device.xml
                         fi
                         '''
                     } // steps
