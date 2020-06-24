@@ -367,17 +367,8 @@ install(
 )
 
 #-------------------------------------------------------------------------------
-# Testers are built by default, but will not be included if Testsweeper is not found
-# Set CMAKE_INSTALL_PREFIX during the installation of TestSweeper and BLAS++.
 if (build_tests)
-    find_package( testsweeper )
-    if (testsweeper_FOUND)
-        message( STATUS "Found TestSweeper; tester will be built." )
-        add_subdirectory( test )
-    else()
-        message( WARNING "TestSweeper not found; tester cannot be built." )
-        # TODO: download Testsweeper here
-    endif()
+    add_subdirectory( test )
 endif()
 
 #-------------------------------------------------------------------------------

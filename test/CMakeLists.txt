@@ -1,3 +1,13 @@
+# Can't build testers if TestSweeper is not found.
+find_package( testsweeper )
+if (testsweeper_FOUND)
+    message( STATUS "Found TestSweeper; tester will be built." )
+else()
+    message( WARNING "TestSweeper not found; tester cannot be built." )
+    return()
+endif()
+
+#-------------------------------------------------------------------------------
 add_executable(
     tester
     test.cc
@@ -82,71 +92,14 @@ else()
     message( STATUS "No CUDA support" )
 endif()
 
-set_target_properties(
-    tester
-    PROPERTIES
-        CXX_STANDARD 11
-        CXX_STANDARD_REQUIRED ON
-        CXX_EXTENSIONS OFF
-        POSITION_INDEPENDENT_CODE ON
-)
+# C++11 is inherited from blaspp, but disabling extensions is not.
+set_target_properties( tester PROPERTIES CXX_EXTENSIONS false )
 
-# Set -Dtestsweeper_DIR=/path/to/testsweeper
-if (0)
-if (testsweeper_DIR)
-    message( STATUS "Found using user supplied testsweeper_DIR to find testsweeper" )
-else()
-    find_path(
-        testsweeper_DIR testsweeperConfig.cmake
-        PATHS
-            ${CMAKE_INSTALL_PREFIX}
-            ${CMAKE_INSTALL_PREFIX}/test
-            ${testsweeper_search_path}
-    )
-endif()
-endif()
-#message( "testsweeper_DIR: ${testsweeper_DIR}" )
-
-if (NOT build_tests)
-    set_target_properties( tester EXCLUDE_FROM_ALL )
-endif()
-
-find_package( testsweeper )
 target_link_libraries(
     tester
     testsweeper
     blaspp
-    #${blas_links}
 )
-
-if (NOT ${is_accelerate} STREQUAL "-1")
-    set( blas_include_dir "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers/" )
-else()
-    set( blas_include_dir "" )
-endif()
-
-target_include_directories(
-    tester
-    PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}
-        #${CMAKE_CURRENT_SOURCE_DIR}/../include
-        ${blas_include_dir}
-        #"/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers/"
-        #${testsweeper_DIR}/include
-)
-if (0)
-    target_compile_definitions(
-        tester
-        PRIVATE
-            ${fortran_mangling}
-            ${blas_defines}
-            ${blas_return}
-            ${MKL_DEFINES}
-            ${cblas_defines}
-            ${lapack_defines}
-            ${blas_int_defines}
-     )
-endif()
 
 # Copy run_tests script to build directory. Used in Jenkins.
 add_custom_command(
