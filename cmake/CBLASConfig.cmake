@@ -41,9 +41,6 @@ if (NOT ${is_accelerate} STREQUAL "-1")
 endif()
 #message( "blas_inc_dir: ${blas_include_dir}" )
 
-set( run_output "" )
-set( compile_OUTPUT1 "" )
-
 try_run(
     run_result compile_result ${CMAKE_CURRENT_BINARY_DIR}
     SOURCES
@@ -57,15 +54,10 @@ try_run(
         ${local_LIB_DEFINES}
         ${blas_int_defines}
     COMPILE_OUTPUT_VARIABLE
-        compile_output1
+        compile_output
     RUN_OUTPUT_VARIABLE
         run_output
 )
-
-#message ('compile result: ' ${compile_result})
-#message ('run result: ' ${run_result})
-#message ('compile output: ' ${compile_output1})
-#message ('run output: ' ${run_output})
 
 if (compile_result AND "${run_output}" MATCHES "ok")
     message( "${blue}  Found CBLAS${default_color}" )
@@ -74,8 +66,5 @@ else()
     message( "${red}  CBLAS not found.${default_color}" )
     set( cblas_defines "" CACHE INTERNAL "" )
 endif()
-
-set( run_output "" )
-set( compile_OUTPUT1 "" )
 
 #message( "cblas defines: " ${cblas_defines} )

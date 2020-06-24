@@ -13,11 +13,6 @@ include( "cmake/util.cmake" )
 
 message( STATUS "Checking for BLAS library options" )
 
-set( run_result "" )
-set( compile_result "" )
-set( run_output "" )
-set( compile_output1 "" )
-
 if (${blas_defines} MATCHES "HAVE_BLAS")
     #message( STATUS "Checking for library vendors ..." )
 
@@ -31,7 +26,7 @@ if (${blas_defines} MATCHES "HAVE_BLAS")
         COMPILE_DEFINITIONS
             ${blas_int_defines}
         COMPILE_OUTPUT_VARIABLE
-            compile_output1
+            compile_output
         RUN_OUTPUT_VARIABLE
             run_output
     )
@@ -42,10 +37,6 @@ if (${blas_defines} MATCHES "HAVE_BLAS")
     else()
         set( lib_defines "" )
     endif()
-    set( run_result "" )
-    set( compile_result "" )
-    set( run_output "" )
-    set( compile_output1 "" )
 endif()
 
 if (blas_defines MATCHES "HAVE_BLAS"
@@ -60,7 +51,7 @@ if (blas_defines MATCHES "HAVE_BLAS"
         COMPILE_DEFINITIONS
             ${blas_int_defines}
         COMPILE_OUTPUT_VARIABLE
-            compile_output1
+            compile_output
         RUN_OUTPUT_VARIABLE
             run_output
     )
@@ -71,10 +62,6 @@ if (blas_defines MATCHES "HAVE_BLAS"
     else()
         set( lib_defines "" CACHE INTERNAL "" )
     endif()
-    set( run_result "" )
-    set( compile_result "" )
-    set( run_output "" )
-    set( compile_output1 "" )
 endif()
 
 if (${blas_defines} MATCHES "HAVE_BLAS" AND
@@ -89,7 +76,7 @@ if (${blas_defines} MATCHES "HAVE_BLAS" AND
         COMPILE_DEFINITIONS
             ${blas_int_defines}
         COMPILE_OUTPUT_VARIABLE
-            compile_output1
+            compile_output
         RUN_OUTPUT_VARIABLE
             run_output
     )
@@ -100,10 +87,6 @@ if (${blas_defines} MATCHES "HAVE_BLAS" AND
     else()
         set( lib_defines "" CACHE INTERNAL "" )
     endif()
-    set( run_result "" )
-    set( compile_result "" )
-    set( run_output "" )
-    set( compile_output1 "" )
 endif()
 
 if (${blas_defines} MATCHES "HAVE_BLAS" AND
@@ -118,7 +101,7 @@ if (${blas_defines} MATCHES "HAVE_BLAS" AND
         COMPILE_DEFINITIONS
             ${blas_int_defines}
         COMPILE_OUTPUT_VARIABLE
-            compile_output1
+            compile_output
         RUN_OUTPUT_VARIABLE
             run_output
     )
@@ -129,10 +112,6 @@ if (${blas_defines} MATCHES "HAVE_BLAS" AND
     else()
         set( lib_defines "" CACHE INTERNAL "" )
     endif()
-    set( run_result "" )
-    set( compile_result "" )
-    set( run_output "" )
-    set( compile_output1 "" )
 endif()
 
 message( STATUS "Checking BLAS complex return type..." )
@@ -149,24 +128,20 @@ try_run(
     COMPILE_DEFINITIONS
         ${blas_int_defines}
     COMPILE_OUTPUT_VARIABLE
-        compile_output1
+        compile_output
     RUN_OUTPUT_VARIABLE
         run_output
 )
 
 #message ('compile result: ' ${compile_result})
 #message ('run result: ' ${run_result})
-#message ('compile output: ' ${compile_output1})
+#message ('compile output: ' ${compile_output})
 #message ('run output: ' ${run_output})
 
 if (compile_result AND "${run_output}" MATCHES "ok")
     message( "${blue}  BLAS (zdotc) returns complex (GNU gfortran convention)${default_color}" )
     set( blas_complex_return "" )
 else()
-    set( run_result "" )
-    set( compile_result "" )
-    set( run_output "" )
-    set( compile_output1 "" )
 
     try_run(
         run_result compile_result ${CMAKE_CURRENT_BINARY_DIR}
@@ -178,7 +153,7 @@ else()
         COMPILE_DEFINITIONS
             ${blas_int_defines}
         COMPILE_OUTPUT_VARIABLE
-            compile_output1
+            compile_output
         RUN_OUTPUT_VARIABLE
             run_output
         )
@@ -189,10 +164,6 @@ else()
     else()
         message( FATAL_ERROR "Error - Cannot detect zdotc return value. Please check the BLAS installation." )
     endif()
-    set( run_result "" )
-    set( compile_result "" )
-    set( run_output "" )
-    set( compile_output1 "" )
 endif()
 
 message( STATUS "Checking BLAS float return type..." )
@@ -207,7 +178,7 @@ try_run(
     COMPILE_DEFINITIONS
         ${blas_int_defines}
     COMPILE_OUTPUT_VARIABLE
-        compile_output1
+        compile_output
     RUN_OUTPUT_VARIABLE
         run_output
 )
@@ -215,10 +186,6 @@ try_run(
 if (compile_result AND "${run_output}" MATCHES "ok")
     message( "${blue}  BLAS (sdot) returns float as float (standard)${default_color}" )
 else()
-    set( run_result "" )
-    set( compile_result "" )
-    set( run_output "" )
-    set( compile_output1 "" )
     try_run(
         run_result compile_result ${CMAKE_CURRENT_BINARY_DIR}
         SOURCES
@@ -229,7 +196,7 @@ else()
         COMPILE_DEFINITIONS
             ${blas_int_defines}
         COMPILE_OUTPUT_VARIABLE
-            compile_output1
+            compile_output
         RUN_OUTPUT_VARIABLE
             run_output
     )
@@ -238,10 +205,6 @@ else()
         message( "${blue}  BLAS (sdot) returns float as double (f2c convention)${default_color}" )
         set( blas_float_return "HAVE_F2C" )
     endif()
-    set( run_result "" )
-    set( compile_result "" )
-    set( run_output "" )
-    set( compile_output1 "" )
 endif()
 
 if (DEBUG)

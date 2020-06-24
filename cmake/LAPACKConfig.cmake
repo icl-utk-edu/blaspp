@@ -45,12 +45,12 @@ try_run(
         ${local_blas_defines}
         ${local_int}
     COMPILE_OUTPUT_VARIABLE
-        compile_output1
+        compile_output
     RUN_OUTPUT_VARIABLE
         run_output
 )
 
-#message( "compile_output: ${compile_output1}" )
+#message( "compile_output: ${compile_output}" )
 
 # if it compiled and ran, then LAPACK is available
 if (compile_result AND "${run_output}" MATCHES "ok")
@@ -61,9 +61,6 @@ else()
     set( lapack_defines "" CACHE INTERNAL "" )
 endif()
 
-set( run_result "" )
-set( compile_result "" )
-set( run_output "" )
 return()
 message( STATUS "Checking for LAPACKE POTRF..." )
 
@@ -93,10 +90,6 @@ else()
     set( lapacke_defines "" )
 endif()
 
-set( run_result "" )
-set( compile_result "" )
-set( run_output "" )
-
 message( STATUS "Checking for XBLAS..." )
 
 try_run(
@@ -124,9 +117,6 @@ else()
     message( "${red}  XBLAS not found.${default_color}" )
     set( xblas_defines "" )
 endif()
-set( run_result "" )
-set( compile_result "" )
-set( run_output "" )
 
 message( STATUS "Checking LAPACK version..." )
 
@@ -177,10 +167,6 @@ else()
     message( "${red}  Failed to determine LAPACK version.${default_color}" )
     set( lapack_ver_define "" )
 endif()
-
-set( run_result "" )
-set( compile_result "" )
-set( run_output "" )
 
 #message( "lapack defines: " ${lapack_defines} )
 #message( "lapacke defines: " ${lapacke_defines} )
