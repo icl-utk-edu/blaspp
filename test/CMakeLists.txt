@@ -148,21 +148,10 @@ if (0)
      )
 endif()
 
-# Since we can't do 'make test'...
-add_custom_target( testing DEPENDS tester )
-
-# Move test script to build directory
+# Copy run_tests script to build directory. Used in Jenkins.
 add_custom_command(
     TARGET tester POST_BUILD
     COMMAND
         cp ${CMAKE_CURRENT_SOURCE_DIR}/run_tests.py
            ${CMAKE_CURRENT_BINARY_DIR}/run_tests.py
-)
-
-#Move test script to build directory
-add_custom_command(
-    TARGET tester POST_BUILD
-    COMMAND
-        cp ${CMAKE_CURRENT_BINARY_DIR}/tester
-           ${CMAKE_CURRENT_BINARY_DIR}/tester
 )
