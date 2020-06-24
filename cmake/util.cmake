@@ -17,3 +17,35 @@ if (color)
     set( default_color "${Esc}[39m" )
     set( plain         "${Esc}[39m" )
 endif()
+
+#-------------------------------------------------------------------------------
+# pad_string( input length output_variable )
+# Adds spaces to input up to length and saves to output_variable.
+#
+function( pad_string input length output_variable )
+    string( LENGTH "${input}" len )
+    math( EXPR pad_len "${length} - ${len}" )
+    string( REPEAT " " ${pad_len} pad )
+    set( ${output_variable} "${input}${pad}" PARENT_SCOPE )
+endfunction()
+
+#-------------------------------------------------------------------------------
+# debug_try_compile( msg compile_result compile_output )
+# Prints compile_result at log level DEBUG (5);
+#        compile_output at log level TRACE (6).
+#
+function( debug_try_compile msg compile_result compile_output )
+    message( DEBUG "${msg}: compile_result '${compile_result}'" )
+    message( TRACE "compile_output: <<<\n${compile_output}>>>" )
+endfunction()
+
+#-------------------------------------------------------------------------------
+# debug_try_run( msg compile_result run_result compile_output run_output )
+# Prints {compile,run}_result at debug DEBUG (5);
+#        {compile,run}_output at debug TRACE (6).
+#
+function( debug_try_run msg compile_result compile_output run_result run_output )
+    message( DEBUG "${msg}: compile_result '${compile_result}', run_result '${run_result}'" )
+    message( TRACE "compile_output: '''\n${compile_output}'''" )
+    message( TRACE "run_output: '''\n${run_output}'''" )
+endfunction()

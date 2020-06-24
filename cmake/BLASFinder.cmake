@@ -13,6 +13,31 @@ include( "cmake/util.cmake" )
 
 message( STATUS "Looking for BLAS libraries and options" )
 
+#-------------------------------------------------------------------------------
+# Prints the BLAS_{name,flag,libs}_lists.
+#
+function( debug_print_list msg )
+    if ("${CMAKE_MESSAGE_LOG_LEVEL}" MATCHES "DEBUG|TRACE")
+        message( "---------- lists: ${msg}" )
+        message( "blas_name_list = ${blas_name_list}" )
+        message( "blas_flag_list = ${blas_flag_list}" )
+        message( "blas_libs_list = ${blas_libs_list}" )
+
+        message( "\nrow;  ${red}blas_name;${plain}  blas_libs;  ${red}blas_flag${plain}" )
+        set( i 0 )
+        foreach (name IN LISTS blas_name_list)
+            list( GET blas_flag_list ${i} flag )
+            list( GET blas_libs_list ${i} libs )
+            message( "${i};  ${red}${name};${plain}  ${libs};  ${red}${flag}${plain}" )
+            math( EXPR i "${i} + 1" )
+        endforeach()
+        message( "" )
+    endif()
+endfunction()
+
+#-------------------------------------------------------------------------------
+# Setup.
+
 #---------------------------------------- compiler
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     set( gnu_compiler true )
@@ -26,62 +51,30 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "XL")
     set( ibm_compiler true )
 endif()
 
+#---------------------------------------- Fortran manglings to test
 if (ibm_compiler)
+    # For IBM XL, change default mangling search order to lower, add_, upper,
+    # ESSL includes all 3, but Netlib LAPACK has only one mangling.
     set( fortran_mangling_list
-        "-DFORTRAN_LOWER -DNOCHANGE"
-        "-DFORTRAN_ADD_ -DADD_"
-        "-DFORTRAN_UPPER -DUPCASE"
-    )
-
-    set( fortran_mangling_names
-        "Fortran LOWER"
-        "Fortran ADD_"
-        "Fortran UPPER"
-    )
-
-    set( fortran_mangling_clean
-        "FORTRAN_LOWER -DNOCHANGE"
-        "FORTRAN_ADD_ -DADD_"
-        "FORTRAN_UPPER -DUPCASE"
+        "-DFORTRAN_LOWER"
+        "-DFORTRAN_ADD_"
+        "-DFORTRAN_UPPER"
     )
 else()
+    # For all others, mangling search order as add_, lower, upper,
+    # since add_ is the most common.
     set( fortran_mangling_list
-        "-DFORTRAN_ADD_ -DADD_"
-        "-DFORTRAN_LOWER -DNOCHANGE"
-        "-DFORTRAN_UPPER -DUPCASE"
-    )
-
-    set( fortran_mangling_names
-        "Fortran ADD_"
-        "Fortran LOWER"
-        "Fortran UPPER"
-    )
-
-    set( fortran_mangling_clean
-        "FORTRAN_ADD_ -DADD_"
-        "FORTRAN_LOWER -DNOCHANGE"
-        "FORTRAN_UPPER -DUPCASE"
+        "-DFORTRAN_ADD_"
+        "-DFORTRAN_LOWER"
+        "-DFORTRAN_UPPER"
     )
 endif()
-set( fortran_mangling "" )
-list( LENGTH fortran_mangling_list fort_list_len )
 
-set( blas_int_size_names
-    "32-bit index array data type"
-    "64-bit index array data type"
+#---------------------------------------- integer sizes to test
+set( int_size_list
+    " "             # int (LP64)
+    "-DBLAS_ILP64"  # int64_t (ILP64)
 )
-
-set( blas_int_size_defines
-    " "
-    "-DLAPACK_ILP64 -DBLAS_ILP64"
-)
-
-set( blas_int_size_clean
-    " "
-    "LAPACK_ILP64 -DBLAS_ILP64"
-)
-
-set( config_found "" )
 
 #-------------------------------------------------------------------------------
 # Parse options: BLAS_LIBRARIES, blas, blas_int, blas_threaded, blas_fortran.
@@ -233,26 +226,28 @@ if (test_blas_libraries)
     list( APPEND blas_name_list "\$BLAS_LIBRARIES" )
     list( APPEND blas_flag_list " " )
     list( APPEND blas_libs_list "${BLAS_LIBRARIES_ESC}" )
+    debug_print_list( "BLAS_LIBRARIES" )
 endif()
 
 #---------------------------------------- default; Cray libsci
-if (test_default)
+if (test_all OR test_default)
     list( APPEND blas_name_list "default (no library)" )
     list( APPEND blas_flag_list " " )
     list( APPEND blas_libs_list " " )
+    debug_print_list( "default" )
 endif()
 
 #---------------------------------------- Intel MKL
-if (test_mkl)
+if (test_all OR test_mkl)
     # todo: MKL_?(ROOT|DIR)
     if (test_threaded)
         if (OpenMP_CXX_FOUND)
             if (test_gfortran AND gnu_compiler)
                 # GNU compiler + OpenMP: require gnu_thread library.
                 if (test_int)
-                    list( APPEND blas_name_list "Intel MKL lp64, GNU threads (gomp), gfortran")
+                    list( APPEND blas_name_list "Intel MKL lp64,  GNU threads (gomp), gfortran")
                     list( APPEND blas_flag_list "${OpenMP_CXX_FLAGS}" )
-                    list( APPEND blas_libs_list "-lmkl_gf_lp64 -lmkl_gnu_thread -lmkl_core" )
+                    list( APPEND blas_libs_list "-lmkl_gf_lp64  -lmkl_gnu_thread -lmkl_core" )
                 endif()
 
                 if (test_int64)
@@ -264,9 +259,9 @@ if (test_mkl)
             elseif (test_ifort AND intel_compiler)
                 # Intel compiler + OpenMP: require intel_thread library.
                 if (test_int)
-                    list( APPEND blas_name_list "Intel MKL lp64, Intel threads (iomp5), ifort")
+                    list( APPEND blas_name_list "Intel MKL lp64,  Intel threads (iomp5), ifort")
                     list( APPEND blas_flag_list "${OpenMP_CXX_FLAGS}" )
-                    list( APPEND blas_libs_list "-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core" )
+                    list( APPEND blas_libs_list "-lmkl_intel_lp64  -lmkl_intel_thread -lmkl_core" )
                 endif()
 
                 if (test_int64)
@@ -284,9 +279,9 @@ if (test_mkl)
             if (test_ifort AND intel_compiler)
                 # Intel compiler, no OpenMP: add -liomp5.
                 if (test_int)
-                    list( APPEND blas_name_list "Intel MKL lp64, Intel threads (iomp5), ifort")
+                    list( APPEND blas_name_list "Intel MKL lp64,  Intel threads (iomp5), ifort")
                     list( APPEND blas_flag_list " " )
-                    list( APPEND blas_libs_list "-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread" )
+                    list( APPEND blas_libs_list "-lmkl_intel_lp64  -lmkl_intel_thread -lmkl_core -liomp5 -lpthread" )
                 endif()
 
                 if (test_int64)
@@ -299,9 +294,9 @@ if (test_mkl)
             # Otherwise, prefer GNU gfortran interfaces.
             if (test_gfortran)
                 if (test_int)
-                    list( APPEND blas_name_list "Intel MKL lp64, GNU threads (gomp), gfortran")
+                    list( APPEND blas_name_list "Intel MKL lp64,  GNU threads (gomp), gfortran")
                     list( APPEND blas_flag_list " " )
-                    list( APPEND blas_libs_list "-lmkl_gf_lp64 -lmkl_gnu_thread -lmkl_core -lgomp -lpthread" )
+                    list( APPEND blas_libs_list "-lmkl_gf_lp64  -lmkl_gnu_thread -lmkl_core -lgomp -lpthread" )
                 endif()
 
                 if (test_int64)
@@ -315,9 +310,9 @@ if (test_mkl)
             # todo: same as Intel block above.
             if (test_ifort AND NOT intel_compiler)
                 if (test_int)
-                    list( APPEND blas_name_list "Intel MKL lp64, Intel threads (iomp5), ifort")
+                    list( APPEND blas_name_list "Intel MKL lp64,  Intel threads (iomp5), ifort")
                     list( APPEND blas_flag_list " " )
-                    list( APPEND blas_libs_list "-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread" )
+                    list( APPEND blas_libs_list "-lmkl_intel_lp64  -lmkl_intel_thread -lmkl_core -liomp5 -lpthread" )
                 endif()
 
                 if (test_int64)
@@ -334,9 +329,9 @@ if (test_mkl)
         # If Intel compiler, prefer Intel ifort interfaces.
         if (test_ifort AND intel_compiler)
             if (test_int)
-                list( APPEND blas_name_list "Intel MKL lp64, sequential, ifort" )
+                list( APPEND blas_name_list "Intel MKL lp64,  sequential, ifort" )
                 list( APPEND blas_flag_list " " )
-                list( APPEND blas_libs_list "-lmkl_intel_lp64 -lmkl_sequential -lmkl_core" )
+                list( APPEND blas_libs_list "-lmkl_intel_lp64  -lmkl_sequential -lmkl_core" )
             endif()
 
             if (test_int64)
@@ -349,9 +344,9 @@ if (test_mkl)
         # Otherwise, prefer GNU gfortran interfaces.
         if (test_gfortran)
             if (test_int)
-                list( APPEND blas_name_list "Intel MKL lp64, sequential, gfortran" )
+                list( APPEND blas_name_list "Intel MKL lp64,  sequential, gfortran" )
                 list( APPEND blas_flag_list " " )
-                list( APPEND blas_libs_list "-lmkl_gf_lp64 -lmkl_sequential -lmkl_core" )
+                list( APPEND blas_libs_list "-lmkl_gf_lp64  -lmkl_sequential -lmkl_core" )
             endif()
 
             if (test_int64)
@@ -364,9 +359,9 @@ if (test_mkl)
         # Not Intel compiler, lower preference for Intel ifort interfaces.
         if (test_ifort AND NOT intel_compiler)
             if (test_int)
-                list( APPEND blas_name_list "Intel MKL lp64, sequential, ifort" )
+                list( APPEND blas_name_list "Intel MKL lp64,  sequential, ifort" )
                 list( APPEND blas_flag_list " " )
-                list( APPEND blas_libs_list "-lmkl_intel_lp64 -lmkl_sequential -lmkl_core" )
+                list( APPEND blas_libs_list "-lmkl_intel_lp64  -lmkl_sequential -lmkl_core" )
             endif()
 
             if (test_int64)
@@ -376,10 +371,11 @@ if (test_mkl)
             endif()
         endif()  # ifort && not intel
     endif()  # sequential
+    debug_print_list( "mkl" )
 endif()  # MKL
 
 #---------------------------------------- IBM ESSL
-if (test_essl)
+if (test_all OR test_essl)
     # todo: ESSL_?(ROOT|DIR)
     if (test_threaded)
         if (ibm_compiler)
@@ -409,7 +405,7 @@ if (test_essl)
                 list( APPEND blas_libs_list "-lesslsmp6464"  )
             endif()
         endif()
-    endif()
+    endif()  # threaded
 
     if (test_sequential)
         if (test_int)
@@ -423,26 +419,29 @@ if (test_essl)
             list( APPEND blas_flag_list "-D_ESV6464"  )
             list( APPEND blas_libs_list "-lessl6464"  )
         endif()
-    endif()
+    endif()  # sequential
+    debug_print_list( "essl" )
 endif()
 
 #---------------------------------------- OpenBLAS
-if (test_openblas)
+if (test_all OR test_openblas)
     # todo: OPENBLAS_?(ROOT|DIR)
     list( APPEND blas_name_list "OpenBLAS" )
     list( APPEND blas_flag_list " " )
     list( APPEND blas_libs_list "-lopenblas" )
+    debug_print_list( "openblas" )
 endif()
 
 #---------------------------------------- Apple Accelerate
-if (test_accelerate)
+if (test_all OR test_accelerate)
     list( APPEND blas_name_list "Apple Accelerate" )
     list( APPEND blas_flag_list " " )
     list( APPEND blas_libs_list "-framework Accelerate" )
+    debug_print_list( "accelerate" )
 endif()
 
 #---------------------------------------- AMD ACML
-if (test_acml)
+if (test_all OR test_acml)
     # todo: ACML_?(ROOT|DIR)
     if (test_threaded)
         list( APPEND blas_name_list "AMD ACML threaded" )
@@ -455,110 +454,128 @@ if (test_acml)
         list( APPEND blas_flag_list " " )
         list( APPEND blas_libs_list "-lacml" )
     endif()
+    debug_print_list( "acml" )
 endif()
 
 #---------------------------------------- generic -lblas
-if (test_generic)
+if (test_all OR test_generic)
     list( APPEND blas_name_list "generic" )
     list( APPEND blas_flag_list " " )
     list( APPEND blas_libs_list "-lblas" )
+    debug_print_list( "generic" )
 endif()
 
 #-------------------------------------------------------------------------------
-# Check libraries.
+# Check each BLAS library.
 
+unset( BLAS_FOUND CACHE )
 unset( blas_defines CACHE )
+
 set( i 0 )
-foreach( blas_name ${blas_name_list} )
-    #message( "i: ${i}" )
+foreach (blas_name IN LISTS blas_name_list)
+    message( TRACE "i: ${i}" )
     list( GET blas_flag_list ${i} blas_flag )
     list( GET blas_libs_list ${i} blas_libs )
+    math( EXPR i "${i}+1" )
 
     # Undo escaping ; semi-colons to make list.
     string(REPLACE "\;" ";" blas_libs "${blas_libs}")
 
-    message( "${blas_name}" )
-    message( "   libs: ${blas_libs}" )
-    message( "   flag: ${blas_flag}" )
+    message( "\n${blas_name}" )
+    message( "   libs:  ${blas_libs}" )
+    message( "   flags: ${blas_flag}" )
 
-    set( run_result "" )
-    set( compile_result "" )
-    set( run_output "" )
-    set( compile_output "" )
+    foreach (mangling IN LISTS fortran_mangling_list)
+        foreach (int_size IN LISTS int_size_list)
+            set( label "   ${mangling} ${int_size}" )
+            pad_string( "${label}" 50 label )
 
-    set( j 0 )
-    foreach( fortran_name ${fortran_mangling_names} )
-        #message( "j: ${j}" )
-        list( GET fortran_mangling_list ${j} mangling )
+            # Try to link a simple hello world with the library.
+            try_compile(
+                link_result ${CMAKE_CURRENT_BINARY_DIR}
+                SOURCES
+                    "${CMAKE_CURRENT_SOURCE_DIR}/config/hello.cc"
+                LINK_LIBRARIES
+                    "${blas_libs}"
+                COMPILE_DEFINITIONS
+                    "${blas_flag} ${mangling} ${int_size}"
+                CMAKE_FLAGS
+                    "${OpenMP_lib_str}"
+                COMPILE_OUTPUT_VARIABLE
+                    link_output
+            )
+            debug_try_compile( "hello.cc" "${link_result}" "${link_output}" )
 
-        message( "   Fortran: ${mangling}" )
-        try_run(
-            run_result compile_result ${CMAKE_CURRENT_BINARY_DIR}
-            SOURCES
-                "${CMAKE_CURRENT_SOURCE_DIR}/config/blas.cc"
-            LINK_LIBRARIES
-                "${blas_libs}"
-            COMPILE_DEFINITIONS
-                "${blas_flag}"
-                "${mangling}"
-            CMAKE_FLAGS
-                "${OpenMP_lib_str}"
-            COMPILE_OUTPUT_VARIABLE
-                compile_output
-            RUN_OUTPUT_VARIABLE
-                run_output
-        )
-
-        if (compile_result AND "${run_output}" MATCHES "ok")
-            message( "${blue}   yes ${default_color}" )
-            #message( "${blue}  Found working configuration:" )
-            #message( "  BLAS libraries:     ${blas_libs}" )
-            #message( "  CXX flags:          ${blas_flag}" )
-            #message( "  Fortran convention: ${mangling}" )
-            #message( "${default_color}" )
-
-            #LIST( GET fortran_mangling_clean ${j} fortran_mangling )
-            set( blas_defines "HAVE_BLAS" CACHE INTERNAL "" )
-            set( config_found true )
-
-            if (OpenMP_CXX_FOUND)
-                set( blas_links "${blas_libs} ${openmp_flag}" CACHE INTERNAL "" )
-            else()
-                set( blas_links "${blas_libs}" CACHE INTERNAL "" )
+            # If hello didn't link, assume library not found,
+            # so break both mangling & int_size loops.
+            if (NOT link_result)
+                message( "${label} ${red} no (library not found)${plain}" )
+                break()
             endif()
-            set( blas_cxx_flags "${blas_flag} ${mangling}" CACHE INTERNAL "" )
-            string( STRIP "${blas_cxx_flags}" blas_cxx_flags )
-            string( STRIP "${blas_links}" blas_links )
-            break()
-        else()
-            message( "${red}   no ${default_color}" )
-        endif()
 
-        math( EXPR j "${j}+1" )
-        if (blas_defines STREQUAL "HAVE_BLAS")
+            # Try to link and run simple BLAS routine with the library.
+            try_run(
+                run_result compile_result ${CMAKE_CURRENT_BINARY_DIR}
+                SOURCES
+                    "${CMAKE_CURRENT_SOURCE_DIR}/config/blas.cc"
+                LINK_LIBRARIES
+                    "${blas_libs}"
+                COMPILE_DEFINITIONS
+                    "${blas_flag} ${mangling} ${int_size}"
+                CMAKE_FLAGS
+                    "${OpenMP_lib_str}"
+                COMPILE_OUTPUT_VARIABLE
+                    compile_output
+                RUN_OUTPUT_VARIABLE
+                    run_output
+            )
+            debug_try_run( "blas.cc" "${compile_result}" "${compile_output}"
+                                     "${run_result}" "${run_output}" )
+
+            # If int32 didn't link, int64 won't either, so break int_size loop.
+            if (NOT compile_result)
+                message( "${label} ${red} no (didn't link: routine not found)${plain}" )
+                break()
+            endif()
+
+            # If it runs (exits 0), we're done, so break all 3 loops.
+            if (run_result EQUAL 0 AND run_output MATCHES "ok")
+                message( "${label} ${blue} yes${plain}" )
+
+                set( BLAS_FOUND true
+                     CACHE INTERNAL "Whether BLAS library was found" )
+
+                set( BLAS_LIBRARIES ${blas_libs}
+                     CACHE STRING "" )
+
+                set( blas_defines "${blas_flag} ${mangling} ${int_size}"
+                     CACHE INTERNAL "Constants defined for BLAS" )
+                break()
+            else()
+                message( "${label} ${red} no (didn't run: int mismatch, etc.)${plain}" )
+            endif()
+        endforeach()
+
+        # Break loops as described above.
+        if (NOT link_result OR BLAS_FOUND)
             break()
         endif()
     endforeach()
-    math( EXPR i "${i}+1" )
-    if (blas_defines STREQUAL "HAVE_BLAS")
+
+    # Break loops as described above.
+    if (BLAS_FOUND)
         break()
     endif()
 endforeach()
 
-if (NOT "${blas_defines}" STREQUAL "HAVE_BLAS")
-    message( "${red}Failed to find BLAS library${default_color}" )
-    return()
+#-------------------------------------------------------------------------------
+if (BLAS_FOUND)
+    message( "${blue}   Found BLAS library: ${BLAS_LIBRARIES}.${plain}" )
+else()
+    message( "${red}   Failed to find a BLAS library.${plain}" )
 endif()
 
-set( BLAS_LIBRARIES ${blas_links} )
-
-if (DEBUG)
-    #message( "lib defines:     ${lib_defines}" )
-    message( "blas defines:     ${blas_defines}" )
-    message( "blas libraries:   ${BLAS_LIBRARIES}" )
-    message( "cxx flags:        ${blas_cxx_flags}" )
-    message( "mkl int defines:  ${blas_int_defines}" )
-    message( "fortran mangling: ${fortran_mangling}" )
-    #message( "blas complex return:  ${blas_return}" )
-    message( "config_found:  ${config_found}" )
-endif()
+message( DEBUG "
+BLAS_FOUND:         = '${BLAS_FOUND}'
+BLAS_LIBRARIES      = '${BLAS_LIBRARIES}'
+blas_defines        = '${blas_defines}'")
