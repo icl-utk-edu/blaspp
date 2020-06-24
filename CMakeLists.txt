@@ -19,6 +19,7 @@ project(
 # Options
 option( BUILD_SHARED_LIBS "Build shared libraries" true )
 option( build_tests "Build test suite" true )
+option( color "Use ANSI color output" true )
 option( use_openmp "Use OpenMP, if available, to clean caches" true )
 
 # Default prefix=/opt/slate

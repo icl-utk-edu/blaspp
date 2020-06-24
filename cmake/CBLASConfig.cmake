@@ -8,17 +8,7 @@ if (NOT ${cblas_defines} STREQUAL "")
     return()
 endif()
 
-if (COLOR)
-    string(ASCII 27 Esc)
-    set(red         "${Esc}[31m")
-    set(blue        "${Esc}[34m")
-    set(default_color "${Esc}[m")
-else()
-    string(ASCII 27 Esc)
-    set(red         "")
-    set(blue        "")
-    set(default_color "")
-endif()
+include( "cmake/util.cmake" )
 
 message( STATUS "Checking for CBLAS..." )
 
