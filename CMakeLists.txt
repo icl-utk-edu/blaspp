@@ -18,8 +18,8 @@ project(
 #-------------------------------------------------------------------------------
 # Options
 option( BUILD_SHARED_LIBS "Build shared libraries" true )
-option( BUILD_TESTS "Build test suite" true )
-option( USE_OPENMP "Use OpenMP, if available, to clean caches" true )
+option( build_tests "Build test suite" true )
+option( use_openmp "Use OpenMP, if available, to clean caches" true )
 
 # Default prefix=/opt/slate
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
@@ -44,50 +44,50 @@ set_property( CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
 #-----------------------------------
 # BLAS options
 # todo: Goto, BLIS, FLAME, others?
-set( BLAS_LIBRARY "auto" CACHE STRING
+set( blas "auto" CACHE STRING
      "Choose BLAS & LAPACK library: AMD, Apple, Cray, IBM, Intel, OpenBLAS" )
 set_property(
-    CACHE BLAS_LIBRARY PROPERTY STRINGS
+    CACHE blas PROPERTY STRINGS
     "auto" "AMD ACML" "Apple Accelerate" "Cray LibSci" "IBM ESSL"
     "Intel MKL" "OpenBLAS" "generic" )
 
-set( BLAS_LIBRARY_MKL "auto" CACHE STRING
+set( blas_fortran "auto" CACHE STRING
      "For Intel MKL: use Intel ifort or GNU gfortran conventions?" )
 set_property(
-    CACHE BLAS_LIBRARY_MKL PROPERTY STRINGS
+    CACHE blas_fortran PROPERTY STRINGS
     "auto" "GNU gfortran conventions" "Intel ifort conventions" )
 
-set( BLAS_LIBRARY_INTEGER "auto" CACHE STRING
+set( blas_int "auto" CACHE STRING
      "BLAS integer size: int (LP64) or int64_t (ILP64)" )
 set_property(
-    CACHE BLAS_LIBRARY_INTEGER PROPERTY STRINGS
+    CACHE blas_int PROPERTY STRINGS
     "auto" "int (LP64)" "int64_t (ILP64)" )
 
-set( BLAS_LIBRARY_THREADING "auto" CACHE STRING
+set( blas_threaded "auto" CACHE STRING
      "BLAS threaded or sequential" )
 set_property(
-    CACHE BLAS_LIBRARY_THREADING PROPERTY STRINGS
+    CACHE blas_threaded PROPERTY STRINGS
     "auto" "threaded" "sequential" )
 
 # Check if user has changed options and they need to be revalidated.
 unset( do_library_search )
-if (NOT cached_blas_library MATCHES BLAS_LIBRARY)
+if (NOT cached_blas MATCHES blas)
     set( do_library_search true )
 endif()
-if (NOT cached_blas_mkl MATCHES BLAS_LIBRARY_MKL)
+if (NOT cached_blas_fortran MATCHES blas_fortran)
     set( do_library_search true )
 endif()
-if (NOT cached_blas_int MATCHES BLAS_LIBRARY_INTEGER)
+if (NOT cached_blas_int MATCHES blas_int)
     set( do_library_search true )
 endif()
-if (NOT cached_blas_threading MATCHES BLAS_LIBRARY_THREADING)
+if (NOT cached_blas_int MATCHES blas_threaded)
     set( do_library_search true )
 endif()
 
-set( cached_blas_library ${BLAS_LIBRARY} CACHE INTERNAL "" )
-set( cached_blas_mkl ${BLAS_LIBRARY_MKL} CACHE INTERNAL "" )
-set( cached_blas_int ${BLAS_LIBRARY_INTEGER} CACHE INTERNAL "" )
-set( cached_blas_threading ${BLAS_LIBRARY_THREADING} CACHE INTERNAL "" )
+set( cached_blas ${blas} CACHE INTERNAL "" )
+set( cached_blas_fortran ${blas_fortran} CACHE INTERNAL "" )
+set( cached_blas_int ${blas_int} CACHE INTERNAL "" )
+set( cached_blas_int ${blas_threaded} CACHE INTERNAL "" )
 
 #-------------------------------------------------------------------------------
 # Enforce out-of-source build
@@ -211,8 +211,8 @@ else()
     message( STATUS "No CUDA support" )
 endif()
 
-#message( "USE_OPENMP: ${USE_OPENMP}" )
-if (NOT USE_OPENMP)
+#message( "use_openmp: ${use_openmp}" )
+if (NOT use_openmp)
     message( STATUS "User has requested to NOT use OpenMP" )
 else()
     find_package( OpenMP )
@@ -250,7 +250,7 @@ else()
     endif()
 endif()
 
-if (BLAS_DEFINES MATCHES "HAVE_BLAS")
+if (blas_defines MATCHES "HAVE_BLAS")
     # Configure BLAS Libraries, determine return types and suck
     include( "cmake/BLASConfig.cmake" )
     if (blas_config_found)
@@ -260,41 +260,41 @@ if (BLAS_DEFINES MATCHES "HAVE_BLAS")
 
     # Check for CBLAS
     #message( "check for cblas?" )
-    if (NOT CBLAS_DEFINES STREQUAL "")
+    if (NOT cblas_defines STREQUAL "")
         include( "cmake/CBLASConfig.cmake" )
     endif()
 
     # Check for LAPACK
     #message( "check for lapack?" )
-    if (NOT LAPACK_DEFINES STREQUAL "")
+    if (NOT lapack_defines STREQUAL "")
         include( "cmake/LAPACKConfig.cmake" )
     endif()
 else()
     message( FATAL_ERROR "BLAS++ requires a BLAS library and none was found." )
 endif()
 
-if (BLAS_cxx_flags)
-    string( STRIP ${BLAS_cxx_flags} BLAS_cxx_flags )
+if (blas_cxx_flags)
+    string( STRIP ${blas_cxx_flags} blas_cxx_flags )
 endif()
-if (BLAS_links)
-    string( STRIP ${BLAS_links} BLAS_links )
+if (blas_links)
+    string( STRIP ${blas_links} blas_links )
 endif()
 
 # Some debug
-if (BLASPP_QUIET)
-    message( "BLAS_DEFINES:     ${BLAS_DEFINES}" )
-    message( "LIB_DEFINES:      ${LIB_DEFINES}" )
-    message( "BLAS_links:       ${BLAS_links}" )
+if (DEBUG)
+    message( "blas_defines:     ${blas_defines}" )
+    message( "lib_defines:      ${lib_defines}" )
+    message( "blas_links:       ${blas_links}" )
     message( "BLAS_LIBRARIES:   ${BLAS_LIBRARIES}" )
-    message( "BLAS_cxx_flags:   ${BLAS_cxx_flags}" )
+    message( "blas_cxx_flags:   ${blas_cxx_flags}" )
     message( "BLAS_INT_DEFINES: ${BLAS_INT_DEFINES}" )
-    message( "FORTRAN_MANGLING: ${FORTRAN_MANGLING_DEFINES}" )
-    message( "CBLAS_DEFINES:    ${CBLAS_DEFINES}" )
-    message( "BLAS_RETURN:      ${BLAS_RETURN}" )
-    message( "LAPACK_DEFINES:   ${LAPACK_DEFINES}" )
+    message( "FORTRAN_MANGLING: ${fortran_mangling}" )
+    message( "cblas_defines:    ${cblas_defines}" )
+    message( "blas_return:      ${blas_return}" )
+    message( "lapack_defines:   ${lapack_defines}" )
 endif()
 
-if (NOT BLAS_DEFINES MATCHES "HAVE_BLAS")
+if (NOT blas_defines MATCHES "HAVE_BLAS")
     message( FATAL_ERROR "BLAS not found, cannot configure BLAS++" )
 endif()
 
@@ -303,8 +303,8 @@ target_link_libraries(
     PUBLIC
         #LDFLAGS example = -fopenmp
         #LIBS example    = -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -lpthread -lm
-        ${BLAS_links}
-        ${BLAS_cxx_flags}
+        ${blas_links}
+        ${blas_cxx_flags}
 )
 
 target_include_directories(
@@ -318,13 +318,13 @@ target_compile_definitions(
     blaspp
     PUBLIC
         # example: -fopenmp -DFORTRAN_ADD_ -DADD_ -DHAVE_BLAS -DBLAS_COMPLEX_RETURN_ARGUMENT -DHAVE_MKL -DHAVE_CBLAS -DHAVE_LAPACK
-        ${FORTRAN_MANGLING_DEFINES}
-        ${BLAS_DEFINES}
-        ${BLAS_RETURN}
-        ${LIB_DEFINES}
-        #${CBLAS_DEFINES}
-        #${LAPACK_DEFINES}
-        ${BLAS_int}
+        ${fortran_mangling}
+        ${blas_defines}
+        ${blas_return}
+        ${lib_defines}
+        #${cblas_defines}
+        #${lapack_defines}
+        ${blas_int_defines}
 )
 
 install(
@@ -369,7 +369,7 @@ install(
 #-------------------------------------------------------------------------------
 # Testers are built by default, but will not be included if Testsweeper is not found
 # Set CMAKE_INSTALL_PREFIX during the installation of TestSweeper and BLAS++.
-if (BUILD_TESTS)
+if (build_tests)
     find_package( testsweeper )
     if (testsweeper_FOUND)
         message( STATUS "Found TestSweeper; tester will be built." )

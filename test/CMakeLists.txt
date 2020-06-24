@@ -1,5 +1,5 @@
 add_executable(
-    blaspp_test
+    tester
     test.cc
     test_util.cc
     test_asum.cc
@@ -57,7 +57,7 @@ if (CMAKE_CUDA_COMPILER)
 
     message( STATUS "Building CUDA wrapper testers." )
     target_sources(
-        blaspp_test
+        tester
         PRIVATE
         test_batch_gemm_device.cc
         test_batch_hemm_device.cc
@@ -83,7 +83,7 @@ else()
 endif()
 
 set_target_properties(
-    blaspp_test
+    tester
     PROPERTIES
         CXX_STANDARD 11
         CXX_STANDARD_REQUIRED ON
@@ -107,16 +107,16 @@ endif()
 endif()
 #message( "testsweeper_DIR: ${testsweeper_DIR}" )
 
-if (NOT BUILD_TESTS)
-    set_target_properties( blaspp_test EXCLUDE_FROM_ALL )
+if (NOT build_tests)
+    set_target_properties( tester EXCLUDE_FROM_ALL )
 endif()
 
 find_package( testsweeper )
 target_link_libraries(
-    blaspp_test
+    tester
     testsweeper
     blaspp
-    #${BLAS_links}
+    #${blas_links}
 )
 
 if (NOT ${is_accelerate} STREQUAL "-1")
@@ -126,7 +126,7 @@ else()
 endif()
 
 target_include_directories(
-    blaspp_test
+    tester
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
         #${CMAKE_CURRENT_SOURCE_DIR}/../include
@@ -136,24 +136,24 @@ target_include_directories(
 )
 if (0)
     target_compile_definitions(
-        blaspp_test
+        tester
         PRIVATE
-            ${FORTRAN_MANGLING_DEFINES}
-            ${BLAS_DEFINES}
-            ${BLAS_RETURN}
+            ${fortran_mangling}
+            ${blas_defines}
+            ${blas_return}
             ${MKL_DEFINES}
-            ${CBLAS_DEFINES}
-            ${LAPACK_DEFINES}
-            ${BLAS_int}
+            ${cblas_defines}
+            ${lapack_defines}
+            ${blas_int_defines}
      )
 endif()
 
 # Since we can't do 'make test'...
-add_custom_target( testing DEPENDS blaspp_test )
+add_custom_target( testing DEPENDS tester )
 
 # Move test script to build directory
 add_custom_command(
-    TARGET blaspp_test POST_BUILD
+    TARGET tester POST_BUILD
     COMMAND
         cp ${CMAKE_CURRENT_SOURCE_DIR}/run_tests.py
            ${CMAKE_CURRENT_BINARY_DIR}/run_tests.py
@@ -161,8 +161,8 @@ add_custom_command(
 
 #Move test script to build directory
 add_custom_command(
-    TARGET blaspp_test POST_BUILD
+    TARGET tester POST_BUILD
     COMMAND
-        cp ${CMAKE_CURRENT_BINARY_DIR}/blaspp_test
+        cp ${CMAKE_CURRENT_BINARY_DIR}/tester
            ${CMAKE_CURRENT_BINARY_DIR}/tester
 )

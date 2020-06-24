@@ -11,256 +11,256 @@ endif()
 
 if (COLOR)
     string(ASCII 27 Esc)
-    set(Red         "${Esc}[31m")
-    set(Blue        "${Esc}[34m")
-    set(ColourReset "${Esc}[m")
+    set(red         "${Esc}[31m")
+    set(blue        "${Esc}[34m")
+    set(default_color "${Esc}[m")
 else()
     string(ASCII 27 Esc)
-    set(Red         "")
-    set(Blue        "")
-    set(ColourReset "")
+    set(red         "")
+    set(blue        "")
+    set(default_color "")
 endif()
 
 message( STATUS "Checking for BLAS library options" )
 
-set( run_res1 "" )
-set( compile_res1 "" )
-set( run_output1 "" )
+set( run_result "" )
+set( compile_result "" )
+set( run_output "" )
 set( compile_output1 "" )
 
-if (${BLAS_DEFINES} MATCHES "HAVE_BLAS")
+if (${blas_defines} MATCHES "HAVE_BLAS")
     #message( STATUS "Checking for library vendors ..." )
 
     try_run(
-        run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
+        run_result compile_result ${CMAKE_CURRENT_BINARY_DIR}
         SOURCES
             ${CMAKE_CURRENT_SOURCE_DIR}/config/mkl_version.cc
         LINK_LIBRARIES
-            ${BLAS_links}
-            ${BLAS_cxx_flags}
+            ${blas_links}
+            ${blas_cxx_flags}
         COMPILE_DEFINITIONS
-            ${BLAS_int}
+            ${blas_int_defines}
         COMPILE_OUTPUT_VARIABLE
             compile_output1
         RUN_OUTPUT_VARIABLE
-            run_output1
+            run_output
     )
 
-    if (compile_res1 AND "${run_output1}" MATCHES "MKL_VERSION")
-        message( "${Blue}  ${run_output1}${ColourReset}" )
-        set( LIB_DEFINES "HAVE_MKL" CACHE INTERNAL "" )
+    if (compile_result AND "${run_output}" MATCHES "MKL_VERSION")
+        message( "${blue}  ${run_output}${default_color}" )
+        set( lib_defines "HAVE_MKL" CACHE INTERNAL "" )
     else()
-        set( LIB_DEFINES "" )
+        set( lib_defines "" )
     endif()
-    set( run_res1 "" )
-    set( compile_res1 "" )
-    set( run_output1 "" )
+    set( run_result "" )
+    set( compile_result "" )
+    set( run_output "" )
     set( compile_output1 "" )
 endif()
 
-if (BLAS_DEFINES MATCHES "HAVE_BLAS"
-    AND LIB_DEFINES STREQUAL "")
+if (blas_defines MATCHES "HAVE_BLAS"
+    AND lib_defines STREQUAL "")
     try_run(
-        run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
+        run_result compile_result ${CMAKE_CURRENT_BINARY_DIR}
         SOURCES
             ${CMAKE_CURRENT_SOURCE_DIR}/config/acml_version.cc
         LINK_LIBRARIES
-            ${BLAS_links}
-            ${BLAS_cxx_flags}
+            ${blas_links}
+            ${blas_cxx_flags}
         COMPILE_DEFINITIONS
-            ${BLAS_int}
+            ${blas_int_defines}
         COMPILE_OUTPUT_VARIABLE
             compile_output1
         RUN_OUTPUT_VARIABLE
-            run_output1
+            run_output
     )
 
-    if (compile_res1 AND "${run_output1}" MATCHES "ok")
-        message( "${Blue}  ${run_output1}${ColourReset}" )
-        set( LIB_DEFINES "HAVE_ACML" CACHE INTERNAL "" )
+    if (compile_result AND "${run_output}" MATCHES "ok")
+        message( "${blue}  ${run_output}${default_color}" )
+        set( lib_defines "HAVE_ACML" CACHE INTERNAL "" )
     else()
-        set( LIB_DEFINES "" CACHE INTERNAL "" )
+        set( lib_defines "" CACHE INTERNAL "" )
     endif()
-    set( run_res1 "" )
-    set( compile_res1 "" )
-    set( run_output1 "" )
+    set( run_result "" )
+    set( compile_result "" )
+    set( run_output "" )
     set( compile_output1 "" )
 endif()
 
-if (${BLAS_DEFINES} MATCHES "HAVE_BLAS" AND
-   "${LIB_DEFINES}" STREQUAL "")
+if (${blas_defines} MATCHES "HAVE_BLAS" AND
+   "${lib_defines}" STREQUAL "")
     try_run(
-        run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
+        run_result compile_result ${CMAKE_CURRENT_BINARY_DIR}
         SOURCES
             ${CMAKE_CURRENT_SOURCE_DIR}/config/essl_version.cc
         LINK_LIBRARIES
-            ${BLAS_links}
-            ${BLAS_cxx_flags}
+            ${blas_links}
+            ${blas_cxx_flags}
         COMPILE_DEFINITIONS
-            ${BLAS_int}
+            ${blas_int_defines}
         COMPILE_OUTPUT_VARIABLE
             compile_output1
         RUN_OUTPUT_VARIABLE
-            run_output1
+            run_output
     )
 
-    if (compile_res1 AND "${run_output1}" MATCHES "ESSL_VERSION")
-        message( "${Blue}  ${run_output1}${ColourReset}" )
-        set( LIB_DEFINES "HAVE_ESSL" CACHE INTERNAL "" )
+    if (compile_result AND "${run_output}" MATCHES "ESSL_VERSION")
+        message( "${blue}  ${run_output}${default_color}" )
+        set( lib_defines "HAVE_ESSL" CACHE INTERNAL "" )
     else()
-        set( LIB_DEFINES "" CACHE INTERNAL "" )
+        set( lib_defines "" CACHE INTERNAL "" )
     endif()
-    set( run_res1 "" )
-    set( compile_res1 "" )
-    set( run_output1 "" )
+    set( run_result "" )
+    set( compile_result "" )
+    set( run_output "" )
     set( compile_output1 "" )
 endif()
 
-if (${BLAS_DEFINES} MATCHES "HAVE_BLAS" AND
-    "${LIB_DEFINES}" STREQUAL "")
+if (${blas_defines} MATCHES "HAVE_BLAS" AND
+    "${lib_defines}" STREQUAL "")
     try_run(
-        run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
+        run_result compile_result ${CMAKE_CURRENT_BINARY_DIR}
         SOURCES
             ${CMAKE_CURRENT_SOURCE_DIR}/config/openblas_version.cc
         LINK_LIBRARIES
-            ${BLAS_links}
-            ${BLAS_cxx_flags}
+            ${blas_links}
+            ${blas_cxx_flags}
         COMPILE_DEFINITIONS
-            ${BLAS_int}
+            ${blas_int_defines}
         COMPILE_OUTPUT_VARIABLE
             compile_output1
         RUN_OUTPUT_VARIABLE
-            run_output1
+            run_output
     )
 
-    if (compile_res1 AND "${run_output1}" MATCHES "ok")
-        message( "${Blue}  ${run_output1}${ColourReset}" )
-        set( LIB_DEFINES "HAVE_OPENBLAS" CACHE INTERNAL "" )
+    if (compile_result AND "${run_output}" MATCHES "ok")
+        message( "${blue}  ${run_output}${default_color}" )
+        set( lib_defines "HAVE_OPENBLAS" CACHE INTERNAL "" )
     else()
-        set( LIB_DEFINES "" CACHE INTERNAL "" )
+        set( lib_defines "" CACHE INTERNAL "" )
     endif()
-    set( run_res1 "" )
-    set( compile_res1 "" )
-    set( run_output1 "" )
+    set( run_result "" )
+    set( compile_result "" )
+    set( run_output "" )
     set( compile_output1 "" )
 endif()
 
 message( STATUS "Checking BLAS complex return type..." )
 
 try_run(
-    run_res1
-    compile_res1
+    run_result
+    compile_result
         ${CMAKE_CURRENT_BINARY_DIR}
     SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/config/return_complex.cc
     LINK_LIBRARIES
-        ${BLAS_links}
-        ${BLAS_cxx_flags}
+        ${blas_links}
+        ${blas_cxx_flags}
     COMPILE_DEFINITIONS
-        ${BLAS_int}
+        ${blas_int_defines}
     COMPILE_OUTPUT_VARIABLE
         compile_output1
     RUN_OUTPUT_VARIABLE
-        run_output1
+        run_output
 )
 
-#message ('compile result: ' ${compile_res1})
-#message ('run result: ' ${run_res1})
+#message ('compile result: ' ${compile_result})
+#message ('run result: ' ${run_result})
 #message ('compile output: ' ${compile_output1})
-#message ('run output: ' ${run_output1})
+#message ('run output: ' ${run_output})
 
-if (compile_res1 AND "${run_output1}" MATCHES "ok")
-    message( "${Blue}  BLAS (zdotc) returns complex (GNU gfortran convention)${ColourReset}" )
-    set( BLAS_COMPLEX_RETURN "" )
+if (compile_result AND "${run_output}" MATCHES "ok")
+    message( "${blue}  BLAS (zdotc) returns complex (GNU gfortran convention)${default_color}" )
+    set( blas_complex_return "" )
 else()
-    set( run_res1 "" )
-    set( compile_res1 "" )
-    set( run_output1 "" )
+    set( run_result "" )
+    set( compile_result "" )
+    set( run_output "" )
     set( compile_output1 "" )
 
     try_run(
-        run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
+        run_result compile_result ${CMAKE_CURRENT_BINARY_DIR}
         SOURCES
             ${CMAKE_CURRENT_SOURCE_DIR}/config/return_complex_argument.cc
         LINK_LIBRARIES
-            ${BLAS_links}
-            ${BLAS_cxx_flags}
+            ${blas_links}
+            ${blas_cxx_flags}
         COMPILE_DEFINITIONS
-            ${BLAS_int}
+            ${blas_int_defines}
         COMPILE_OUTPUT_VARIABLE
             compile_output1
         RUN_OUTPUT_VARIABLE
-            run_output1
+            run_output
         )
 
-    if (compile_res1 AND "${run_output1}" MATCHES "ok")
-        message( "${Blue}  BLAS (zdotc) returns complex as hidden argument (Intel ifort convention)${ColourReset}" )
-        set( BLAS_COMPLEX_RETURN "BLAS_COMPLEX_RETURN_ARGUMENT" )
+    if (compile_result AND "${run_output}" MATCHES "ok")
+        message( "${blue}  BLAS (zdotc) returns complex as hidden argument (Intel ifort convention)${default_color}" )
+        set( blas_complex_return "BLAS_COMPLEX_RETURN_ARGUMENT" )
     else()
         message( FATAL_ERROR "Error - Cannot detect zdotc return value. Please check the BLAS installation." )
     endif()
-    set( run_res1 "" )
-    set( compile_res1 "" )
-    set( run_output1 "" )
+    set( run_result "" )
+    set( compile_result "" )
+    set( run_output "" )
     set( compile_output1 "" )
 endif()
 
 message( STATUS "Checking BLAS float return type..." )
 
 try_run(
-    run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
+    run_result compile_result ${CMAKE_CURRENT_BINARY_DIR}
     SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/config/return_float.cc
     LINK_LIBRARIES
-        ${BLAS_links}
-        ${BLAS_cxx_flags}
+        ${blas_links}
+        ${blas_cxx_flags}
     COMPILE_DEFINITIONS
-        ${BLAS_int}
+        ${blas_int_defines}
     COMPILE_OUTPUT_VARIABLE
         compile_output1
     RUN_OUTPUT_VARIABLE
-        run_output1
+        run_output
 )
 
-if (compile_res1 AND "${run_output1}" MATCHES "ok")
-    message( "${Blue}  BLAS (sdot) returns float as float (standard)${ColourReset}" )
+if (compile_result AND "${run_output}" MATCHES "ok")
+    message( "${blue}  BLAS (sdot) returns float as float (standard)${default_color}" )
 else()
-    set( run_res1 "" )
-    set( compile_res1 "" )
-    set( run_output1 "" )
+    set( run_result "" )
+    set( compile_result "" )
+    set( run_output "" )
     set( compile_output1 "" )
     try_run(
-        run_res1 compile_res1 ${CMAKE_CURRENT_BINARY_DIR}
+        run_result compile_result ${CMAKE_CURRENT_BINARY_DIR}
         SOURCES
             ${CMAKE_CURRENT_SOURCE_DIR}/config/return_float_f2c.cc
         LINK_LIBRARIES
-            ${BLAS_links}
-            ${BLAS_cxx_flags}
+            ${blas_links}
+            ${blas_cxx_flags}
         COMPILE_DEFINITIONS
-            ${BLAS_int}
+            ${blas_int_defines}
         COMPILE_OUTPUT_VARIABLE
             compile_output1
         RUN_OUTPUT_VARIABLE
-            run_output1
+            run_output
     )
 
-    if (compile_res1 AND "${run_output1}" MATCHES "ok")
-        message( "${Blue}  BLAS (sdot) returns float as double (f2c convention)${ColourReset}" )
-        set( BLAS_FLOAT_RETURN "HAVE_F2C" )
+    if (compile_result AND "${run_output}" MATCHES "ok")
+        message( "${blue}  BLAS (sdot) returns float as double (f2c convention)${default_color}" )
+        set( blas_float_return "HAVE_F2C" )
     endif()
-    set( run_res1 "" )
-    set( compile_res1 "" )
-    set( run_output1 "" )
+    set( run_result "" )
+    set( compile_result "" )
+    set( run_output "" )
     set( compile_output1 "" )
 endif()
 
 if (DEBUG)
-    message( "lib defines: " ${LIB_DEFINES} )
-    message( "blas defines: " ${BLAS_DEFINES} )
-    message( "mkl int defines: " ${BLAS_int} )
-    message( "fortran mangling defines: " ${FORTRAN_MANGLING_DEFINES} )
-    message( "blas complex return: " ${BLAS_COMPLEX_RETURN} )
-    message( "blas float return: " ${BLAS_FLOAT_RETURN} )
+    message( "lib defines: " ${lib_defines} )
+    message( "blas defines: " ${blas_defines} )
+    message( "mkl int defines: " ${blas_int_defines} )
+    message( "fortran mangling defines: " ${fortran_mangling} )
+    message( "blas complex return: " ${blas_complex_return} )
+    message( "blas float return: " ${blas_float_return} )
     message( "config_found: " ${config_found} )
 endif()
 
