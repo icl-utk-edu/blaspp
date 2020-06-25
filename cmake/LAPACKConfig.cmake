@@ -5,7 +5,7 @@
 
 # Check if this file has already been run with these settings.
 if ("${lapack_config_cache}" STREQUAL "${BLAS_LIBRARIES}")
-    message( DEBUG "LAPACK config already done" )
+    message( DEBUG "LAPACK config already done for ${BLAS_LIBRARIES}" )
     return()
 endif()
 set( lapack_config_cache "${BLAS_LIBRARIES}" CACHE INTERNAL "" )
@@ -23,9 +23,9 @@ foreach (lib IN LISTS lib_list)
         SOURCES
             "${CMAKE_CURRENT_SOURCE_DIR}/config/lapack_potrf.cc"
         LINK_LIBRARIES
-            "${lib} ${BLAS_LIBRARIES}"
+            "${lib}" "${BLAS_LIBRARIES}"
         COMPILE_DEFINITIONS
-            "${blas_defines}"
+            "${blas_defines}" "${blas_config_defines}"
         COMPILE_OUTPUT_VARIABLE
             compile_output
         RUN_OUTPUT_VARIABLE
@@ -43,10 +43,10 @@ foreach (lib IN LISTS lib_list)
 endforeach()
 
 #-------------------------------------------------------------------------------
-if (BLAS_FOUND)
+if (lapack_found)
     message( "${blue}   Found LAPACK library ${lapack_libraries}${plain}" )
 else()
-    message( "${red}   LAPACK library not found. Testers cannot be built.${plain}" )
+    message( "${red}   LAPACK library not found. Tester cannot be built.${plain}" )
 endif()
 
 message( DEBUG "

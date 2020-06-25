@@ -4,34 +4,6 @@
 # the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
 #-----------------------------------
-# BLAS options
-# todo: Goto, BLIS, FLAME, others?
-set( blas "auto" CACHE STRING
-     "BLAS library to search for" )
-set_property(
-    CACHE blas PROPERTY STRINGS
-    "auto" "Apple Accelerate" "Cray LibSci" "IBM ESSL"
-    "Intel MKL" "OpenBLAS" "AMD ACML" "generic" )
-
-set( blas_fortran "auto" CACHE STRING
-     "For Intel MKL: use Intel ifort or GNU gfortran conventions?" )
-set_property(
-    CACHE blas_fortran PROPERTY STRINGS
-    "auto" "GNU gfortran conventions" "Intel ifort conventions" )
-
-set( blas_int "auto" CACHE STRING
-     "BLAS integer size: int (LP64) or int64_t (ILP64)" )
-set_property(
-    CACHE blas_int PROPERTY STRINGS
-    "auto" "int (LP64)" "int64_t (ILP64)" )
-
-set( blas_threaded "auto" CACHE STRING
-     "Multi-threaded BLAS?" )
-set_property(
-    CACHE blas_threaded PROPERTY STRINGS
-    "auto" "true" "false" )
-
-#-----------------------------------
 # Check if this file has already been run with these settings.
 if (NOT (    "${cached_blas}"          STREQUAL "${blas}"
          AND "${cached_blas_fortran}"  STREQUAL "${blas_fortran}"
@@ -39,7 +11,8 @@ if (NOT (    "${cached_blas}"          STREQUAL "${blas}"
          AND "${cached_blas_threaded}" STREQUAL "${blas_threaded}"))
     # Ignore BLAS_LIBRARIES if these changed.
     unset( BLAS_LIBRARIES CACHE )
-elseif (BLAS_LIBRARIES AND NOT "${cached_blas_libraries}" STREQUAL "${BLAS_LIBRARIES}")
+elseif (BLAS_LIBRARIES
+        AND NOT "${cached_blas_libraries}" STREQUAL "${BLAS_LIBRARIES}")
     # Ignore blas, etc. if this changes.
     unset( blas          CACHE )
     unset( blas_fortran  CACHE )
@@ -67,6 +40,9 @@ message( STATUS "Looking for BLAS libraries and options" )
 
 #-------------------------------------------------------------------------------
 # Prints the BLAS_{name,flag,libs}_lists.
+# This uses CMAKE_MESSAGE_LOG_LEVEL rather than message( DEBUG, ... )
+# because the extra "-- " cmake prints were quite distracting.
+# Usage: cmake -DCMAKE_MESSAGE_LOG_LEVEL=DEBUG ..
 #
 function( debug_print_list msg )
     if ("${CMAKE_MESSAGE_LOG_LEVEL}" MATCHES "DEBUG|TRACE")
@@ -258,6 +234,7 @@ test_sequential     = '${test_sequential}'")
 
 #-------------------------------------------------------------------------------
 # Build list of libraries to check.
+# todo: BLAS_?(ROOT|DIR)
 
 if (OpenMP_CXX_FOUND)
     set( OpenMP_libs "-DLINK_LIBRARIES=OpenMP::OpenMP_CXX" )
@@ -358,6 +335,7 @@ if (test_all OR test_mkl)
             endif()  # gfortran
 
             # Not Intel compiler, lower preference for Intel ifort interfaces.
+            # E.g., applies to clang on macOS, where MKL doesn't have gfortran libs.
             # todo: same as Intel block above.
             if (test_ifort AND NOT intel_compiler)
                 if (test_int)
@@ -408,6 +386,7 @@ if (test_all OR test_mkl)
         endif()  # gfortran
 
         # Not Intel compiler, lower preference for Intel ifort interfaces.
+        # todo: same as Intel block above.
         if (test_ifort AND NOT intel_compiler)
             if (test_int)
                 list( APPEND blas_name_list "Intel MKL lp64,  sequential, ifort" )

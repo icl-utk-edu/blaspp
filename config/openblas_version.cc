@@ -4,11 +4,18 @@
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
 #include <stdio.h>
-#include <openblas_config.h>
+#include <cblas.h> // openblas_get_config
 
 int main()
 {
     const char* v = OPENBLAS_VERSION;
     printf( "OPENBLAS_VERSION=%s\n", v );
+
+    // since OPENBLAS_VERSION is defined in the header, it may work even
+    // if we don't link with openblas. Calling an OpenBLAS-specific
+    // function ensures we are linking with OpenBLAS.
+    const char* config = openblas_get_config();
+    printf( "openblas_get_config=%s\n", config );
+
     return 0;
 }

@@ -17,7 +17,6 @@ project(
 
 #-------------------------------------------------------------------------------
 # Options
-# See also options in cmake/BLASFinder.cmake
 option( BUILD_SHARED_LIBS "Build shared libraries" true )
 option( build_tests "Build test suite" true )
 option( color "Use ANSI color output" true )
@@ -48,7 +47,35 @@ set_property(
     CACHE BLA_VENDOR PROPERTY STRINGS
     "" All Goto OpenBLAS FLAME ATLAS IBMESSL
     Intel10_32 Intel10_64lp Intel10_64lp_seq Intel10_64ilp Intel10_64ilp_seq
-    Intel10_64_dyn Apple NAS Arm Arm_mp Arm_ilp64 Arm_ilp64_mp Generic
+    Intel10_64_dyn Apple NAS Arm Arm_mp Arm_ilp64 Arm_ilp64_mp Generic )
+
+#-----------------------------------
+# BLAS options
+# todo: Goto, BLIS, FLAME, others?
+set( blas "auto" CACHE STRING
+     "BLAS library to search for" )
+set_property(
+    CACHE blas PROPERTY STRINGS
+    "auto" "Apple Accelerate" "Cray LibSci" "IBM ESSL"
+    "Intel MKL" "OpenBLAS" "AMD ACML" "generic" )
+
+set( blas_fortran "auto" CACHE STRING
+     "For Intel MKL: use Intel ifort or GNU gfortran conventions?" )
+set_property(
+    CACHE blas_fortran PROPERTY STRINGS
+    "auto" "GNU gfortran conventions" "Intel ifort conventions" )
+
+set( blas_int "auto" CACHE STRING
+     "BLAS integer size: int (LP64) or int64_t (ILP64)" )
+set_property(
+    CACHE blas_int PROPERTY STRINGS
+    "auto" "int (LP64)" "int64_t (ILP64)" )
+
+set( blas_threaded "auto" CACHE STRING
+     "Multi-threaded BLAS?" )
+set_property(
+    CACHE blas_threaded PROPERTY STRINGS
+    "auto" "true" "false" )
 
 #-------------------------------------------------------------------------------
 # Enforce out-of-source build
@@ -196,8 +223,10 @@ endif()
 #-------------------------------------------------------------------------------
 # Search for BLAS library.
 if (BLA_VENDOR OR use_cmake_find_blas)
+    message( DEBUG "Using CMake's FindBLAS" )
     find_package( BLAS )
 else()
+    message( DEBUG "Using BLASFinder" )
     include( "cmake/BLASFinder.cmake" )
 endif()
 
@@ -210,7 +239,11 @@ include( "cmake/BLASConfig.cmake" )
 include( "cmake/CBLASConfig.cmake" )
 include( "cmake/LAPACKConfig.cmake" )
 
-target_link_libraries( blaspp PRIVATE "${BLAS_LIBRARIES}" )
+# BLAS_LIBRARIES could be private, but then if an application directly
+# calls blas, cblas, lapack, lapacke, mkl, essl, etc., it would need to
+# devine the exact same BLAS_LIBRARIES. For example, the tester calls
+# cblas. Instead, make it public.
+target_link_libraries( blaspp PUBLIC "${BLAS_LIBRARIES}" )
 
 target_compile_definitions(
     blaspp PRIVATE "${blas_defines}" "${blas_config_defines}" )

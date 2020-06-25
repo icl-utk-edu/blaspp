@@ -5,7 +5,7 @@
 
 # Check if this file has already been run with these settings.
 if ("${blas_config_cache}" STREQUAL "${BLAS_LIBRARIES}")
-    message( DEBUG "BLAS config already done" )
+    message( DEBUG "BLAS config already done for ${BLAS_LIBRARIES}" )
     return()
 endif()
 set( blas_config_cache "${BLAS_LIBRARIES}" CACHE INTERNAL "" )
@@ -18,6 +18,17 @@ include( "cmake/util.cmake" )
 # CMake's find_package( BLAS ) or by the user in BLAS_LIBRARIES.
 message( STATUS "Checking BLAS library version" )
 set( found false )
+
+#---------------------------------------- Apple Accelerate
+# There's no accelerate_version() function that I could find,
+# so just look for the framework.
+if (NOT found)
+    if ("${BLAS_LIBRARIES}" MATCHES "-framework Accelerate|Accelerate.framework")
+        message( "${blue}   Accelerate framework${plain}" )
+        set( blas_config_defines "-DHAVE_ACCELERATE" )
+        set( found true )
+    endif()
+endif()
 
 #---------------------------------------- Intel MKL
 if (NOT found)
