@@ -3,7 +3,7 @@
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
-// Function definitions moved from cblas.hh for ESSL compatability.
+// Function definitions moved from cblas_wrappers.hh for ESSL compatability.
 
 #include "blas/fortran.h"
 

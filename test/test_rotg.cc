@@ -4,7 +4,7 @@
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
 #include "test.hh"
-#include "cblas.hh"
+#include "cblas_wrappers.hh"
 #include "lapack_wrappers.hh"
 
 // -----------------------------------------------------------------------------
