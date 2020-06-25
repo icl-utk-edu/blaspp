@@ -3,11 +3,63 @@
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
-#message( "blas config found: ${blas_config_found}" )
-#if (blas_config_found STREQUAL "TRUE")
-#    message( "BLAS configuration already done!" )
-#    return()
-#endif()
+#-----------------------------------
+# BLAS options
+# todo: Goto, BLIS, FLAME, others?
+set( blas "auto" CACHE STRING
+     "BLAS library to search for" )
+set_property(
+    CACHE blas PROPERTY STRINGS
+    "auto" "Apple Accelerate" "Cray LibSci" "IBM ESSL"
+    "Intel MKL" "OpenBLAS" "AMD ACML" "generic" )
+
+set( blas_fortran "auto" CACHE STRING
+     "For Intel MKL: use Intel ifort or GNU gfortran conventions?" )
+set_property(
+    CACHE blas_fortran PROPERTY STRINGS
+    "auto" "GNU gfortran conventions" "Intel ifort conventions" )
+
+set( blas_int "auto" CACHE STRING
+     "BLAS integer size: int (LP64) or int64_t (ILP64)" )
+set_property(
+    CACHE blas_int PROPERTY STRINGS
+    "auto" "int (LP64)" "int64_t (ILP64)" )
+
+set( blas_threaded "auto" CACHE STRING
+     "Multi-threaded BLAS?" )
+set_property(
+    CACHE blas_threaded PROPERTY STRINGS
+    "auto" "true" "false" )
+
+#-----------------------------------
+# Check if this file has already been run with these settings.
+if (NOT (    "${cached_blas}"          STREQUAL "${blas}"
+         AND "${cached_blas_fortran}"  STREQUAL "${blas_fortran}"
+         AND "${cached_blas_int}"      STREQUAL "${blas_int}"
+         AND "${cached_blas_threaded}" STREQUAL "${blas_threaded}"))
+    # Ignore BLAS_LIBRARIES if these changed.
+    unset( BLAS_LIBRARIES CACHE )
+elseif (BLAS_LIBRARIES AND NOT "${cached_blas_libraries}" STREQUAL "${BLAS_LIBRARIES}")
+    # Ignore blas, etc. if this changes.
+    unset( blas          CACHE )
+    unset( blas_fortran  CACHE )
+    unset( blas_int      CACHE )
+    unset( blas_threaded CACHE )
+else()
+    message( DEBUG "BLAS search already done for
+    blas           = ${blas}
+    blas_fortran   = ${blas_fortran}
+    blas_int       = ${blas_int}
+    blas_threaded  = ${blas_threaded}
+    BLAS_LIBRARIES = ${BLAS_LIBRARIES}" )
+    return()
+endif()
+
+set( cached_blas_libraries ${BLAS_LIBRARIES} CACHE INTERNAL "" )  # updated later
+set( cached_blas           ${blas}           CACHE INTERNAL "" )
+set( cached_blas_fortran   ${blas_fortran}   CACHE INTERNAL "" )
+set( cached_blas_int       ${blas_int}       CACHE INTERNAL "" )
+set( cached_blas_threaded  ${blas_threaded}  CACHE INTERNAL "" )
 
 include( "cmake/util.cmake" )
 
@@ -221,7 +273,6 @@ if (test_blas_libraries)
     string( REPLACE ";" "\\\;" BLAS_LIBRARIES_ESC "${BLAS_LIBRARIES}" )
     message( DEBUG "BLAS_LIBRARIES ${BLAS_LIBRARIES}" )
     message( DEBUG "   =>          ${BLAS_LIBRARIES_ESC}" )
-    message( "..." )
 
     list( APPEND blas_name_list "\$BLAS_LIBRARIES" )
     list( APPEND blas_flag_list " " )
@@ -481,7 +532,7 @@ foreach (blas_name IN LISTS blas_name_list)
     # Undo escaping ; semi-colons to make list.
     string(REPLACE "\;" ";" blas_libs "${blas_libs}")
 
-    message( "\n${blas_name}" )
+    message( "${blas_name}" )
     message( "   libs:  ${blas_libs}" )
     message( "   flags: ${blas_flag}" )
 
@@ -539,17 +590,12 @@ foreach (blas_name IN LISTS blas_name_list)
             endif()
 
             # If it runs (exits 0), we're done, so break all 3 loops.
-            if (run_result EQUAL 0 AND run_output MATCHES "ok")
+            if ("${run_result}" EQUAL 0 AND "${run_output}" MATCHES "ok")
                 message( "${label} ${blue} yes${plain}" )
 
-                set( BLAS_FOUND true
-                     CACHE INTERNAL "Whether BLAS library was found" )
-
-                set( BLAS_LIBRARIES ${blas_libs}
-                     CACHE STRING "" )
-
-                set( blas_defines "${blas_flag} ${mangling} ${int_size}"
-                     CACHE INTERNAL "Constants defined for BLAS" )
+                set( BLAS_FOUND true CACHE INTERNAL "" )
+                set( BLAS_LIBRARIES "${blas_libs}" CACHE STRING "" FORCE )
+                set( blas_defines "${blas_flag} ${mangling} ${int_size}" )
                 break()
             else()
                 message( "${label} ${red} no (didn't run: int mismatch, etc.)${plain}" )
@@ -561,6 +607,7 @@ foreach (blas_name IN LISTS blas_name_list)
             break()
         endif()
     endforeach()
+    message( "" )
 
     # Break loops as described above.
     if (BLAS_FOUND)
@@ -568,14 +615,23 @@ foreach (blas_name IN LISTS blas_name_list)
     endif()
 endforeach()
 
+# To avoid empty -D, need to strip leading whitespace.
+# This seems painful in CMake.
+string( STRIP "${blas_defines}" blas_defines )
+set( blas_defines "${blas_defines}"
+     CACHE INTERNAL "Constants defined for BLAS" )
+
+# Update to found BLAS library.
+set( cached_blas_libraries ${BLAS_LIBRARIES} CACHE INTERNAL "" )
+
 #-------------------------------------------------------------------------------
 if (BLAS_FOUND)
-    message( "${blue}   Found BLAS library: ${BLAS_LIBRARIES}.${plain}" )
+    message( "${blue}   Found BLAS library: ${BLAS_LIBRARIES}${plain}" )
 else()
-    message( "${red}   Failed to find a BLAS library.${plain}" )
+    message( "${red}   BLAS library not found.${plain}" )
 endif()
 
 message( DEBUG "
-BLAS_FOUND:         = '${BLAS_FOUND}'
+BLAS_FOUND          = '${BLAS_FOUND}'
 BLAS_LIBRARIES      = '${BLAS_LIBRARIES}'
 blas_defines        = '${blas_defines}'")

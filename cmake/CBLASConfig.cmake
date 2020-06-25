@@ -3,68 +3,53 @@
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
-if (NOT ${cblas_defines} STREQUAL "")
-    message( "CBLAS configuration already done!" )
+# Check if this file has already been run with these settings.
+if ("${cblas_config_cache}" STREQUAL "${BLAS_LIBRARIES}")
+    message( DEBUG "CBLAS config already done" )
     return()
 endif()
+set( cblas_config_cache "${BLAS_LIBRARIES}" CACHE INTERNAL "" )
 
 include( "cmake/util.cmake" )
 
-message( STATUS "Checking for CBLAS..." )
+set( lib_list ";-lcblas" )
+message( DEBUG "lib_list ${lib_list}" )
 
-#message( "blas_links: " ${blas_links} )
-#message( "blas_defines: " ${blas_defines} )
-#message( "lib_defines: " ${lib_defines} )
-#message( "blas_cxx_flags: " ${blas_cxx_flags} )
-#message( "blas_int: " ${blas_int_defines} )
+foreach (lib IN LISTS lib_list)
+    message( STATUS "Checking for CBLAS library ${lib}" )
 
-if (NOT "${blas_defines}" STREQUAL "")
-    set( local_BLAS_DEFINES "-D${blas_defines}" )
+    try_run(
+        run_result compile_result ${CMAKE_CURRENT_BINARY_DIR}
+        SOURCES
+            "${CMAKE_CURRENT_SOURCE_DIR}/config/cblas.cc"
+        LINK_LIBRARIES
+            "${lib} ${BLAS_LIBRARIES}"
+        COMPILE_DEFINITIONS
+            "${blas_defines}"
+        COMPILE_OUTPUT_VARIABLE
+            compile_output
+        RUN_OUTPUT_VARIABLE
+            run_output
+    )
+    debug_try_run( "cblas.cc" "${compile_result}" "${compile_output}"
+                              "${run_result}" "${run_output}" )
+
+    if (compile_result AND "${run_output}" MATCHES "ok")
+        set( cblas_defines "-DHAVE_CBLAS" CACHE INTERNAL "" )
+        set( cblas_libraries "${lib}" CACHE INTERNAL "" )
+        set( cblas_found true CACHE INTERNAL "" )
+        break()
+    endif()
+endforeach()
+
+#-------------------------------------------------------------------------------
+if (BLAS_FOUND)
+    message( "${blue}   Found CBLAS library ${cblas_libraries}${plain}" )
 else()
-    set( local_BLAS_DEFINES "" )
+    message( "${red}   CBLAS library not found. Testers cannot be built.${plain}" )
 endif()
 
-if (NOT "${lib_defines}" STREQUAL "")
-    set( local_LIB_DEFINES "-D${lib_defines}" )
-else()
-    set( local_LIB_DEFINES "" )
-endif()
-
-#message( "local_LIB_DEFINES: " ${local_LIB_DEFINES} )
-#message( "local_BLAS_DEFINES: " ${local_BLAS_DEFINES} )
-
-string( FIND "${blas_links}" "framework" is_accelerate )
-#message( "is accelerate: ${is_accelerate}" )
-if (NOT ${is_accelerate} STREQUAL "-1")
-    set( blas_include_dir "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers/" )
-    set( blas_inc_dir "-I${blas_include_dir}" )
-endif()
-#message( "blas_inc_dir: ${blas_include_dir}" )
-
-try_run(
-    run_result compile_result ${CMAKE_CURRENT_BINARY_DIR}
-    SOURCES
-        ${CMAKE_CURRENT_SOURCE_DIR}/config/cblas.cc
-    LINK_LIBRARIES
-        ${blas_cxx_flags}
-        ${blas_links}
-    COMPILE_DEFINITIONS
-        ${blas_inc_dir}
-        ${local_BLAS_DEFINES}
-        ${local_LIB_DEFINES}
-        ${blas_int_defines}
-    COMPILE_OUTPUT_VARIABLE
-        compile_output
-    RUN_OUTPUT_VARIABLE
-        run_output
-)
-
-if (compile_result AND "${run_output}" MATCHES "ok")
-    message( "${blue}  Found CBLAS${default_color}" )
-    set( cblas_defines "HAVE_CBLAS" CACHE INTERNAL "" )
-else()
-    message( "${red}  CBLAS not found.${default_color}" )
-    set( cblas_defines "" CACHE INTERNAL "" )
-endif()
-
-#message( "cblas defines: " ${cblas_defines} )
+message( DEBUG "
+cblas_found         = '${cblas_found}'
+cblas_libraries     = '${cblas_libraries}'
+cblas_defines       = '${cblas_defines}'")

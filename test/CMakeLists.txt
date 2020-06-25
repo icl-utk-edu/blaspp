@@ -1,8 +1,16 @@
-# Can't build testers if TestSweeper is not found.
+# Can't build testers if CBLAS, LAPACK, or TestSweeper are not found.
+if (NOT cblas_found)
+    message( WARNING "CBLAS not found; tester cannot be built." )
+    return()
+endif()
+
+if (NOT lapack_found)
+    message( WARNING "LAPACK not found; tester cannot be built." )
+    return()
+endif()
+
 find_package( testsweeper )
-if (testsweeper_FOUND)
-    message( STATUS "Found TestSweeper; tester will be built." )
-else()
+if (NOT testsweeper_FOUND)
     message( WARNING "TestSweeper not found; tester cannot be built." )
     return()
 endif()
@@ -60,11 +68,7 @@ add_executable(
     lapack_wrappers.cc
 )
 
-include( CheckLanguage )
-check_language( CUDA )
 if (CMAKE_CUDA_COMPILER)
-    enable_language( CUDA )
-
     message( STATUS "Building CUDA wrapper testers." )
     target_sources(
         tester
@@ -89,7 +93,7 @@ if (CMAKE_CUDA_COMPILER)
         test_trsm_device.cc
     )
 else()
-    message( STATUS "No CUDA support" )
+    message( STATUS "No CUDA support in testers" )
 endif()
 
 # C++11 is inherited from blaspp, but disabling extensions is not.
@@ -99,6 +103,8 @@ target_link_libraries(
     tester
     testsweeper
     blaspp
+    "${cblas_libraries}"
+    "${lapack_libraries}"
 )
 
 # Copy run_tests script to build directory. Used in Jenkins.
