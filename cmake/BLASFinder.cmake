@@ -530,8 +530,8 @@ foreach (blas_name IN LISTS blas_name_list)
                 COMPILE_DEFINITIONS
                     "${blas_flag} ${mangling} ${int_size}"
                 CMAKE_FLAGS
-                    "${OpenMP_lib_str}"
-                COMPILE_OUTPUT_VARIABLE
+                    "${OpenMP_libs}"
+                OUTPUT_VARIABLE
                     link_output
             )
             debug_try_compile( "hello.cc" "${link_result}" "${link_output}" )
@@ -553,7 +553,7 @@ foreach (blas_name IN LISTS blas_name_list)
                 COMPILE_DEFINITIONS
                     "${blas_flag} ${mangling} ${int_size}"
                 CMAKE_FLAGS
-                    "${OpenMP_lib_str}"
+                    "${OpenMP_libs}"
                 COMPILE_OUTPUT_VARIABLE
                     compile_output
                 RUN_OUTPUT_VARIABLE
