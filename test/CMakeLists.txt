@@ -107,7 +107,11 @@ target_link_libraries(
     "${lapack_libraries}"
 )
 
-target_include_directories( tester PUBLIC "${cblas_include}" )
+target_include_directories(
+    tester
+    PUBLIC
+        "${cblas_include}"
+)
 
 # Copy run_tests script to build directory. Used in Jenkins.
 add_custom_command(
