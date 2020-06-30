@@ -113,6 +113,15 @@ target_include_directories(
         "${cblas_include}"
 )
 
+target_compile_definitions(
+    tester
+    PRIVATE
+        "${blas_defines}"
+        "${blas_config_defines}"
+        "${cblas_defines}"
+        "${lapack_defines}"
+)
+
 # Copy run_tests script to build directory. Used in Jenkins.
 add_custom_command(
     TARGET tester POST_BUILD
