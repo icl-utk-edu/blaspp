@@ -236,9 +236,7 @@ test_sequential     = '${test_sequential}'")
 # Build list of libraries to check.
 # todo: BLAS_?(ROOT|DIR)
 
-if (OpenMP_CXX_FOUND)
-    set( OpenMP_libs "-DLINK_LIBRARIES=OpenMP::OpenMP_CXX" )
-endif()
+find_package( OpenMP )
 
 set( blas_name_list "" )
 set( blas_flag_list "" )
@@ -274,35 +272,35 @@ if (test_all OR test_mkl)
                 # GNU compiler + OpenMP: require gnu_thread library.
                 if (test_int)
                     list( APPEND blas_name_list "Intel MKL lp64,  GNU threads (gomp), gfortran")
-                    list( APPEND blas_flag_list "${OpenMP_CXX_FLAGS}" )
-                    list( APPEND blas_libs_list "-lmkl_gf_lp64  -lmkl_gnu_thread -lmkl_core" )
+                    list( APPEND blas_flag_list " " )
+                    list( APPEND blas_libs_list "-lmkl_gf_lp64  -lmkl_gnu_thread -lmkl_core OpenMP::OpenMP_CXX" )
                 endif()
 
                 if (test_int64)
                     list( APPEND blas_name_list "Intel MKL ilp64, GNU threads (gomp), gfortran")
-                    list( APPEND blas_flag_list "${OpenMP_CXX_FLAGS} -DMKL_ILP64" )
-                    list( APPEND blas_libs_list "-lmkl_gf_ilp64 -lmkl_gnu_thread -lmkl_core" )
+                    list( APPEND blas_flag_list "-DMKL_ILP64" )
+                    list( APPEND blas_libs_list "-lmkl_gf_ilp64 -lmkl_gnu_thread -lmkl_core OpenMP::OpenMP_CXX" )
                 endif()
 
             elseif (test_ifort AND intel_compiler)
                 # Intel compiler + OpenMP: require intel_thread library.
                 if (test_int)
                     list( APPEND blas_name_list "Intel MKL lp64,  Intel threads (iomp5), ifort")
-                    list( APPEND blas_flag_list "${OpenMP_CXX_FLAGS}" )
-                    list( APPEND blas_libs_list "-lmkl_intel_lp64  -lmkl_intel_thread -lmkl_core" )
+                    list( APPEND blas_flag_list " " )
+                    list( APPEND blas_libs_list "-lmkl_intel_lp64  -lmkl_intel_thread -lmkl_core OpenMP::OpenMP_CXX" )
                 endif()
 
                 if (test_int64)
                     list( APPEND blas_name_list "Intel MKL ilp64, Intel threads (iomp5), ifort")
-                    list( APPEND blas_flag_list "${OpenMP_CXX_FLAGS} -DMKL_ILP64" )
-                    list( APPEND blas_libs_list "-lmkl_intel_ilp64 -lmkl_intel_thread -lmkl_core" )
+                    list( APPEND blas_flag_list "-DMKL_ILP64" )
+                    list( APPEND blas_libs_list "-lmkl_intel_ilp64 -lmkl_intel_thread -lmkl_core OpenMP::OpenMP_CXX" )
                 endif()
 
             else()
                 # MKL doesn't have libraries for other OpenMP backends.
                 message( "Skipping threaded MKL for non-GNU, non-Intel compiler with OpenMP" )
             endif()
-        else()
+        else() # not OpenMP found
             # If Intel compiler, prefer Intel ifort interfaces.
             if (test_ifort AND intel_compiler)
                 # Intel compiler, no OpenMP: add -liomp5.
@@ -408,31 +406,33 @@ endif()  # MKL
 if (test_all OR test_essl)
     # todo: ESSL_?(ROOT|DIR)
     if (test_threaded)
-        if (ibm_compiler)
-            if (test_int)
-                list( APPEND blas_name_list "IBM ESSL int (lp64), multi-threaded"  )
-                list( APPEND blas_flag_list " "  )
-                list( APPEND blas_libs_list "-lesslsmp -lxlsmp"  )
-                # ESSL manual says '-lxlf90_r -lxlfmath' also,
-                # but this doesn't work on Summit
-            endif()
-
-            if (test_int64)
-                list( APPEND blas_name_list "IBM ESSL int64 (ilp64), multi-threaded"  )
-                list( APPEND blas_flag_list "-D_ESV6464"  )
-                list( APPEND blas_libs_list "-lesslsmp6464 -lxlsmp"  )
-            endif()
-        elseif (OpenMP_CXX_FOUND)
+        #message( "essl OpenMP_CXX_FOUND ${OpenMP_CXX_FOUND}" )
+        #if (ibm_compiler)
+        #    if (test_int)
+        #        list( APPEND blas_name_list "IBM ESSL int (lp64), multi-threaded"  )
+        #        list( APPEND blas_flag_list " "  )
+        #        list( APPEND blas_libs_list "-lesslsmp -lxlsmp"  )
+        #        # ESSL manual says '-lxlf90_r -lxlfmath' also,
+        #        # but this doesn't work on Summit
+        #    endif()
+        #
+        #    if (test_int64)
+        #        list( APPEND blas_name_list "IBM ESSL int64 (ilp64), multi-threaded"  )
+        #        list( APPEND blas_flag_list "-D_ESV6464"  )
+        #        list( APPEND blas_libs_list "-lesslsmp6464 -lxlsmp"  )
+        #    endif()
+        #else
+        if (OpenMP_CXX_FOUND)
             if (test_int)
                 list( APPEND blas_name_list "IBM ESSL int (lp64), multi-threaded, with OpenMP"  )
-                list( APPEND blas_flag_list "${OpenMP_CXX_FLAGS}"  )
-                list( APPEND blas_libs_list "-lesslsmp"  )
+                list( APPEND blas_flag_list " "  )
+                list( APPEND blas_libs_list "-lesslsmp OpenMP::OpenMP_CXX"  )
             endif()
 
             if (test_int64)
                 list( APPEND blas_name_list "IBM ESSL int64 (ilp64), multi-threaded, with OpenMP"  )
-                list( APPEND blas_flag_list "${OpenMP_CXX_FLAGS} -D_ESV6464"  )
-                list( APPEND blas_libs_list "-lesslsmp6464"  )
+                list( APPEND blas_flag_list "-D_ESV6464"  )
+                list( APPEND blas_libs_list "-lesslsmp6464 OpenMP::OpenMP_CXX"  )
             endif()
         endif()
     endif()  # threaded
@@ -508,12 +508,13 @@ foreach (blas_name IN LISTS blas_name_list)
     list( GET blas_libs_list ${i} blas_libs )
     math( EXPR i "${i}+1" )
 
-    # Undo escaping ; semi-colons to make list.
-    string(REPLACE "\;" ";" blas_libs "${blas_libs}")
-
-    message( "${blas_name}" )
+    message( "${bold}${blas_name}" )
     message( "   libs:  ${blas_libs}" )
-    message( "   flags: ${blas_flag}" )
+    message( "   flags: ${blas_flag}${not_bold}" )
+
+    # Undo escaping \; semi-colons and split on spaces to make list.
+    string( REGEX REPLACE "([^ ])( +|\\\;)" "\\1;" blas_libs "${blas_libs}" )
+    #message( "   blas_libs: ${blas_libs}" )
 
     foreach (mangling IN LISTS fortran_mangling_list)
         foreach (int_size IN LISTS int_size_list)
@@ -526,11 +527,9 @@ foreach (blas_name IN LISTS blas_name_list)
                 SOURCES
                     "${CMAKE_CURRENT_SOURCE_DIR}/config/hello.cc"
                 LINK_LIBRARIES
-                    "${blas_libs}"
+                    ${blas_libs}  # not "..." quoted; screws up OpenMP
                 COMPILE_DEFINITIONS
                     "${blas_flag} ${mangling} ${int_size}"
-                CMAKE_FLAGS
-                    "${OpenMP_libs}"
                 OUTPUT_VARIABLE
                     link_output
             )
@@ -549,11 +548,9 @@ foreach (blas_name IN LISTS blas_name_list)
                 SOURCES
                     "${CMAKE_CURRENT_SOURCE_DIR}/config/blas.cc"
                 LINK_LIBRARIES
-                    "${blas_libs}"
+                    ${blas_libs}  # not "..." quoted; screws up OpenMP
                 COMPILE_DEFINITIONS
                     "${blas_flag} ${mangling} ${int_size}"
-                CMAKE_FLAGS
-                    "${OpenMP_libs}"
                 COMPILE_OUTPUT_VARIABLE
                     compile_output
                 RUN_OUTPUT_VARIABLE
