@@ -168,7 +168,7 @@ test_generic        = '${test_generic}'
 test_all            = '${test_all}'")
 
 #---------------------------------------- blas_fortran
-set( TOLOWER "${blas_fortran}" blas_fortran_ )
+string( TOLOWER "${blas_fortran}" blas_fortran_ )
 
 if ("${blas_fortran_}" MATCHES "gfortran")
     set( test_gfortran true )
@@ -189,7 +189,7 @@ test_gfortran       = '${test_gfortran}'
 test_ifort          = '${test_ifort}'")
 
 #---------------------------------------- blas_int
-set( TOLOWER "${blas_int}" blas_int_ )
+string( TOLOWER "${blas_int}" blas_int_ )
 
 # This regex is similar to "\b(lp64|int)\b".
 if ("${blas_int_}" MATCHES "(^|[^a-zA-Z0-9_])(lp64|int|int32|int32_t)($|[^a-zA-Z0-9_])")
@@ -211,7 +211,7 @@ test_int            = '${test_int}'
 test_int64          = '${test_int64}'")
 
 #---------------------------------------- blas_threaded
-set( TOLOWER "${blas_threaded}" blas_threaded_ )
+string( TOLOWER "${blas_threaded}" blas_threaded_ )
 
 # This regex is similar to "\b(yes|...)\b".
 if ("${blas_threaded_}" MATCHES "(^|[^a-zA-Z0-9_])(yes|true|on|1)($|[^a-zA-Z0-9_])")
