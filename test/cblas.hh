@@ -19,6 +19,7 @@
     #else
         #include <Accelerate/Accelerate.h>
     #endif
+    typedef CBLAS_ORDER CBLAS_LAYOUT;
 #else
     // Some ancient cblas.h don't include extern C. It's okay to nest.
     extern "C" {

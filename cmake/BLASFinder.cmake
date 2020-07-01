@@ -3,21 +3,35 @@
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
+message( DEBUG "BLAS_LIBRARIES '${BLAS_LIBRARIES}'"        )
+message( DEBUG "cached         '${cached_blas_libraries}'" )
+message( DEBUG "blas           '${blas}'"                  )
+message( DEBUG "cached         '${cached_blas}'"           )
+message( DEBUG "blas_int       '${blas_int}'"              )
+message( DEBUG "cached         '${cached_blas_int}'"       )
+message( DEBUG "blas_fortran   '${blas_fortran}'"          )
+message( DEBUG "cached         '${cached_blas_fortran}'"   )
+message( DEBUG "blas_threaded  '${blas_threaded}'"         )
+message( DEBUG "cached         '${cached_blas_threaded}'"  )
+message( DEBUG "" )
+
 #-----------------------------------
 # Check if this file has already been run with these settings.
-if (NOT (    "${cached_blas}"          STREQUAL "${blas}"
-         AND "${cached_blas_fortran}"  STREQUAL "${blas_fortran}"
-         AND "${cached_blas_int}"      STREQUAL "${blas_int}"
-         AND "${cached_blas_threaded}" STREQUAL "${blas_threaded}"))
-    # Ignore BLAS_LIBRARIES if these changed.
-    unset( BLAS_LIBRARIES CACHE )
-elseif (BLAS_LIBRARIES
-        AND NOT "${cached_blas_libraries}" STREQUAL "${BLAS_LIBRARIES}")
-    # Ignore blas, etc. if this changes.
+if (BLAS_LIBRARIES
+    AND NOT "${cached_blas_libraries}" STREQUAL "${BLAS_LIBRARIES}")
+    # Ignore blas, etc. if BLAS_LIBRARIES changes.
+    message( DEBUG "unset blas, blas_fortran, blas_int, blas_threaded" )
     unset( blas          CACHE )
     unset( blas_fortran  CACHE )
     unset( blas_int      CACHE )
     unset( blas_threaded CACHE )
+elseif (NOT (    "${cached_blas}"          STREQUAL "${blas}"
+             AND "${cached_blas_fortran}"  STREQUAL "${blas_fortran}"
+             AND "${cached_blas_int}"      STREQUAL "${blas_int}"
+             AND "${cached_blas_threaded}" STREQUAL "${blas_threaded}"))
+    # Ignore BLAS_LIBRARIES if blas* changed.
+    message( DEBUG "unset BLAS_LIBRARIES" )
+    unset( BLAS_LIBRARIES CACHE )
 else()
     message( DEBUG "BLAS search already done for
     blas           = ${blas}
@@ -513,7 +527,9 @@ foreach (blas_name IN LISTS blas_name_list)
     message( "   flags: ${blas_flag}${not_bold}" )
 
     # Undo escaping \; semi-colons and split on spaces to make list.
+    # But keep '-framework Accelerate' together as one item.
     string( REGEX REPLACE "([^ ])( +|\\\;)" "\\1;" blas_libs "${blas_libs}" )
+    string( REGEX REPLACE "-framework;" "-framework " blas_libs "${blas_libs}" )
     #message( "   blas_libs: ${blas_libs}" )
 
     foreach (mangling IN LISTS fortran_mangling_list)
