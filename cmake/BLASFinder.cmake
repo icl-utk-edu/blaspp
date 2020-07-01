@@ -228,10 +228,10 @@ test_int64          = '${test_int64}'")
 string( TOLOWER "${blas_threaded}" blas_threaded_ )
 
 # This regex is similar to "\b(yes|...)\b".
-if ("${blas_threaded_}" MATCHES "(^|[^a-zA-Z0-9_])(yes|true|on|1)($|[^a-zA-Z0-9_])")
+if ("${blas_threaded_}" MATCHES "(^|[^a-zA-Z0-9_])(y|yes|true|on|1)($|[^a-zA-Z0-9_])")
     set( test_threaded true )
 endif()
-if ("${blas_threaded_}" MATCHES "(^|[^a-zA-Z0-9_])(no|false|off|0)($|[^a-zA-Z0-9_])")
+if ("${blas_threaded_}" MATCHES "(^|[^a-zA-Z0-9_])(n|no|false|off|0)($|[^a-zA-Z0-9_])")
     set( test_sequential true )
 endif()
 # Otherwise, test both.
