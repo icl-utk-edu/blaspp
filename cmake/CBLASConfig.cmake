@@ -43,7 +43,7 @@ foreach (lib IN LISTS lib_list)
         SOURCES
             "${CMAKE_CURRENT_SOURCE_DIR}/config/cblas.cc"
         LINK_LIBRARIES
-            ${lib} ${BLAS_LIBRARIES}  # not "..." quoted; screws up OpenMP
+            ${lib} ${BLAS_LIBRARIES} ${openmp_lib} # not "..." quoted; screws up OpenMP
         COMPILE_DEFINITIONS
             "${blas_defines}" "${blas_config_defines}" "${cblas_defines}"
         CMAKE_FLAGS

@@ -250,7 +250,9 @@ test_sequential     = '${test_sequential}'")
 # Build list of libraries to check.
 # todo: BLAS_?(ROOT|DIR)
 
-find_package( OpenMP )
+if (OpenMP_CXX_FOUND)
+    set( openmp_lib "OpenMP::OpenMP_CXX" )
+endif()
 
 set( blas_name_list "" )
 set( blas_flag_list "" )
@@ -287,13 +289,13 @@ if (test_all OR test_mkl)
                 if (test_int)
                     list( APPEND blas_name_list "Intel MKL lp64,  GNU threads (gomp), gfortran")
                     list( APPEND blas_flag_list " " )
-                    list( APPEND blas_libs_list "-lmkl_gf_lp64  -lmkl_gnu_thread -lmkl_core OpenMP::OpenMP_CXX" )
+                    list( APPEND blas_libs_list "-lmkl_gf_lp64  -lmkl_gnu_thread -lmkl_core" )
                 endif()
 
                 if (test_int64)
                     list( APPEND blas_name_list "Intel MKL ilp64, GNU threads (gomp), gfortran")
                     list( APPEND blas_flag_list "-DMKL_ILP64" )
-                    list( APPEND blas_libs_list "-lmkl_gf_ilp64 -lmkl_gnu_thread -lmkl_core OpenMP::OpenMP_CXX" )
+                    list( APPEND blas_libs_list "-lmkl_gf_ilp64 -lmkl_gnu_thread -lmkl_core" )
                 endif()
 
             elseif (test_ifort AND intel_compiler)
@@ -301,13 +303,13 @@ if (test_all OR test_mkl)
                 if (test_int)
                     list( APPEND blas_name_list "Intel MKL lp64,  Intel threads (iomp5), ifort")
                     list( APPEND blas_flag_list " " )
-                    list( APPEND blas_libs_list "-lmkl_intel_lp64  -lmkl_intel_thread -lmkl_core OpenMP::OpenMP_CXX" )
+                    list( APPEND blas_libs_list "-lmkl_intel_lp64  -lmkl_intel_thread -lmkl_core" )
                 endif()
 
                 if (test_int64)
                     list( APPEND blas_name_list "Intel MKL ilp64, Intel threads (iomp5), ifort")
                     list( APPEND blas_flag_list "-DMKL_ILP64" )
-                    list( APPEND blas_libs_list "-lmkl_intel_ilp64 -lmkl_intel_thread -lmkl_core OpenMP::OpenMP_CXX" )
+                    list( APPEND blas_libs_list "-lmkl_intel_ilp64 -lmkl_intel_thread -lmkl_core" )
                 endif()
 
             else()
@@ -440,13 +442,13 @@ if (test_all OR test_essl)
             if (test_int)
                 list( APPEND blas_name_list "IBM ESSL int (lp64), multi-threaded, with OpenMP"  )
                 list( APPEND blas_flag_list " "  )
-                list( APPEND blas_libs_list "-lesslsmp OpenMP::OpenMP_CXX"  )
+                list( APPEND blas_libs_list "-lesslsmp"  )
             endif()
 
             if (test_int64)
                 list( APPEND blas_name_list "IBM ESSL int64 (ilp64), multi-threaded, with OpenMP"  )
                 list( APPEND blas_flag_list "-D_ESV6464"  )
-                list( APPEND blas_libs_list "-lesslsmp6464 OpenMP::OpenMP_CXX"  )
+                list( APPEND blas_libs_list "-lesslsmp6464"  )
             endif()
         endif()
     endif()  # threaded
@@ -543,7 +545,7 @@ foreach (blas_name IN LISTS blas_name_list)
                 SOURCES
                     "${CMAKE_CURRENT_SOURCE_DIR}/config/hello.cc"
                 LINK_LIBRARIES
-                    ${blas_libs}  # not "..." quoted; screws up OpenMP
+                    ${blas_libs} ${openmp_lib} # not "..." quoted; screws up OpenMP
                 COMPILE_DEFINITIONS
                     "${blas_flag} ${mangling} ${int_size}"
                 OUTPUT_VARIABLE
@@ -564,7 +566,7 @@ foreach (blas_name IN LISTS blas_name_list)
                 SOURCES
                     "${CMAKE_CURRENT_SOURCE_DIR}/config/blas.cc"
                 LINK_LIBRARIES
-                    ${blas_libs}  # not "..." quoted; screws up OpenMP
+                    ${blas_libs} ${openmp_lib} # not "..." quoted; screws up OpenMP
                 COMPILE_DEFINITIONS
                     "${blas_flag} ${mangling} ${int_size}"
                 COMPILE_OUTPUT_VARIABLE

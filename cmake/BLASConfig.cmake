@@ -37,7 +37,7 @@ if (NOT found)
         SOURCES
             "${CMAKE_CURRENT_SOURCE_DIR}/config/mkl_version.cc"
         LINK_LIBRARIES
-            ${BLAS_LIBRARIES}  # not "..." quoted; screws up OpenMP
+            ${BLAS_LIBRARIES} ${openmp_lib} # not "..." quoted; screws up OpenMP
         COMPILE_DEFINITIONS
             "${blas_defines}"
         COMPILE_OUTPUT_VARIABLE
@@ -62,7 +62,7 @@ if (NOT found)
         SOURCES
             "${CMAKE_CURRENT_SOURCE_DIR}/config/essl_version.cc"
         LINK_LIBRARIES
-            ${BLAS_LIBRARIES}  # not "..." quoted; screws up OpenMP
+            ${BLAS_LIBRARIES} ${openmp_lib} # not "..." quoted; screws up OpenMP
         COMPILE_DEFINITIONS
             "${blas_defines}"
         COMPILE_OUTPUT_VARIABLE
@@ -87,7 +87,7 @@ if (NOT found)
         SOURCES
             "${CMAKE_CURRENT_SOURCE_DIR}/config/openblas_version.cc"
         LINK_LIBRARIES
-            ${BLAS_LIBRARIES}  # not "..." quoted; screws up OpenMP
+            ${BLAS_LIBRARIES} ${openmp_lib} # not "..." quoted; screws up OpenMP
         COMPILE_DEFINITIONS
             "${blas_defines}"
         COMPILE_OUTPUT_VARIABLE
@@ -112,7 +112,7 @@ if (NOT found)
         SOURCES
             "${CMAKE_CURRENT_SOURCE_DIR}/config/acml_version.cc"
         LINK_LIBRARIES
-            ${BLAS_LIBRARIES}  # not "..." quoted; screws up OpenMP
+            ${BLAS_LIBRARIES} ${openmp_lib} # not "..." quoted; screws up OpenMP
         COMPILE_DEFINITIONS
             "${blas_defines}"
         COMPILE_OUTPUT_VARIABLE
@@ -141,7 +141,7 @@ try_run(
     SOURCES
         "${CMAKE_CURRENT_SOURCE_DIR}/config/return_complex.cc"
     LINK_LIBRARIES
-        ${BLAS_LIBRARIES}  # not "..." quoted; screws up OpenMP
+        ${BLAS_LIBRARIES} ${openmp_lib} # not "..." quoted; screws up OpenMP
     COMPILE_DEFINITIONS
         "${blas_defines}"
     COMPILE_OUTPUT_VARIABLE
@@ -161,7 +161,7 @@ else()
         SOURCES
             "${CMAKE_CURRENT_SOURCE_DIR}/config/return_complex_argument.cc"
         LINK_LIBRARIES
-            ${BLAS_LIBRARIES}  # not "..." quoted; screws up OpenMP
+            ${BLAS_LIBRARIES} ${openmp_lib} # not "..." quoted; screws up OpenMP
         COMPILE_DEFINITIONS
             "${blas_defines}"
         COMPILE_OUTPUT_VARIABLE
@@ -189,7 +189,7 @@ try_run(
     SOURCES
         "${CMAKE_CURRENT_SOURCE_DIR}/config/return_float.cc"
     LINK_LIBRARIES
-        ${BLAS_LIBRARIES}  # not "..." quoted; screws up OpenMP
+        ${BLAS_LIBRARIES} ${openmp_lib} # not "..." quoted; screws up OpenMP
     COMPILE_DEFINITIONS
         "${blas_defines}"
     COMPILE_OUTPUT_VARIABLE
@@ -210,7 +210,7 @@ else()
         SOURCES
             "${CMAKE_CURRENT_SOURCE_DIR}/config/return_float_f2c.cc"
         LINK_LIBRARIES
-            ${BLAS_LIBRARIES}  # not "..." quoted; screws up OpenMP
+            ${BLAS_LIBRARIES} ${openmp_lib} # not "..." quoted; screws up OpenMP
         COMPILE_DEFINITIONS
             "${blas_defines}"
         COMPILE_OUTPUT_VARIABLE
