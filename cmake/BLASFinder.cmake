@@ -4,15 +4,15 @@
 # the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
 message( DEBUG "BLAS_LIBRARIES '${BLAS_LIBRARIES}'"        )
-message( DEBUG "cached         '${cached_blas_libraries}'" )
+message( DEBUG "  cached       '${cached_blas_libraries}'" )
 message( DEBUG "blas           '${blas}'"                  )
-message( DEBUG "cached         '${cached_blas}'"           )
+message( DEBUG "  cached       '${cached_blas}'"           )
 message( DEBUG "blas_int       '${blas_int}'"              )
-message( DEBUG "cached         '${cached_blas_int}'"       )
+message( DEBUG "  cached       '${cached_blas_int}'"       )
 message( DEBUG "blas_fortran   '${blas_fortran}'"          )
-message( DEBUG "cached         '${cached_blas_fortran}'"   )
+message( DEBUG "  cached       '${cached_blas_fortran}'"   )
 message( DEBUG "blas_threaded  '${blas_threaded}'"         )
-message( DEBUG "cached         '${cached_blas_threaded}'"  )
+message( DEBUG "  cached       '${cached_blas_threaded}'"  )
 message( DEBUG "" )
 
 #-----------------------------------
@@ -20,18 +20,20 @@ message( DEBUG "" )
 if (BLAS_LIBRARIES
     AND NOT "${cached_blas_libraries}" STREQUAL "${BLAS_LIBRARIES}")
     # Ignore blas, etc. if BLAS_LIBRARIES changes.
-    message( DEBUG "unset blas, blas_fortran, blas_int, blas_threaded" )
-    unset( blas          CACHE )
-    unset( blas_fortran  CACHE )
-    unset( blas_int      CACHE )
-    unset( blas_threaded CACHE )
+    # Set to empty, rather than unset, so when cmake is invoked again
+    # they don't force a search.
+    message( DEBUG "clear blas, blas_fortran, blas_int, blas_threaded" )
+    set( blas          "" CACHE INTERNAL "" )
+    set( blas_fortran  "" CACHE INTERNAL "" )
+    set( blas_int      "" CACHE INTERNAL "" )
+    set( blas_threaded "" CACHE INTERNAL "" )
 elseif (NOT (    "${cached_blas}"          STREQUAL "${blas}"
              AND "${cached_blas_fortran}"  STREQUAL "${blas_fortran}"
              AND "${cached_blas_int}"      STREQUAL "${blas_int}"
              AND "${cached_blas_threaded}" STREQUAL "${blas_threaded}"))
     # Ignore BLAS_LIBRARIES if blas* changed.
     message( DEBUG "unset BLAS_LIBRARIES" )
-    unset( BLAS_LIBRARIES CACHE )
+    set( BLAS_LIBRARIES "" CACHE INTERNAL "" )
 else()
     message( DEBUG "BLAS search already done for
     blas           = ${blas}
