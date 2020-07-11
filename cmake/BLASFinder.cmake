@@ -123,50 +123,44 @@ set( int_size_list
 #-------------------------------------------------------------------------------
 # Parse options: BLAS_LIBRARIES, blas, blas_int, blas_threaded, blas_fortran.
 
-set( test_all true )
-
 #---------------------------------------- BLAS_LIBRARIES
 if (BLAS_LIBRARIES)
     set( test_blas_libraries true )
-    set( test_all false )
 endif()
 
 #---------------------------------------- blas
 string( TOLOWER "${blas}" blas_ )
 
+if ("${blas_}" MATCHES "auto")
+    set( test_all true )
+endif()
+
 if ("${blas_}" MATCHES "acml")
     set( test_acml true )
-    set( test_all false )
 endif()
 
 if ("${blas_}" MATCHES "apple|accelerate")
     set( test_accelerate true )
-    set( test_all false )
 endif()
 
 if ("${blas_}" MATCHES "cray|libsci|default")
     set( test_default true )
-    set( test_all false )
 endif()
 
 if ("${blas_}" MATCHES "ibm|essl")
     set( test_essl true )
-    set( test_all false )
 endif()
 
 if ("${blas_}" MATCHES "intel|mkl")
     set( test_mkl true )
-    set( test_all false )
 endif()
 
 if ("${blas_}" MATCHES "openblas")
     set( test_openblas true )
-    set( test_all false )
 endif()
 
 if ("${blas_}" MATCHES "generic")
     set( test_generic true )
-    set( test_all false )
 endif()
 
 message( DEBUG "
@@ -192,8 +186,7 @@ endif()
 if ("${blas_fortran_}" MATCHES "ifort")
     set( test_ifort true )
 endif()
-# Otherwise, test both.
-if (NOT (test_gfortran OR test_ifort))
+if ("${blas_fortran_}" MATCHES "auto")
     set( test_gfortran true )
     set( test_ifort    true )
 endif()
@@ -214,8 +207,7 @@ endif()
 if ("${blas_int_}" MATCHES "(^|[^a-zA-Z0-9_])(ilp64|int64|int64_t)($|[^a-zA-Z0-9_])")
     set( test_int64 true )
 endif()
-# Otherwise, test both.
-if (NOT (test_int OR test_int64))
+if ("${blas_int_}" MATCHES "auto")
     set( test_int   true )
     set( test_int64 true )
 endif()
@@ -236,8 +228,7 @@ endif()
 if ("${blas_threaded_}" MATCHES "(^|[^a-zA-Z0-9_])(n|no|false|off|0)($|[^a-zA-Z0-9_])")
     set( test_sequential true )
 endif()
-# Otherwise, test both.
-if (NOT (test_threaded OR test_sequential))
+if ("${blas_threaded_}" MATCHES "auto")
     set( test_threaded   true )
     set( test_sequential true )
 endif()
@@ -526,9 +517,9 @@ foreach (blas_name IN LISTS blas_name_list)
     list( GET blas_libs_list ${i} blas_libs )
     math( EXPR i "${i}+1" )
 
-    message( "${bold}${blas_name}" )
+    message( "${bold}${blas_name}${not_bold}" )
     message( "   libs:  ${blas_libs}" )
-    message( "   flags: ${blas_flag}${not_bold}" )
+    message( "   flags: ${blas_flag}" )
 
     # Undo escaping \; semi-colons and split on spaces to make list.
     # But keep '-framework Accelerate' together as one item.
