@@ -26,13 +26,13 @@ stages {
                         #!/bin/sh +x
                         hostname && pwd
 
-                        source /home/jmfinney/spack/share/spack/setup-env.sh
-                        spack load gcc@6.4.0
-                        spack load intel-mkl
+                        source /home/jenkins/spack_setup
+                        sload gcc@6.4.0
+                        sload intel-mkl
 
                         # run CUDA tests on lips
                         if [ "${host}" = "lips" ]; then
-                            spack load cuda
+                            sload cuda
                         fi
 
                         echo "========================================"
