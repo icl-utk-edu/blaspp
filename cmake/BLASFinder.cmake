@@ -279,88 +279,38 @@ endif()
 #---------------------------------------- Intel MKL
 if (test_all OR test_mkl)
     # todo: MKL_?(ROOT|DIR)
-    if (test_threaded)
-        if (OpenMP_CXX_FOUND)
-            if (test_gfortran AND gnu_compiler)
-                # GNU compiler + OpenMP: require gnu_thread library.
-                if (test_int)
-                    list( APPEND blas_name_list "Intel MKL lp64,  GNU threads (gomp), gfortran")
-                    list( APPEND blas_flag_list " " )
-                    list( APPEND blas_libs_list "-lmkl_gf_lp64  -lmkl_gnu_thread -lmkl_core" )
-                endif()
-
-                if (test_int64)
-                    list( APPEND blas_name_list "Intel MKL ilp64, GNU threads (gomp), gfortran")
-                    list( APPEND blas_flag_list "-DMKL_ILP64" )
-                    list( APPEND blas_libs_list "-lmkl_gf_ilp64 -lmkl_gnu_thread -lmkl_core" )
-                endif()
-
-            elseif (test_ifort AND intel_compiler)
-                # Intel compiler + OpenMP: require intel_thread library.
-                if (test_int)
-                    list( APPEND blas_name_list "Intel MKL lp64,  Intel threads (iomp5), ifort")
-                    list( APPEND blas_flag_list " " )
-                    list( APPEND blas_libs_list "-lmkl_intel_lp64  -lmkl_intel_thread -lmkl_core" )
-                endif()
-
-                if (test_int64)
-                    list( APPEND blas_name_list "Intel MKL ilp64, Intel threads (iomp5), ifort")
-                    list( APPEND blas_flag_list "-DMKL_ILP64" )
-                    list( APPEND blas_libs_list "-lmkl_intel_ilp64 -lmkl_intel_thread -lmkl_core" )
-                endif()
-
-            else()
-                # MKL doesn't have libraries for other OpenMP backends.
-                message( "Skipping threaded MKL for non-GNU, non-Intel compiler with OpenMP" )
+    if (test_threaded AND OpenMP_CXX_FOUND)
+        if (test_gfortran AND gnu_compiler)
+            # GNU compiler + OpenMP: require gnu_thread library.
+            if (test_int)
+                list( APPEND blas_name_list "Intel MKL lp64,  GNU threads (gomp), gfortran")
+                list( APPEND blas_flag_list " " )
+                list( APPEND blas_libs_list "-lmkl_gf_lp64  -lmkl_gnu_thread -lmkl_core" )
             endif()
-        else() # not OpenMP found
-            # If Intel compiler, prefer Intel ifort interfaces.
-            if (test_ifort AND intel_compiler)
-                # Intel compiler, no OpenMP: add -liomp5.
-                if (test_int)
-                    list( APPEND blas_name_list "Intel MKL lp64,  Intel threads (iomp5), ifort")
-                    list( APPEND blas_flag_list " " )
-                    list( APPEND blas_libs_list "-lmkl_intel_lp64  -lmkl_intel_thread -lmkl_core -liomp5 -lpthread" )
-                endif()
 
-                if (test_int64)
-                    list( APPEND blas_name_list "Intel MKL ilp64, Intel threads (iomp5), ifort")
-                    list( APPEND blas_flag_list "-DMKL_ILP64" )
-                    list( APPEND blas_libs_list "-lmkl_intel_ilp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread" )
-                endif()
-            endif()  # ifort
+            if (test_int64)
+                list( APPEND blas_name_list "Intel MKL ilp64, GNU threads (gomp), gfortran")
+                list( APPEND blas_flag_list "-DMKL_ILP64" )
+                list( APPEND blas_libs_list "-lmkl_gf_ilp64 -lmkl_gnu_thread -lmkl_core" )
+            endif()
 
-            # Otherwise, prefer GNU gfortran interfaces.
-            if (test_gfortran)
-                if (test_int)
-                    list( APPEND blas_name_list "Intel MKL lp64,  GNU threads (gomp), gfortran")
-                    list( APPEND blas_flag_list " " )
-                    list( APPEND blas_libs_list "-lmkl_gf_lp64  -lmkl_gnu_thread -lmkl_core -lgomp -lpthread" )
-                endif()
+        elseif (test_ifort AND intel_compiler)
+            # Intel compiler + OpenMP: require intel_thread library.
+            if (test_int)
+                list( APPEND blas_name_list "Intel MKL lp64,  Intel threads (iomp5), ifort")
+                list( APPEND blas_flag_list " " )
+                list( APPEND blas_libs_list "-lmkl_intel_lp64  -lmkl_intel_thread -lmkl_core" )
+            endif()
 
-                if (test_int64)
-                    list( APPEND blas_name_list "Intel MKL ilp64, GNU threads (gomp), gfortran")
-                    list( APPEND blas_flag_list "-DMKL_ILP64" )
-                    list( APPEND blas_libs_list "-lmkl_gf_ilp64 -lmkl_gnu_thread -lmkl_core -lgomp -lpthread" )
-                endif()
-            endif()  # gfortran
+            if (test_int64)
+                list( APPEND blas_name_list "Intel MKL ilp64, Intel threads (iomp5), ifort")
+                list( APPEND blas_flag_list "-DMKL_ILP64" )
+                list( APPEND blas_libs_list "-lmkl_intel_ilp64 -lmkl_intel_thread -lmkl_core" )
+            endif()
 
-            # Not Intel compiler, lower preference for Intel ifort interfaces.
-            # E.g., applies to clang on macOS, where MKL doesn't have gfortran libs.
-            # todo: same as Intel block above.
-            if (test_ifort AND NOT intel_compiler)
-                if (test_int)
-                    list( APPEND blas_name_list "Intel MKL lp64,  Intel threads (iomp5), ifort")
-                    list( APPEND blas_flag_list " " )
-                    list( APPEND blas_libs_list "-lmkl_intel_lp64  -lmkl_intel_thread -lmkl_core -liomp5 -lpthread" )
-                endif()
-
-                if (test_int64)
-                    list( APPEND blas_name_list "Intel MKL ilp64, Intel threads (iomp5), ifort")
-                    list( APPEND blas_flag_list "-DMKL_ILP64" )
-                    list( APPEND blas_libs_list "-lmkl_intel_ilp64 -lmkl_intel_thread -lmkl_core -liomp5 -lpthread" )
-                endif()
-            endif()  # ifort && not intel
+        else()
+            # MKL doesn't have libraries for other OpenMP backends.
+            message( "Skipping threaded MKL for non-GNU, non-Intel compiler with OpenMP" )
         endif()
     endif()
 
@@ -483,7 +433,16 @@ if (test_all OR test_accelerate)
     debug_print_list( "accelerate" )
 endif()
 
+#---------------------------------------- generic -lblas
+if (test_all OR test_generic)
+    list( APPEND blas_name_list "generic" )
+    list( APPEND blas_flag_list " " )
+    list( APPEND blas_libs_list "-lblas" )
+    debug_print_list( "generic" )
+endif()
+
 #---------------------------------------- AMD ACML
+# Deprecated libraries last.
 if (test_all OR test_acml)
     # todo: ACML_?(ROOT|DIR)
     if (test_threaded)
@@ -498,14 +457,6 @@ if (test_all OR test_acml)
         list( APPEND blas_libs_list "-lacml" )
     endif()
     debug_print_list( "acml" )
-endif()
-
-#---------------------------------------- generic -lblas
-if (test_all OR test_generic)
-    list( APPEND blas_name_list "generic" )
-    list( APPEND blas_flag_list " " )
-    list( APPEND blas_libs_list "-lblas" )
-    debug_print_list( "generic" )
 endif()
 
 #-------------------------------------------------------------------------------
