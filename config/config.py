@@ -43,11 +43,23 @@ interactive_ = False
 # values and gives user a choice. If False, config picks the first valid value.
 # value = interactive() returns value of interactive.
 # interactive( value ) sets value of interactive.
+# Making this a function config.interactive() avoids issues with the
+# package __init__.py importing it if it were a variable.
 def interactive( value=None ):
     global interactive_
     if (value is not None):
         interactive_ = value
     return interactive_
+# end
+
+# ------------------------------------------------------------------------------
+debug_ = False
+
+def debug( value=None ):
+    global debug_
+    if (value is not None):
+        debug_ = value
+    return debug_
 # end
 
 # ------------------------------------------------------------------------------
@@ -528,13 +540,16 @@ def prog_cxx( choices=['g++', 'c++', 'CC', 'cxx', 'icpc', 'xlc++', 'clang++'] ):
         print( 'Trying $CXX =', cxx )
         choices = [ cxx ]
 
-    passed = []
+    passed = []  # CXX compilers, e.g., g++ or mpicxx
+    actual = []  # Detected underlying compilers, e.g., g++ or clang++
     for cxx in choices:
         print_test( cxx )
         (rc, out, err) = compile_run( 'config/compiler_cxx.cc', {'CXX': cxx} )
         # print (g++), (clang++), etc., as output by compiler_cxx, after yes
         if (rc == 0):
-            out = '(' + out.strip() + ')'
+            cxx_ = out.strip()
+            out = '(' + cxx_ + ')'
+            actual.append( cxx_ )
         print_result( cxx, rc, out )
         if (rc == 0):
             passed.append( cxx )
@@ -543,6 +558,7 @@ def prog_cxx( choices=['g++', 'c++', 'CC', 'cxx', 'icpc', 'xlc++', 'clang++'] ):
     # end
     i = choose( 'Choose C++ compiler:', passed )
     environ['CXX'] = passed[i]
+    environ['CXX_actual'] = actual[i]
 # end
 
 #-------------------------------------------------------------------------------
@@ -573,7 +589,7 @@ def openmp( flags=['-fopenmp', '-qopenmp', '-openmp', '-omp', ''] ):
     src = 'config/openmp.cc'
     for flag in flags:
         print_test( flag )
-        env = {'CXXFLAGS': flag, 'LDFLAGS': flag}
+        env = {'CXXFLAGS': flag, 'LDFLAGS': flag, 'HAS_OPENMP': True}
         (rc, out, err) = compile_run( src, env )
         print_result( flag, rc )
         if (rc == 0):
@@ -786,7 +802,7 @@ def parse_args():
     Parses command line options.
     Sets if interactive and if ansicodes are enabled.
     '''
-    global opts, parser
+    global opts, parser, debug
 
     #--------------------
     # Parse command line. We'll handle help ourselves.
@@ -796,6 +812,8 @@ def parse_args():
                              +' otherwise use first choice found.' )
     parser.add_argument( '--color', action='store', default='auto',
                          help='Use ANSI colors: yes, no, or auto; default %(default)s.' )
+    parser.add_argument( '--debug', action='store_true',
+                         help='Enable debugging output.' )
     parser.add_argument( '-h', '--help', action='store_true',
                          help='Print help and exit.' )
     parser.add_argument( 'options', nargs=argparse.REMAINDER,
@@ -820,6 +838,8 @@ def parse_args():
         opts.interactive = environ['interactive']
     if (opts.interactive):
         interactive( True )
+
+    debug( opts.debug )
 # end
 
 #-------------------------------------------------------------------------------
@@ -830,7 +850,9 @@ def init( prefix='/usr/local' ):
     '''
     global log
 
-    environ['prefix'] = prefix
+    # Default prefix.
+    if (not environ['prefix']):
+        environ['prefix'] = prefix
 
     #--------------------
     logfile = 'config/log.txt'

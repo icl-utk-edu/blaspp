@@ -30,21 +30,29 @@ def get_fortran_manglings():
     if (config.environ['fortran_upper']):
         print_warn('Variable `fortran_upper` is obsolete; use fortran_mangling=upper')
 
-    # ADD_, NOCHANGE, UPCASE are traditional in lapack
     # FORTRAN_ADD_, FORTRAN_LOWER, DFORTRAN_UPPER are BLAS++/LAPACK++.
     manglings = []
-    if ('add_'  in config.environ['fortran_mangling']):
-        manglings.append('-DFORTRAN_ADD_ -DADD_')
-    if ('lower' in config.environ['fortran_mangling']):
-        manglings.append('-DFORTRAN_LOWER -DNOCHANGE')
-    if ('upper' in config.environ['fortran_mangling']):
-        manglings.append('-DFORTRAN_UPPER -DUPCASE')
+    fortran_mangling = config.environ['fortran_mangling'].lower()
+    if ('add_'  in fortran_mangling):
+        manglings.append('-DFORTRAN_ADD_')
+    if ('lower' in fortran_mangling):
+        manglings.append('-DFORTRAN_LOWER')
+    if ('upper' in fortran_mangling):
+        manglings.append('-DFORTRAN_UPPER')
     if (not manglings):
-        if (config.environ['fortran_mangling']):
-            print_warn('Unknown fortran_mangling: '+ config.environ['fortran_mangling'])
-        manglings = ['-DFORTRAN_ADD_ -DADD_',
-                     '-DFORTRAN_LOWER -DNOCHANGE',
-                     '-DFORTRAN_UPPER -DUPCASE']
+        cxx_actual = config.environ['CXX_actual']
+        if (cxx_actual == 'xlc++'):
+            # For IBM XL, change default mangling search order to lower, add_, upper,
+            # ESSL includes all 3, but Netlib LAPACK has only one mangling.
+            manglings = ['-DFORTRAN_LOWER',
+                         '-DFORTRAN_ADD_',
+                         '-DFORTRAN_UPPER']
+        else:
+            # For all others, mangling search order as add_, lower, upper,
+            # since add_ is the most common.
+            manglings = ['-DFORTRAN_ADD_',
+                         '-DFORTRAN_LOWER',
+                         '-DFORTRAN_UPPER']
     return manglings
 # end
 
@@ -53,20 +61,27 @@ def get_int_sizes():
     '''
     Returns list of flags to test different integer sizes.
     Setting one or more of:
-        lp64=1, ilp64=1
+        blas_int=int
+        blas_int=int64
     limits which sizes are returned.
 
     Ex: get_int_sizes()
     returns ['', '-DBLAS_ILP64 -DLAPACK_ILP64']
     where '' is compiler's default, usually 32-bit int in LP64.
     '''
+    # todo: repeated from below
+    blas_int = config.environ['blas_int'].lower()
+    test_int   = re.search( r'\b(lp64|int|int32|int32_t)\b', blas_int ) is not None
+    test_int64 = re.search( r'\b(ilp64|int64|int64_t)\b',    blas_int ) is not None
+    if (not blas_int or blas_int == 'auto'):
+        test_int   = True
+        test_int64 = True
+
     int_sizes = []
-    if (config.environ['lp64'] == '1'):
+    if (test_int):
         int_sizes.append('') # i.e., default int
-    if (config.environ['ilp64'] == '1'):
+    if (test_int64):
         int_sizes.append('-DBLAS_ILP64 -DLAPACK_ILP64')
-    if (not int_sizes):
-        int_sizes = ['', '-DBLAS_ILP64 -DLAPACK_ILP64']
     return int_sizes
 # end
 
@@ -126,11 +141,13 @@ def blas():
     Searches for BLAS in default libraries, MKL, ACML, ESSL, OpenBLAS,
     and Accelerate.
     Checks FORTRAN_ADD_, FORTRAN_LOWER, FORTRAN_UPPER.
-    Checks int (LP64) and int64_t (ILP64).
+    Checks int (LP64) and int64 (ILP64).
     Setting one or more of:
         blas=mkl, blas=acml, blas=essl, blas=openblas, blas=accelerate;
+        blas_int=int, blas_int=int64;
+        blas_threading=threaded, blas_threading=sequential;
+        blas_fortran=gfortran, blas_fortran=ifort;
         fortran_mangling=add_, fortran_mangling=lower, fortran_mangling=upper;
-        lp64=1, ilp64=1
     in the environment or on the command line, limits the search space.
     '''
     print_header( 'BLAS library' )
@@ -147,97 +164,254 @@ def blas():
         print_warn('Variable `openblas` is obsolete; use blas=openblas')
     if (config.environ['accelerate']):
         print_warn('Variable `accelerate` is obsolete; use blas=accelerate')
+    if (config.environ['lp64']):
+        print_warn('Variable `lp64` is obsolete; use blas_int=int')
+    if (config.environ['ilp64']):
+        print_warn('Variable `ilp64` is obsolete; use blas_int=int64')
 
-    test_mkl        = ('mkl'        in config.environ['blas'])
-    test_acml       = ('acml'       in config.environ['blas'])
-    test_essl       = ('essl'       in config.environ['blas'])
-    test_openblas   = ('openblas'   in config.environ['blas'])
-    test_accelerate = ('accelerate' in config.environ['blas'])
-    # otherwise, test all
-    test_all = not (test_mkl or test_acml or test_essl or test_openblas or
-                    test_accelerate)
+    BLAS_LIBRARIES = config.environ['BLAS_LIBRARIES']
+    blas           = config.environ['blas'].lower()
+    blas_fortran   = config.environ['blas_fortran'].lower()
+    blas_int       = config.environ['blas_int'].lower()
+    blas_threaded  = config.environ['blas_threaded'].lower()
 
-    # build list of choices to test
+    #---------------------------------------- BLAS_LIBRARIES
+    # If testing BLAS_LIBRARIES, ignore other flags (blas, ...).
+    test_blas_libraries = (BLAS_LIBRARIES != '')
+    if (test_blas_libraries):
+        blas          = 'none'
+        blas_fortran  = ''
+        blas_int      = ''
+        blas_threaded = ''
+
+    if (config.debug()):
+        print( "BLAS_LIBRARIES      = '" + BLAS_LIBRARIES  + "'\n"
+             + "test_blas_libraries = ", test_blas_libraries, "\n" )
+
+    #---------------------------------------- blas
+    test_all        = (not blas or blas == 'auto')
+    test_acml       = re.search( r'\b(acml)\b',                blas ) is not None
+    test_accelerate = re.search( r'\b(apple|accelerate)\b',    blas ) is not None
+    test_default    = re.search( r'\b(cray|libsci|default)\b', blas ) is not None
+    test_essl       = re.search( r'\b(ibm|essl)\b',            blas ) is not None
+    test_mkl        = re.search( r'\b(intel|mkl)\b',           blas ) is not None
+    test_openblas   = re.search( r'\b(openblas)\b',            blas ) is not None
+    test_generic    = re.search( r'\b(generic)\b',             blas ) is not None
+
+    if (config.debug()):
+        print( "blas                = '" + blas            + "'\n"
+             + "test_acml           = ", test_acml,           "\n"
+             + "test_accelerate     = ", test_accelerate,     "\n"
+             + "test_default        = ", test_default,        "\n"
+             + "test_essl           = ", test_essl,           "\n"
+             + "test_mkl            = ", test_mkl,            "\n"
+             + "test_openblas       = ", test_openblas,       "\n"
+             + "test_generic        = ", test_generic,        "\n"
+             + "test_all            = ", test_all,            "\n" )
+
+    #---------------------------------------- blas_fortran
+    test_gfortran = re.search( r'\b(gfortran)\b', blas_fortran ) is not None
+    test_ifort    = re.search( r'\b(ifort)\b',    blas_fortran ) is not None
+    if (not blas_fortran or blas_fortran == 'auto'):
+        test_gfortran = True
+        test_ifort    = True
+
+    if (config.debug()):
+        print( "blas_fortran        = '" + blas_fortran + "'\n"
+             + "test_gfortran       = ", + test_gfortran,  "\n"
+             + "test_ifort          = ", + test_ifort,     "\n" )
+
+    #---------------------------------------- blas_int
+    test_int   = re.search( r'\b(lp64|int|int32|int32_t)\b', blas_int ) is not None
+    test_int64 = re.search( r'\b(ilp64|int64|int64_t)\b',    blas_int ) is not None
+    if (not blas_int or blas_int == 'auto'):
+        test_int   = True
+        test_int64 = True
+
+    if (config.debug()):
+        print( "blas_int            = '" + blas_int + "'\n"
+             + "test_int            = ", test_int,     "\n"
+             + "test_int64          = ", test_int64,   "\n" )
+
+    #---------------------------------------- blas_threaded
+    test_threaded   = re.search( r'\b(y|yes|true|on|1)\b',  blas_threaded ) is not None
+    test_sequential = re.search( r'\b(n|no|false|off|0)\b', blas_threaded ) is not None
+    if (not blas_threaded or blas_threaded == 'auto'):
+        test_threaded   = True
+        test_sequential = True
+
+    if (config.debug()):
+        print( "blas_threaded       = '" + blas_threaded + "'\n"
+             + "test_threaded       = ", test_threaded,     "\n"
+             + "test_sequential     = ", test_sequential,   "\n" )
+
+    #----------------------------------------
+    # Build list of libraries to check.
     choices = []
 
-    if (test_all):
-        # sometimes BLAS is in default libraries (e.g., on Cray)
-        choices.extend([
-            ['Default', {}],
-        ])
+    #---------------------------------------- BLAS_LIBRARIES
+    if (test_blas_libraries):
+        choices.append(
+            ['BLAS_LIBRARIES',
+             {'LIBS': BLAS_LIBRARIES}] )
     # end
 
+    #---------------------------------------- default; Cray libsci
+    if (test_all or test_default):
+        # Sometimes BLAS is in default libraries (e.g., on Cray).
+        choices.append(
+            ['Default',
+             {}] )
+    # end
+
+    cxx        = config.environ['CXX']
+    cxx_actual = config.environ['CXX_actual']
+    has_openmp = config.environ['HAS_OPENMP']
+
+    #---------------------------------------- Intel MKL
     if (test_all or test_mkl):
-        choices.extend([
-            # each pair has Intel conventions, then GNU conventions
-            # int, threaded
-            ['Intel MKL (int, Intel conventions, threaded)',
-                {'LIBS':     '-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -lpthread -lm',
-                 'CXXFLAGS': '-fopenmp',
-                 'LDFLAGS':  '-fopenmp'}],
-            ['Intel MKL (int, GNU conventions, threaded)',
-                {'LIBS':     '-lmkl_gf_lp64 -lmkl_gnu_thread -lmkl_core -lpthread -lm',
-                 'CXXFLAGS': '-fopenmp',
-                 'LDFLAGS':  '-fopenmp'}],
+        choices_ifort    = []
+        choices_gfortran = []
+        if (test_threaded and has_openmp):
+            t_core = ' -lmkl_core -lm'
+            if (test_gfortran and cxx_actual == 'g++'):
+                # GNU compiler + OpenMP: require gnu_thread library.
+                if (test_int):
+                    choices_gfortran.append(
+                        ['Intel MKL (int, GNU Fortran conventions, threaded)',
+                         {'LIBS': '-lmkl_gf_lp64 -lmkl_gnu_thread' + t_core}])
+                if (test_int64):
+                    choices_gfortran.append(
+                        ['Intel MKL (int64, GNU Fortran conventions, threaded)',
+                         {'LIBS': '-lmkl_gf_ilp64 -lmkl_gnu_thread' + t_core,
+                          'CXXFLAGS': '-DMKL_ILP64'}])
 
-            # int64_t, threaded
-            ['Intel MKL (int64_t, Intel conventions, threaded)',
-                {'LIBS':     '-lmkl_intel_ilp64 -lmkl_intel_thread -lmkl_core -lpthread -lm',
-                 'CXXFLAGS': '-fopenmp -DMKL_ILP64',
-                 'LDFLAGS':  '-fopenmp'}],
-            ['Intel MKL (int64_t, GNU conventions, threaded)',
-                {'LIBS':     '-lmkl_gf_ilp64 -lmkl_gnu_thread -lmkl_core -lpthread -lm',
-                 'CXXFLAGS': '-fopenmp -DMKL_ILP64',
-                 'LDFLAGS':  '-fopenmp'}],
+            elif (test_ifort and cxx_actual == 'icpc'):
+                # Intel compiler + OpenMP: require intel_thread library.
+                if (test_int):
+                    choices_ifort.append(
+                        ['Intel MKL (int, Intel Fortran conventions, threaded)',
+                         {'LIBS': '-lmkl_intel_lp64 -lmkl_intel_thread' + t_core}])
+                if (test_int64):
+                    choices_ifort.append(
+                        ['Intel MKL (int64, Intel Fortran conventions, threaded)',
+                         {'LIBS': '-lmkl_intel_ilp64 -lmkl_intel_thread' + t_core,
+                          'CXXFLAGS': '-DMKL_ILP64'}])
+            else:
+                # MKL doesn't have libraries for other OpenMP backends.
+                print( "Skipping threaded MKL for non-GNU, non-Intel compiler" )
+        # end threaded
 
-            # int, sequential
-            ['Intel MKL (int, Intel conventions, sequential)',
-                {'LIBS':     '-lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lm',
-                 'CXXFLAGS': ''}],
-            ['Intel MKL (int, GNU conventions, sequential)',
-                {'LIBS':     '-lmkl_gf_lp64 -lmkl_sequential -lmkl_core -lm',
-                 'CXXFLAGS': ''}],
+        if (test_sequential):
+            s_core = ' -lmkl_sequential -lmkl_core -lm'
+            if (test_ifort):
+                if (test_int):
+                    choices_ifort.append(
+                        ['Intel MKL (int, Intel Fortran conventions, sequential)',
+                         {'LIBS': '-lmkl_intel_lp64' + s_core}])
+                if (test_int64):
+                    choices_ifort.append(
+                        ['Intel MKL (int64, Intel Fortran conventions, sequential)',
+                         {'LIBS': '-lmkl_intel_ilp64' + s_core,
+                          'CXXFLAGS': '-DMKL_ILP64'}])
+            # end
 
-            # int64_t, sequential
-            ['Intel MKL (int64_t, Intel conventions, sequential)',
-                {'LIBS':     '-lmkl_intel_ilp64 -lmkl_sequential -lmkl_core -lm',
-                 'CXXFLAGS': '-DMKL_ILP64'}],
-            ['Intel MKL (int64_t, GNU conventions, sequential)',
-                {'LIBS':     '-lmkl_gf_ilp64 -lmkl_sequential -lmkl_core -lm',
-                 'CXXFLAGS': '-DMKL_ILP64'}],
-        ])
-    # end
+            if (test_gfortran):
+                if (test_int):
+                    choices_gfortran.append(
+                        ['Intel MKL (int, GNU Fortran conventions, sequential)',
+                         {'LIBS': '-lmkl_gf_lp64' + s_core}])
+                if (test_int64):
+                    choices_gfortran.append(
+                        ['Intel MKL (int64, GNU Fortran conventions, sequential)',
+                         {'LIBS': '-lmkl_gf_ilp64' + s_core,
+                          'CXXFLAGS': '-DMKL_ILP64'}])
+            # end
+        # end
 
+        # For Intel icpc, prefer Intel fortran interfaces first;
+        # otherwise,      prefer GNU   fortran interfaces first.
+        if (cxx_actual == 'icpc'):
+            choices.extend( choices_ifort )
+            choices.extend( choices_gfortran )
+        else:
+            choices.extend( choices_gfortran )
+            choices.extend( choices_ifort )
+    # end mkl
+
+    #---------------------------------------- IBM ESSL
     if (test_all or test_essl):
-        choices.extend([
-            ['IBM ESSL', {'LIBS': '-lessl'}],
-        ])
-    # end
+        if (test_threaded):
+            if (test_int):
+                choices.append(
+                    ['IBM ESSL int (lp64), threaded',
+                     {'LIBS': '-lesslsmp'}])
+            if (test_int64):
+                choices.append(
+                    ['IBM ESSL int64 (ilp64), threaded',
+                     {'LIBS': '-lesslsmp6464',
+                      'CXXFLAGS': '-D_ESV6464'}])
 
+        if (test_sequential):
+            if (test_int):
+                choices.append(
+                    ['IBM ESSL int (lp64), sequential',
+                     {'LIBS': '-lessl'}])
+            if (test_int64):
+                choices.append(
+                    ['IBM ESSL int64 (ilp64), sequential',
+                     {'LIBS': '-lessl6464',
+                      'CXXFLAGS': '-D_ESV6464'}])
+    # end essl
+
+    #---------------------------------------- OpenBLAS
     if (test_all or test_openblas):
-        choices.extend([
-            ['OpenBLAS', {'LIBS': '-lopenblas'}],
-        ])
+        choices.append(
+            ['OpenBLAS',
+             {'LIBS': '-lopenblas'}])
     # end
 
+    #---------------------------------------- Apple Accelerate
     if (test_all or test_accelerate):
-        path = '/System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/Headers'
-        inc = '-I' + path if (os.path.exists( path )) else ''
-        choices.extend([
+        # macOS puts cblas.h in weird places.
+        paths = [
+            '/System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/Headers',
+            '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Headers',
+        ]
+        inc = ''
+        for p in paths:
+            if (os.path.exists( p + '/cblas.h' )):
+                inc = '-I' + p + ' -DHAVE_ACCELERATE_CBLAS_H'
+                break
+
+        choices.append(
             ['MacOS Accelerate',
-                {'LIBS': '-framework Accelerate', 'CXXFLAGS': inc}],
-        ])
+             {'LIBS': '-framework Accelerate',
+              'CXXFLAGS': inc + '-DHAVE_ACCELERATE'}])
     # end
 
-    #--------------------
+    #---------------------------------------- generic -lblas
+    if (test_all or test_generic):
+        choices.append(
+            ['Generic BLAS',
+             {'LIBS': '-lblas'}])
+    # end
+
+    #---------------------------------------- AMD ACML
     # Deprecated libraries last.
     if (test_all or test_acml):
-        choices.extend([
-            ['AMD ACML (threaded)', {'LIBS': '-lacml_mp'}],
-            ['AMD ACML (sequential)', {'LIBS': '-lacml'}],
-        ])
+        if (test_threaded):
+            choices.append(
+                ['AMD ACML (threaded)',
+                 {'LIBS': '-lacml_mp'}])
+        if (test_sequential):
+            choices.append(
+                ['AMD ACML (sequential)',
+                 {'LIBS': '-lacml'}])
     # end
 
+    #----------------------------------------
+    # Test choices.
     manglings = get_fortran_manglings()
     int_sizes = get_int_sizes()
     passed = []
