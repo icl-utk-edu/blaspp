@@ -35,6 +35,74 @@ These include:
     DYLD_LIBRARY_PATH   runtime library search path on macOS
 
 
+Options (Makefile and CMake)
+--------------------------------------------------------------------------------
+
+BLAS++ specific options include (all values are case insensitive):
+
+    blas
+        BLAS libraries to search for. One or more of:
+        auto            search for all libraries (default)
+        LibSci          Cray LibSci
+        MKL             Intel MKL
+        ESSL            IBM ESSL
+        OpenBLAS        OpenBLAS
+        Accelerate      Apple Accelerate framework
+        ACML            AMD ACML (deprecated)
+        generic         generic -lblas
+
+    blas_int
+        BLAS integer size to search for. One or more of:
+        auto            search for both sizes (default)
+        int             32-bit int (LP64 model)
+        int64           64-bit int (ILP64 model)
+
+    blas_threaded
+        Whether to search for multi-threaded or sequential BLAS.
+        Currently applies to Intel MKL and IBM ESSL. One of:
+        auto            search for both threaded and sequential BLAS (default)
+        yes             multi-threaded BLAS
+        no              sequential BLAS
+
+    blas_fortran
+        Fortran interface to use. Currently applies only to Intel MKL.
+        One or more of:
+        auto            search for both interfaces (default)
+        ifort           use Intel ifort interfaces (e.g., libmkl_intel_lp64)
+        gfortran        use GNU gfortran interfaces (e.g., libmkl_gf_lp64)
+
+    fortran_mangling
+        (Makefile only; CMake always searches all manglings)
+        BLAS and LAPACK are written in Fortran, which has a
+        compiler-specific name mangling scheme: routine DGEMM is called
+        dgemm_, dgemm, or DGEMM in the library. One or more of:
+        auto            search all manglings (default)
+        add_            add _ to names  (dgemm_)
+        lower           lowercase names (dgemm)
+        upper           uppercase names (DGEMM)
+
+    BLAS_LIBRARIES
+        Specify the exact BLAS libraries, overriding the built-in search. E.g.,
+        cmake -DBLAS_LIBRARIES='-lopenblas' ..
+
+    color
+        Whether to use ANSI colors in output. One of:
+        auto            uses color if output is a TTY
+                        (default with Makefile; not support with CMake)
+        yes             (default with CMake)
+        no
+
+With Makefile, options are specified as environment variables or on the
+command line using `option=value` syntax, such as:
+
+    python configure.py blas=mkl
+
+With CMake, options are specified on the command line using
+`-Doption=value` syntax, such as:
+
+    cmake -Dblas=mkl ..
+
+
 Makefile Installation
 --------------------------------------------------------------------------------
 
@@ -55,22 +123,25 @@ Available targets:
 ### Options
 
     make config [options]
+    or
+    python configure.py [options]
 
 Runs the `configure.py` script to detect your compiler and library properties,
 then creates a make.inc configuration file. You can also manually edit the
-make.inc file. Options are name=value pairs to set variables. The configure.py
-script can be invoked directly:
+make.inc file. Options are name=value pairs to set variables.
 
-    python configure.py [options]
-
-Running `configure.py -h` will print a help message with the current options.
-In addition to those listed in the Environment variables section above,
+Besides the Environment variables and Options listed above, additional
 options include:
 
-    static={0,1}        build as shared (default) or static library
-    prefix              where to install, default /opt/slate.
-                        headers go   in ${prefix}/include,
-                        library goes in ${prefix}/lib${LIB_SUFFIX}
+    static
+        Whether to build as a static or shared library.
+        0               shared library (default)
+        1               static library
+
+    prefix
+        Where to install, default /opt/slate.
+        Headers go   in ${prefix}/include,
+        library goes in ${prefix}/lib${LIB_SUFFIX}
 
 These can be set in your environment or on the command line, e.g.,
 
@@ -82,9 +153,7 @@ libraries. For example:
     export LD_LIBRARY_PATH="/opt/my-blas/lib64"  # or DYLD_LIBRARY_PATH on macOS
     export LIBRARY_PATH="/opt/my-blas/lib64"
     export CPATH="/opt/my-blas/include"
-
-or
-
+    or
     export LDFLAGS="-L/opt/my-blas/lib64 -Wl,-rpath,/opt/my-blas/lib64"
     export CXXFLAGS="-I/opt/my-blas/include"
 
@@ -98,9 +167,7 @@ On some systems, loading the appropriate module will set these flags:
 Intel MKL provides scripts to set these flags, e.g.:
 
     source /opt/intel/bin/compilervars.sh intel64
-
-or
-
+    or
     source /opt/intel/mkl/bin/mklvars.sh intel64
 
 
@@ -145,70 +212,61 @@ directory under the BLAS++ root directory:
 
 ### Options
 
-CMake uses the settings in the Environment variables section above.
-Standard CMake options include:
+Besides the Environment variables and Options listed above, additional
+options include:
 
-    BUILD_SHARED_LIBS={ON,off}  build as shared (default) or static library
-    CMAKE_INSTALL_PREFIX        where to install, default /opt/slate
+    use_openmp
+        Whether to use OpenMP, if available.
+        yes (default)
+        no
+
+    build_tests
+        Whether to build test suite (test/tester). Requires TestSweeper.
+        yes (default)
+        no
+
+    use_cmake_find_blas
+        Whether to use CMake's FindBLAS, instead of BLAS++ search.
+        If BLA_VENDOR is set, it will use CMake's FindBLAS.
+        yes
+        no (default)
+
     BLA_VENDOR
         use CMake's FindBLAS, instead of BLAS++ search. For values, see:
-        https://cmake.org/cmake/help/v3.14/module/FindBLAS.html
-
-BLAS++ specific options include (all values case insensitive):
-
-    blas
-        BLAS libraries to search for. One or more of:
-        auto            search for all libraries (default)
-        LibSci          Cray LibSci
-        MKL             Intel MKL
-        ESSL            IBM ESSL
-        OpenBLAS        OpenBLAS
-        Accelerate      Apple Accelerate framework
-        ACML            AMD ACML (deprecated)
-        generic         -lblas
-
-    blas_int
-        BLAS integer size to search for. One or more of:
-        auto            search for both sizes (default)
-        int             32-bit int (LP64 model)
-        int64           64-bit int (ILP64 model)
-
-    blas_threaded
-        Whether to search for multi-threaded or sequential BLAS. One or more of:
-        auto            search for both threaded and sequential BLAS (default)
-        on              multi-threaded BLAS
-        off             sequential BLAS
-
-    blas_fortran
-        Fortran interface to use. Currently applies only to Intel MKL.
-        auto            search for both interfaces (default)
-        ifort           use Intel ifort interfaces (e.g., libmkl_intel_lp64)
-        gfortran        use GNU gfortran interfaces (e.g., libmkl_gf_lp64)
-
-    BLAS_LIBRARIES
-        Specify the exact library, overriding the built-in search. E.g.,
-        cmake -DBLAS_LIBRARIES='-lopenblas' ..
-
-    color={ON,off}                use ANSI colors in output
-    use_openmp={ON,off}           use OpenMP, if available
-    build_tests={ON,off}          build test suite (test/tester)
-    use_cmake_find_blas={on,OFF}  use CMake's FindBLAS, instead of BLAS++ search
+        https://cmake.org/cmake/help/latest/module/FindBLAS.html
 
 If `build_tests` is enabled, the build will require the TestSweeper
 library to be installed via CMake prior to compilation. Information and
 installation instructions can be found at https://bitbucket.org/icl/testsweeper.
 Tests also require CBLAS and LAPACK.
 
+Standard CMake options include:
+
+    BUILD_SHARED_LIBS
+        Whether to build as a static or shared library.
+        yes             shared library (default)
+        no              static library
+
+    CMAKE_INSTALL_PREFIX
+        Where to install, default /opt/slate.
+        Headers go   in ${prefix}/include,
+        library goes in ${prefix}/lib
+
+    CMAKE_BUILD_TYPE
+        Type of build.
+        Release
+        Debug
+
 These options are defined on the command line using `-D`, e.g.,
 
     # in build directory
-    cmake -Dblas=mkl -Dbuild_tests=off -DCMAKE_INSTALL_PREFIX=/usr/local ..
+    cmake -Dblas=mkl -Dbuild_tests=no -DCMAKE_INSTALL_PREFIX=/usr/local ..
 
 Alternatively, use the `ccmake` text-based interface or the CMake app GUI.
 
     # in build directory
     ccmake ..
-    Type 'c' to configure, then 'g' to generate Makefile
+    # Type 'c' to configure, then 'g' to generate Makefile
 
 To re-configure CMake, you may need to delete CMake's cache:
 
@@ -216,6 +274,7 @@ To re-configure CMake, you may need to delete CMake's cache:
     rm CMakeCache.txt
     # or
     rm -rf *
+    cmake [options] ..
 
 To debug the build, set `VERBOSE`:
 
