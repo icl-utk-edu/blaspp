@@ -19,7 +19,14 @@
         #include <Accelerate/Accelerate.h>
     #endif
 #else
-    #include <cblas.h>
+    #ifdef __cplusplus
+        // Some ancient cblas.h don't include extern C. It's okay to nest.
+        extern "C" {
+        #include <cblas.h>
+        }
+    #else
+        #include <cblas.h>
+    #endif
 #endif
 
 int main()
