@@ -20,6 +20,7 @@ project(
 option( BUILD_SHARED_LIBS "Build shared libraries" true )
 option( build_tests "Build test suite" true )
 option( color "Use ANSI color output" true )
+option( use_cuda "Use CUDA, if available" true )
 option( use_openmp "Use OpenMP, if available" true )
 option( use_cmake_find_blas "Use CMake's find_package( BLAS ) rather than the search in BLAS++" false )
 
@@ -140,44 +141,48 @@ add_library(
 )
 
 # CUDA is not required, use if it is available
-include( CheckLanguage )
-check_language( CUDA )
-if (CMAKE_CUDA_COMPILER)
-    enable_language( CUDA )
-
-    # todo: check for cuda 10.0+ and force newer CMake version - if possible
-    message( STATUS "Building accelerated CUDA wrappers." )
-    target_sources(
-        blaspp
-        PRIVATE
-        src/device_batch_gemm.cc
-        src/device_batch_hemm.cc
-        src/device_batch_her2k.cc
-        src/device_batch_herk.cc
-        src/device_batch_symm.cc
-        src/device_batch_syr2k.cc
-        src/device_batch_syrk.cc
-        src/device_batch_trmm.cc
-        src/device_batch_trsm.cc
-        src/device_blas_wrappers.cc
-        src/device_error.cc
-        src/device_gemm.cc
-        src/device_hemm.cc
-        src/device_her2k.cc
-        src/device_herk.cc
-        src/device_queue.cc
-        src/device_symm.cc
-        src/device_syr2k.cc
-        src/device_syrk.cc
-        src/device_trmm.cc
-        src/device_trsm.cc
-        src/device_utils.cc
-    )
-
-    target_compile_definitions( blaspp PUBLIC "-DBLASPP_WITH_CUBLAS" )
-    target_link_libraries( blaspp PRIVATE cublas cudart )
+if (NOT use_cuda)
+    message( STATUS "User has requested to NOT use CUDA" )
 else()
-    message( STATUS "No CUDA support in BLAS++" )
+    include( CheckLanguage )
+    check_language( CUDA )
+    if (CMAKE_CUDA_COMPILER)
+        enable_language( CUDA )
+
+        # todo: check for cuda 10.0+ and force newer CMake version - if possible
+        message( STATUS "Building accelerated CUDA wrappers." )
+        target_sources(
+            blaspp
+            PRIVATE
+            src/device_batch_gemm.cc
+            src/device_batch_hemm.cc
+            src/device_batch_her2k.cc
+            src/device_batch_herk.cc
+            src/device_batch_symm.cc
+            src/device_batch_syr2k.cc
+            src/device_batch_syrk.cc
+            src/device_batch_trmm.cc
+            src/device_batch_trsm.cc
+            src/device_blas_wrappers.cc
+            src/device_error.cc
+            src/device_gemm.cc
+            src/device_hemm.cc
+            src/device_her2k.cc
+            src/device_herk.cc
+            src/device_queue.cc
+            src/device_symm.cc
+            src/device_syr2k.cc
+            src/device_syrk.cc
+            src/device_trmm.cc
+            src/device_trsm.cc
+            src/device_utils.cc
+        )
+
+        target_compile_definitions( blaspp PUBLIC "-DBLASPP_WITH_CUBLAS" )
+        target_link_libraries( blaspp PRIVATE cublas cudart )
+    else()
+        message( STATUS "No CUDA support in BLAS++" )
+    endif()
 endif()
 
 # Include directory.
