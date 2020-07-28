@@ -264,7 +264,7 @@ install(
 
 # Install header files
 install(
-    DIRECTORY "include"
+    DIRECTORY "include/"    # / copies contents, not directory itself
     DESTINATION "include"
     FILES_MATCHING REGEX "\.(h|hh)$"
 )
