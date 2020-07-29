@@ -18,6 +18,8 @@ int main()
         // but xlc -qshowmacros shows __ibmxl_version__.
         #if defined(__IBMCPP__) || defined(__ibmxl_version__)
             "xlc++";
+        #elif defined(_CRAYC)
+            "cray";
         #elif defined(__ICC)
             "icpc";
         #elif defined(_MSC_VER)
@@ -32,6 +34,8 @@ int main()
     #else
         #if defined(__IBMC__) || defined(__ibmxl_version__)
             "xlc";
+        #elif defined(_CRAYC)
+            "cray";
         #elif defined(__ICC)
             "icc";
         #elif defined(_MSC_VER)

@@ -135,7 +135,6 @@ def compile_with_manglings( src, env, manglings, int_sizes ):
 # end
 
 #-------------------------------------------------------------------------------
-# todo mkl_threaded, mkl_intel, mkl_gnu command line options.
 def blas():
     '''
     Searches for BLAS in default libraries, MKL, ACML, ESSL, OpenBLAS,
@@ -143,11 +142,11 @@ def blas():
     Checks FORTRAN_ADD_, FORTRAN_LOWER, FORTRAN_UPPER.
     Checks int (LP64) and int64 (ILP64).
     Setting one or more of:
-        blas=mkl, blas=acml, blas=essl, blas=openblas, blas=accelerate;
-        blas_int=int, blas_int=int64;
-        blas_threading=threaded, blas_threading=sequential;
-        blas_fortran=gfortran, blas_fortran=ifort;
-        fortran_mangling=add_, fortran_mangling=lower, fortran_mangling=upper;
+        blas = {mkl, acml, essl, openblas, accelerate, generic};
+        blas_int = {int, int64};
+        blas_threaded = {y, n};
+        blas_fortran = {gfortran, ifort};
+        fortran_mangling = {add_, lower, upper}
     in the environment or on the command line, limits the search space.
     '''
     print_header( 'BLAS library' )
@@ -169,13 +168,15 @@ def blas():
     if (config.environ['ilp64']):
         print_warn('Variable `ilp64` is obsolete; use blas_int=int64')
 
+    #----------------------------------------
+    # Parse options.
     BLAS_LIBRARIES = config.environ['BLAS_LIBRARIES']
     blas           = config.environ['blas'].lower()
     blas_fortran   = config.environ['blas_fortran'].lower()
     blas_int       = config.environ['blas_int'].lower()
     blas_threaded  = config.environ['blas_threaded'].lower()
 
-    #---------------------------------------- BLAS_LIBRARIES
+    #-------------------- BLAS_LIBRARIES
     # If testing BLAS_LIBRARIES, ignore other flags (blas, ...).
     test_blas_libraries = (BLAS_LIBRARIES != '')
     if (test_blas_libraries):
@@ -188,7 +189,7 @@ def blas():
         print( "BLAS_LIBRARIES      = '" + BLAS_LIBRARIES  + "'\n"
              + "test_blas_libraries = ", test_blas_libraries, "\n" )
 
-    #---------------------------------------- blas
+    #-------------------- blas
     test_all        = (not blas or blas == 'auto')
     test_acml       = re.search( r'\b(acml)\b',                blas ) is not None
     test_accelerate = re.search( r'\b(apple|accelerate)\b',    blas ) is not None
@@ -209,7 +210,7 @@ def blas():
              + "test_generic        = ", test_generic,        "\n"
              + "test_all            = ", test_all,            "\n" )
 
-    #---------------------------------------- blas_fortran
+    #-------------------- blas_fortran
     test_gfortran = re.search( r'\b(gfortran)\b', blas_fortran ) is not None
     test_ifort    = re.search( r'\b(ifort)\b',    blas_fortran ) is not None
     if (not blas_fortran or blas_fortran == 'auto'):
@@ -221,7 +222,7 @@ def blas():
              + "test_gfortran       = ", + test_gfortran,  "\n"
              + "test_ifort          = ", + test_ifort,     "\n" )
 
-    #---------------------------------------- blas_int
+    #-------------------- blas_int
     test_int   = re.search( r'\b(lp64|int|int32|int32_t)\b', blas_int ) is not None
     test_int64 = re.search( r'\b(ilp64|int64|int64_t)\b',    blas_int ) is not None
     if (not blas_int or blas_int == 'auto'):
@@ -233,7 +234,7 @@ def blas():
              + "test_int            = ", test_int,     "\n"
              + "test_int64          = ", test_int64,   "\n" )
 
-    #---------------------------------------- blas_threaded
+    #-------------------- blas_threaded
     test_threaded   = re.search( r'\b(y|yes|true|on|1)\b',  blas_threaded ) is not None
     test_sequential = re.search( r'\b(n|no|false|off|0)\b', blas_threaded ) is not None
     if (not blas_threaded or blas_threaded == 'auto'):
@@ -249,26 +250,20 @@ def blas():
     # Build list of libraries to check.
     choices = []
 
-    #---------------------------------------- BLAS_LIBRARIES
-    if (test_blas_libraries):
-        choices.append(
-            ['BLAS_LIBRARIES',
-             {'LIBS': BLAS_LIBRARIES}] )
-    # end
-
-    #---------------------------------------- default; Cray libsci
-    if (test_all or test_default):
-        # Sometimes BLAS is in default libraries (e.g., on Cray).
-        choices.append(
-            ['Default',
-             {}] )
-    # end
-
     cxx        = config.environ['CXX']
     cxx_actual = config.environ['CXX_actual']
     has_openmp = config.environ['HAS_OPENMP']
 
-    #---------------------------------------- Intel MKL
+    #-------------------- BLAS_LIBRARIES
+    if (test_blas_libraries):
+        choices.append( ['BLAS_LIBRARIES', {'LIBS': BLAS_LIBRARIES}] )
+
+    #-------------------- default; Cray libsci
+    if (test_all or test_default):
+        # Sometimes BLAS is in default libraries (e.g., on Cray).
+        choices.append( ['Default', {}] )
+
+    #-------------------- Intel MKL
     if (test_all or test_mkl):
         choices_ifort    = []
         choices_gfortran = []
@@ -339,7 +334,7 @@ def blas():
             choices.extend( choices_ifort )
     # end mkl
 
-    #---------------------------------------- IBM ESSL
+    #-------------------- IBM ESSL
     if (test_all or test_essl):
         if (test_threaded):
             if (test_int):
@@ -364,14 +359,11 @@ def blas():
                       'CXXFLAGS': '-D_ESV6464'}])
     # end essl
 
-    #---------------------------------------- OpenBLAS
+    #-------------------- OpenBLAS
     if (test_all or test_openblas):
-        choices.append(
-            ['OpenBLAS',
-             {'LIBS': '-lopenblas'}])
-    # end
+        choices.append( ['OpenBLAS', {'LIBS': '-lopenblas'}])
 
-    #---------------------------------------- Apple Accelerate
+    #-------------------- Apple Accelerate
     if (test_all or test_accelerate):
         # macOS puts cblas.h in weird places.
         paths = [
@@ -390,24 +382,17 @@ def blas():
               'CXXFLAGS': inc + '-DHAVE_ACCELERATE'}])
     # end
 
-    #---------------------------------------- generic -lblas
+    #-------------------- generic -lblas
     if (test_all or test_generic):
-        choices.append(
-            ['Generic BLAS',
-             {'LIBS': '-lblas'}])
-    # end
+        choices.append( ['Generic BLAS', {'LIBS': '-lblas'}])
 
-    #---------------------------------------- AMD ACML
+    #-------------------- AMD ACML
     # Deprecated libraries last.
     if (test_all or test_acml):
         if (test_threaded):
-            choices.append(
-                ['AMD ACML (threaded)',
-                 {'LIBS': '-lacml_mp'}])
+            choices.append( ['AMD ACML (threaded)', {'LIBS': '-lacml_mp'}])
         if (test_sequential):
-            choices.append(
-                ['AMD ACML (sequential)',
-                 {'LIBS': '-lacml'}])
+            choices.append( ['AMD ACML (sequential)', {'LIBS': '-lacml'}])
     # end
 
     #----------------------------------------
@@ -415,6 +400,7 @@ def blas():
     manglings = get_fortran_manglings()
     int_sizes = get_int_sizes()
     passed = []
+    print_subhead( 'BLAS (ddot) in:' )
     for (label, env) in choices:
         title = label
         if ('LIBS' in env):
@@ -442,8 +428,8 @@ def cblas():
     '''
     print_header( 'CBLAS library' )
     choices = [
-        ['CBLAS routines (cblas_ddot) available', {}],
-        ['CBLAS routines (cblas_ddot) in -lcblas', {'LIBS': '-lcblas'}],
+        ['CBLAS (cblas_ddot) in BLAS library', {}],
+        ['CBLAS (cblas_ddot) in -lcblas', {'LIBS': '-lcblas'}],
     ]
 
     passed = []
@@ -461,119 +447,78 @@ def cblas():
 # end cblas
 
 #-------------------------------------------------------------------------------
-def test_lapack( src, label, append=False ):
-    '''
-    Used by lapack() and lapack_uncommon() to search for LAPACK routines,
-    first in already found libraries, then in -llapack.
-    Rechecks Fortran name mangling if -llapack exists but linking fails.
-    '''
-    # try in BLAS library
-    print_test( label + ' available' )
-    (rc, out, err) = config.compile_obj( src )
-    if (rc != 0):
-        raise Error
-
-    (rc, out, err) = config.link_exe( src )
-    if (rc == 0):
-        (rc, out, err) = config.run_exe( src )
-        print_result( 'label', rc )
-        if (rc != 0):
-            raise Error( 'LAPACK linked, but failed to run' )
-        # Otherwise, success! See also lapack().
-    else:
-        # Default failed, try with -llapack
-        print_result( 'label', rc )
-        print_test( label + ' in -llapack' )
-        env = {'LIBS': '-llapack'}
-        (rc, out, err) = config.compile_exe( 'config/hello.cc', env )
-        if (rc == 0):
-            # -llapack exists
-            (rc, out, err) = config.compile_obj( src, env )
-            if (rc != 0):
-                raise Error( 'Unexpected error: ' + src + ' failed to compile' )
-
-            (rc, out, err) = config.link_exe( src, env )
-            if (rc == 0):
-                # -llapack linked
-                (rc, out, err) = config.run_exe( src, env )
-                print_result( 'label', rc )
-                if (rc == 0):
-                    # Success! -llapack worked. See also lapack().
-                    if (append):
-                        config.environ.append( 'LIBS', env['LIBS'] )
-                    else:
-                        config.environ.merge( env )
-                else:
-                    raise Error( 'LAPACK linked -llapack, but failed to run' )
-                # end
-            else:
-                print_result( 'label', rc )
-                # -llapack exists but didn't link
-                print_subhead( '-llapack exists, but linking failed. Re-checking Fortran mangling.' )
-                # Get, then undef, original mangling & int_sizes.
-                cxxflags = config.environ['CXXFLAGS']
-                old_mangling_sizes = re.findall(
-                    r'-D(FORTRAN_(?:ADD_|LOWER|UPPER)|\w*ILP64)\b', cxxflags )
-                config.environ['CXXFLAGS'] = re.sub(
-                    r'-D(FORTRAN_(?:ADD_|LOWER|UPPER)|\w*ILP64|ADD_|NOCHANGE|UPCASE)\b',
-                    r'', cxxflags )
-                manglings = get_fortran_manglings()
-                int_sizes = get_int_sizes()
-                (rc, out, err, env) = compile_with_manglings(
-                    src, env, manglings, int_sizes )
-                if (rc == 0):
-                    (rc, out, err) = config.compile_run( 'config/blas.cc', env,
-                        'Re-checking Fortran mangling for BLAS' )
-                    if (rc == 0):
-                        # Success! See also lapack().
-                        new_mangling_sizes = re.findall(
-                            r'-D(FORTRAN_(?:ADD_|LOWER|UPPER)|\w*ILP64)\b',
-                            env['CXXFLAGS'])
-                        print( font.red(
-                               'Changing Fortran name mangling for both BLAS and LAPACK to '
-                               + ' '.join( new_mangling_sizes ) ) )
-                        config.environ.merge( env )
-
-                    else:
-                        raise Error( 'BLAS and LAPACK require different Fortran name manglings' )
-                    # end
-                else:
-                    raise Error( 'No Fortran name mangling worked for LAPACK (seems odd).' )
-                # end
-            # end
-        else:
-            # -llapack doesn't exist
-            print_result( 'label', rc )
-            raise Error( 'LAPACK not found' )
-        # end
-    # end
-# end test_lapack
-
-#-------------------------------------------------------------------------------
+# This code is structured similarly to blas().
 def lapack():
     '''
-    Search for common LAPACK routines, first in already found libraries,
-    then in -llapack.
+    Search for LAPACK library, first in already found BLAS libraries,
+    then in -llapack. Use blas() first to find BLAS library.
+    This checks for `pstrf` to ensure we're getting a complete LAPACK,
+    since `pstrf` has been in LAPACK for a long time, but is omitted
+    from some libraries like ESSL and ATLAS that contain only selected
+    routines like `potrf`.
     '''
     print_header( 'LAPACK library' )
-    test_lapack( 'config/lapack_potrf.cc', 'LAPACK routines (dpotrf)' )
-    # no error thrown: success!
+
+    #----------------------------------------
+    # Parse options.
+    LAPACK_LIBRARIES = config.environ['LAPACK_LIBRARIES']
+    lapack = config.environ['lapack'].lower()
+
+    #-------------------- LAPACK_LIBRARIES
+    # If testing LAPACK_LIBRARIES, ignore other flags (lapack, ...).
+    test_lapack_libraries = (LAPACK_LIBRARIES != '')
+    if (test_lapack_libraries):
+        lapack = 'none'
+
+    if (config.debug()):
+        print( "LAPACK_LIBRARIES      = '" + LAPACK_LIBRARIES  + "'\n"
+             + "test_lapack_libraries = ", test_lapack_libraries, "\n" )
+
+    #-------------------- lapack
+    test_all     = (not lapack or lapack == 'auto')
+    test_default = re.search( r'\b(default)\b', lapack ) is not None
+    test_generic = re.search( r'\b(generic)\b', lapack ) is not None
+
+    if (config.debug()):
+        print( "lapack              = '" + lapack          + "'\n"
+             + "test_default        = ", test_default,        "\n"
+             + "test_generic        = ", test_generic,        "\n"
+             + "test_all            = ", test_all,            "\n" )
+
+    #----------------------------------------
+    # Build list of libraries to check.
+    choices = []
+
+    #-------------------- LAPACK_LIBRARIES
+    if (test_lapack_libraries):
+        choices.append( ['LAPACK_LIBRARIES = ' + LAPACK_LIBRARIES,
+                         {'LIBS': LAPACK_LIBRARIES}] )
+
+    #-------------------- default (e.g., in BLAS library)
+    if (test_all or test_default):
+        choices.append( ['BLAS library', {}] )
+
+    #-------------------- generic -llapack
+    if (test_all or test_generic):
+        choices.append( ['generic -llapack', {'LIBS': '-llapack'}])
+
+    #----------------------------------------
+    # Test choices.
+    passed = []
+    for (label, env) in choices:
+        label = 'LAPACK (dpstrf) in ' + label
+        (rc, out, err) = config.compile_run(
+            'config/lapack_pstrf.cc', env, label )
+        if (rc == 0):
+            passed.append( (label, env) )
+            break
+    # end
+
+    labels = map( lambda c: c[0], passed )
+    i = config.choose( 'Choose LAPACK library:', labels )
+    config.environ.merge( passed[i][1] )
     config.environ.append( 'CXXFLAGS', '-DHAVE_LAPACK' )
 # end lapack
-
-#-------------------------------------------------------------------------------
-def lapack_uncommon():
-    '''
-    Search for uncommon LAPACK routines, first in already found libraries,
-    then in -llapack.
-
-    This is needed because some libraries, like ESSL and ATLAS,
-    include part but not all of LAPACK, so need -llapack added.
-    Cholesky with pivoting (pstrf) is a routine from LAPACK >= 3.2 that is
-    unlikely to be included in a subset of LAPACK routines.
-    '''
-    test_lapack( 'config/lapack_pstrf.cc', 'Uncommon routines (dpstrf)', append=True )
-# end lapack_uncommon
 
 #-------------------------------------------------------------------------------
 def lapacke():
@@ -583,38 +528,10 @@ def lapacke():
     '''
     print_header( 'LAPACKE library' )
     choices = [
-        ['LAPACKE routines (LAPACKE_dpotrf) available', {}],
-        ['LAPACKE routines (LAPACKE_dpotrf) in -llapacke',
+        ['LAPACKE (LAPACKE_dpotrf) in LAPACK library', {}],
+        ['LAPACKE (LAPACKE_dpotrf) in -llapacke',
             {'LIBS': '-llapacke'}],
     ]
-
-    passed = []
-    for (label, env) in choices:
-        (rc, out, err) = config.compile_run( 'config/lapacke_potrf.cc', env, label )
-        if (rc == 0):
-            passed.append( (label, env) )
-            break
-    # end
-
-    labels = map( lambda c: c[0], passed )
-    i = config.choose( 'Choose LAPACKE library:', labels )
-    config.environ.merge( passed[i][1] )
-    config.environ.append( 'CXXFLAGS', '-DHAVE_LAPACKE' )
-# end lapacke
-
-#-------------------------------------------------------------------------------
-def lapacke_uncommon():
-    '''
-    ESSL doesn't include all of LAPACKE, so needs -llapacke added.
-    Cholesky with pivoting (LAPACKE_pstrf) is one from LAPACK >= 3.4 that ESSL
-    excludes.
-    '''
-    choices = [
-        ('Uncommon routines (LAPACKE_dpstrf) available', {}),
-    ]
-    if ('-llapacke' not in config.environ['LIBS']):
-        choices.append( ['Uncommon routines (LAPACKE_dpstrf) in -llapacke',
-                            {'LIBS': '-llapacke'}] )
 
     passed = []
     for (label, env) in choices:
@@ -627,7 +544,8 @@ def lapacke_uncommon():
     labels = map( lambda c: c[0], passed )
     i = config.choose( 'Choose LAPACKE library:', labels )
     config.environ.merge( passed[i][1] )
-# end lapacke_uncommon
+    config.environ.append( 'CXXFLAGS', '-DHAVE_LAPACKE' )
+# end lapacke
 
 #-------------------------------------------------------------------------------
 def blas_float_return():
@@ -694,7 +612,7 @@ def lapack_xblas():
     Check for LAPACK routines that use XBLAS in found BLAS/LAPACK libraries.
     '''
     (rc, out, err) = config.compile_run( 'config/lapack_xblas.cc', {},
-                                         'LAPACK XBLAS routines (dposvxx) available' )
+                                         'LAPACK XBLAS (dposvxx) in LAPACK library' )
     if (rc == 0):
         config.environ.append( 'CXXFLAGS', '-DHAVE_XBLAS' )
 # end
@@ -706,8 +624,8 @@ def lapack_matgen():
     in found BLAS/LAPACK libraries, then in -llapacke.
     '''
     choices = [
-        ['Matrix generation routines (lagsy) available', {}],
-        ['Matrix generation routines (lagsy) in -ltmglib',
+        ['Matrix generation (dlagsy) in LAPACK library', {}],
+        ['Matrix generation (dlagsy) in -ltmglib',
             {'LIBS': '-ltmglib'}],
     ]
 
