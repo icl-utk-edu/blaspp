@@ -92,6 +92,8 @@ if (CMAKE_CUDA_COMPILER)
         test_trmm_device.cc
         test_trsm_device.cc
     )
+    # Explicitly linking with cublas required on some platforms.
+    target_link_libraries( tester cublas cudart )
 else()
     message( STATUS "No CUDA support in testers" )
 endif()

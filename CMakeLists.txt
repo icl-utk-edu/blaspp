@@ -35,6 +35,8 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     # Append the new CMAKE_INSTALL_PREFIX, since CMake appended the old value.
     # This helps find TestSweeper.
     list( APPEND CMAKE_SYSTEM_PREFIX_PATH ${CMAKE_INSTALL_PREFIX} )
+else()
+    message( STATUS "Using CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}" )
 endif()
 
 # Provide menu of options. (Why doesn't CMake do this?)
