@@ -15,8 +15,15 @@ Option 1: Makefile
 
 Option 2: CMake
 
+    # In order to build tests, build TestSweeper, from
+    # https://bitbucket.org/icl/testsweeper
+    # In testsweeper directory:
     mkdir build && cd build
-    cmake ..
+    cmake .. && make
+
+    # In blaspp directory:
+    mkdir build && cd build
+    cmake -Dtestsweeper_DIR=/path/to/testsweeper/build ..
     make && make install
 
 
@@ -98,7 +105,7 @@ command line using `option=value` syntax, such as:
     python configure.py blas=mkl
 
 With CMake, options are specified on the command line using
-`-Doption=value` syntax, such as:
+`-Doption=value` syntax (not as environment variables), such as:
 
     cmake -Dblas=mkl ..
 
@@ -200,12 +207,31 @@ test files are in the config directory.
 CMake Installation
 --------------------------------------------------------------------------------
 
-The CMake script enforces an out-of-source build. Create a build
-directory under the BLAS++ root directory:
+BLAS++ uses the TestSweeper library (https://bitbucket.org/icl/testsweeper)
+to run its tests. This can be omitted, but then the tester will not be built.
+First build TestSweeper:
+
+    cd /path/to/testsweeper
+    mkdir build && cd build
+    cmake [options] ..
+    make
+    make install   # optional
+
+Now build BLAS++ itself. The CMake script enforces an out-of-source
+build. Create a build directory under the BLAS++ root directory:
 
     cd /path/to/blaspp
     mkdir build && cd build
+
+Either TestSweeper can be installed, or the path to TestSweeper's build
+directory should be given to the BLAS++ CMake.
+
+    # If TestSweeper was installed, CMake should find it:
     cmake [options] ..
+
+    # Else if TestSweeper was NOT installed, add its directory:
+    cmake -Dtestsweeper_DIR=/path/to/testsweeper/build [options] ..
+
     make
     make install
 
@@ -221,7 +247,8 @@ options include:
         no
 
     build_tests
-        Whether to build test suite (test/tester). Requires TestSweeper.
+        Whether to build test suite (test/tester).
+        Requires TestSweeper, CBLAS, and LAPACK.
         yes (default)
         no
 
@@ -234,11 +261,6 @@ options include:
     BLA_VENDOR
         use CMake's FindBLAS, instead of BLAS++ search. For values, see:
         https://cmake.org/cmake/help/latest/module/FindBLAS.html
-
-If `build_tests` is enabled, the build will require the TestSweeper
-library to be installed via CMake prior to compilation. Information and
-installation instructions can be found at https://bitbucket.org/icl/testsweeper.
-Tests also require CBLAS and LAPACK.
 
 Standard CMake options include:
 
@@ -257,7 +279,8 @@ Standard CMake options include:
         Release
         Debug
 
-These options are defined on the command line using `-D`, e.g.,
+With CMake, options are specified on the command line using
+`-Doption=value` syntax (not as environment variables), such as:
 
     # in build directory
     cmake -Dblas=mkl -Dbuild_tests=no -DCMAKE_INSTALL_PREFIX=/usr/local ..
