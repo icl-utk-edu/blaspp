@@ -14,24 +14,36 @@ or in the Makefile. For the flags, there are two more options:
 a. Using pkg-config to get CXXFLAGS and LIBS for BLAS++ (recommended).
 pkg-config must be able to locate the blas++ package. If it is installed
 outside the default search path (see `pkg-config --variable pc_path pkg-config`),
-it should be added to `$PKG_CONFIG_PATH`. For instance:
-   
-    export PKG_CONFIG_PATH=/usr/local/blaspp/lib/pkgconfig  # for sh
-    setenv PKG_CONFIG_PATH /usr/local/blaspp/lib/pkgconfig  # for csh
-    
+it should be added to `$PKG_CONFIG_PATH`. For instance, if it is installed
+in /opt/slate:
+
+    export PKG_CONFIG_PATH=/opt/slate/lib/pkgconfig  # for sh
+    setenv PKG_CONFIG_PATH /opt/slate/lib/pkgconfig  # for csh
+
 b. Hard-code CXXFLAGS and LIBS for BLAS++ in the Makefile.
 
 Then, to build `example_gemm` using the Makefile, run:
-    
+
     make
-    
+
 ## Option 2: CMake
 
-todo: CMake must know where BLAS++ is installed.
+CMake must know the compiler used to compile BLAS++. Set CXX to the
+compiler, in your environment.
 
-Then, to build `example_gemm` using the CMakeLists.txt, run:
+It's best (but not required) to compile in out-of-source in a build directory:
 
-    mkdir build
-    cd build
+    mkdir build && cd build
+
+If BLAS++ is installed outside the default search path, tell cmake
+where, for example, in /opt/slate:
+
+    cmake -DCMAKE_PREFIX_PATH=/opt/slate ..
+
+Otherwise, simply run:
+
     cmake ..
+
+Then, to build `example_gemm` using the resulting Makefile, run:
+
     make
