@@ -134,7 +134,7 @@ TEST_LIBS    += -lblaspp -ltestsweeper
 
 all: lib tester
 
-pkg = lib/pkgconfig/blas++.pc
+pkg = lib/pkgconfig/blaspp.pc
 
 install: lib $(pkg)
 	mkdir -p $(DESTDIR)$(prefix)/include/blas
@@ -149,7 +149,7 @@ uninstall:
 	$(RM)    $(DESTDIR)$(prefix)/include/blas.hh
 	$(RM) -r $(DESTDIR)$(prefix)/include/blas
 	$(RM) $(DESTDIR)$(prefix)/lib$(LIB_SUFFIX)/libblaspp.*
-	$(RM) $(DESTDIR)$(prefix)/lib$(LIB_SUFFIX)/pkgconfig/blas++.pc
+	$(RM) $(DESTDIR)$(prefix)/lib$(LIB_SUFFIX)/pkgconfig/blaspp.pc
 
 #-------------------------------------------------------------------------------
 # if re-configured, recompile everything
