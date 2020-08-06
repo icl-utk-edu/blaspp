@@ -26,6 +26,7 @@ const char* blaspp_id();
 #include "blas/axpy.hh"
 #include "blas/copy.hh"
 #include "blas/dot.hh"
+#include "blas/dotu.hh"
 #include "blas/iamax.hh"
 #include "blas/nrm2.hh"
 #include "blas/rot.hh"
