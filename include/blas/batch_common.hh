@@ -118,7 +118,8 @@ void gemm_check(
         int64_t lerror = INTERNAL_INFO_DEFAULT;
         #pragma omp parallel for reduction(max:lerror)
         for (size_t i = 0; i < batchCount; ++i) {
-            if (internal_info[i] == 0) continue;    // skip problems that passed error checks
+            if (internal_info[i] == 0)
+                continue;    // skip problems that passed error checks
             lerror = std::max(lerror, internal_info[i]);
         }
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
@@ -232,7 +233,8 @@ void trsm_check(
         int64_t lerror = INTERNAL_INFO_DEFAULT;
         #pragma omp parallel for reduction(max:lerror)
         for (size_t i = 0; i < batchCount; ++i) {
-            if (internal_info[i] == 0) continue;    // skip problems that passed error checks
+            if (internal_info[i] == 0)
+                continue;    // skip problems that passed error checks
             lerror = std::max(lerror, internal_info[i]);
         }
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
@@ -346,7 +348,8 @@ void trmm_check(
         int64_t lerror = INTERNAL_INFO_DEFAULT;
         #pragma omp parallel for reduction(max:lerror)
         for (size_t i = 0; i < batchCount; ++i) {
-            if (internal_info[i] == 0) continue;    // skip problems that passed error checks
+            if (internal_info[i] == 0)
+                continue;    // skip problems that passed error checks
             lerror = std::max(lerror, internal_info[i]);
         }
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
@@ -470,7 +473,8 @@ void hemm_check(
         int64_t lerror = INTERNAL_INFO_DEFAULT;
         #pragma omp parallel for reduction(max:lerror)
         for (size_t i = 0; i < batchCount; ++i) {
-            if (internal_info[i] == 0) continue;    // skip problems that passed error checks
+            if (internal_info[i] == 0)
+                continue;    // skip problems that passed error checks
             lerror = std::max(lerror, internal_info[i]);
         }
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
@@ -580,7 +584,8 @@ void herk_check(
         int64_t lerror = INTERNAL_INFO_DEFAULT;
         #pragma omp parallel for reduction(max:lerror)
         for (size_t i = 0; i < batchCount; ++i) {
-            if (internal_info[i] == 0) continue;    // skip problems that passed error checks
+            if (internal_info[i] == 0)
+                continue;    // skip problems that passed error checks
             lerror = std::max(lerror, internal_info[i]);
         }
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
@@ -709,7 +714,8 @@ void syrk_check(
         int64_t lerror = INTERNAL_INFO_DEFAULT;
         #pragma omp parallel for reduction(max:lerror)
         for (size_t i = 0; i < batchCount; ++i) {
-            if (internal_info[i] == 0) continue;    // skip problems that passed error checks
+            if (internal_info[i] == 0)
+                continue;    // skip problems that passed error checks
             lerror = std::max(lerror, internal_info[i]);
         }
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
@@ -833,7 +839,8 @@ void her2k_check(
         int64_t lerror = INTERNAL_INFO_DEFAULT;
         #pragma omp parallel for reduction(max:lerror)
         for (size_t i = 0; i < batchCount; ++i) {
-            if (internal_info[i] == 0) continue;    // skip problems that passed error checks
+            if (internal_info[i] == 0)
+                continue;    // skip problems that passed error checks
             lerror = std::max(lerror, internal_info[i]);
         }
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
@@ -957,7 +964,8 @@ void syr2k_check(
         int64_t lerror = INTERNAL_INFO_DEFAULT;
         #pragma omp parallel for reduction(max:lerror)
         for (size_t i = 0; i < batchCount; ++i) {
-            if (internal_info[i] == 0) continue;    // skip problems that passed error checks
+            if (internal_info[i] == 0)
+                continue;    // skip problems that passed error checks
             lerror = std::max(lerror, internal_info[i]);
         }
         info[0] = (lerror == INTERNAL_INFO_DEFAULT) ? 0 : lerror;
@@ -978,7 +986,7 @@ void syr2k_check(
     }
 }
 
-}        // namespace batch
-}        // namespace blas
+}  // namespace batch
+}  // namespace blas
 
-#endif    // BLAS_BATCH_COMMON_HH
+#endif        //  #ifndef BLAS_BATCH_COMMON_HH

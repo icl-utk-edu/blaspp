@@ -75,7 +75,7 @@ void blas::batch::trsm(
         dAarray = (float**)queue.get_devPtrArray();
         dBarray = dAarray + batch_limit;
 
-        for( size_t ib = 0; ib < batch; ib += batch_limit ) { 
+        for (size_t ib = 0; ib < batch; ib += batch_limit) {
             size_t ibatch = std::min( batch_limit, batch-ib );
 
             // copy pointer array(s) to device
@@ -181,7 +181,7 @@ void blas::batch::trsm(
         dAarray = (double**)queue.get_devPtrArray();
         dBarray = dAarray + batch_limit;
 
-        for( size_t ib = 0; ib < batch; ib += batch_limit ) { 
+        for (size_t ib = 0; ib < batch; ib += batch_limit) {
             size_t ibatch = std::min( batch_limit, batch-ib );
 
             // copy pointer array(s) to device
@@ -287,7 +287,7 @@ void blas::batch::trsm(
         dAarray = (std::complex<float>**)queue.get_devPtrArray();
         dBarray = dAarray + batch_limit;
 
-        for( size_t ib = 0; ib < batch; ib += batch_limit ) { 
+        for (size_t ib = 0; ib < batch; ib += batch_limit) {
             size_t ibatch = std::min( batch_limit, batch-ib );
 
             // copy pointer array(s) to device
@@ -393,7 +393,7 @@ void blas::batch::trsm(
         dAarray = (std::complex<double>**)queue.get_devPtrArray();
         dBarray = dAarray + batch_limit;
 
-        for( size_t ib = 0; ib < batch; ib += batch_limit ) { 
+        for (size_t ib = 0; ib < batch; ib += batch_limit) {
             size_t ibatch = std::min( batch_limit, batch-ib );
 
             // copy pointer array(s) to device

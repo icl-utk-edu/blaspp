@@ -7,4 +7,4 @@
 
 @HEADER_DEFINES@
 
-#endif /* BLAS_DEFINES_H */
+#endif        //  #ifndef BLAS_DEFINES_H

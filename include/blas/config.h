@@ -39,4 +39,4 @@
 #define blas_complex_float  blas_complex_float
 #define blas_complex_double blas_complex_double
 
-#endif /* BLAS_CONFIG_H */
+#endif        //  #ifndef BLAS_CONFIG_H

@@ -70,7 +70,7 @@ void blas::batch::gemm(
         dBarray = dAarray + batch_limit;
         dCarray = dBarray + batch_limit;
 
-        for( size_t ib = 0; ib < batch; ib += batch_limit ) { 
+        for (size_t ib = 0; ib < batch; ib += batch_limit) {
             size_t ibatch = std::min( batch_limit, batch-ib );
 
             // copy Aarray, Barray, and Carray to device
@@ -185,7 +185,7 @@ void blas::batch::gemm(
         dBarray = dAarray + batch_limit;
         dCarray = dBarray + batch_limit;
 
-        for( size_t ib = 0; ib < batch; ib += batch_limit ) { 
+        for (size_t ib = 0; ib < batch; ib += batch_limit) {
             size_t ibatch = std::min( batch_limit, batch-ib );
 
             // copy Aarray, Barray, and Carray to device
@@ -301,7 +301,7 @@ void blas::batch::gemm(
         dBarray = dAarray + batch_limit;
         dCarray = dBarray + batch_limit;
 
-        for( size_t ib = 0; ib < batch; ib += batch_limit ) { 
+        for (size_t ib = 0; ib < batch; ib += batch_limit) {
             size_t ibatch = std::min( batch_limit, batch-ib );
 
             // copy Aarray, Barray, and Carray to device
@@ -417,7 +417,7 @@ void blas::batch::gemm(
         dBarray = dAarray + batch_limit;
         dCarray = dBarray + batch_limit;
 
-        for( size_t ib = 0; ib < batch; ib += batch_limit ) { 
+        for (size_t ib = 0; ib < batch; ib += batch_limit) {
             size_t ibatch = std::min( batch_limit, batch-ib );
 
             // copy Aarray, Barray, and Carray to device
@@ -490,13 +490,14 @@ void blas::batch::gemm(
     blas::Queue &queue )
 {
     size_t batch_size = 0;
-    size_t group_count = group_size.size(); 
-    if( group_count == 0 ) return;
+    size_t group_count = group_size.size();
+    if (group_count == 0)
+        return;
 
     blas_error_if( layout      != Layout::ColMajor && layout      != Layout::RowMajor );
     blas_error_if( info.size() != 0                && info.size() != group_count );
 
-    for(size_t ig = 0; ig < group_count; ig++) {
+    for (size_t ig = 0; ig < group_count; ig++) {
         batch_size += group_size[ ig ];
     }
 
@@ -536,9 +537,10 @@ void blas::batch::gemm(
     size_t processed = 0;
 
     // if we have one group only, no need to fork
-    if( group_count > 1 ) queue.fork();
+    if (group_count > 1)
+        queue.fork();
 
-    for(size_t ig = 0; ig < group_count; ig++) {
+    for (size_t ig = 0; ig < group_count; ig++) {
         // extract params for the current group
         size_t          batch   = group_size[ ig ];
         device_trans_t  transA_ = blas::device_trans_const( transA[ ig ] );
@@ -555,7 +557,7 @@ void blas::batch::gemm(
         dAarray = (float**)queue.get_devPtrArray();
         dBarray = dAarray + batch_limit;
         dCarray = dBarray + batch_limit;
-        for( size_t ib = 0; ib < batch; ib += batch_limit ) { 
+        for (size_t ib = 0; ib < batch; ib += batch_limit) {
             size_t ibatch = std::min( batch_limit, batch-ib );
 
             // copy Aarray, Barray, and Carray to device
@@ -582,11 +584,13 @@ void blas::batch::gemm(
             }
         }
 
-        processed += batch; 
-        if( group_count > 1 ) queue.revolve();
+        processed += batch;
+        if (group_count > 1)
+            queue.revolve();
     }
 
-    if( group_count > 1 ) queue.join();
+    if (group_count > 1)
+        queue.join();
 }
 
 // -----------------------------------------------------------------------------
@@ -608,13 +612,14 @@ void blas::batch::gemm(
     blas::Queue &queue )
 {
     size_t batch_size = 0;
-    size_t group_count = group_size.size(); 
-    if( group_count == 0 ) return;
+    size_t group_count = group_size.size();
+    if (group_count == 0)
+        return;
 
     blas_error_if( layout      != Layout::ColMajor && layout      != Layout::RowMajor );
     blas_error_if( info.size() != 0                && info.size() != group_count );
 
-    for(size_t ig = 0; ig < group_count; ig++) {
+    for (size_t ig = 0; ig < group_count; ig++) {
         batch_size += group_size[ ig ];
     }
 
@@ -654,9 +659,10 @@ void blas::batch::gemm(
     size_t processed = 0;
 
     // if we have one group only, no need to fork
-    if( group_count > 1 ) queue.fork();
+    if (group_count > 1)
+        queue.fork();
 
-    for(size_t ig = 0; ig < group_count; ig++) {
+    for (size_t ig = 0; ig < group_count; ig++) {
         // extract params for the current group
         size_t          batch   = group_size[ ig ];
         device_trans_t  transA_ = blas::device_trans_const( transA[ ig ] );
@@ -673,7 +679,7 @@ void blas::batch::gemm(
         dAarray = (double**)queue.get_devPtrArray();
         dBarray = dAarray + batch_limit;
         dCarray = dBarray + batch_limit;
-        for( size_t ib = 0; ib < batch; ib += batch_limit ) { 
+        for (size_t ib = 0; ib < batch; ib += batch_limit) {
             size_t ibatch = std::min( batch_limit, batch-ib );
 
             // copy Aarray, Barray, and Carray to device
@@ -700,11 +706,13 @@ void blas::batch::gemm(
             }
         }
 
-        processed += batch; 
-        if( group_count > 1 ) queue.revolve();
+        processed += batch;
+        if (group_count > 1)
+            queue.revolve();
     }
 
-    if( group_count > 1 ) queue.join();
+    if (group_count > 1)
+        queue.join();
 }
 
 // -----------------------------------------------------------------------------
@@ -726,13 +734,14 @@ void blas::batch::gemm(
     blas::Queue &queue )
 {
     size_t batch_size = 0;
-    size_t group_count = group_size.size(); 
-    if( group_count == 0 ) return;
+    size_t group_count = group_size.size();
+    if (group_count == 0)
+        return;
 
     blas_error_if( layout      != Layout::ColMajor && layout      != Layout::RowMajor );
     blas_error_if( info.size() != 0                && info.size() != group_count );
 
-    for(size_t ig = 0; ig < group_count; ig++) {
+    for (size_t ig = 0; ig < group_count; ig++) {
         batch_size += group_size[ ig ];
     }
 
@@ -772,9 +781,10 @@ void blas::batch::gemm(
     size_t processed = 0;
 
     // if we have one group only, no need to fork
-    if( group_count > 1 ) queue.fork();
+    if (group_count > 1)
+        queue.fork();
 
-    for(size_t ig = 0; ig < group_count; ig++) {
+    for (size_t ig = 0; ig < group_count; ig++) {
         // extract params for the current group
         size_t          batch   = group_size[ ig ];
         device_trans_t  transA_ = blas::device_trans_const( transA[ ig ] );
@@ -791,7 +801,7 @@ void blas::batch::gemm(
         dAarray = (std::complex<float>**)queue.get_devPtrArray();
         dBarray = dAarray + batch_limit;
         dCarray = dBarray + batch_limit;
-        for( size_t ib = 0; ib < batch; ib += batch_limit ) { 
+        for (size_t ib = 0; ib < batch; ib += batch_limit) {
             size_t ibatch = std::min( batch_limit, batch-ib );
 
             // copy Aarray, Barray, and Carray to device
@@ -818,11 +828,13 @@ void blas::batch::gemm(
             }
         }
 
-        processed += batch; 
-        if( group_count > 1 ) queue.revolve();
+        processed += batch;
+        if (group_count > 1)
+            queue.revolve();
     }
 
-    if( group_count > 1 ) queue.join();
+    if (group_count > 1)
+        queue.join();
 }
 
 // -----------------------------------------------------------------------------
@@ -844,13 +856,14 @@ void blas::batch::gemm(
     blas::Queue &queue )
 {
     size_t batch_size = 0;
-    size_t group_count = group_size.size(); 
-    if( group_count == 0 ) return;
+    size_t group_count = group_size.size();
+    if (group_count == 0)
+        return;
 
     blas_error_if( layout      != Layout::ColMajor && layout      != Layout::RowMajor );
     blas_error_if( info.size() != 0                && info.size() != group_count );
 
-    for(size_t ig = 0; ig < group_count; ig++) {
+    for (size_t ig = 0; ig < group_count; ig++) {
         batch_size += group_size[ ig ];
     }
 
@@ -890,9 +903,10 @@ void blas::batch::gemm(
     size_t processed = 0;
 
     // if we have one group only, no need to fork
-    if( group_count > 1 ) queue.fork();
+    if (group_count > 1)
+        queue.fork();
 
-    for(size_t ig = 0; ig < group_count; ig++) {
+    for (size_t ig = 0; ig < group_count; ig++) {
         // extract params for the current group
         size_t          batch   = group_size[ ig ];
         device_trans_t  transA_ = blas::device_trans_const( transA[ ig ] );
@@ -909,7 +923,7 @@ void blas::batch::gemm(
         dAarray = (std::complex<double>**)queue.get_devPtrArray();
         dBarray = dAarray + batch_limit;
         dCarray = dBarray + batch_limit;
-        for( size_t ib = 0; ib < batch; ib += batch_limit ) { 
+        for (size_t ib = 0; ib < batch; ib += batch_limit) {
             size_t ibatch = std::min( batch_limit, batch-ib );
 
             // copy Aarray, Barray, and Carray to device
@@ -936,9 +950,11 @@ void blas::batch::gemm(
             }
         }
 
-        processed += batch; 
-        if( group_count > 1 ) queue.revolve();
+        processed += batch;
+        if (group_count > 1)
+            queue.revolve();
     }
 
-    if( group_count > 1 ) queue.join();
+    if (group_count > 1)
+        queue.join();
 }

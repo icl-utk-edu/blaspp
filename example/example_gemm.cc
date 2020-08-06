@@ -13,9 +13,9 @@ void run( int m, int n, int k )
     std::vector<T> A( lda*k, 1.0 );  // m-by-k
     std::vector<T> B( ldb*n, 2.0 );  // k-by-n
     std::vector<T> C( ldc*n, 3.0 );  // m-by-n
-    
+
     // ... fill in application data into A, B, C ...
-    
+
     // C = -1.0*A*B + 1.0*C
     blas::gemm( blas::Layout::ColMajor, blas::Op::NoTrans, blas::Op::NoTrans,
                 m, n, k,

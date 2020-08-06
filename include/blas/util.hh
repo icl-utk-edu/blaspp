@@ -451,7 +451,7 @@ inline void abort_if( bool cond, const char* func,  const char* format, ... )
     }
 }
 
-} // namespace internal
+}  // namespace internal
 
 // -----------------------------------------------------------------------------
 // internal macros to handle error checks

@@ -1707,5 +1707,5 @@ void syr2k(
     std::vector<std::complex<double>*> const &Carray, std::vector<int64_t> const &lddc,
     const size_t batch, std::vector<int64_t>       &info );
 
-} // namespace batch
-} // namespace blas
+}  // namespace batch
+}  // namespace blas

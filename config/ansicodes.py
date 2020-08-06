@@ -14,13 +14,13 @@ ansi_esc_ = chr(0x1B) + '['
 class Font( object ):
     '''
     ANSI font and color codes.
-    
+
     The Font class implements all settings, and is accessible by a global object
     `font`. Member functions that take a string `msg`, e.g., `font.bold( msg )`,
     return a string of an ANSI code + msg + an ANSI code to restore the state.
     Member functions that don't take a string just return an ANSI code, usually
     to restore the state, e.g., `font.not_italic()`. Example use:
-    
+
         from ansicodes import font
         font.set_enabled( True )  # enabled by default
         print( font.bold( font.red( 'red' ) + ' bold' ) + ' normal.' )
@@ -133,7 +133,7 @@ class Font( object ):
         May produce weird results on others like macOS Terminal.
         '''
         return self.code('38;2;%d;%d;%d' % (r, g, b)) + msg + self.default_color()
-    
+
     #-------------------- background colors
     def   black_bg( self, msg ): return self.code('40') + msg + self.default_bgcolor()
     def     red_bg( self, msg ): return self.code('41') + msg + self.default_bgcolor()

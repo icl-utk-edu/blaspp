@@ -167,4 +167,4 @@ void test_error ( Params& params, bool run );
 void test_max   ( Params& params, bool run );
 void test_util  ( Params& params, bool run );
 
-#endif  //  #ifndef TEST_HH
+#endif        //  #ifndef TEST_HH
