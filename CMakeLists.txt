@@ -180,8 +180,17 @@ else()
             src/device_utils.cc
         )
 
+        # CMake 3.17 adds find_package( CUDAToolkit )
+        # with CUDA::cudart and CUDA::cublas targets.
+        # For compatibility with older CMake, for now do search ourselves.
+        find_library( cudart_lib cudart ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES} )
+        find_library( cublas_lib cublas ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES} )
+
+        # Some platforms need these to be public libraries.
         target_compile_definitions( blaspp PUBLIC "-DBLASPP_WITH_CUBLAS" )
-        target_link_libraries( blaspp PRIVATE cublas cudart )
+        target_link_libraries( blaspp PUBLIC "${cudart_lib}" "${cublas_lib}" )
+        target_include_directories(
+            blaspp PUBLIC "${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}" )
     else()
         message( STATUS "No CUDA support in BLAS++" )
     endif()
