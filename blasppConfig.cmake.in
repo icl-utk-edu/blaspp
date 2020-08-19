@@ -1,1 +1,19 @@
+cmake_minimum_required( VERSION 3.8 )
+# 3.1  target_compile_features
+# 3.8  target_compile_features( cxx_std_11 )
+# 3.14 install( LIBRARY DESTINATION lib ) default
+# 3.15 $<$COMPILE_LANG_AND_ID  # optional
+
+set( BLASPP_USE_OPENMP @use_openmp@ )
+set( BLASPP_USE_CUDA   @use_cuda@   )
+
+
+include(CMakeFindDependencyMacro)
+if( BLASPP_USE_OPENMP )
+  find_dependency( OpenMP )
+endif()
+
+
 include("${CMAKE_CURRENT_LIST_DIR}/blasppTargets.cmake")
+
+
