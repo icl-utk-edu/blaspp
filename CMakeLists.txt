@@ -285,7 +285,7 @@ install(
 install(
     DIRECTORY ${PROJECT_SOURCE_DIR}/include/    # / copies contents, not directory itself
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-    FILES_MATCHING REGEX "\.(h|hh)$"
+    FILES_MATCHING REGEX "\\.(h|hh)$"
 )
 
 # Install <package>Targets.cmake

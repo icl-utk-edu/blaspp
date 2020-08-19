@@ -247,10 +247,6 @@ test_sequential     = '${test_sequential}'")
 # Build list of libraries to check.
 # todo: BLAS_?(ROOT|DIR)
 
-if (OpenMP_CXX_FOUND)
-    set( openmp_lib "OpenMP::OpenMP_CXX" )
-endif()
-
 set( blas_name_list "" )
 set( blas_flag_list "" )
 set( blas_libs_list "" )
