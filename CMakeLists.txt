@@ -219,6 +219,7 @@ endif()
 # Get git commit id.
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
     execute_process( COMMAND git rev-parse --short HEAD
+                     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                      OUTPUT_VARIABLE blaspp_id )
     string( STRIP "${blaspp_id}" blaspp_id )
     message( STATUS "blaspp_id = ${blaspp_id}" )
@@ -265,25 +266,33 @@ target_link_libraries( blaspp PUBLIC "${BLAS_LIBRARIES}" )
 target_compile_definitions(
     blaspp PRIVATE "${blas_defines}" "${blas_config_defines}" )
 
+
+
 #-------------------------------------------------------------------------------
+
+# GNU Filesystem Convensions
+include( GNUInstallDirs )
+set( INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/blaspp )
+
 # Install library and add to <package>Targets.cmake
 install(
     TARGETS blaspp
     EXPORT blasppTargets
-    LIBRARY DESTINATION "lib"  # no default before 3.14
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}  # no default before 3.14
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
 # Install header files
 install(
-    DIRECTORY "include/"    # / copies contents, not directory itself
-    DESTINATION "include"
+    DIRECTORY ${PROJECT_SOURCE_DIR}/include/    # / copies contents, not directory itself
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     FILES_MATCHING REGEX "\.(h|hh)$"
 )
 
 # Install <package>Targets.cmake
 install(
     EXPORT blasppTargets
-    DESTINATION "lib/blaspp"
+    DESTINATION ${INSTALL_CONFIGDIR} 
 )
 
 # Also export <package>Targets.cmake in build directory
@@ -298,7 +307,7 @@ include( CMakePackageConfigHelpers )
 configure_package_config_file(
     "blasppConfig.cmake.in"
     "blasppConfig.cmake"
-    INSTALL_DESTINATION "lib/blaspp"
+    INSTALL_DESTINATION ${INSTALL_CONFIGDIR} 
 )
 write_basic_package_version_file(
     "blasppConfigVersion.cmake"
@@ -308,7 +317,7 @@ write_basic_package_version_file(
 install(
     FILES "${CMAKE_CURRENT_BINARY_DIR}/blasppConfig.cmake"
           "${CMAKE_CURRENT_BINARY_DIR}/blasppConfigVersion.cmake"
-    DESTINATION "lib/blaspp"
+    DESTINATION ${INSTALL_CONFIGDIR} 
 )
 
 #-------------------------------------------------------------------------------
