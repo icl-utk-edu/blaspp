@@ -3,7 +3,7 @@
 # Tests require TestSweeper library from
 #     http://bitbucket.org/icl/testsweeper
 
-cmake_minimum_required( VERSION 3.8 )
+cmake_minimum_required( VERSION 3.15 )
 # 3.1  target_compile_features
 # 3.8  target_compile_features( cxx_std_11 )
 # 3.14 install( LIBRARY DESTINATION lib ) default
