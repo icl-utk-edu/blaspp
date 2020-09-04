@@ -223,30 +223,30 @@ Besides the Environment variables and Options listed above, additional
 options include:
 
     use_openmp
-        Whether to use OpenMP, if available.
+        Whether to use OpenMP, if available. One of:
         yes (default)
         no
 
     build_tests
         Whether to build test suite (test/tester).
-        Requires TestSweeper, CBLAS, and LAPACK.
+        Requires TestSweeper, CBLAS, and LAPACK. One of:
         yes (default)
         no
 
     use_cmake_find_blas
-        Whether to use CMake's FindBLAS, instead of BLAS++ search.
-        If BLA_VENDOR is set, it will use CMake's FindBLAS.
+        Whether to use CMake's FindBLAS, instead of BLAS++ search. One of:
         yes
         no (default)
+        If BLA_VENDOR is set, it automatically uses CMake's FindBLAS.
 
     BLA_VENDOR
-        use CMake's FindBLAS, instead of BLAS++ search. For values, see:
+        Use CMake's FindBLAS, instead of BLAS++ search. For values, see:
         https://cmake.org/cmake/help/latest/module/FindBLAS.html
 
 Standard CMake options include:
 
     BUILD_SHARED_LIBS
-        Whether to build as a static or shared library.
+        Whether to build as a static or shared library. One of:
         yes             shared library (default)
         no              static library
 
@@ -256,9 +256,12 @@ Standard CMake options include:
         library goes in ${prefix}/lib
 
     CMAKE_BUILD_TYPE
-        Type of build.
-        Release
-        Debug
+        Type of build. One of:
+        [empty]         default compiler optimization          (no flags)
+        Debug           no optimization, with asserts          (-O0 -g)
+        Release         optimized, no asserts, no debug info   (-O3 -DNDEBUG)
+        RelWithDebInfo  optimized, no asserts, with debug info (-O2 -DNDEBUG -g)
+        MinSizeRel      Release, but optimized for size        (-Os -DNDEBUG)
 
 With CMake, options are specified on the command line using
 `-Doption=value` syntax (not as environment variables), such as:
