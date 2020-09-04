@@ -9,7 +9,7 @@ stages {
             axes {
                 axis {
                     name 'maker'
-                    values 'make'
+                    values 'make', 'cmake'
                 }
                 axis {
                     name 'host'
@@ -42,6 +42,14 @@ stages {
                             make distclean
                             make config CXXFLAGS="-Werror"
                             export top=..
+                        fi
+                        if [ "${maker}" = "cmake" ]; then
+                            sload cmake
+                            rm -rf build
+                            mkdir build
+                            cd build
+                            cmake -Dcolor=no -DCMAKE_CXX_FLAGS="-Werror" ..
+                            export top=../..
                         fi
 
                         echo "========================================"
