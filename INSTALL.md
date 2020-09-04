@@ -15,15 +15,8 @@ Option 1: Makefile
 
 Option 2: CMake
 
-    # In order to build tests, build TestSweeper, from
-    # https://bitbucket.org/icl/testsweeper
-    # In testsweeper directory:
     mkdir build && cd build
-    cmake .. && make
-
-    # In blaspp directory:
-    mkdir build && cd build
-    cmake -Dtestsweeper_DIR=/path/to/testsweeper/build ..
+    cmake ..
     make && make install
 
 
@@ -207,33 +200,21 @@ test files are in the config directory.
 CMake Installation
 --------------------------------------------------------------------------------
 
-BLAS++ uses the TestSweeper library (https://bitbucket.org/icl/testsweeper)
-to run its tests. This can be omitted, but then the tester will not be built.
-First build TestSweeper:
-
-    cd /path/to/testsweeper
-    mkdir build && cd build
-    cmake [options] ..
-    make
-    make install   # optional
-
-Now build BLAS++ itself. The CMake script enforces an out-of-source
-build. Create a build directory under the BLAS++ root directory:
+The CMake script enforces an out-of-source build. Create a build
+directory under the BLAS++ root directory:
 
     cd /path/to/blaspp
     mkdir build && cd build
-
-Either TestSweeper can be installed, or the path to TestSweeper's build
-directory should be given to the BLAS++ CMake.
-
-    # If TestSweeper was installed, CMake should find it:
     cmake [options] ..
-
-    # Else if TestSweeper was NOT installed, add its directory:
-    cmake -Dtestsweeper_DIR=/path/to/testsweeper/build [options] ..
-
     make
     make install
+
+BLAS++ uses the TestSweeper library (https://bitbucket.org/icl/testsweeper)
+to run its tests. If CMake doesn't find TestSweeper, it will be
+downloaded and compiled. To use a different TestSweeper build that was
+not installed, you can point to its directory.
+
+    cmake -Dtestsweeper_DIR=/path/to/testsweeper/build [options] ..
 
 
 ### Options

@@ -269,7 +269,6 @@ target_compile_definitions(
 
 
 #-------------------------------------------------------------------------------
-
 # GNU Filesystem Convensions
 include( GNUInstallDirs )
 set( INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/blaspp )
@@ -292,7 +291,7 @@ install(
 # Install <package>Targets.cmake
 install(
     EXPORT blasppTargets
-    DESTINATION ${INSTALL_CONFIGDIR} 
+    DESTINATION ${INSTALL_CONFIGDIR}
 )
 
 # Also export <package>Targets.cmake in build directory
@@ -307,7 +306,7 @@ include( CMakePackageConfigHelpers )
 configure_package_config_file(
     "blasppConfig.cmake.in"
     "blasppConfig.cmake"
-    INSTALL_DESTINATION ${INSTALL_CONFIGDIR} 
+    INSTALL_DESTINATION ${INSTALL_CONFIGDIR}
 )
 write_basic_package_version_file(
     "blasppConfigVersion.cmake"
@@ -317,7 +316,7 @@ write_basic_package_version_file(
 install(
     FILES "${CMAKE_CURRENT_BINARY_DIR}/blasppConfig.cmake"
           "${CMAKE_CURRENT_BINARY_DIR}/blasppConfigVersion.cmake"
-    DESTINATION ${INSTALL_CONFIGDIR} 
+    DESTINATION ${INSTALL_CONFIGDIR}
 )
 
 #-------------------------------------------------------------------------------
