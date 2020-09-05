@@ -13,7 +13,6 @@ add_executable(
     example_gemm.cc
 )
 
-find_package( OpenMP )  # may be required by blaspp
 find_package( blaspp )
 
 target_link_libraries(
