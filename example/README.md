@@ -12,7 +12,7 @@ CXXFLAGS, and LIBS. Set CXX to the compiler, either in your environment
 or in the Makefile. For the flags, there are two more options:
 
 a. Using pkg-config to get CXXFLAGS and LIBS for BLAS++ (recommended).
-pkg-config must be able to locate the blas++ package. If it is installed
+pkg-config must be able to locate the blaspp package. If it is installed
 outside the default search path (see `pkg-config --variable pc_path pkg-config`),
 it should be added to `$PKG_CONFIG_PATH`. For instance, if it is installed
 in /opt/slate:
@@ -31,7 +31,7 @@ Then, to build `example_gemm` using the Makefile, run:
 CMake must know the compiler used to compile BLAS++. Set CXX to the
 compiler, in your environment.
 
-It's best (but not required) to compile in out-of-source in a build directory:
+It's best (but not required) to compile out-of-source in a build directory:
 
     mkdir build && cd build
 
