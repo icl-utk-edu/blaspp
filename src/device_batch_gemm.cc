@@ -3,10 +3,13 @@
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
-#include <limits>
-#include <cstring>
 #include "blas/batch_common.hh"
 #include "blas/device_blas.hh"
+
+#include "device_internal.hh"
+
+#include <limits>
+#include <cstring>
 
 // -----------------------------------------------------------------------------
 /// @ingroup gemm
@@ -80,7 +83,7 @@ void blas::batch::gemm(
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
-                DEVICE_BATCH_sgemm( queue.handle(),
+                device::batch_sgemm( queue.handle(),
                                     transB_, transA_,
                                     n_, m_, k_,
                                     alpha[0], dBarray, lddb_, dAarray, ldda_,
@@ -88,7 +91,7 @@ void blas::batch::gemm(
                                     ibatch);
             }
             else {
-                DEVICE_BATCH_sgemm( queue.handle(),
+                device::batch_sgemm( queue.handle(),
                                     transA_, transB_,
                                     m_, n_, k_,
                                     alpha[0], dAarray, ldda_, dBarray, lddb_,
@@ -195,7 +198,7 @@ void blas::batch::gemm(
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
-                DEVICE_BATCH_dgemm( queue.handle(),
+                device::batch_dgemm( queue.handle(),
                                     transB_, transA_,
                                     n_, m_, k_,
                                     alpha[0], dBarray, lddb_, dAarray, ldda_,
@@ -203,7 +206,7 @@ void blas::batch::gemm(
                                     ibatch);
             }
             else {
-                DEVICE_BATCH_dgemm( queue.handle(),
+                device::batch_dgemm( queue.handle(),
                                     transA_, transB_,
                                     m_, n_, k_,
                                     alpha[0], dAarray, ldda_, dBarray, lddb_,
@@ -311,7 +314,7 @@ void blas::batch::gemm(
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
-                DEVICE_BATCH_cgemm( queue.handle(),
+                device::batch_cgemm( queue.handle(),
                                     transB_, transA_,
                                     n_, m_, k_,
                                     alpha[0], dBarray, lddb_, dAarray, ldda_,
@@ -319,7 +322,7 @@ void blas::batch::gemm(
                                     ibatch);
             }
             else {
-                DEVICE_BATCH_cgemm( queue.handle(),
+                device::batch_cgemm( queue.handle(),
                                     transA_, transB_,
                                     m_, n_, k_,
                                     alpha[0], dAarray, ldda_, dBarray, lddb_,
@@ -427,7 +430,7 @@ void blas::batch::gemm(
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
-                DEVICE_BATCH_zgemm( queue.handle(),
+                device::batch_zgemm( queue.handle(),
                                     transB_, transA_,
                                     n_, m_, k_,
                                     alpha[0], dBarray, lddb_, dAarray, ldda_,
@@ -435,7 +438,7 @@ void blas::batch::gemm(
                                     ibatch);
             }
             else {
-                DEVICE_BATCH_zgemm( queue.handle(),
+                device::batch_zgemm( queue.handle(),
                                     transA_, transB_,
                                     m_, n_, k_,
                                     alpha[0], dAarray, ldda_, dBarray, lddb_,
@@ -567,7 +570,7 @@ void blas::batch::gemm(
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
-                DEVICE_BATCH_sgemm( queue.handle(),
+                device::batch_sgemm( queue.handle(),
                                     transB_, transA_,
                                     n_, m_, k_,
                                     alpha[ig], dBarray, lddb_, dAarray, ldda_,
@@ -575,7 +578,7 @@ void blas::batch::gemm(
                                     ibatch);
             }
             else {
-                DEVICE_BATCH_sgemm( queue.handle(),
+                device::batch_sgemm( queue.handle(),
                                     transA_, transB_,
                                     m_, n_, k_,
                                     alpha[ig], dAarray, ldda_, dBarray, lddb_,
@@ -689,7 +692,7 @@ void blas::batch::gemm(
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
-                DEVICE_BATCH_dgemm( queue.handle(),
+                device::batch_dgemm( queue.handle(),
                                     transB_, transA_,
                                     n_, m_, k_,
                                     alpha[ig], dBarray, lddb_, dAarray, ldda_,
@@ -697,7 +700,7 @@ void blas::batch::gemm(
                                     ibatch);
             }
             else {
-                DEVICE_BATCH_dgemm( queue.handle(),
+                device::batch_dgemm( queue.handle(),
                                     transA_, transB_,
                                     m_, n_, k_,
                                     alpha[ig], dAarray, ldda_, dBarray, lddb_,
@@ -811,7 +814,7 @@ void blas::batch::gemm(
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
-                DEVICE_BATCH_cgemm( queue.handle(),
+                device::batch_cgemm( queue.handle(),
                                     transB_, transA_,
                                     n_, m_, k_,
                                     alpha[ig], dBarray, lddb_, dAarray, ldda_,
@@ -819,7 +822,7 @@ void blas::batch::gemm(
                                     ibatch);
             }
             else {
-                DEVICE_BATCH_cgemm( queue.handle(),
+                device::batch_cgemm( queue.handle(),
                                     transA_, transB_,
                                     m_, n_, k_,
                                     alpha[ig], dAarray, ldda_, dBarray, lddb_,
@@ -933,7 +936,7 @@ void blas::batch::gemm(
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
-                DEVICE_BATCH_zgemm( queue.handle(),
+                device::batch_zgemm( queue.handle(),
                                     transB_, transA_,
                                     n_, m_, k_,
                                     alpha[ig], dBarray, lddb_, dAarray, ldda_,
@@ -941,7 +944,7 @@ void blas::batch::gemm(
                                     ibatch);
             }
             else {
-                DEVICE_BATCH_zgemm( queue.handle(),
+                device::batch_zgemm( queue.handle(),
                                     transA_, transB_,
                                     m_, n_, k_,
                                     alpha[ig], dAarray, ldda_, dBarray, lddb_,

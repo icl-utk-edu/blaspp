@@ -4,6 +4,9 @@
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
 #include "blas/device_blas.hh"
+
+#include "device_internal.hh"
+
 #include <limits>
 
 // =============================================================================
@@ -74,7 +77,7 @@ void blas::symm(
     device_side_t side_ = device_side_const( side );
     device_uplo_t uplo_ = device_uplo_const( uplo );
     blas::set_device( queue.device() );
-    DEVICE_ssymm(
+    device::ssymm(
             queue.handle(),
             side_, uplo_, m_, n_,
             alpha, dA, ldda_,
@@ -147,7 +150,7 @@ void blas::symm(
     device_side_t side_ = device_side_const( side );
     device_uplo_t uplo_ = device_uplo_const( uplo );
     blas::set_device( queue.device() );
-    DEVICE_dsymm(
+    device::dsymm(
             queue.handle(),
             side_, uplo_, m_, n_,
             alpha, dA, ldda_,
@@ -220,7 +223,7 @@ void blas::symm(
     device_side_t side_ = device_side_const( side );
     device_uplo_t uplo_ = device_uplo_const( uplo );
     blas::set_device( queue.device() );
-    DEVICE_csymm(
+    device::csymm(
             queue.handle(),
             side_, uplo_, m_, n_,
             alpha, dA, ldda_,
@@ -293,7 +296,7 @@ void blas::symm(
     device_side_t side_ = device_side_const( side );
     device_uplo_t uplo_ = device_uplo_const( uplo );
     blas::set_device( queue.device() );
-    DEVICE_zsymm(
+    device::zsymm(
             queue.handle(),
             side_, uplo_, m_, n_,
             alpha, dA, ldda_,

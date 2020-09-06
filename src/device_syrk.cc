@@ -4,6 +4,9 @@
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
 #include "blas/device_blas.hh"
+
+#include "device_internal.hh"
+
 #include <limits>
 
 // =============================================================================
@@ -63,7 +66,7 @@ void blas::syrk(
     device_uplo_t uplo_ = device_uplo_const( uplo );
     device_trans_t trans_ = device_trans_const( trans );
     blas::set_device( queue.device() );
-    DEVICE_ssyrk(
+    device::ssyrk(
             queue.handle(),
             uplo_, trans_,
             n_, k_,
@@ -125,7 +128,7 @@ void blas::syrk(
     device_uplo_t uplo_ = device_uplo_const( uplo );
     device_trans_t trans_ = device_trans_const( trans );
     blas::set_device( queue.device() );
-    DEVICE_dsyrk(
+    device::dsyrk(
             queue.handle(),
             uplo_, trans_,
             n_, k_,
@@ -186,7 +189,7 @@ void blas::syrk(
     device_uplo_t uplo_ = device_uplo_const( uplo );
     device_trans_t trans_ = device_trans_const( trans );
     blas::set_device( queue.device() );
-    DEVICE_csyrk(
+    device::csyrk(
             queue.handle(),
             uplo_, trans_,
             n_, k_,
@@ -247,7 +250,7 @@ void blas::syrk(
     device_uplo_t uplo_ = device_uplo_const( uplo );
     device_trans_t trans_ = device_trans_const( trans );
     blas::set_device( queue.device() );
-    DEVICE_zsyrk(
+    device::zsyrk(
             queue.handle(),
             uplo_, trans_,
             n_, k_,

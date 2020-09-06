@@ -5,6 +5,8 @@
 
 #include "blas/device.hh"
 
+#include "device_internal.hh"
+
 // -----------------------------------------------------------------------------
 // return true on runtime errors
 bool blas::is_device_error(device_error_t error)

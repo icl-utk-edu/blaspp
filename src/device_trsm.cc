@@ -4,6 +4,9 @@
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
 #include "blas/device_blas.hh"
+
+#include "device_internal.hh"
+
 #include <limits>
 
 // =============================================================================
@@ -75,7 +78,7 @@ void blas::trsm(
     device_diag_t diag_   = blas::device_diag_const( diag );
 
     blas::set_device( queue.device() );
-    DEVICE_strsm(
+    device::strsm(
             queue.handle(),
             side_, uplo_, trans_, diag_,
             m_, n_, alpha,
@@ -149,7 +152,7 @@ void blas::trsm(
     device_diag_t diag_   = blas::device_diag_const( diag );
 
     blas::set_device( queue.device() );
-    DEVICE_dtrsm(
+    device::dtrsm(
             queue.handle(),
             side_, uplo_, trans_, diag_,
             m_, n_, alpha,
@@ -223,7 +226,7 @@ void blas::trsm(
     device_diag_t diag_   = blas::device_diag_const( diag );
 
     blas::set_device( queue.device() );
-    DEVICE_ctrsm(
+    device::ctrsm(
             queue.handle(),
             side_, uplo_, trans_, diag_,
             m_, n_, alpha,
@@ -297,7 +300,7 @@ void blas::trsm(
     device_diag_t diag_   = blas::device_diag_const( diag );
 
     blas::set_device( queue.device() );
-    DEVICE_ztrsm(
+    device::ztrsm(
             queue.handle(),
             side_, uplo_, trans_, diag_,
             m_, n_, alpha,

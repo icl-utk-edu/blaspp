@@ -3,10 +3,13 @@
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
-#include <limits>
-#include <cstring>
 #include "blas/batch_common.hh"
 #include "blas/device_blas.hh"
+
+#include "device_internal.hh"
+
+#include <limits>
+#include <cstring>
 
 // -----------------------------------------------------------------------------
 /// @ingroup trsm
@@ -82,7 +85,7 @@ void blas::batch::trsm(
             device_setvector<float*>(ibatch, (float**)&Aarray[ib], 1, dAarray, 1, queue);
             device_setvector<float*>(ibatch, (float**)&Barray[ib], 1, dBarray, 1, queue);
 
-            DEVICE_BATCH_strsm( queue.handle(),
+            device::batch_strsm( queue.handle(),
                                 side_, uplo_, trans_, diag_,
                                 m_, n_, alpha[0],
                                 dAarray, ldda_,
@@ -188,7 +191,7 @@ void blas::batch::trsm(
             device_setvector<double*>(ibatch, (double**)&Aarray[ib], 1, dAarray, 1, queue);
             device_setvector<double*>(ibatch, (double**)&Barray[ib], 1, dBarray, 1, queue);
 
-            DEVICE_BATCH_dtrsm( queue.handle(),
+            device::batch_dtrsm( queue.handle(),
                                 side_, uplo_, trans_, diag_,
                                 m_, n_, alpha[0],
                                 dAarray, ldda_,
@@ -294,7 +297,7 @@ void blas::batch::trsm(
             device_setvector< std::complex<float>* >(ibatch, (std::complex<float>**)&Aarray[ib], 1, dAarray, 1, queue);
             device_setvector< std::complex<float>* >(ibatch, (std::complex<float>**)&Barray[ib], 1, dBarray, 1, queue);
 
-            DEVICE_BATCH_ctrsm( queue.handle(),
+            device::batch_ctrsm( queue.handle(),
                                 side_, uplo_, trans_, diag_,
                                 m_, n_, alpha[0],
                                 dAarray, ldda_,
@@ -400,7 +403,7 @@ void blas::batch::trsm(
             device_setvector< std::complex<double>* >(ibatch, (std::complex<double>**)&Aarray[ib], 1, dAarray, 1, queue);
             device_setvector< std::complex<double>* >(ibatch, (std::complex<double>**)&Barray[ib], 1, dBarray, 1, queue);
 
-            DEVICE_BATCH_ztrsm( queue.handle(),
+            device::batch_ztrsm( queue.handle(),
                                 side_, uplo_, trans_, diag_,
                                 m_, n_, alpha[0],
                                 dAarray, ldda_,

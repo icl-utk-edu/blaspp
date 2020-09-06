@@ -1057,5 +1057,5 @@ void syr2k(
     const size_t batch, std::vector<int64_t>       &info,
     blas::Queue &queue );
 
-}    // namespace batch
-}    // namespace blas
+}  // namespace batch
+}  // namespace blas

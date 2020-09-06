@@ -4,6 +4,9 @@
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
 #include "blas/device_blas.hh"
+
+#include "device_internal.hh"
+
 #include <limits>
 
 // =============================================================================
@@ -73,14 +76,14 @@ void blas::gemm(
     blas::set_device( queue.device() );
     if (layout == Layout::RowMajor) {
         // swap transA <=> transB, m <=> n, B <=> A
-        DEVICE_sgemm(
+        device::sgemm(
                 queue.handle(), transB_, transA_,
                 n_, m_, k_,
                 alpha, dB, lddb_, dA, ldda_,
                 beta,  dC, lddc_);
     }
     else {
-        DEVICE_sgemm(
+        device::sgemm(
                 queue.handle(), transA_, transB_,
                 m_, n_, k_,
                 alpha, dA, ldda_, dB, lddb_,
@@ -165,14 +168,14 @@ void blas::gemm(
     blas::set_device( queue.device() );
     if (layout == Layout::RowMajor) {
         // swap transA <=> transB, m <=> n, B <=> A
-        DEVICE_dgemm(
+        device::dgemm(
                 queue.handle(), transB_, transA_,
                 n_, m_, k_,
                 alpha, dB, lddb_, dA, ldda_,
                 beta,  dC, lddc_);
     }
     else {
-        DEVICE_dgemm(
+        device::dgemm(
                 queue.handle(), transA_, transB_,
                 m_, n_, k_,
                 alpha, dA, ldda_, dB, lddb_,
@@ -256,14 +259,14 @@ void blas::gemm(
     blas::set_device( queue.device() );
     if (layout == Layout::RowMajor) {
         // swap transA <=> transB, m <=> n, B <=> A
-        DEVICE_cgemm(
+        device::cgemm(
                 queue.handle(), transB_, transA_,
                 n_, m_, k_,
                 alpha, dB, lddb_, dA, ldda_,
                 beta,  dC, lddc_);
     }
     else {
-        DEVICE_cgemm(
+        device::cgemm(
                 queue.handle(), transA_, transB_,
                 m_, n_, k_,
                 alpha, dA, ldda_, dB, lddb_,
@@ -347,14 +350,14 @@ void blas::gemm(
     blas::set_device( queue.device() );
     if (layout == Layout::RowMajor) {
         // swap transA <=> transB, m <=> n, B <=> A
-        DEVICE_zgemm(
+        device::zgemm(
                 queue.handle(), transB_, transA_,
                 n_, m_, k_,
                 alpha, dB, lddb_, dA, ldda_,
                 beta,  dC, lddc_);
     }
     else {
-        DEVICE_zgemm(
+        device::zgemm(
                 queue.handle(), transA_, transB_,
                 m_, n_, k_,
                 alpha, dA, ldda_, dB, lddb_,

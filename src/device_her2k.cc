@@ -4,6 +4,9 @@
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
 #include "blas/device_blas.hh"
+
+#include "device_internal.hh"
+
 #include <limits>
 
 // =============================================================================
@@ -102,7 +105,7 @@ void blas::her2k(
     device_uplo_t  uplo_  = device_uplo_const( uplo );
     device_trans_t trans_ = device_trans_const( trans );
     blas::set_device( queue.device() );
-    DEVICE_cher2k(
+    device::cher2k(
             queue.handle(),
             uplo_, trans_, n_, k_,
             alpha, dA, ldda_,
@@ -169,7 +172,7 @@ void blas::her2k(
     device_uplo_t  uplo_  = device_uplo_const( uplo );
     device_trans_t trans_ = device_trans_const( trans );
     blas::set_device( queue.device() );
-    DEVICE_zher2k(
+    device::zher2k(
             queue.handle(),
             uplo_, trans_, n_, k_,
             alpha, dA, ldda_,
