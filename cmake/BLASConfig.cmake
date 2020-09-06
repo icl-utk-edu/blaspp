@@ -4,8 +4,10 @@
 # the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
 # Check if this file has already been run with these settings.
-if ("${blas_config_cache}" STREQUAL "${BLAS_LIBRARIES}")
-    message( DEBUG "BLAS config already done for ${BLAS_LIBRARIES}" )
+if (DEFINED blas_config_cache
+    AND "${blas_config_cache}" STREQUAL "${BLAS_LIBRARIES}")
+
+    message( DEBUG "BLAS config already done for '${BLAS_LIBRARIES}'" )
     return()
 endif()
 set( blas_config_cache "${BLAS_LIBRARIES}" CACHE INTERNAL "" )

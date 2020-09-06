@@ -4,7 +4,7 @@
 # the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
 # Convert to list, as blas_libs is later, to match cached value.
-string( REGEX REPLACE "([^ ])( +|\\\;)" "\\1;" BLAS_LIBRARIES "${BLAS_LIBRARIES}" )
+string( REGEX REPLACE "([^ ])( +|\\\;)" "\\1;"    BLAS_LIBRARIES "${BLAS_LIBRARIES}" )
 string( REGEX REPLACE "-framework;" "-framework " BLAS_LIBRARIES "${BLAS_LIBRARIES}" )
 
 message( DEBUG "BLAS_LIBRARIES '${BLAS_LIBRARIES}'"        )

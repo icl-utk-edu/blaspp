@@ -13,7 +13,7 @@ add_executable(
     example_gemm.cc
 )
 
-find_package( blaspp )
+find_package( blaspp REQUIRED )
 
 target_link_libraries(
     example_gemm

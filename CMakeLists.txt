@@ -249,13 +249,12 @@ else()
 endif()
 
 if (NOT BLAS_FOUND)
-    message( FATAL_ERROR "BLAS++ requires a BLAS library and none was found." )
+    message( FATAL_ERROR "BLAS++ requires a BLAS library and none was found."
+             " Ensure that it is accessible in environment variables"
+             " $CPATH, $LIBRARY_PATH, and $LD_LIBRARY_PATH." )
 endif()
 
 include( "cmake/BLASConfig.cmake" )
-# todo: cblas, lapack only needed for tester.
-include( "cmake/CBLASConfig.cmake" )
-include( "cmake/LAPACKConfig.cmake" )
 
 # BLAS_LIBRARIES could be private, but then if an application directly
 # calls blas, cblas, lapack, lapacke, mkl, essl, etc., it would need to
@@ -267,6 +266,17 @@ target_compile_definitions(
     blaspp PRIVATE "${blas_defines}" "${blas_config_defines}" )
 
 
+#-------------------------------------------------------------------------------
+if (build_tests)
+    # cblas, lapack only needed for tester.
+    include( "cmake/CBLASConfig.cmake" )
+    include( "cmake/LAPACKFinder.cmake" )
+    add_subdirectory( test )
+endif()
+
+#-------------------------------------------------------------------------------
+# Add 'make lib' target.
+add_custom_target( lib DEPENDS blaspp )
 
 #-------------------------------------------------------------------------------
 # GNU Filesystem Convensions
@@ -318,12 +328,3 @@ install(
           "${CMAKE_CURRENT_BINARY_DIR}/blasppConfigVersion.cmake"
     DESTINATION ${INSTALL_CONFIGDIR}
 )
-
-#-------------------------------------------------------------------------------
-if (build_tests)
-    add_subdirectory( test )
-endif()
-
-#-------------------------------------------------------------------------------
-# Add 'make lib' target.
-add_custom_target( lib DEPENDS blaspp )

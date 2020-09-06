@@ -4,7 +4,9 @@
 # the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
 # Check if this file has already been run with these settings.
-if ("${cblas_config_cache}" STREQUAL "${BLAS_LIBRARIES}")
+if (DEFINED cblas_config_cache
+    AND "${cblas_config_cache}" STREQUAL "${BLAS_LIBRARIES}")
+
     message( DEBUG "CBLAS config already done for ${BLAS_LIBRARIES}" )
     return()
 endif()
