@@ -205,7 +205,7 @@ directory under the BLAS++ root directory:
 
     cd /path/to/blaspp
     mkdir build && cd build
-    cmake [options] ..
+    cmake [-DCMAKE_INSTALL_PREFIX=/path/to/install] [options] ..
     make
     make install
 
@@ -254,6 +254,9 @@ Standard CMake options include:
         Where to install, default /opt/slate.
         Headers go   in ${prefix}/include,
         library goes in ${prefix}/lib
+
+    CMAKE_PREFIX_PATH
+        Where to look for CMake packages such as BLAS++ and TestSweeper.
 
     CMAKE_BUILD_TYPE
         Type of build. One of:
