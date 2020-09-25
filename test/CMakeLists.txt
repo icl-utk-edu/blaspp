@@ -26,8 +26,9 @@ else()
 endif()
 
 #-------------------------------------------------------------------------------
+set( tester "${blaspp_}tester" )
 add_executable(
-    tester
+    ${tester}
     test.cc
     test_util.cc
     test_asum.cc
@@ -81,7 +82,7 @@ add_executable(
 if (CMAKE_CUDA_COMPILER)
     message( STATUS "Building CUDA wrapper testers." )
     target_sources(
-        tester
+        ${tester}
         PRIVATE
         test_batch_gemm_device.cc
         test_batch_hemm_device.cc
@@ -107,10 +108,10 @@ else()
 endif()
 
 # C++11 is inherited from blaspp, but disabling extensions is not.
-set_target_properties( tester PROPERTIES CXX_EXTENSIONS false )
+set_target_properties( ${tester} PROPERTIES CXX_EXTENSIONS false )
 
 target_link_libraries(
-    tester
+    ${tester}
     testsweeper
     blaspp
     "${cblas_libraries}"
@@ -118,13 +119,13 @@ target_link_libraries(
 )
 
 target_include_directories(
-    tester
+    ${tester}
     PUBLIC
         "${cblas_include}"
 )
 
 target_compile_definitions(
-    tester
+    ${tester}
     PRIVATE
         "${blas_defines}"
         "${blas_config_defines}"
@@ -134,7 +135,7 @@ target_compile_definitions(
 
 # Copy run_tests script to build directory. Used in Jenkins.
 add_custom_command(
-    TARGET tester POST_BUILD
+    TARGET ${tester} POST_BUILD
     COMMAND
         cp ${CMAKE_CURRENT_SOURCE_DIR}/run_tests.py
            ${CMAKE_CURRENT_BINARY_DIR}/run_tests.py
