@@ -8,6 +8,7 @@ cmake_minimum_required( VERSION 3.15 )
 # 3.8  target_compile_features( cxx_std_11 )
 # 3.14 install( LIBRARY DESTINATION lib ) default
 # 3.15 $<$COMPILE_LANG_AND_ID  # optional
+# 3.15 message DEBUG, string REPEAT
 
 project(
     blaspp
@@ -15,17 +16,29 @@ project(
     LANGUAGES CXX
 )
 
+# When built as a sub-project, add a namespace to make targets unique,
+# e.g., `make tester` becomes `make blaspp_tester`.
+if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    set( blaspp_is_project true )
+    set( blaspp_ "" )
+else()
+    set( blaspp_is_project false )
+    set( blaspp_ "blaspp_" )
+endif()
+
 #-------------------------------------------------------------------------------
 # Options
 option( BUILD_SHARED_LIBS "Build shared libraries" true )
-option( build_tests "Build test suite" true )
+option( build_tests "Build test suite" "${blaspp_is_project}" )
 option( color "Use ANSI color output" true )
+option( use_cmake_find_blas "Use CMake's find_package( BLAS ) rather than the search in BLAS++" false )
 option( use_cuda "Use CUDA, if available" true )
 option( use_openmp "Use OpenMP, if available" true )
-option( use_cmake_find_blas "Use CMake's find_package( BLAS ) rather than the search in BLAS++" false )
 
 # Default prefix=/opt/slate
-if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT
+    AND blaspp_is_project)
+
     set( CMAKE_INSTALL_PREFIX "/opt/slate"
          CACHE PATH
          "Install path prefix, prepended onto install directories."
@@ -79,6 +92,24 @@ set( blas_threaded "auto" CACHE STRING
 set_property(
     CACHE blas_threaded PROPERTY STRINGS
     "auto" "true" "false" )
+
+message( DEBUG "Settings:
+CMAKE_INSTALL_PREFIX   = ${CMAKE_INSTALL_PREFIX}
+CMAKE_BUILD_TYPE       = ${CMAKE_BUILD_TYPE}
+BUILD_SHARED_LIBS      = ${BUILD_SHARED_LIBS}
+BLA_VENDOR             = ${BLA_VENDOR}
+blas                   = ${blas}
+blas_fortran           = ${blas_fortran}
+blas_int               = ${blas_int}
+blas_threaded          = ${blas_threaded}
+build_tests            = ${build_tests}
+color                  = ${color}
+use_cmake_find_blas    = ${use_cmake_find_blas}
+use_cuda               = ${use_cuda}
+use_openmp             = ${use_openmp}
+blaspp_is_project      = ${blaspp_is_project}
+blaspp_                = ${blaspp_}
+" )
 
 #-------------------------------------------------------------------------------
 # Enforce out-of-source build
@@ -268,7 +299,7 @@ target_compile_definitions(
 
 #-------------------------------------------------------------------------------
 if (build_tests)
-    # cblas, lapack only needed for tester.
+    # cblas, lapack only needed for tester. LAPACK++ tester also depends on them.
     include( "cmake/CBLASConfig.cmake" )
     include( "cmake/LAPACKFinder.cmake" )
     add_subdirectory( test )
@@ -276,10 +307,12 @@ endif()
 
 #-------------------------------------------------------------------------------
 # Add 'make lib' target.
-add_custom_target( lib DEPENDS blaspp )
+if (blaspp_is_project)
+    add_custom_target( lib DEPENDS blaspp )
+endif()
 
 #-------------------------------------------------------------------------------
-# GNU Filesystem Convensions
+# GNU Filesystem Conventions
 include( GNUInstallDirs )
 set( INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/blaspp )
 

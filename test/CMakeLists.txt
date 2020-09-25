@@ -18,8 +18,6 @@ else()
     message( "" )
     message( "---------- TestSweeper" )
     message( STATUS "Fetching TestSweeper from ${url}" )
-    # Don't install TestSweeper.
-    option( testsweeper_install "" false )
     include( FetchContent )
     FetchContent_Declare( testsweeper GIT_REPOSITORY "${url}" )
     FetchContent_MakeAvailable( testsweeper )
