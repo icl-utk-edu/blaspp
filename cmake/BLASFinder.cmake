@@ -95,7 +95,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
     set( intel_compiler true )
 endif()
 
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "XL")
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "XL|XLClang")
     set( ibm_compiler true )
 endif()
 
