@@ -61,7 +61,7 @@ Join by signing in with your Google credentials, then clicking
 *Join group to post*.
 
 Bug reports can be filed directly on Bitbucket's issue tracker:
-<http://bitbucket.org/icl/lapackpp/issues>.
+<https://bitbucket.org/icl/blaspp/issues?status=new&status=open>.
 
 * * *
 
