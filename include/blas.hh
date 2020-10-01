@@ -7,8 +7,8 @@
 #define BLAS_HH
 
 // Version is updated by make_release.py; DO NOT EDIT.
-// Version 2020.08.00
-#define BLASPP_VERSION 20200800
+// Version 2020.09.00
+#define BLASPP_VERSION 20200900
 
 namespace blas {
 
