@@ -518,25 +518,26 @@ void BLAS_dsymv(
     double const *beta,
     double       *y, blas_int const *incy );
 
-#define BLAS_csymv BLAS_FORTRAN_NAME( csymv, CSYMV )
-void BLAS_csymv(
-    char const *uplo,
-    blas_int const *n,
-    blas_complex_float const *alpha,
-    blas_complex_float const *A, blas_int const *lda,
-    blas_complex_float const *x, blas_int const *incx,
-    blas_complex_float const *beta,
-    blas_complex_float       *y, blas_int const *incy );
-
-#define BLAS_zsymv BLAS_FORTRAN_NAME( zsymv, ZSYMV )
-void BLAS_zsymv(
-    char const *uplo,
-    blas_int const *n,
-    blas_complex_double const *alpha,
-    blas_complex_double const *A, blas_int const *lda,
-    blas_complex_double const *x, blas_int const *incx,
-    blas_complex_double const *beta,
-    blas_complex_double       *y, blas_int const *incy );
+// [cz]symv moved to LAPACK++ since they are provided by LAPACK.
+// #define BLAS_csymv BLAS_FORTRAN_NAME( csymv, CSYMV )
+// void BLAS_csymv(
+//     char const *uplo,
+//     blas_int const *n,
+//     blas_complex_float const *alpha,
+//     blas_complex_float const *A, blas_int const *lda,
+//     blas_complex_float const *x, blas_int const *incx,
+//     blas_complex_float const *beta,
+//     blas_complex_float       *y, blas_int const *incy );
+//
+// #define BLAS_zsymv BLAS_FORTRAN_NAME( zsymv, ZSYMV )
+// void BLAS_zsymv(
+//     char const *uplo,
+//     blas_int const *n,
+//     blas_complex_double const *alpha,
+//     blas_complex_double const *A, blas_int const *lda,
+//     blas_complex_double const *x, blas_int const *incx,
+//     blas_complex_double const *beta,
+//     blas_complex_double       *y, blas_int const *incy );
 
 // -----------------------------------------------------------------------------
 #define BLAS_chemv BLAS_FORTRAN_NAME( chemv, CHEMV )
