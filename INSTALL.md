@@ -113,6 +113,7 @@ Available targets:
     make config    - configures BLAS++, creating a make.inc file
     make lib       - compiles the library (lib/libblaspp.so)
     make tester    - compiles test/tester
+    make check     - run basic checks using tester
     make docs      - generates documentation in docs/html/index.html
     make install   - installs the library and headers to ${prefix}
     make uninstall - remove installed library and headers from ${prefix}

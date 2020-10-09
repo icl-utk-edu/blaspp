@@ -133,10 +133,19 @@ target_compile_definitions(
         "${lapack_defines}"
 )
 
-# Copy run_tests script to build directory. Used in Jenkins.
+# Copy run_tests script to build directory.
 add_custom_command(
     TARGET ${tester} POST_BUILD
     COMMAND
         cp ${CMAKE_CURRENT_SOURCE_DIR}/run_tests.py
            ${CMAKE_CURRENT_BINARY_DIR}/run_tests.py
 )
+
+if (blaspp_is_project)
+    add_custom_target(
+        "check"
+        COMMAND
+            python run_tests.py --quick
+        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+    )
+endif()
