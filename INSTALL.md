@@ -223,6 +223,11 @@ not installed, you can point to its directory.
 Besides the Environment variables and Options listed above, additional
 options include:
 
+    use_cuda
+        Whether to use CUDA, if available. One of:
+        yes (default)
+        no
+
     use_openmp
         Whether to use OpenMP, if available. One of:
         yes (default)
