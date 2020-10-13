@@ -7,9 +7,17 @@
 #define CBLAS_HH
 
 #if defined(HAVE_MKL)
+    #if defined(BLAS_ILP64) && ! defined(MKL_ILP64)
+        #define MKL_ILP64
+    #endif
     #include <mkl_cblas.h>
+
 #elif defined(HAVE_ESSL)
+    #if defined(BLAS_ILP64) && ! defined(_ESV6464)
+        #define _ESV6464
+    #endif
     #include <essl.h>
+
 #elif defined(HAVE_ACCELERATE)
     // On macOS, the official way to include cblas is via Accelerate.h.
     // Unfortunately with Xcode 10.3 and GNU g++ 9.3, that doesn't compile.
@@ -20,6 +28,7 @@
         #include <Accelerate/Accelerate.h>
     #endif
     typedef CBLAS_ORDER CBLAS_LAYOUT;
+
 #else
     // Some ancient cblas.h don't include extern C. It's okay to nest.
     extern "C" {
