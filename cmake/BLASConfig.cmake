@@ -27,7 +27,7 @@ set( found false )
 if (NOT found)
     if ("${BLAS_LIBRARIES}" MATCHES "-framework Accelerate|Accelerate.framework")
         message( "${blue}   Accelerate framework${plain}" )
-        set( blas_config_defines "-DHAVE_ACCELERATE" )
+        set( blaspp_defines "${blaspp_defines} -DHAVE_ACCELERATE" )
         set( found true )
     endif()
 endif()
@@ -41,7 +41,7 @@ if (NOT found)
         LINK_LIBRARIES
             ${BLAS_LIBRARIES} ${openmp_lib} # not "..." quoted; screws up OpenMP
         COMPILE_DEFINITIONS
-            "${blas_defines}"
+            "${blaspp_defines}"
         COMPILE_OUTPUT_VARIABLE
             compile_output
         RUN_OUTPUT_VARIABLE
@@ -52,7 +52,7 @@ if (NOT found)
 
     if (compile_result AND "${run_output}" MATCHES "MKL_VERSION")
         message( "${blue}   ${run_output}${plain}" )
-        set( blas_config_defines "-DHAVE_MKL" )
+        set( blaspp_defines "${blaspp_defines} -DHAVE_MKL" )
         set( found true )
     endif()
 endif()
@@ -66,7 +66,7 @@ if (NOT found)
         LINK_LIBRARIES
             ${BLAS_LIBRARIES} ${openmp_lib} # not "..." quoted; screws up OpenMP
         COMPILE_DEFINITIONS
-            "${blas_defines}"
+            "${blaspp_defines}"
         COMPILE_OUTPUT_VARIABLE
             compile_output
         RUN_OUTPUT_VARIABLE
@@ -77,7 +77,7 @@ if (NOT found)
 
     if (compile_result AND "${run_output}" MATCHES "ESSL_VERSION")
         message( "${blue}   ${run_output}${plain}" )
-        set( blas_config_defines "-DHAVE_ESSL" )
+        set( blaspp_defines "${blaspp_defines} -DHAVE_ESSL" )
         set( found true )
     endif()
 endif()
@@ -91,7 +91,7 @@ if (NOT found)
         LINK_LIBRARIES
             ${BLAS_LIBRARIES} ${openmp_lib} # not "..." quoted; screws up OpenMP
         COMPILE_DEFINITIONS
-            "${blas_defines}"
+            "${blaspp_defines}"
         COMPILE_OUTPUT_VARIABLE
             compile_output
         RUN_OUTPUT_VARIABLE
@@ -102,7 +102,7 @@ if (NOT found)
 
     if (compile_result AND "${run_output}" MATCHES "OPENBLAS_VERSION")
         message( "${blue}   ${run_output}${plain}" )
-        set( blas_config_defines "-DHAVE_OPENBLAS" )
+        set( blaspp_defines "${blaspp_defines} -DHAVE_OPENBLAS" )
         set( found true )
     endif()
 endif()
@@ -116,7 +116,7 @@ if (NOT found)
         LINK_LIBRARIES
             ${BLAS_LIBRARIES} ${openmp_lib} # not "..." quoted; screws up OpenMP
         COMPILE_DEFINITIONS
-            "${blas_defines}"
+            "${blaspp_defines}"
         COMPILE_OUTPUT_VARIABLE
             compile_output
         RUN_OUTPUT_VARIABLE
@@ -127,7 +127,7 @@ if (NOT found)
 
     if (compile_result AND "${run_output}" MATCHES "ACML_VERSION")
         message( "${blue}   ${run_output}${plain}" )
-        set( blas_config_defines "-DHAVE_ACML" )
+        set( blaspp_defines "${blaspp_defines} -DHAVE_ACML" )
         set( found true )
     endif()
 endif()
@@ -145,7 +145,7 @@ try_run(
     LINK_LIBRARIES
         ${BLAS_LIBRARIES} ${openmp_lib} # not "..." quoted; screws up OpenMP
     COMPILE_DEFINITIONS
-        "${blas_defines}"
+        "${blaspp_defines}"
     COMPILE_OUTPUT_VARIABLE
         compile_output
     RUN_OUTPUT_VARIABLE
@@ -165,7 +165,7 @@ else()
         LINK_LIBRARIES
             ${BLAS_LIBRARIES} ${openmp_lib} # not "..." quoted; screws up OpenMP
         COMPILE_DEFINITIONS
-            "${blas_defines}"
+            "${blaspp_defines}"
         COMPILE_OUTPUT_VARIABLE
             compile_output
         RUN_OUTPUT_VARIABLE
@@ -177,7 +177,7 @@ else()
 
     if (compile_result AND "${run_output}" MATCHES "ok")
         message( "${blue}   BLAS (zdotc) returns complex as hidden argument (Intel ifort convention)${plain}" )
-        set( blas_config_defines "-DBLAS_COMPLEX_RETURN_ARGUMENT ${blas_config_defines}" )
+        set( blaspp_defines "${blaspp_defines} -DBLAS_COMPLEX_RETURN_ARGUMENT" )
     else()
         message( FATAL_ERROR "Error - Cannot detect zdotc return value. Please check the BLAS installation." )
     endif()
@@ -193,7 +193,7 @@ try_run(
     LINK_LIBRARIES
         ${BLAS_LIBRARIES} ${openmp_lib} # not "..." quoted; screws up OpenMP
     COMPILE_DEFINITIONS
-        "${blas_defines}"
+        "${blaspp_defines}"
     COMPILE_OUTPUT_VARIABLE
         compile_output
     RUN_OUTPUT_VARIABLE
@@ -214,7 +214,7 @@ else()
         LINK_LIBRARIES
             ${BLAS_LIBRARIES} ${openmp_lib} # not "..." quoted; screws up OpenMP
         COMPILE_DEFINITIONS
-            "${blas_defines}"
+            "${blaspp_defines}"
         COMPILE_OUTPUT_VARIABLE
             compile_output
         RUN_OUTPUT_VARIABLE
@@ -225,16 +225,17 @@ else()
 
     if (compile_result AND "${run_output}" MATCHES "ok")
         message( "${blue}   BLAS (sdot) returns float as double (f2c convention)${plain}" )
-        set( blas_config_defines "-DHAVE_F2C ${blas_config_defines}" )
+        set( blaspp_defines "${blaspp_defines} -DHAVE_F2C" )
     endif()
 endif()
 
 # To avoid empty -D, need to strip leading whitespace.
 # This seems painful in CMake.
-string( STRIP "${blas_config_defines}" blas_config_defines )
-set( blas_config_defines "${blas_config_defines}"
-     CACHE INTERNAL "Constants defined for BLAS" )
+string( STRIP "${blaspp_defines}" blaspp_defines )
+set( blaspp_defines "${blaspp_defines}"
+     CACHE INTERNAL "Constants defined for BLAS++" )
 
 #-------------------------------------------------------------------------------
 message( DEBUG "
-blas_config_defines = '${blas_config_defines}'")
+blaspp_defines = '${blaspp_defines}'
+")

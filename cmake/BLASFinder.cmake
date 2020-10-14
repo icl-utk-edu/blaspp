@@ -8,21 +8,21 @@ string( REGEX REPLACE "([^ ])( +|\\\;)" "\\1;"    BLAS_LIBRARIES "${BLAS_LIBRARI
 string( REGEX REPLACE "-framework;" "-framework " BLAS_LIBRARIES "${BLAS_LIBRARIES}" )
 
 message( DEBUG "BLAS_LIBRARIES '${BLAS_LIBRARIES}'"        )
-message( DEBUG "  cached       '${cached_blas_libraries}'" )
+message( DEBUG "  cached       '${blas_libraries_cached}'" )
 message( DEBUG "blas           '${blas}'"                  )
-message( DEBUG "  cached       '${cached_blas}'"           )
+message( DEBUG "  cached       '${blas_cached}'"           )
 message( DEBUG "blas_int       '${blas_int}'"              )
-message( DEBUG "  cached       '${cached_blas_int}'"       )
+message( DEBUG "  cached       '${blas_int_cached}'"       )
 message( DEBUG "blas_fortran   '${blas_fortran}'"          )
-message( DEBUG "  cached       '${cached_blas_fortran}'"   )
+message( DEBUG "  cached       '${blas_fortran_cached}'"   )
 message( DEBUG "blas_threaded  '${blas_threaded}'"         )
-message( DEBUG "  cached       '${cached_blas_threaded}'"  )
+message( DEBUG "  cached       '${blas_threaded_cached}'"  )
 message( DEBUG "" )
 
 #-----------------------------------
 # Check if this file has already been run with these settings.
 if (BLAS_LIBRARIES
-    AND NOT "${cached_blas_libraries}" STREQUAL "${BLAS_LIBRARIES}")
+    AND NOT "${blas_libraries_cached}" STREQUAL "${BLAS_LIBRARIES}")
     # Ignore blas, etc. if BLAS_LIBRARIES changes.
     # Set to empty, rather than unset, so when cmake is invoked again
     # they don't force a search.
@@ -31,10 +31,10 @@ if (BLAS_LIBRARIES
     set( blas_fortran  "" CACHE INTERNAL "" )
     set( blas_int      "" CACHE INTERNAL "" )
     set( blas_threaded "" CACHE INTERNAL "" )
-elseif (NOT (    "${cached_blas}"          STREQUAL "${blas}"
-             AND "${cached_blas_fortran}"  STREQUAL "${blas_fortran}"
-             AND "${cached_blas_int}"      STREQUAL "${blas_int}"
-             AND "${cached_blas_threaded}" STREQUAL "${blas_threaded}"))
+elseif (NOT (    "${blas_cached}"          STREQUAL "${blas}"
+             AND "${blas_fortran_cached}"  STREQUAL "${blas_fortran}"
+             AND "${blas_int_cached}"      STREQUAL "${blas_int}"
+             AND "${blas_threaded_cached}" STREQUAL "${blas_threaded}"))
     # Ignore BLAS_LIBRARIES if blas* changed.
     message( DEBUG "unset BLAS_LIBRARIES" )
     set( BLAS_LIBRARIES "" CACHE INTERNAL "" )
@@ -48,11 +48,11 @@ else()
     return()
 endif()
 
-set( cached_blas_libraries ${BLAS_LIBRARIES} CACHE INTERNAL "" )  # updated later
-set( cached_blas           ${blas}           CACHE INTERNAL "" )
-set( cached_blas_fortran   ${blas_fortran}   CACHE INTERNAL "" )
-set( cached_blas_int       ${blas_int}       CACHE INTERNAL "" )
-set( cached_blas_threaded  ${blas_threaded}  CACHE INTERNAL "" )
+set( blas_libraries_cached ${BLAS_LIBRARIES} CACHE INTERNAL "" )  # updated later
+set( blas_cached           ${blas}           CACHE INTERNAL "" )
+set( blas_fortran_cached   ${blas_fortran}   CACHE INTERNAL "" )
+set( blas_int_cached       ${blas_int}       CACHE INTERNAL "" )
+set( blas_threaded_cached  ${blas_threaded}  CACHE INTERNAL "" )
 
 include( "cmake/util.cmake" )
 
@@ -459,7 +459,7 @@ endif()
 # Check each BLAS library.
 
 unset( BLAS_FOUND CACHE )
-unset( blas_defines CACHE )
+unset( blaspp_defines CACHE )
 
 set( i 0 )
 foreach (blas_name IN LISTS blas_name_list)
@@ -533,7 +533,7 @@ foreach (blas_name IN LISTS blas_name_list)
 
                 set( BLAS_FOUND true CACHE INTERNAL "" )
                 set( BLAS_LIBRARIES "${blas_libs}" CACHE STRING "" FORCE )
-                set( blas_defines "${blas_flag} ${mangling} ${int_size}" )
+                set( blaspp_defines "${blas_flag} ${mangling} ${int_size}" )
                 break()
             else()
                 message( "${label} ${red} no (didn't run: int mismatch, etc.)${plain}" )
@@ -555,12 +555,12 @@ endforeach()
 
 # To avoid empty -D, need to strip leading whitespace.
 # This seems painful in CMake.
-string( STRIP "${blas_defines}" blas_defines )
-set( blas_defines "${blas_defines}"
+string( STRIP "${blaspp_defines}" blaspp_defines )
+set( blaspp_defines "${blaspp_defines}"
      CACHE INTERNAL "Constants defined for BLAS" )
 
 # Update to found BLAS library.
-set( cached_blas_libraries ${BLAS_LIBRARIES} CACHE INTERNAL "" )
+set( blas_libraries_cached ${BLAS_LIBRARIES} CACHE INTERNAL "" )
 
 #-------------------------------------------------------------------------------
 if (BLAS_FOUND)
@@ -572,4 +572,5 @@ endif()
 message( DEBUG "
 BLAS_FOUND          = '${BLAS_FOUND}'
 BLAS_LIBRARIES      = '${BLAS_LIBRARIES}'
-blas_defines        = '${blas_defines}'")
+blaspp_defines      = '${blaspp_defines}'
+")

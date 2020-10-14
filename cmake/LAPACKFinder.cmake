@@ -7,7 +7,7 @@
 if (DEFINED lapack_config_cache
     AND "${lapack_config_cache}" STREQUAL "${BLAS_LIBRARIES}")
 
-    message( DEBUG "LAPACK config already done for ${BLAS_LIBRARIES}" )
+    message( DEBUG "LAPACK config already done for '${BLAS_LIBRARIES}'" )
     return()
 endif()
 set( lapack_config_cache "${BLAS_LIBRARIES}" CACHE INTERNAL "" )
@@ -27,7 +27,7 @@ foreach (lib IN LISTS lib_list)
         LINK_LIBRARIES
             ${lib} ${BLAS_LIBRARIES} ${openmp_lib} # not "..." quoted; screws up OpenMP
         COMPILE_DEFINITIONS
-            "${blas_defines}" "${blas_config_defines}"
+            "${blaspp_defines}"
         COMPILE_OUTPUT_VARIABLE
             compile_output
         RUN_OUTPUT_VARIABLE
@@ -37,21 +37,20 @@ foreach (lib IN LISTS lib_list)
                                      "${run_result}" "${run_output}" )
 
     if (compile_result AND "${run_output}" MATCHES "ok")
-        set( lapack_defines "-DHAVE_LAPACK" CACHE INTERNAL "" )
-        set( lapack_libraries "${lib}" CACHE INTERNAL "" )
-        set( lapack_found true CACHE INTERNAL "" )
+        set( lapack_libraries_ "${lib}" CACHE INTERNAL "" )
+        set( lapack_found_ true CACHE INTERNAL "" )
         break()
     endif()
 endforeach()
 
 #-------------------------------------------------------------------------------
-if (lapack_found)
-    message( "${blue}   Found LAPACK library ${lapack_libraries}${plain}" )
+if (lapack_found_)
+    message( "${blue}   Found LAPACK library ${lapack_libraries_}${plain}" )
 else()
     message( "${red}   LAPACK library not found. Tester cannot be built.${plain}" )
 endif()
 
 message( DEBUG "
-lapack_found        = '${lapack_found}'
-lapack_libraries    = '${lapack_libraries}'
-lapack_defines      = '${lapack_defines}'")
+lapack_found_       = '${lapack_found_}'
+lapack_libraries_   = '${lapack_libraries_}'
+")

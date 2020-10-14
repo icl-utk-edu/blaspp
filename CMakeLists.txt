@@ -305,7 +305,7 @@ include( "cmake/BLASConfig.cmake" )
 target_link_libraries( blaspp PUBLIC "${BLAS_LIBRARIES}" )
 
 target_compile_definitions(
-    blaspp PRIVATE "${blas_defines}" "${blas_config_defines}" )
+    blaspp PRIVATE "${blaspp_defines}" )
 
 
 #-------------------------------------------------------------------------------
@@ -326,27 +326,28 @@ endif()
 #-------------------------------------------------------------------------------
 # GNU Filesystem Conventions
 include( GNUInstallDirs )
-set( INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/blaspp )
+set( install_configdir "${CMAKE_INSTALL_LIBDIR}/blaspp" )
 
 # Install library and add to <package>Targets.cmake
 install(
     TARGETS blaspp
     EXPORT blasppTargets
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}  # no default before 3.14
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
 )
 
 # Install header files
 install(
-    DIRECTORY ${PROJECT_SOURCE_DIR}/include/    # / copies contents, not directory itself
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    # / copies contents, not directory itself
+    DIRECTORY "${PROJECT_SOURCE_DIR}/include/"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
     FILES_MATCHING REGEX "\\.(h|hh)$"
 )
 
 # Install <package>Targets.cmake
 install(
     EXPORT blasppTargets
-    DESTINATION ${INSTALL_CONFIGDIR}
+    DESTINATION "${install_configdir}"
 )
 
 # Also export <package>Targets.cmake in build directory
@@ -361,7 +362,7 @@ include( CMakePackageConfigHelpers )
 configure_package_config_file(
     "blasppConfig.cmake.in"
     "blasppConfig.cmake"
-    INSTALL_DESTINATION ${INSTALL_CONFIGDIR}
+    INSTALL_DESTINATION "${install_configdir}"
 )
 write_basic_package_version_file(
     "blasppConfigVersion.cmake"
@@ -371,5 +372,5 @@ write_basic_package_version_file(
 install(
     FILES "${CMAKE_CURRENT_BINARY_DIR}/blasppConfig.cmake"
           "${CMAKE_CURRENT_BINARY_DIR}/blasppConfigVersion.cmake"
-    DESTINATION ${INSTALL_CONFIGDIR}
+    DESTINATION "${install_configdir}"
 )

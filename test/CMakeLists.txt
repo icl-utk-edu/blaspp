@@ -1,10 +1,10 @@
 # Can't build testers if CBLAS, LAPACK, or TestSweeper are not found.
-if (NOT cblas_found)
+if (NOT blaspp_cblas_found)
     message( WARNING "CBLAS not found; tester cannot be built." )
     return()
 endif()
 
-if (NOT lapack_found)
+if (NOT lapack_found_)
     message( WARNING "LAPACK not found; tester cannot be built." )
     return()
 endif()
@@ -114,23 +114,21 @@ target_link_libraries(
     ${tester}
     testsweeper
     blaspp
-    "${cblas_libraries}"
-    "${lapack_libraries}"
+    "${blaspp_cblas_libraries}"
+    "${lapack_libraries_}"
 )
 
 target_include_directories(
     ${tester}
-    PUBLIC
-        "${cblas_include}"
+    PRIVATE
+        "${blaspp_cblas_include}"
 )
 
 target_compile_definitions(
     ${tester}
     PRIVATE
-        "${blas_defines}"
-        "${blas_config_defines}"
-        "${cblas_defines}"
-        "${lapack_defines}"
+        "${blaspp_defines}"
+        "${blaspp_cblas_defines}"
 )
 
 # Copy run_tests script to build directory.
