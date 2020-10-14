@@ -28,6 +28,16 @@ endif()
 
 #-------------------------------------------------------------------------------
 # Options
+if (blaspp_is_project)
+    set( log "" CACHE STRING "Shorthand for CMAKE_MESSAGE_LOG_LEVEL" )
+    set_property( CACHE log PROPERTY STRINGS
+                  FATAL_ERROR SEND_ERROR WARNING AUTHOR_WARNING DEPRECATION
+                  NOTICE STATUS VERBOSE DEBUG TRACE )
+    if (log)
+        set( CMAKE_MESSAGE_LOG_LEVEL "${log}" )
+    endif()
+endif()
+
 option( BUILD_SHARED_LIBS "Build shared libraries" true )
 option( build_tests "Build test suite" "${blaspp_is_project}" )
 option( color "Use ANSI color output" true )
@@ -39,7 +49,8 @@ option( use_openmp "Use OpenMP, if available" true )
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT
     AND blaspp_is_project)
 
-    set( CMAKE_INSTALL_PREFIX "/opt/slate"
+    set( prefix "/opt/slate" CACHE PATH "Shorthand for CMAKE_INSTALL_PREFIX" )
+    set( CMAKE_INSTALL_PREFIX "${prefix}"
          CACHE PATH
          "Install path prefix, prepended onto install directories."
          FORCE

@@ -256,7 +256,7 @@ Standard CMake options include:
         yes             shared library (default)
         no              static library
 
-    CMAKE_INSTALL_PREFIX
+    CMAKE_INSTALL_PREFIX (alias prefix)
         Where to install, default /opt/slate.
         Headers go   in ${prefix}/include,
         library goes in ${prefix}/lib
@@ -271,6 +271,12 @@ Standard CMake options include:
         Release         optimized, no asserts, no debug info   (-O3 -DNDEBUG)
         RelWithDebInfo  optimized, no asserts, with debug info (-O2 -DNDEBUG -g)
         MinSizeRel      Release, but optimized for size        (-Os -DNDEBUG)
+
+    CMAKE_MESSAGE_LOG_LEVEL (alias log)
+        Level of messages to report. In ascending order:
+        FATAL_ERROR, SEND_ERROR, WARNING, AUTHOR_WARNING, DEPRECATION,
+        NOTICE, STATUS, VERBOSE, DEBUG, TRACE.
+        Particularly, DEBUG or TRACE gives useful information.
 
 With CMake, options are specified on the command line using
 `-Doption=value` syntax (not as environment variables), such as:
