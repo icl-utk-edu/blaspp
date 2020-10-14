@@ -1,3 +1,7 @@
+2020.10.00
+  - Fixes: CMake defines, version, ILP64; remove [cz]symv prototypes
+  - Add `make check`
+
 2020.09.00
   - Clean up namespace
   - Makefile and CMake improvements

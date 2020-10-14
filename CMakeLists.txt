@@ -12,7 +12,7 @@ cmake_minimum_required( VERSION 3.15 )
 
 project(
     blaspp
-    VERSION 2020.06.00
+    VERSION 2020.10.00
     LANGUAGES CXX
 )
 
