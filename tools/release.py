@@ -133,6 +133,11 @@ def make( project, version_h, version_c ):
               r'VERSION:\d\d\d\d.\d\d.\d\d',
               r'VERSION:%s' % (tag), count=1 )
 
+    print( '\n>> Updating version in: CMakeLists.txt' )
+    file_sub( 'CMakeLists.txt',
+              r'VERSION \d\d\d\d.\d\d.\d\d',
+              r'VERSION %s' % (tag), count=1 )
+
     # Update copyright in all files.
     files = myrun( 'git ls-tree -r master --name-only',
                    stdout=PIPE, text=True ).rstrip().split( '\n' )
