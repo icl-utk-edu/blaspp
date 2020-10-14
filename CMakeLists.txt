@@ -298,11 +298,13 @@ endif()
 
 include( "cmake/BLASConfig.cmake" )
 
-# BLAS_LIBRARIES could be private, but then if an application directly
+set( blaspp_libraries "${BLAS_LIBRARIES}" CACHE INTERNAL "" )
+
+# blaspp_libraries could be private, but then if an application directly
 # calls blas, cblas, lapack, lapacke, mkl, essl, etc., it would need to
-# devine the exact same BLAS_LIBRARIES. For example, the tester calls
+# devine the exact same blaspp_libraries. For example, the tester calls
 # cblas. Instead, make it public.
-target_link_libraries( blaspp PUBLIC "${BLAS_LIBRARIES}" )
+target_link_libraries( blaspp PUBLIC "${blaspp_libraries}" )
 
 target_compile_definitions(
     blaspp PRIVATE "${blaspp_defines}" )
