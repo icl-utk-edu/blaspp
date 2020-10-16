@@ -248,6 +248,7 @@ target_include_directories(
 )
 
 # OpenMP support.
+set( openmp_lib "" )
 if (NOT use_openmp)
     message( STATUS "User has requested to NOT use OpenMP" )
 else()
@@ -298,7 +299,8 @@ endif()
 
 include( "cmake/BLASConfig.cmake" )
 
-set( blaspp_libraries "${BLAS_LIBRARIES}" CACHE INTERNAL "" )
+set( blaspp_libraries "${BLAS_LIBRARIES};${openmp_lib}" CACHE INTERNAL "" )
+message( DEBUG "blaspp_libraries = '${blaspp_libraries}'" )
 
 # blaspp_libraries could be private, but then if an application directly
 # calls blas, cblas, lapack, lapacke, mkl, essl, etc., it would need to
