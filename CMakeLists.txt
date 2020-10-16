@@ -298,9 +298,10 @@ target_compile_definitions(
 
 
 #-------------------------------------------------------------------------------
+# Always run the cblas config check so other software can use this information.
+include( "cmake/CBLASConfig.cmake" )
 if (build_tests)
     # cblas, lapack only needed for tester. LAPACK++ tester also depends on them.
-    include( "cmake/CBLASConfig.cmake" )
     include( "cmake/LAPACKFinder.cmake" )
     add_subdirectory( test )
 endif()
