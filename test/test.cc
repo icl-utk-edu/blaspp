@@ -232,7 +232,7 @@ int main( int argc, char** argv )
     using testsweeper::QuitException;
 
     // check that all sections have names
-    assert( sizeof(section_names)/sizeof(*section_names) == Section::num_sections );
+    require( sizeof(section_names)/sizeof(*section_names) == Section::num_sections );
 
     int status = 0;
     try {

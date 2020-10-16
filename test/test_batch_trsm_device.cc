@@ -123,7 +123,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
         }
         int64_t potrf_info = 0;
         lapack_potrf( uplo2str(uplo_), Am, pA, lda_, &potrf_info );
-        assert( potrf_info == 0 );
+        require( potrf_info == 0 );
     }
 
     // if row-major, transpose A

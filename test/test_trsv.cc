@@ -80,7 +80,7 @@ void test_trsv_work( Params& params, bool run )
     }
     int64_t info = 0;
     lapack_potrf( uplo2str(uplo), n, A, lda, &info );
-    assert( info == 0 );
+    require( info == 0 );
 
     // norms for error check
     real_t work[1];

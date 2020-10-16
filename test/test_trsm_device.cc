@@ -90,7 +90,7 @@ void test_trsm_device_work( Params& params, bool run )
     }
     int64_t info = 0;
     lapack_potrf( uplo2str(uplo), Am, A, lda, &info );
-    assert( info == 0 );
+    require( info == 0 );
 
     blas::device_setmatrix(Am, Am, A, lda, dA, lda, queue);
     blas::device_setmatrix(Bm, Bn, B, ldb, dB, ldb, queue);

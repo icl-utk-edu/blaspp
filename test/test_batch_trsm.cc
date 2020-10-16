@@ -109,7 +109,7 @@ void test_batch_trsm_work( Params& params, bool run )
         }
         int64_t blas_info = 0;
         lapack_potrf( uplo2str(uplo_), Am, Aarray[s], lda_, &blas_info );
-        assert( blas_info == 0 );
+        require( blas_info == 0 );
     }
 
     // norms for error check

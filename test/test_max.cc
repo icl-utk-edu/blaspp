@@ -68,43 +68,43 @@ void test_max( Params& params, bool run )
     // -----
     // check results
     // use assert, to tell which one failed, vs. single okay flag
-    assert( max_xi   == 2 );
-    assert( max_xi2  == i );
-    assert( max_xi3  == i );
-    assert( max_xi4  == i );
-    assert( max_xi5  == i2 );
-    assert( max_xi64 == m );
-    assert( max_xd   == 1.0 );
-    assert( max_xd2  == d );
-    assert( max_xd3  == d );
-    assert( max_xd4  == f );
-    assert( max_xd5  == f );
-    assert( max_xs   == f );
+    require( max_xi   == 2 );
+    require( max_xi2  == i );
+    require( max_xi3  == i );
+    require( max_xi4  == i );
+    require( max_xi5  == i2 );
+    require( max_xi64 == m );
+    require( max_xd   == 1.0 );
+    require( max_xd2  == d );
+    require( max_xd3  == d );
+    require( max_xd4  == f );
+    require( max_xd5  == f );
+    require( max_xs   == f );
 
-    assert( max_yi   == 2 );
-    assert( max_yi2  == i );
-    assert( max_yi64 == m );
-    assert( max_yd   == 1.0 );
-    assert( max_yd2  == d );
+    require( max_yi   == 2 );
+    require( max_yi2  == i );
+    require( max_yi64 == m );
+    require( max_yd   == 1.0 );
+    require( max_yd2  == d );
 
-    assert( min_xi   == 1 );
-    assert( min_xi2  == 1 );
-    assert( min_xi3  == 1 );
-    assert( min_xi4  == 1 );
-    assert( min_xi5  == 1 );
-    assert( min_xi64 == 1 );
-    assert( min_xd   == 0.245 );
-    assert( min_xd2  == 1.0 );
-    assert( min_xd3  == 0.245 );
-    assert( min_xd4  == 0.245 );
-    assert( min_xd5  == 0.245 );
-    assert( min_xs   == 1.0 );
+    require( min_xi   == 1 );
+    require( min_xi2  == 1 );
+    require( min_xi3  == 1 );
+    require( min_xi4  == 1 );
+    require( min_xi5  == 1 );
+    require( min_xi64 == 1 );
+    require( min_xd   == 0.245 );
+    require( min_xd2  == 1.0 );
+    require( min_xd3  == 0.245 );
+    require( min_xd4  == 0.245 );
+    require( min_xd5  == 0.245 );
+    require( min_xs   == 1.0 );
 
-    assert( min_yi   == 1 );
-    assert( min_yi2  == 1 );
-    assert( min_yi64 == 1 );
-    assert( min_yd   == 0.245 );
-    assert( min_yd2  == 1 );
+    require( min_yi   == 1 );
+    require( min_yi2  == 1 );
+    require( min_yi64 == 1 );
+    require( min_yd   == 0.245 );
+    require( min_yd2  == 1 );
 
     // -----
     // check types of results

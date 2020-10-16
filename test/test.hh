@@ -84,6 +84,19 @@ inline T roundup( T x, T y )
     }
 
 // -----------------------------------------------------------------------------
+// Like assert(), but throws error and is not disabled by NDEBUG.
+inline
+void require_( bool cond, const char* condstr, const char* file, int line )
+{
+    if (! cond) {
+        throw blas::Error( std::string(condstr) + " failed at "
+                           + file + ":" + std::to_string(line) );
+    }
+}
+
+#define require( cond ) require_( (cond), #cond, __FILE__, __LINE__ )
+
+// -----------------------------------------------------------------------------
 // Level 1 BLAS
 void test_asum  ( Params& params, bool run );
 void test_axpy  ( Params& params, bool run );

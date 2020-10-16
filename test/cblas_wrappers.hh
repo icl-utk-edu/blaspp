@@ -53,7 +53,7 @@ inline CBLAS_LAYOUT cblas_layout_const( blas::Layout layout )
     switch (layout) {
         case blas::Layout::RowMajor:  return CblasRowMajor;
         case blas::Layout::ColMajor:  return CblasColMajor;
-        default: assert( false );
+        default: throw blas::Error();
     }
 }
 
@@ -62,9 +62,7 @@ inline CBLAS_LAYOUT cblas_layout_const( char layout )
     switch (layout) {
         case 'r': case 'R': return CblasRowMajor;
         case 'c': case 'C': return CblasColMajor;
-        default:
-            printf( "%s( %c )\n", __func__, layout );
-            assert( false );
+        default: throw blas::Error();
     }
 }
 
@@ -73,7 +71,7 @@ inline char lapack_layout_const( CBLAS_LAYOUT layout )
     switch (layout) {
         case CblasRowMajor: return 'r';
         case CblasColMajor: return 'c';
-        default: assert( false );
+        default: throw blas::Error();
     }
 }
 
@@ -84,7 +82,7 @@ inline CBLAS_DIAG cblas_diag_const( blas::Diag diag )
     switch (diag) {
         case blas::Diag::NonUnit:  return CblasNonUnit;
         case blas::Diag::Unit:     return CblasUnit;
-        default: assert( false );
+        default: throw blas::Error();
     }
 }
 
@@ -93,9 +91,7 @@ inline CBLAS_DIAG cblas_diag_const( char diag )
     switch (diag) {
         case 'n': case 'N': return CblasNonUnit;
         case 'u': case 'U': return CblasUnit;
-        default:
-            printf( "%s( %c )\n", __func__, diag );
-            assert( false );
+        default: throw blas::Error();
     }
 }
 
@@ -104,7 +100,7 @@ inline char lapack_diag_const( CBLAS_DIAG diag )
     switch (diag) {
         case CblasNonUnit: return 'n';
         case CblasUnit: return 'u';
-        default: assert( false );
+        default: throw blas::Error();
     }
 }
 
@@ -115,7 +111,7 @@ inline CBLAS_SIDE cblas_side_const( blas::Side side )
     switch (side) {
         case blas::Side::Left:  return CblasLeft;
         case blas::Side::Right: return CblasRight;
-        default: assert( false );
+        default: throw blas::Error();
     }
 }
 
@@ -124,9 +120,7 @@ inline CBLAS_SIDE cblas_side_const( char side )
     switch (side) {
         case 'l': case 'L': return CblasLeft;
         case 'r': case 'R': return CblasRight;
-        default:
-            printf( "%s( %c )\n", __func__, side );
-            assert( false );
+        default: throw blas::Error();
     }
 }
 
@@ -135,7 +129,7 @@ inline char lapack_side_const( CBLAS_SIDE side )
     switch (side) {
         case CblasLeft:  return 'l';
         case CblasRight: return 'r';
-        default: assert( false );
+        default: throw blas::Error();
     }
 }
 
@@ -147,7 +141,7 @@ inline CBLAS_TRANSPOSE cblas_trans_const( blas::Op trans )
         case blas::Op::NoTrans:   return CblasNoTrans;
         case blas::Op::Trans:     return CblasTrans;
         case blas::Op::ConjTrans: return CblasConjTrans;
-        default: assert( false );
+        default: throw blas::Error();
     }
 }
 
@@ -157,9 +151,7 @@ inline CBLAS_TRANSPOSE cblas_trans_const( char trans )
         case 'n': case 'N': return CblasNoTrans;
         case 't': case 'T': return CblasTrans;
         case 'c': case 'C': return CblasConjTrans;
-        default:
-            printf( "%s( %c )\n", __func__, trans );
-            assert( false );
+        default: throw blas::Error();
     }
 }
 
@@ -169,7 +161,7 @@ inline char lapack_trans_const( CBLAS_TRANSPOSE trans )
         case CblasNoTrans:   return 'n';
         case CblasTrans:     return 't';
         case CblasConjTrans: return 'c';
-        default: assert( false );
+        default: throw blas::Error();
     }
 }
 
@@ -180,7 +172,7 @@ inline CBLAS_UPLO cblas_uplo_const( blas::Uplo uplo )
     switch (uplo) {
         case blas::Uplo::Lower: return CblasLower;
         case blas::Uplo::Upper: return CblasUpper;
-        default: assert( false );
+        default: throw blas::Error();
     }
 }
 
@@ -189,9 +181,7 @@ inline CBLAS_UPLO cblas_uplo_const( char uplo )
     switch (uplo) {
         case 'l': case 'L': return CblasLower;
         case 'u': case 'U': return CblasUpper;
-        default:
-            printf( "%s( %c )\n", __func__, uplo );
-            assert( false );
+        default: throw blas::Error();
     }
 }
 
@@ -200,9 +190,7 @@ inline char lapack_uplo_const( CBLAS_UPLO uplo )
     switch (uplo) {
         case CblasLower: return 'l';
         case CblasUpper: return 'u';
-        default:
-            printf( "%s( %c )\n", __func__, uplo );
-            assert( false );
+        default: throw blas::Error();
     }
 }
 
