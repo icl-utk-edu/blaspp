@@ -1,3 +1,6 @@
+2020.10.01
+  - Fixes: CMake always checks for CBLAS, in case LAPACK++ needs it
+
 2020.10.00
   - Fixes: CMake defines, version, ILP64; remove [cz]symv prototypes
   - Add `make check`
