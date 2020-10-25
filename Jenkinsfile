@@ -72,20 +72,7 @@ stages {
 
                     //----------------------------------------------------------
                     post {
-                        changed {
-                            slackSend channel: '#slate_ci',
-                                color: 'good',
-                                message: "${currentBuild.fullDisplayName} >> ${STAGE_NAME} >> ${maker} ${host} changed (<${env.BUILD_URL}|Open>)"
-                        }
-                        unstable {
-                            slackSend channel: '#slate_ci',
-                                color: 'warning',
-                                message: "${currentBuild.fullDisplayName} >> ${STAGE_NAME} >> ${maker} ${host} unstable (<${env.BUILD_URL}|Open>)"
-                        }
                         failure {
-                            slackSend channel: '#slate_ci',
-                                color: 'danger',
-                                message: "${currentBuild.fullDisplayName} >> ${STAGE_NAME} >> ${maker} ${host} failed (<${env.BUILD_URL}|Open>)"
                             mail to: 'slate-dev@icl.utk.edu',
                                 subject: "${currentBuild.fullDisplayName} >> ${STAGE_NAME} >> ${maker} ${host} failed",
                                 body: "See more at ${env.BUILD_URL}"
