@@ -1,3 +1,6 @@
+2020.10.02
+  - CMake support for including as subdirectory
+
 2020.10.01
   - Fixes: CMake always checks for CBLAS, in case LAPACK++ needs it
 
