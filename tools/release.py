@@ -138,6 +138,11 @@ def make( project, version_h, version_c ):
               r'VERSION \d\d\d\d.\d\d.\d\d',
               r'VERSION %s' % (tag), count=1 )
 
+    print( '\n>> Updating version in: doxyfile.conf' )
+    file_sub( 'docs/doxygen/doxyfile.conf',
+              r'(PROJECT_NUMBER *=) *"\d+\.\d+\.\d+"',
+              r'\1 "%s"' % (tag), count=1 )
+
     # Update copyright in all files.
     files = myrun( 'git ls-tree -r master --name-only',
                    stdout=PIPE, text=True ).rstrip().split( '\n' )
@@ -151,6 +156,7 @@ def make( project, version_h, version_c ):
     print()
 
     myrun( 'git diff' )
+    myrun( 'git diff --staged' )
     print( '>> Do changes look good? Continue building release [yn]? ', end='' )
     response = input()
     if (response != 'y'):
