@@ -306,7 +306,7 @@ message( DEBUG "blaspp_libraries = '${blaspp_libraries}'" )
 # calls blas, cblas, lapack, lapacke, mkl, essl, etc., it would need to
 # devine the exact same blaspp_libraries. For example, the tester calls
 # cblas. Instead, make it public.
-target_link_libraries( blaspp PUBLIC "${blaspp_libraries}" )
+target_link_libraries( blaspp PUBLIC ${blaspp_libraries} )
 
 target_compile_definitions(
     blaspp PRIVATE "${blaspp_defines}" )
