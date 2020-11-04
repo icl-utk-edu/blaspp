@@ -254,7 +254,7 @@ set( blas_libs_list "" )
 #---------------------------------------- BLAS_LIBRARIES
 if (test_blas_libraries)
     # Escape ; semi-colons so we can append it as one item to a list.
-    string( REPLACE ";" "\\\;" BLAS_LIBRARIES_ESC "${BLAS_LIBRARIES}" )
+    string( REPLACE ";" "\\;" BLAS_LIBRARIES_ESC "${BLAS_LIBRARIES}" )
     message( DEBUG "BLAS_LIBRARIES ${BLAS_LIBRARIES}" )
     message( DEBUG "   =>          ${BLAS_LIBRARIES_ESC}" )
 
