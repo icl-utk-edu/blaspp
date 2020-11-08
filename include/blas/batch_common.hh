@@ -92,7 +92,7 @@ void gemm_check(
 
         int64_t nrowA_ = ((transA_ == Op::NoTrans) ^ (layout == Layout::RowMajor)) ? m_ : k_;
         int64_t nrowB_ = ((transB_ == Op::NoTrans) ^ (layout == Layout::RowMajor)) ? k_ : n_;
-        int64_t nrowC_ = (layout == Layout::ColMajor) ? k_ : n_;
+        int64_t nrowC_ = (layout == Layout::ColMajor) ? m_ : n_;
 
         internal_info[i] = 0;
         if (transA_ != Op::NoTrans &&
