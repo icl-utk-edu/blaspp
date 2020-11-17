@@ -8,8 +8,8 @@ from __future__ import print_function
 import os
 import re
 import config
-from   config import print_header, print_subhead, print_msg, print_warn, print_test, print_result
-from   config import Error, get
+from   config import print_header, print_subhead, print_msg, print_warn, \
+                     print_test, print_result, define, Error, get
 
 #-------------------------------------------------------------------------------
 def get_fortran_manglings():
@@ -20,7 +20,7 @@ def get_fortran_manglings():
     limits which manglings are returned.
 
     Ex: get_fortran_manglings()
-    returns ['-DFORTRAN_ADD_', '-DFORTRAN_LOWER', '-DFORTRAN_UPPER']
+    returns ['-D<name>_FORTRAN_ADD_', '-D<name>_FORTRAN_LOWER', '-D<name>_FORTRAN_UPPER']
     '''
     # Warn about obsolete settings.
     if (config.environ['fortran_add_']):
@@ -34,25 +34,25 @@ def get_fortran_manglings():
     manglings = []
     fortran_mangling = config.environ['fortran_mangling'].lower()
     if ('add_'  in fortran_mangling):
-        manglings.append('-DFORTRAN_ADD_')
+        manglings.append( define('FORTRAN_ADD_') )
     if ('lower' in fortran_mangling):
-        manglings.append('-DFORTRAN_LOWER')
+        manglings.append( define('FORTRAN_LOWER') )
     if ('upper' in fortran_mangling):
-        manglings.append('-DFORTRAN_UPPER')
+        manglings.append( define('FORTRAN_UPPER') )
     if (not manglings):
         cxx_actual = config.environ['CXX_actual']
         if (cxx_actual == 'xlc++'):
             # For IBM XL, change default mangling search order to lower, add_, upper,
             # ESSL includes all 3, but Netlib LAPACK has only one mangling.
-            manglings = ['-DFORTRAN_LOWER',
-                         '-DFORTRAN_ADD_',
-                         '-DFORTRAN_UPPER']
+            manglings = [define('FORTRAN_LOWER'),
+                         define('FORTRAN_ADD_'),
+                         define('FORTRAN_UPPER')]
         else:
             # For all others, mangling search order as add_, lower, upper,
             # since add_ is the most common.
-            manglings = ['-DFORTRAN_ADD_',
-                         '-DFORTRAN_LOWER',
-                         '-DFORTRAN_UPPER']
+            manglings = [define('FORTRAN_ADD_'),
+                         define('FORTRAN_LOWER'),
+                         define('FORTRAN_UPPER')]
     return manglings
 # end
 
@@ -66,7 +66,7 @@ def get_int_sizes():
     limits which sizes are returned.
 
     Ex: get_int_sizes()
-    returns ['', '-DBLAS_ILP64 -DLAPACK_ILP64']
+    returns ['', '-D<name>_ILP64']
     where '' is compiler's default, usually 32-bit int in LP64.
     '''
     # todo: repeated from below
@@ -81,7 +81,7 @@ def get_int_sizes():
     if (test_int):
         int_sizes.append('') # i.e., default int
     if (test_int64):
-        int_sizes.append('-DBLAS_ILP64 -DLAPACK_ILP64')
+        int_sizes.append( define('ILP64') )
     return int_sizes
 # end
 
@@ -94,13 +94,13 @@ def compile_with_manglings( src, env, manglings, int_sizes ):
     from either the successful run or the last unsuccessful run.
 
     Ex: compile_with_manglings( 'test.cc', {'CXXFLAGS': '-Wall'},
-                                ['-DFORTRAN_ADD_', '-DFORTRAN_LOWER'],
-                                ['', '-DBLAS_ILP64'] )
+                                ['-D<name>_FORTRAN_ADD_', '-D<name>_FORTRAN_LOWER'],
+                                ['', '-D<name>_ILP64'] )
     tests:
-        CXX -Wall -DFORTRAN_ADD_               test.cc
-        CXX -Wall -DFORTRAN_ADD_ -DBLAS_ILP64  test.cc
-        CXX -Wall -DFORTRAN_LOWER              test.cc
-        CXX -Wall -DFORTRAN_LOWER -DBLAS_ILP64 test.cc
+        CXX -Wall -D<name>_FORTRAN_ADD_                 test.cc
+        CXX -Wall -D<name>_FORTRAN_ADD_ -D<name>_ILP64  test.cc
+        CXX -Wall -D<name>_FORTRAN_LOWER                test.cc
+        CXX -Wall -D<name>_FORTRAN_LOWER -D<name>_ILP64 test.cc
     '''
     rc = -1
     for mangling in manglings:
@@ -367,13 +367,13 @@ def blas():
         inc = ''
         for p in paths:
             if (os.path.exists( p + '/cblas.h' )):
-                inc = '-I' + p + ' -DHAVE_ACCELERATE_CBLAS_H'
+                inc = '-I' + p + ' ' + define('HAVE_ACCELERATE_CBLAS_H')
                 break
 
         choices.append(
             ['MacOS Accelerate',
              {'LIBS': '-framework Accelerate',
-              'CXXFLAGS': inc + '-DHAVE_ACCELERATE'}])
+              'CXXFLAGS': inc + define('HAVE_ACCELERATE')}])
     # end
 
     #-------------------- generic -lblas
@@ -411,7 +411,6 @@ def blas():
     labels = map( lambda c: c[0], passed )
     i = config.choose( 'Choose BLAS library:', labels )
     config.environ.merge( passed[i][1] )
-    config.environ.append( 'CXXFLAGS', '-DHAVE_BLAS' )
 # end blas
 
 #-------------------------------------------------------------------------------
@@ -437,7 +436,7 @@ def cblas():
     labels = map( lambda c: c[0], passed )
     i = config.choose( 'Choose CBLAS library:', labels )
     config.environ.merge( passed[i][1] )
-    config.environ.append( 'CXXFLAGS', '-DHAVE_CBLAS' )
+    config.environ.append( 'CXXFLAGS', define('HAVE_CBLAS') )
 # end cblas
 
 #-------------------------------------------------------------------------------
@@ -511,7 +510,7 @@ def lapack():
     labels = map( lambda c: c[0], passed )
     i = config.choose( 'Choose LAPACK library:', labels )
     config.environ.merge( passed[i][1] )
-    config.environ.append( 'CXXFLAGS', '-DHAVE_LAPACK' )
+    config.environ.append( 'CXXFLAGS', define('HAVE_LAPACK') )
 # end lapack
 
 #-------------------------------------------------------------------------------
@@ -538,7 +537,7 @@ def lapacke():
     labels = map( lambda c: c[0], passed )
     i = config.choose( 'Choose LAPACKE library:', labels )
     config.environ.merge( passed[i][1] )
-    config.environ.append( 'CXXFLAGS', '-DHAVE_LAPACKE' )
+    config.environ.append( 'CXXFLAGS', define('HAVE_LAPACKE') )
 # end lapacke
 
 #-------------------------------------------------------------------------------
@@ -558,7 +557,7 @@ def blas_float_return():
         'config/return_float_f2c.cc', {},
         'BLAS (sdot) returns float as double (f2c convention)' )
     if (rc == 0):
-        config.environ.append( 'CXXFLAGS', '-DHAVE_F2C' )
+        config.environ.append( 'CXXFLAGS', define('HAVE_F2C') )
     else:
         print_warn( 'unexpected error!' )
 # end
@@ -579,7 +578,7 @@ def blas_complex_return():
         'config/return_complex_argument.cc', {},
         'BLAS (zdotc) returns complex as hidden argument (Intel ifort convention)' )
     if (rc == 0):
-        config.environ.append( 'CXXFLAGS', '-DBLAS_COMPLEX_RETURN_ARGUMENT' )
+        config.environ.append( 'CXXFLAGS', define('COMPLEX_RETURN_ARGUMENT') )
     else:
         print_warn( 'unexpected error!' )
 # end
@@ -594,7 +593,7 @@ def lapack_version():
     s = re.search( r'^LAPACK_VERSION=((\d+)\.(\d+)\.(\d+))', out )
     if (rc == 0 and s):
         v = '%d%02d%02d' % (int(s.group(2)), int(s.group(3)), int(s.group(4)))
-        config.environ.append( 'CXXFLAGS', '-DLAPACK_VERSION=%s' % v )
+        config.environ.append( 'CXXFLAGS', define('LAPACK_VERSION', v) )
         config.print_result( 'LAPACK', rc, '(' + s.group(1) + ')' )
     else:
         config.print_result( 'LAPACK', rc )
@@ -608,7 +607,7 @@ def lapack_xblas():
     (rc, out, err) = config.compile_run( 'config/lapack_xblas.cc', {},
                                          'LAPACK XBLAS (dposvxx) in LAPACK library' )
     if (rc == 0):
-        config.environ.append( 'CXXFLAGS', '-DHAVE_XBLAS' )
+        config.environ.append( 'CXXFLAGS', define('HAVE_XBLAS') )
 # end
 
 #-------------------------------------------------------------------------------
@@ -628,7 +627,7 @@ def lapack_matgen():
         (rc, out, err) = config.compile_run( 'config/lapack_matgen.cc', env, label )
         if (rc == 0):
             config.environ.merge( env )
-            config.environ.append( 'CXXFLAGS', '-DHAVE_MATGEN' )
+            config.environ.append( 'CXXFLAGS', define('HAVE_MATGEN') )
             break
     # end
 # end
@@ -642,7 +641,7 @@ def mkl_version():
     (rc, out, err) = config.compile_run( 'config/mkl_version.cc' )
     s = re.search( r'^MKL_VERSION=((\d+)\.(\d+)\.(\d+))', out )
     if (rc == 0 and s):
-        config.environ.append( 'CXXFLAGS', '-DHAVE_MKL' )
+        config.environ.append( 'CXXFLAGS', define('HAVE_MKL') )
         config.print_result( 'MKL', rc, '(' + s.group(1) + ')' )
     else:
         config.print_result( 'MKL', rc )
@@ -657,7 +656,7 @@ def acml_version():
     (rc, out, err) = config.compile_run( 'config/acml_version.cc' )
     s = re.search( r'^ACML_VERSION=((\d+)\.(\d+)\.(\d+)\.(\d+))', out )
     if (rc == 0 and s):
-        config.environ.append( 'CXXFLAGS', '-DHAVE_ACML' )
+        config.environ.append( 'CXXFLAGS', define('HAVE_ACML') )
         config.print_result( 'ACML', rc, '(' + s.group(1) + ')' )
     else:
         config.print_result( 'ACML', rc )
@@ -672,7 +671,7 @@ def essl_version():
     (rc, out, err) = config.compile_run( 'config/essl_version.cc' )
     s = re.search( r'^ESSL_VERSION=((\d+)\.(\d+)\.(\d+)\.(\d+))', out )
     if (rc == 0 and s):
-        config.environ.append( 'CXXFLAGS', '-DHAVE_ESSL' )
+        config.environ.append( 'CXXFLAGS', define('HAVE_ESSL') )
         config.print_result( 'ESSL', rc, '(' + s.group(1) + ')' )
     else:
         config.print_result( 'ESSL', rc )
@@ -687,7 +686,7 @@ def openblas_version():
     (rc, out, err) = config.compile_run( 'config/openblas_version.cc' )
     s = re.search( r'^OPENBLAS_VERSION=.*?((\d+)\.(\d+)\.(\d+))', out )
     if (rc == 0 and s):
-        config.environ.append( 'CXXFLAGS', '-DHAVE_OPENBLAS' )
+        config.environ.append( 'CXXFLAGS', define('HAVE_OPENBLAS') )
         config.print_result( 'OpenBLAS', rc, '(' + s.group(1) + ')' )
     else:
         config.print_result( 'OpenBLAS', rc )

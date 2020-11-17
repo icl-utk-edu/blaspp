@@ -6,23 +6,23 @@
 #ifndef CBLAS_HH
 #define CBLAS_HH
 
-#if defined(HAVE_MKL)
+#if defined(BLAS_HAVE_MKL)
     #if defined(BLAS_ILP64) && ! defined(MKL_ILP64)
         #define MKL_ILP64
     #endif
     #include <mkl_cblas.h>
 
-#elif defined(HAVE_ESSL)
+#elif defined(BLAS_HAVE_ESSL)
     #if defined(BLAS_ILP64) && ! defined(_ESV6464)
         #define _ESV6464
     #endif
     #include <essl.h>
 
-#elif defined(HAVE_ACCELERATE)
+#elif defined(BLAS_HAVE_ACCELERATE)
     // On macOS, the official way to include cblas is via Accelerate.h.
     // Unfortunately with Xcode 10.3 and GNU g++ 9.3, that doesn't compile.
     // If we can find cblas.h, use it, otherwise use Accelerate.h.
-    #ifdef HAVE_ACCELERATE_CBLAS_H
+    #ifdef BLAS_HAVE_ACCELERATE_CBLAS_H
         #include <cblas.h>
     #else
         #include <Accelerate/Accelerate.h>

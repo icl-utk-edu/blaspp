@@ -67,7 +67,7 @@ const char* blaspp_id();
 // =============================================================================
 // Device BLAS
 
-#ifdef BLASPP_WITH_CUBLAS
+#ifdef BLAS_HAVE_CUBLAS
 #include "blas/device_blas.hh"
 #endif
 

@@ -114,7 +114,7 @@ std::vector< testsweeper::routines_t > routines = {
     { "batch-trsm",   test_batch_trsm,   Section::blas3   },
     { "",              nullptr,          Section::newline },
 
-#ifdef BLASPP_WITH_CUBLAS
+#ifdef BLAS_HAVE_CUBLAS
     { "dev-gemm"      ,   test_gemm_device      ,   Section::device_blas3   },
     { "",                 nullptr,                  Section::newline },
 

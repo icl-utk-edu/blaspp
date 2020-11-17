@@ -38,7 +38,7 @@ are set so your compiler can find libraries. See INSTALL.md for more details.
 
 #-------------------------------------------------------------------------------
 def main():
-    config.init( prefix='/opt/slate' )
+    config.init( namespace='BLAS', prefix='/opt/slate' )
     config.prog_cxx()
     config.prog_cxx_flags([
         '-O2', '-std=c++11', '-MMD',
@@ -73,7 +73,7 @@ def main():
     try:
         config.cublas_library()
         config.environ.merge({'devtarget': 'cuda'})
-        config.environ.append( 'CXXFLAGS', '-DBLASPP_WITH_CUBLAS' )
+        config.environ.append( 'CXXFLAGS', '-DBLAS_HAVE_CUBLAS' )
     except Error:
         print_warn( 'BLAS++ CUDA wrappers will not be compiled.' )
 

@@ -21,7 +21,7 @@ Queue::Queue()
     size_t workspace_size = 3 * batch_limit_ * ( DEV_QUEUE_FORK_SIZE + 1 );
     devPtrArray  = blas::device_malloc<void*>( workspace_size );
 
-    #ifdef BLASPP_WITH_CUBLAS
+    #ifdef BLAS_HAVE_CUBLAS
         // default stream
         blas_cuda_call( cudaStreamCreate( &default_stream_ ) );
         blas_cublas_call( cublasCreate( &handle_ ) );
@@ -57,7 +57,7 @@ Queue::Queue( blas::Device device, int64_t batch_size )
     size_t workspace_size = 3 * batch_limit_ * ( DEV_QUEUE_FORK_SIZE + 1 );
     devPtrArray  = blas::device_malloc<void*>( workspace_size );
 
-    #ifdef BLASPP_WITH_CUBLAS
+    #ifdef BLAS_HAVE_CUBLAS
         blas_cuda_call( cudaStreamCreate( &default_stream_ ) );
         blas_cublas_call( cublasCreate( &handle_ ) );
         blas_cublas_call( cublasSetStream( handle_, default_stream_ ) );
@@ -89,7 +89,7 @@ Device   Queue::device()          { return device_;   }
 device_blas_handle_t   Queue::handle()   { return handle_;   }
 
 // -----------------------------------------------------------------------------
-#ifdef BLASPP_WITH_CUBLAS
+#ifdef BLAS_HAVE_CUBLAS
     /// @return CUDA stream associated with this queue; requires CUDA.
     cudaStream_t     Queue::stream()     { return *current_stream_;   }
 #elif defined(HAVE_ROCBLAS)
@@ -101,7 +101,7 @@ device_blas_handle_t   Queue::handle()   { return handle_;   }
 /// synchronize with queue.
 void Queue::sync()
 {
-    #ifdef BLASPP_WITH_CUBLAS
+    #ifdef BLAS_HAVE_CUBLAS
         // in default mode, sync with default stream
         // otherwise, sync against the parallel streams
         if (current_stream_ == &default_stream_) {
@@ -139,7 +139,7 @@ void**  Queue::get_devPtrArray()
 /// this function is not nested ( you must join after each fork )
 void Queue::fork()
 {
-    #ifdef BLASPP_WITH_CUBLAS
+    #ifdef BLAS_HAVE_CUBLAS
         // check if queue is already in fork mode
         if (current_stream_ != &default_stream_)
             return;
@@ -167,7 +167,7 @@ void Queue::fork()
 /// this function is not nested ( you must join after each fork )
 void Queue::join()
 {
-    #ifdef BLASPP_WITH_CUBLAS
+    #ifdef BLAS_HAVE_CUBLAS
         // check if queue is already joined
         if (current_stream_ == &default_stream_)
             return;
@@ -195,7 +195,7 @@ void Queue::join()
 /// in join mode, no effect
 void Queue::revolve()
 {
-    #ifdef BLASPP_WITH_CUBLAS
+    #ifdef BLAS_HAVE_CUBLAS
         // return if not in fork mode
         if (current_stream_ == &default_stream_)
             return;
@@ -216,7 +216,7 @@ void Queue::revolve()
 Queue::~Queue()
 {
     blas::device_free( devPtrArray );
-    #ifdef BLASPP_WITH_CUBLAS
+    #ifdef BLAS_HAVE_CUBLAS
         blas_cublas_call( cublasDestroy( handle_ ) );
         blas_cuda_call( cudaStreamDestroy( default_stream_ ) );
 

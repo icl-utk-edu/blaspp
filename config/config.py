@@ -63,6 +63,18 @@ def debug( value=None ):
 # end
 
 # ------------------------------------------------------------------------------
+namespace_ = None
+
+def namespace( value ):
+    return namespace_
+
+def define( var, value=None ):
+    txt = '-D' + namespace_ + '_' + var
+    if (value):
+        txt += '=' + value
+    return txt
+
+# ------------------------------------------------------------------------------
 # variables to replace instead of appending/prepending
 replace_vars = ['CC', 'CXX', 'NVCC', 'FC', 'AR', 'RANLIB', 'prefix']
 
@@ -608,7 +620,7 @@ def cublas_library():
     libs = '-lcudart -lcublas'
     print_header( 'CUDA and cuBLAS libraries' )
     print_test( libs )
-    env = {'LIBS': libs, 'CXXFLAGS': '-DHAVE_CUBLAS'}
+    env = {'LIBS': libs, 'CXXFLAGS': define('HAVE_CUBLAS')}
     (rc, out, err) = compile_exe( 'config/cublas.cc', env )
     print_result( libs, rc )
     if (rc == 0):
@@ -843,12 +855,14 @@ def parse_args():
 # end
 
 #-------------------------------------------------------------------------------
-def init( prefix='/usr/local' ):
+def init( namespace, prefix='/usr/local' ):
     '''
     Initializes config.
     Opens the logfile and deals with OS-specific issues.
     '''
-    global log
+    global log, namespace_
+
+    namespace_ = namespace
 
     # Default prefix.
     if (not environ['prefix']):

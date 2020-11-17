@@ -229,7 +229,7 @@ else()
         find_library( cudart_lib cudart ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES} )
         find_library( cublas_lib cublas ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES} )
 
-        set( blaspp_defs_cuda_ "-DBLASPP_WITH_CUBLAS" )
+        set( blaspp_defs_cuda_ "-DBLAS_HAVE_CUBLAS" )
 
         # Some platforms need these to be public libraries.
         target_link_libraries( blaspp PUBLIC "${cudart_lib}" "${cublas_lib}" )

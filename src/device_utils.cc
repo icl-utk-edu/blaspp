@@ -13,7 +13,7 @@ namespace blas {
 // set device
 void set_device(blas::Device device)
 {
-    #ifdef BLASPP_WITH_CUBLAS
+    #ifdef BLAS_HAVE_CUBLAS
         blas_cuda_call(
             cudaSetDevice((device_blas_int)device) );
     #elif defined(HAVE_ROCBLAS)
@@ -27,7 +27,7 @@ void get_device(blas::Device *device)
 {
     device_blas_int dev;
 
-    #ifdef BLASPP_WITH_CUBLAS
+    #ifdef BLAS_HAVE_CUBLAS
         blas_cuda_call(
             cudaGetDevice(&dev) );
     #elif defined(HAVE_ROCBLAS)
@@ -107,7 +107,7 @@ device_side_t device_side_const(blas::Side side)
 /// free a device pointer
 void device_free(void* ptr)
 {
-    #ifdef BLASPP_WITH_CUBLAS
+    #ifdef BLAS_HAVE_CUBLAS
         blas_cuda_call(
             cudaFree( ptr ) );
     #elif defined(HAVE_ROCBLAS)
@@ -119,7 +119,7 @@ void device_free(void* ptr)
 /// free a pinned memory space
 void device_free_pinned(void* ptr)
 {
-    #ifdef BLASPP_WITH_CUBLAS
+    #ifdef BLAS_HAVE_CUBLAS
         blas_cuda_call(
             cudaFreeHost( ptr ) );
     #elif defined(HAVE_ROCBLAS)

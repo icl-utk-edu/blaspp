@@ -10,7 +10,7 @@
 #include "blas/device_types.hh"
 #include "blas/defines.h"
 
-#ifdef BLASPP_WITH_CUBLAS
+#ifdef BLAS_HAVE_CUBLAS
     #include <cuda_runtime.h>
     #include <cublas_v2.h>
 #endif
@@ -46,9 +46,9 @@ public:
     // return the next-in-line stream (for both default and fork modes)
     void revolve();
 
-    #ifdef BLASPP_WITH_CUBLAS
+    #ifdef BLAS_HAVE_CUBLAS
         cudaStream_t stream();
-    #elif defined(HAVE_ROCBLAS)
+    #elif defined(BLAS_HAVE_ROCBLAS)
         // TODO: add similar functionality for rocBLAS, if required
     #endif
 
@@ -66,7 +66,7 @@ private:
     // workspace for pointer arrays of batch routines
     void**                devPtrArray;
 
-    #ifdef BLASPP_WITH_CUBLAS
+    #ifdef BLAS_HAVE_CUBLAS
         // the number of streams the queue is currently using for
         // launching kernels (1 by default)
         size_t           num_active_streams_;
@@ -85,7 +85,7 @@ private:
 
         cudaEvent_t      default_event_;
         cudaEvent_t      parallel_events_[DEV_QUEUE_FORK_SIZE];
-    #elif defined(HAVE_ROCBLAS)
+    #elif defined(BLAS_HAVE_ROCBLAS)
         // TODO: stream for rocBLAS
     #endif
 };
@@ -174,10 +174,10 @@ T* device_malloc(
     int64_t nelements)
 {
     T* ptr = nullptr;
-    #ifdef BLASPP_WITH_CUBLAS
+    #ifdef BLAS_HAVE_CUBLAS
         blas_cuda_call(
             cudaMalloc( (void**)&ptr, nelements * sizeof(T) ) );
-    #elif defined(HAVE_ROCBLAS)
+    #elif defined(BLAS_HAVE_ROCBLAS)
         // TODO: allocation for AMD GPUs
     #endif
     return ptr;
@@ -190,10 +190,10 @@ T* device_malloc_pinned(
     int64_t nelements)
 {
     T* ptr = nullptr;
-    #ifdef BLASPP_WITH_CUBLAS
+    #ifdef BLAS_HAVE_CUBLAS
         blas_cuda_call(
             cudaMallocHost( (void**)&ptr, nelements * sizeof(T) ) );
-    #elif defined(HAVE_ROCBLAS)
+    #elif defined(BLAS_HAVE_ROCBLAS)
         // TODO: allocation using AMD driver API
     #endif
     return ptr;
@@ -212,13 +212,13 @@ void device_setmatrix(
     device_blas_int ldd_ = device_blas_int( ldd );
     device_blas_int ldh_ = device_blas_int( ldh );
 
-    #ifdef BLASPP_WITH_CUBLAS
+    #ifdef BLAS_HAVE_CUBLAS
         blas_cublas_call(
             cublasSetMatrixAsync(
                 m_, n_, sizeof(T),
                 hostPtr, ldh_,
                 devPtr,  ldd_, queue.stream() ) );
-    #elif defined(HAVE_ROCBLAS)
+    #elif defined(BLAS_HAVE_ROCBLAS)
         // TODO: call rocblas_set_matrix
     #endif
 }
@@ -236,13 +236,13 @@ void device_getmatrix(
     device_blas_int ldd_ = device_blas_int( ldd );
     device_blas_int ldh_ = device_blas_int( ldh );
 
-    #ifdef BLASPP_WITH_CUBLAS
+    #ifdef BLAS_HAVE_CUBLAS
         blas_cublas_call(
             cublasGetMatrixAsync(
                 m_, n_, sizeof(T),
                 devPtr,  ldd_,
                 hostPtr, ldh_, queue.stream() ) );
-    #elif defined(HAVE_ROCBLAS)
+    #elif defined(BLAS_HAVE_ROCBLAS)
         // TODO: call rocblas_get_matrix
     #endif
 }
@@ -259,13 +259,13 @@ void device_setvector(
     device_blas_int incd_ = device_blas_int( incd );
     device_blas_int inch_ = device_blas_int( inch );
 
-    #ifdef BLASPP_WITH_CUBLAS
+    #ifdef BLAS_HAVE_CUBLAS
         blas_cublas_call(
             cublasSetVectorAsync(
                 n_, sizeof(T),
                 hostPtr, inch_,
                 devPtr,  incd_, queue.stream() ) );
-    #elif defined(HAVE_ROCBLAS)
+    #elif defined(BLAS_HAVE_ROCBLAS)
         // TODO: call rocblas_set_vector
     #endif
 }
@@ -282,13 +282,13 @@ void device_getvector(
     device_blas_int incd_ = device_blas_int( incd );
     device_blas_int inch_ = device_blas_int( inch );
 
-    #ifdef BLASPP_WITH_CUBLAS
+    #ifdef BLAS_HAVE_CUBLAS
         blas_cublas_call(
             cublasGetVectorAsync(
                 n_, sizeof(T),
                 devPtr,  incd_,
                 hostPtr, inch_, queue.stream() ) );
-    #elif defined(HAVE_ROCBLAS)
+    #elif defined(BLAS_HAVE_ROCBLAS)
         // TODO: call rocblas_get_vector
     #endif
 }

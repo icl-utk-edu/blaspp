@@ -13,9 +13,9 @@
 // else the default is lowercase with appended underscore
 // (GNU gcc, Intel icc, PGI pgfortan, Cray ftn).
 #ifndef BLAS_FORTRAN_NAME
-    #if defined(FORTRAN_UPPER)
+    #if defined(BLAS_FORTRAN_UPPER)
         #define BLAS_FORTRAN_NAME( lower, UPPER ) UPPER
-    #elif defined(FORTRAN_LOWER)
+    #elif defined(BLAS_FORTRAN_LOWER)
         #define BLAS_FORTRAN_NAME( lower, UPPER ) lower
     #else
         #define BLAS_FORTRAN_NAME( lower, UPPER ) lower##_

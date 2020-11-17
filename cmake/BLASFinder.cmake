@@ -102,17 +102,17 @@ if (ibm_compiler)
     # For IBM XL, change default mangling search order to lower, add_, upper,
     # ESSL includes all 3, but Netlib LAPACK has only one mangling.
     set( fortran_mangling_list
-        "-DFORTRAN_LOWER"
-        "-DFORTRAN_ADD_"
-        "-DFORTRAN_UPPER"
+        "-DBLAS_FORTRAN_LOWER"
+        "-DBLAS_FORTRAN_ADD_"
+        "-DBLAS_FORTRAN_UPPER"
     )
 else()
     # For all others, mangling search order as add_, lower, upper,
     # since add_ is the most common.
     set( fortran_mangling_list
-        "-DFORTRAN_ADD_"
-        "-DFORTRAN_LOWER"
-        "-DFORTRAN_UPPER"
+        "-DBLAS_FORTRAN_ADD_"
+        "-DBLAS_FORTRAN_LOWER"
+        "-DBLAS_FORTRAN_UPPER"
     )
 endif()
 

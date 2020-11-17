@@ -6,7 +6,7 @@
 #ifndef BLAS_DEVICE_TYPES_HH
 #define BLAS_DEVICE_TYPES_HH
 
-#ifdef BLASPP_WITH_CUBLAS
+#ifdef BLAS_HAVE_CUBLAS
     #include <cuda_runtime.h>
     #include <cublas_v2.h>
 #elif defined(HAVE_ROCBLAS)
@@ -18,7 +18,7 @@ namespace blas {
 // -----------------------------------------------------------------------------
 // types
 
-#ifdef BLASPP_WITH_CUBLAS
+#ifdef BLAS_HAVE_CUBLAS
     typedef    int                  device_blas_int;
     typedef    cudaError_t          device_error_t;
     typedef    cublasStatus_t       device_blas_status_t;

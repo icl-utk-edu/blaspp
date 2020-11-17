@@ -152,7 +152,7 @@ void test_batch_trsm  ( Params& params, bool run );
 
 // -----------------------------------------------------------------------------
 // Level 3 GPU BLAS
-#ifdef BLASPP_WITH_CUBLAS
+#ifdef BLAS_HAVE_CUBLAS
 void test_gemm_device  ( Params& params, bool run );
 void test_trsm_device  ( Params& params, bool run );
 void test_trmm_device  ( Params& params, bool run );
