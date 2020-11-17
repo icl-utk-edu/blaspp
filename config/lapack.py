@@ -278,8 +278,7 @@ def blas():
                 if (test_int64):
                     choices_gfortran.append(
                         ['Intel MKL (int64, GNU Fortran conventions, threaded)',
-                         {'LIBS': '-lmkl_gf_ilp64 -lmkl_gnu_thread' + t_core,
-                          'CXXFLAGS': '-DMKL_ILP64'}])
+                         {'LIBS': '-lmkl_gf_ilp64 -lmkl_gnu_thread' + t_core}])
 
             elif (test_ifort and cxx_actual == 'icpc'):
                 # Intel compiler + OpenMP: require intel_thread library.
@@ -290,8 +289,7 @@ def blas():
                 if (test_int64):
                     choices_ifort.append(
                         ['Intel MKL (int64, Intel Fortran conventions, threaded)',
-                         {'LIBS': '-lmkl_intel_ilp64 -lmkl_intel_thread' + t_core,
-                          'CXXFLAGS': '-DMKL_ILP64'}])
+                         {'LIBS': '-lmkl_intel_ilp64 -lmkl_intel_thread' + t_core}])
             else:
                 # MKL doesn't have libraries for other OpenMP backends.
                 print( "Skipping threaded MKL for non-GNU, non-Intel compiler" )
@@ -307,8 +305,7 @@ def blas():
                 if (test_int64):
                     choices_ifort.append(
                         ['Intel MKL (int64, Intel Fortran conventions, sequential)',
-                         {'LIBS': '-lmkl_intel_ilp64' + s_core,
-                          'CXXFLAGS': '-DMKL_ILP64'}])
+                         {'LIBS': '-lmkl_intel_ilp64' + s_core}])
             # end
 
             if (test_gfortran):
@@ -319,8 +316,7 @@ def blas():
                 if (test_int64):
                     choices_gfortran.append(
                         ['Intel MKL (int64, GNU Fortran conventions, sequential)',
-                         {'LIBS': '-lmkl_gf_ilp64' + s_core,
-                          'CXXFLAGS': '-DMKL_ILP64'}])
+                         {'LIBS': '-lmkl_gf_ilp64' + s_core}])
             # end
         # end
 
@@ -344,8 +340,7 @@ def blas():
             if (test_int64):
                 choices.append(
                     ['IBM ESSL int64 (ilp64), threaded',
-                     {'LIBS': '-lesslsmp6464',
-                      'CXXFLAGS': '-D_ESV6464'}])
+                     {'LIBS': '-lesslsmp6464'}])
 
         if (test_sequential):
             if (test_int):
@@ -355,8 +350,7 @@ def blas():
             if (test_int64):
                 choices.append(
                     ['IBM ESSL int64 (ilp64), sequential',
-                     {'LIBS': '-lessl6464',
-                      'CXXFLAGS': '-D_ESV6464'}])
+                     {'LIBS': '-lessl6464'}])
     # end essl
 
     #-------------------- OpenBLAS
