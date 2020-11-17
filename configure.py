@@ -86,8 +86,8 @@ def main():
     if (not testsweeper):
         print_warn( 'BLAS++ needs TestSweeper only in testers.' )
 
-    config.extract_defines_from_flags( 'CXXFLAGS' )
-    config.output_files( ['make.inc', 'blas_defines.h'] )
+    config.extract_defines_from_flags( 'CXXFLAGS', 'blaspp_header_defines' )
+    config.output_files( ['make.inc', 'include/blas/defines.h'] )
     print( 'log in config/log.txt' )
 
     print( '-'*80 )

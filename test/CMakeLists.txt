@@ -131,13 +131,6 @@ target_include_directories(
         "${blaspp_cblas_include}"
 )
 
-target_compile_definitions(
-    ${tester}
-    PRIVATE
-        "${blaspp_defines}"
-        "${blaspp_cblas_defines}"
-)
-
 # Copy run_tests script to build directory.
 add_custom_command(
     TARGET ${tester} POST_BUILD

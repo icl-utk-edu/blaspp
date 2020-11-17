@@ -459,7 +459,7 @@ endif()
 # Check each BLAS library.
 
 unset( BLAS_FOUND CACHE )
-unset( blaspp_defines CACHE )
+unset( blaspp_defs_ CACHE )
 
 set( i 0 )
 foreach (blas_name IN LISTS blas_name_list)
@@ -533,7 +533,15 @@ foreach (blas_name IN LISTS blas_name_list)
 
                 set( BLAS_FOUND true CACHE INTERNAL "" )
                 set( BLAS_LIBRARIES "${blas_libs}" CACHE STRING "" FORCE )
-                set( blaspp_defines "${blas_flag} ${mangling} ${int_size}" )
+                if (blas_flag MATCHES "[^ ]")  # non-empty
+                    list( APPEND blaspp_defs_ "${blas_flag}" )
+                endif()
+                if (mangling MATCHES "[^ ]")  # non-empty
+                    list( APPEND blaspp_defs_ "${mangling}" )
+                endif()
+                if (int_size MATCHES "[^ ]")  # non-empty
+                    list( APPEND blaspp_defs_ "${int_size}" )
+                endif()
                 break()
             else()
                 message( "${label} ${red} no (didn't run: int mismatch, etc.)${plain}" )
@@ -553,12 +561,6 @@ foreach (blas_name IN LISTS blas_name_list)
     endif()
 endforeach()
 
-# To avoid empty -D, need to strip leading whitespace.
-# This seems painful in CMake.
-string( STRIP "${blaspp_defines}" blaspp_defines )
-set( blaspp_defines "${blaspp_defines}"
-     CACHE INTERNAL "Constants defined for BLAS" )
-
 # Update to found BLAS library.
 set( blas_libraries_cached ${BLAS_LIBRARIES} CACHE INTERNAL "" )
 
@@ -572,5 +574,5 @@ endif()
 message( DEBUG "
 BLAS_FOUND          = '${BLAS_FOUND}'
 BLAS_LIBRARIES      = '${BLAS_LIBRARIES}'
-blaspp_defines      = '${blaspp_defines}'
+blaspp_defs_        = '${blaspp_defs_}'
 ")

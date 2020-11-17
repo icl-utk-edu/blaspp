@@ -8,6 +8,7 @@
 
 #include "blas/util.hh"
 #include "blas/device_types.hh"
+#include "blas/defines.h"
 
 #ifdef BLASPP_WITH_CUBLAS
     #include <cuda_runtime.h>

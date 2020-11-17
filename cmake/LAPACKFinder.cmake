@@ -27,7 +27,7 @@ foreach (lib IN LISTS lib_list)
         LINK_LIBRARIES
             ${lib} ${BLAS_LIBRARIES} ${openmp_lib} # not "..." quoted; screws up OpenMP
         COMPILE_DEFINITIONS
-            "${blaspp_defines}"
+            ${blaspp_defines}
         COMPILE_OUTPUT_VARIABLE
             compile_output
         RUN_OUTPUT_VARIABLE

@@ -695,7 +695,7 @@ def get_package( name, directories, repo_url, tar_url, tar_filename ):
 # end
 
 #-------------------------------------------------------------------------------
-def extract_defines_from_flags( flags='CXXFLAGS' ):
+def extract_defines_from_flags( flags='CXXFLAGS', var='HEADER_DEFINES' ):
     '''
     Extracts all "-Dname[=value]" defines from the given flags.
     Adds all "-Dname[=value]" defines to DEFINES.
@@ -716,7 +716,7 @@ def extract_defines_from_flags( flags='CXXFLAGS' ):
         else:
             header += '#define '+ name + '\n'
     # end
-    environ['HEADER_DEFINES'] = header
+    environ[ var ] = header
 # end
 
 #-------------------------------------------------------------------------------

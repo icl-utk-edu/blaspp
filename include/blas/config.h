@@ -6,6 +6,8 @@
 #ifndef BLAS_CONFIG_H
 #define BLAS_CONFIG_H
 
+#include "blas/defines.h"
+
 #ifndef blas_int
     #if defined(BLAS_ILP64)
         #define blas_int              long long  /* or int64_t */

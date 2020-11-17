@@ -265,7 +265,7 @@ test/docs: docs
 clean: lib/clean test/clean headers/clean
 
 distclean: clean
-	$(RM) make.inc $(dep)
+	$(RM) make.inc include/blas/defines.h $(dep)
 
 %.o: %.cc
 	$(CXX) $(CXXFLAGS) -c $< -o $@

@@ -105,6 +105,7 @@ set_property(
     "auto" "true" "false" )
 
 message( DEBUG "Settings:
+CMAKE_VERSION          = ${CMAKE_VERSION}
 CMAKE_INSTALL_PREFIX   = ${CMAKE_INSTALL_PREFIX}
 CMAKE_BUILD_TYPE       = ${CMAKE_BUILD_TYPE}
 BUILD_SHARED_LIBS      = ${BUILD_SHARED_LIBS}
@@ -228,8 +229,9 @@ else()
         find_library( cudart_lib cudart ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES} )
         find_library( cublas_lib cublas ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES} )
 
+        set( blaspp_defs_cuda_ "-DBLASPP_WITH_CUBLAS" )
+
         # Some platforms need these to be public libraries.
-        target_compile_definitions( blaspp PUBLIC "-DBLASPP_WITH_CUBLAS" )
         target_link_libraries( blaspp PUBLIC "${cudart_lib}" "${cublas_lib}" )
         target_include_directories(
             blaspp PUBLIC "${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}" )
@@ -244,6 +246,7 @@ target_include_directories(
     blaspp
     PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"  # defines.h
         "$<INSTALL_INTERFACE:include>"
 )
 
@@ -266,6 +269,7 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
                      OUTPUT_VARIABLE blaspp_id )
     string( STRIP "${blaspp_id}" blaspp_id )
     message( STATUS "blaspp_id = ${blaspp_id}" )
+    # Don't put in blaspp_defs_ as the quotes cause parsing issues.
     target_compile_definitions(
         blaspp PRIVATE BLASPP_ID="${blaspp_id}" )
 endif()
@@ -299,6 +303,39 @@ endif()
 
 include( "cmake/BLASConfig.cmake" )
 
+# Only tester needs cblas, but always config it so LAPACK++ tester can use it.
+include( "cmake/CBLASConfig.cmake" )
+
+# Cache blaspp_defs_ that was built in BLASFinder, BLASConfig, CBLASConfig.
+set( blaspp_defs_ "${blaspp_defs_}"
+     CACHE INTERNAL "Constants defined for BLAS" )
+
+# Concat defines.
+set( blaspp_defines ${blaspp_defs_} ${blaspp_defs_cuda_} )
+
+if (true)
+    # Extract definitions as #define VAR or #define VAR VALUE.
+    set( blaspp_header_defines "" )
+    foreach (def IN LISTS blaspp_defines)
+        string( REGEX REPLACE "^-D" "" def "${def}" )
+        string( REGEX REPLACE "=" " "  def "${def}" )
+        string( APPEND blaspp_header_defines "#define ${def}\n" )
+    endforeach()
+
+    cmake_host_system_information( RESULT HOSTNAME QUERY HOSTNAME )
+    # ctime format: Mon Nov 16 15:19:47 2020
+    string( TIMESTAMP datetime "%a %b %d %H:%M:%S %Y" )
+
+    # Pass defines via header.
+    configure_file(
+        include/blas/defines.h.in  # in source dir
+        include/blas/defines.h     # in binary dir
+    )
+else()
+    # Pass defines via compiler flags.
+    target_compile_definitions( blaspp PRIVATE ${blaspp_defines} )
+endif()
+
 set( blaspp_libraries "${BLAS_LIBRARIES};${openmp_lib}" CACHE INTERNAL "" )
 message( DEBUG "blaspp_libraries = '${blaspp_libraries}'" )
 
@@ -308,26 +345,20 @@ message( DEBUG "blaspp_libraries = '${blaspp_libraries}'" )
 # cblas. Instead, make it public.
 target_link_libraries( blaspp PUBLIC ${blaspp_libraries} )
 
-target_compile_definitions(
-    blaspp PRIVATE "${blaspp_defines}" )
-
-
-#-------------------------------------------------------------------------------
-# Always run the cblas config check so other software can use this information.
-include( "cmake/CBLASConfig.cmake" )
-if (build_tests)
-    # cblas, lapack only needed for tester. LAPACK++ tester also depends on them.
-    include( "cmake/LAPACKFinder.cmake" )
-    add_subdirectory( test )
-endif()
-
-#-------------------------------------------------------------------------------
 # Add 'make lib' target.
 if (blaspp_is_project)
     add_custom_target( lib DEPENDS blaspp )
 endif()
 
 #-------------------------------------------------------------------------------
+if (build_tests)
+    # Only tester needs lapack.
+    include( "cmake/LAPACKFinder.cmake" )
+    add_subdirectory( test )
+endif()
+
+#-------------------------------------------------------------------------------
+# Install rules.
 # GNU Filesystem Conventions
 include( GNUInstallDirs )
 set( install_configdir "${CMAKE_INSTALL_LIBDIR}/blaspp" )
@@ -346,6 +377,10 @@ install(
     DIRECTORY "${PROJECT_SOURCE_DIR}/include/"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
     FILES_MATCHING REGEX "\\.(h|hh)$"
+)
+install(
+    FILES "${PROJECT_BINARY_DIR}/include/blas/defines.h"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
 )
 
 # Install <package>Targets.cmake

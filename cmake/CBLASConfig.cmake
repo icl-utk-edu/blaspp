@@ -17,7 +17,7 @@ include( "cmake/util.cmake" )
 #----------------------------------------
 # Apple puts cblas.h in weird places. If we can't find it,
 # use Accelerate/Accelerate.h, but that had issues compiling with g++. <sigh>
-if ("${blaspp_defines}" MATCHES "HAVE_ACCELERATE")
+if ("${blaspp_defs_}" MATCHES "HAVE_ACCELERATE")
     set( dir_list
         "/System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/Headers"
         "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Headers"
@@ -25,7 +25,7 @@ if ("${blaspp_defines}" MATCHES "HAVE_ACCELERATE")
     foreach (dir IN LISTS dir_list)
         if (EXISTS "${dir}/cblas.h")
             set( blaspp_cblas_include "${dir}" )
-            set( blaspp_cblas_defines "-DHAVE_ACCELERATE_CBLAS_H" )
+            list( APPEND blaspp_defs_ "-DHAVE_ACCELERATE_CBLAS_H" )
             break()
         endif()
     endforeach()
@@ -45,7 +45,7 @@ foreach (lib IN LISTS lib_list)
         LINK_LIBRARIES
             ${lib} ${BLAS_LIBRARIES} ${openmp_lib} # not "..." quoted; screws up OpenMP
         COMPILE_DEFINITIONS
-            "${blaspp_defines}" "${blaspp_cblas_defines}"
+            ${blaspp_defs_}
         CMAKE_FLAGS
             "-DINCLUDE_DIRECTORIES=${blaspp_cblas_include}"
         COMPILE_OUTPUT_VARIABLE
@@ -57,18 +57,12 @@ foreach (lib IN LISTS lib_list)
                               "${run_result}" "${run_output}" )
 
     if (compile_result AND "${run_output}" MATCHES "ok")
-        set( blaspp_cblas_defines "${blaspp_cblas_defines} -DHAVE_CBLAS" )
+        list( APPEND blaspp_defs_ "-DHAVE_CBLAS" )
         set( blaspp_cblas_libraries "${lib}" CACHE INTERNAL "" )
         set( blaspp_cblas_found true CACHE INTERNAL "" )
         break()
     endif()
 endforeach()
-
-# To avoid empty -D, need to strip leading whitespace.
-# This seems painful in CMake.
-string( STRIP "${blaspp_cblas_defines}" blaspp_cblas_defines )
-set( blaspp_cblas_defines "${blaspp_cblas_defines}"
-     CACHE INTERNAL "Constants defined for CBLAS" )
 
 #-------------------------------------------------------------------------------
 if (blaspp_cblas_found)
@@ -80,5 +74,5 @@ endif()
 message( DEBUG "
 blaspp_cblas_found     = '${blaspp_cblas_found}'
 blaspp_cblas_libraries = '${blaspp_cblas_libraries}'
-blaspp_cblas_defines   = '${blaspp_cblas_defines}'
+blaspp_defs_           = '${blaspp_defs_}'
 ")

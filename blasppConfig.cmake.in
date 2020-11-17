@@ -12,7 +12,6 @@ endif()
 set( blaspp_defines         "@blaspp_defines@" )
 set( blaspp_libraries       "@blaspp_libraries@" )
 
-set( blaspp_cblas_defines   "@blaspp_cblas_defines@" )
 set( blaspp_cblas_found     "@blaspp_cblas_found@" )
 set( blaspp_cblas_include   "@blaspp_cblas_include@" )
 set( blaspp_cblas_libraries "@blaspp_cblas_libraries@" )
