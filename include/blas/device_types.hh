@@ -6,6 +6,8 @@
 #ifndef BLAS_DEVICE_TYPES_HH
 #define BLAS_DEVICE_TYPES_HH
 
+#include "blas/defines.h"
+
 #ifdef BLAS_HAVE_CUBLAS
     #include <cuda_runtime.h>
     #include <cublas_v2.h>

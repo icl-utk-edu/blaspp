@@ -6,6 +6,8 @@
 #ifndef BLAS_HH
 #define BLAS_HH
 
+#include "blas/defines.h"
+
 // Version is updated by make_release.py; DO NOT EDIT.
 // Version 2020.10.02
 #define BLASPP_VERSION 20201002

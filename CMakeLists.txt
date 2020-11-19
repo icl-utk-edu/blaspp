@@ -380,7 +380,7 @@ install(
 )
 install(
     FILES "${PROJECT_BINARY_DIR}/include/blas/defines.h"
-    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/blas"
 )
 
 # Install <package>Targets.cmake

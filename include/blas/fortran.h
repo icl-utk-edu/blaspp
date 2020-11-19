@@ -6,6 +6,7 @@
 #ifndef BLAS_FORTRAN_H
 #define BLAS_FORTRAN_H
 
+#include "blas/defines.h"
 #include "blas/mangling.h"
 #include "blas/config.h"
 

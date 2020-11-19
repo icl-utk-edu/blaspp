@@ -73,7 +73,6 @@ def main():
     try:
         config.cublas_library()
         config.environ.merge({'devtarget': 'cuda'})
-        config.environ.append( 'CXXFLAGS', '-DBLAS_HAVE_CUBLAS' )
     except Error:
         print_warn( 'BLAS++ CUDA wrappers will not be compiled.' )
 

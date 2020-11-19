@@ -6,6 +6,7 @@
 // Function definitions moved from cblas_wrappers.hh for ESSL compatability.
 
 #include "blas/fortran.h"
+#include "cblas_wrappers.hh"
 
 #include <complex>
 

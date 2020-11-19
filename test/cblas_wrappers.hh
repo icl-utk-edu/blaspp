@@ -6,6 +6,8 @@
 #ifndef CBLAS_HH
 #define CBLAS_HH
 
+#include "blas/defines.h"
+
 #if defined(BLAS_HAVE_MKL)
     #if defined(BLAS_ILP64) && ! defined(MKL_ILP64)
         #define MKL_ILP64

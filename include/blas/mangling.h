@@ -6,6 +6,8 @@
 #ifndef BLAS_MANGLING_H
 #define BLAS_MANGLING_H
 
+#include "blas/defines.h"
+
 // -----------------------------------------------------------------------------
 // Fortran name mangling depends on compiler.
 // Define FORTRAN_UPPER for uppercase,
