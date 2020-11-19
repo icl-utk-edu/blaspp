@@ -76,6 +76,12 @@ def main():
     except Error:
         print_warn( 'BLAS++ CUDA wrappers will not be compiled.' )
 
+    try:
+        config.rocblas_library()
+        config.environ.merge({'devtarget': 'rocm'})
+    except Error:
+        print_warn( 'BLAS++ ROCm wrappers will not be compiled.' )
+
     testsweeper = config.get_package(
         'testsweeper',
         ['../testsweeper', './testsweeper'],

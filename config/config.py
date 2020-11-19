@@ -617,7 +617,7 @@ def cublas_library():
     Does not actually run the resulting exe, to allow compiling with CUDA on a
     machine without GPUs.
     '''
-    libs = '-lcudart -lcublas'
+    libs = '-lcublas -lcudart'
     print_header( 'CUDA and cuBLAS libraries' )
     print_test( libs )
     env = {'LIBS': libs, 'CXXFLAGS': define('HAVE_CUBLAS')}
@@ -627,6 +627,26 @@ def cublas_library():
         environ.merge( env )
     else:
         raise Error( 'cuBLAS not found' )
+# end
+
+#-------------------------------------------------------------------------------
+def rocblas_library():
+    '''
+    Tests for linking ROCm/HIP and rocBLAS libraries.
+    Does not actually run the resulting exe, to allow compiling with ROCm on a
+    machine without GPUs.
+    '''
+    libs = '-lrocblas -lamdhip64'
+    print_header( 'ROCm and rocBLAS libraries' )
+    print_test( libs )
+    env = {'LIBS': libs,
+           'CXXFLAGS': '-D__HIP_PLATFORM_HCC__ ' + define('HAVE_ROCBLAS')}
+    (rc, out, err) = compile_exe( 'config/rocblas.cc', env )
+    print_result( libs, rc )
+    if (rc == 0):
+        environ.merge( env )
+    else:
+        raise Error( 'rocBLAS not found' )
 # end
 
 #-------------------------------------------------------------------------------
