@@ -7,147 +7,281 @@
 
 namespace blas {
 
+// =============================================================================
+// Light wrappers around CUDA and cuBLAS functions.
+#if defined(BLAS_HAVE_CUBLAS)
+
+// -----------------------------------------------------------------------------
+void stream_create( cudaStream_t* stream )
+{
+    blas_dev_call( cudaStreamCreate( stream ) );
+}
+
+// -----------------------------------------------------------------------------
+void stream_destroy( cudaStream_t stream )
+{
+    blas_dev_call( cudaStreamDestroy( stream ) );
+}
+
+// -----------------------------------------------------------------------------
+void stream_synchronize( cudaStream_t stream )
+{
+    blas_dev_call( cudaStreamSynchronize( stream ) );
+}
+
+// -----------------------------------------------------------------------------
+void handle_create( cublasHandle_t* handle )
+{
+    blas_dev_call( cublasCreate( handle ) );
+}
+
+// -----------------------------------------------------------------------------
+void handle_destroy( cublasHandle_t handle )
+{
+    blas_dev_call( cublasDestroy( handle ) );
+}
+
+// -----------------------------------------------------------------------------
+void handle_set_stream( cublasHandle_t handle, cudaStream_t stream )
+{
+    blas_dev_call( cublasSetStream( handle, stream ) );
+}
+
+// -----------------------------------------------------------------------------
+void event_create( cudaEvent_t* event )
+{
+    blas_dev_call( cudaEventCreate( event ) );
+}
+
+// -----------------------------------------------------------------------------
+void event_destroy( cudaEvent_t event )
+{
+    blas_dev_call( cudaEventDestroy( event ) );
+}
+
+// -----------------------------------------------------------------------------
+void event_record( cudaEvent_t event, cudaStream_t stream )
+{
+    blas_dev_call( cudaEventRecord( event, stream ) );
+}
+
+// -----------------------------------------------------------------------------
+void stream_wait_event( cudaStream_t stream, cudaEvent_t event, unsigned int flags )
+{
+    blas_dev_call( cudaStreamWaitEvent( stream, event, flags ) );
+}
+
+// =============================================================================
+// Light wrappers around HIP and rocBLAS functions.
+#elif defined(BLAS_HAVE_ROCBLAS)
+
+// -----------------------------------------------------------------------------
+void stream_create( hipStream_t* stream )
+{
+    blas_dev_call( hipStreamCreate( stream ) );
+}
+
+// -----------------------------------------------------------------------------
+void stream_destroy( hipStream_t stream )
+{
+    blas_dev_call( hipStreamDestroy( stream ) );
+}
+
+// -----------------------------------------------------------------------------
+void stream_synchronize( hipStream_t stream )
+{
+    blas_dev_call( hipStreamSynchronize( stream ) );
+}
+
+// -----------------------------------------------------------------------------
+void handle_create( rocblas_handle* handle )
+{
+    blas_dev_call( rocblas_create_handle( handle ) );
+}
+
+// -----------------------------------------------------------------------------
+void handle_destroy( rocblas_handle handle )
+{
+    blas_dev_call( rocblas_destroy_handle( handle ) );
+}
+
+// -----------------------------------------------------------------------------
+void handle_set_stream( rocblas_handle handle, hipStream_t stream )
+{
+    blas_dev_call( rocblas_set_stream( handle, stream ) );
+}
+
+// -----------------------------------------------------------------------------
+void event_create( hipEvent_t* event )
+{
+    blas_dev_call( hipEventCreate( event ) );
+}
+
+// -----------------------------------------------------------------------------
+void event_destroy( hipEvent_t event )
+{
+    blas_dev_call( hipEventDestroy( event ) );
+}
+
+// -----------------------------------------------------------------------------
+void event_record( hipEvent_t event, hipStream_t stream )
+{
+    blas_dev_call( hipEventRecord( event, stream ) );
+}
+
+// -----------------------------------------------------------------------------
+void stream_wait_event( hipStream_t stream, hipEvent_t event, unsigned int flags )
+{
+    blas_dev_call( hipStreamWaitEvent( stream, event, flags ) );
+}
+
+#endif
+
+// =============================================================================
+
 /** queue member functions **/
 
 // -----------------------------------------------------------------------------
-// default constructor
+/// Default constructor.
 Queue::Queue()
 {
     // get the currently set device ID
-    blas::get_device( &device_ );
+    get_device( &device_ );
     batch_limit_ = DEV_QUEUE_DEFAULT_BATCH_LIMIT;
     // compute workspace for pointer arrays in the queue
     // fork size + 1 (def. stream), each need 3 pointer arrays
     size_t workspace_size = 3 * batch_limit_ * ( DEV_QUEUE_FORK_SIZE + 1 );
-    devPtrArray  = blas::device_malloc<void*>( workspace_size );
+    dev_ptr_array_ = device_malloc<void*>( workspace_size );
 
-    #ifdef BLAS_HAVE_CUBLAS
+    #if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
         // default stream
-        blas_cuda_call( cudaStreamCreate( &default_stream_ ) );
-        blas_cublas_call( cublasCreate( &handle_ ) );
-        blas_cublas_call( cublasSetStream( handle_, default_stream_ ) );
+        stream_create( &default_stream_ );
+        handle_create( &handle_ );
+        handle_set_stream( handle_, default_stream_ );
         current_stream_       = &default_stream_;
         num_active_streams_   = 1;
         current_stream_index_ = 0;
 
         // create parallel streams
-        for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; i++) {
-            blas_cuda_call( cudaStreamCreate(&parallel_streams_[ i ]) );
+        for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
+            stream_create( &parallel_streams_[ i ] );
         }
 
         // create default and parallel events
-        blas_cuda_call( cudaEventCreate( &default_event_ ) );
-        for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; i++) {
-            blas_cuda_call( cudaEventCreate(&parallel_events_[ i ]) );
+        event_create( &default_event_ );
+        for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
+            event_create(&parallel_events_[ i ]);
         }
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: rocBLAS queue init
     #endif
 }
 
 // -----------------------------------------------------------------------------
-// constructor with batch init
+/// Constructor with device and batch init.
+// todo: merge with default constructor.
 Queue::Queue( blas::Device device, int64_t batch_size )
 {
-    device_ = device;
-    batch_limit_ = batch_size;
-    blas::set_device( device_ );
-    // compute workspace for pointer arrays in the queue
-    // fork size + 1 (def. stream), each need 3 pointer arrays
-    size_t workspace_size = 3 * batch_limit_ * ( DEV_QUEUE_FORK_SIZE + 1 );
-    devPtrArray  = blas::device_malloc<void*>( workspace_size );
+    #if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
+        device_ = device;
+        batch_limit_ = batch_size;
+        set_device( device_ );
+        // compute workspace for pointer arrays in the queue
+        // fork size + 1 (def. stream), each need 3 pointer arrays
+        size_t workspace_size = 3 * batch_limit_ * ( DEV_QUEUE_FORK_SIZE + 1 );
+        dev_ptr_array_ = device_malloc<void*>( workspace_size );
 
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cuda_call( cudaStreamCreate( &default_stream_ ) );
-        blas_cublas_call( cublasCreate( &handle_ ) );
-        blas_cublas_call( cublasSetStream( handle_, default_stream_ ) );
+        stream_create( &default_stream_ );
+        handle_create( &handle_ );
+        handle_set_stream( handle_, default_stream_ );
         current_stream_       = &default_stream_;
         num_active_streams_   = 1;
         current_stream_index_ = 0;
 
         // create parallel streams
-        for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; i++) {
-            blas_cuda_call( cudaStreamCreate(&parallel_streams_[ i ]) );
+        for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
+            stream_create(&parallel_streams_[ i ]);
         }
 
         // create default and parallel events
-        blas_cuda_call( cudaEventCreate( &default_event_ ) );
-        for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; i++) {
-            blas_cuda_call( cudaEventCreate(&parallel_events_[ i ]) );
+        event_create( &default_event_ );
+        for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
+            event_create( &parallel_events_[ i ] );
         }
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: rocBLAS queue init and vector resize
     #endif
 }
 
 // -----------------------------------------------------------------------------
-/// @return device associated with this queue
-Device   Queue::device()          { return device_;   }
+// Default destructor.
+Queue::~Queue()
+{
+    try {
+        #if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
+            device_free( dev_ptr_array_ );
+            handle_destroy( handle_ );
+            stream_destroy( default_stream_ );
+
+            // destroy parallel streams
+            for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
+                stream_destroy( parallel_streams_[ i ] );
+            }
+
+            // destroy events
+            event_destroy( default_event_ );
+            for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
+                event_destroy( parallel_events_[ i ] );
+            }
+        #endif
+    }
+    catch (...) {
+        // Destructors can't leak exceptions.
+        // todo: best way to handle?
+    }
+}
 
 // -----------------------------------------------------------------------------
-/// @return device blas handle associated with this queue
-device_blas_handle_t   Queue::handle()   { return handle_;   }
-
-// -----------------------------------------------------------------------------
-#ifdef BLAS_HAVE_CUBLAS
-    /// @return CUDA stream associated with this queue; requires CUDA.
-    cudaStream_t     Queue::stream()     { return *current_stream_;   }
-#elif defined(HAVE_ROCBLAS)
-    // TODO: add similar functionality for rocBLAS, if required
-#endif
-
-
-// -----------------------------------------------------------------------------
-/// synchronize with queue.
+/// Synchronize with queue.
 void Queue::sync()
 {
-    #ifdef BLAS_HAVE_CUBLAS
+    #if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
         // in default mode, sync with default stream
         // otherwise, sync against the parallel streams
         if (current_stream_ == &default_stream_) {
-            blas_cuda_call( cudaStreamSynchronize( default_stream_ ) );
+            stream_synchronize( default_stream_ );
         }
         else {
-            for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; i++) {
-                blas_cuda_call( cudaStreamSynchronize(parallel_streams_[ i ]) );
+            for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
+                stream_synchronize( parallel_streams_[ i ] );
             }
         }
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: sync with queue in rocBLAS
     #endif
 }
 
 // -----------------------------------------------------------------------------
-/// get batch limit.
-size_t Queue::get_batch_limit()    { return batch_limit_; }
-
-// -----------------------------------------------------------------------------
-/// get device array pointer for the current stream.
-void**  Queue::get_devPtrArray()
+/// Get device array pointer for the current stream.
+void**  Queue::get_dev_ptr_array()
 {
-    // in default (join) mode, return devPtrArray with no offset
+    // in default (join) mode, return dev_ptr_array with no offset
     if (current_stream_ == &default_stream_)
-        return devPtrArray;
+        return dev_ptr_array_;
 
-    // in fork mode, return devPtrArray + offset
-    size_t offset = ( current_stream_index_ + 1 ) * 3 * batch_limit_;
-    return (devPtrArray + offset);
+    // in fork mode, return dev_ptr_array_ + offset
+    size_t offset = (current_stream_index_ + 1) * 3 * batch_limit_;
+    return (dev_ptr_array_ + offset);
 }
 
 // -----------------------------------------------------------------------------
-/// forks the kernel launches assigned to this queue to parallel streams
-/// this function is not nested ( you must join after each fork )
+/// Forks the kernel launches assigned to this queue to parallel streams.
+/// This function is not nested (you must join after each fork).
 void Queue::fork()
 {
-    #ifdef BLAS_HAVE_CUBLAS
+    #if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
         // check if queue is already in fork mode
         if (current_stream_ != &default_stream_)
             return;
 
         // make sure dependencies are respected
-        blas_cuda_call( cudaEventRecord(default_event_, default_stream_) );
-        for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; i++) {
-            blas_cuda_call( cudaStreamWaitEvent(parallel_streams_[i], default_event_, 0) );
+        event_record(default_event_, default_stream_);
+        for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
+            stream_wait_event( parallel_streams_[i], default_event_, 0 );
         }
 
         // assign current stream
@@ -156,26 +290,24 @@ void Queue::fork()
         current_stream_       = &parallel_streams_[ current_stream_index_ ];
 
         // assign cublas handle to current stream
-        blas_cublas_call( cublasSetStream( handle_, *current_stream_ ) );
-    #else
-        // TODO: rocBLAS equivalent
+        handle_set_stream( handle_, *current_stream_ );
     #endif
 }
 
 // -----------------------------------------------------------------------------
-/// switch back executions on this queue from parallel streams to the default stream
-/// this function is not nested ( you must join after each fork )
+/// Switch executions on this queue back from parallel streams to the default
+/// stream. This function is not nested (you must join after each fork).
 void Queue::join()
 {
-    #ifdef BLAS_HAVE_CUBLAS
+    #if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
         // check if queue is already joined
         if (current_stream_ == &default_stream_)
             return;
 
         // make sure dependencies are respected
-        for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; i++) {
-            blas_cuda_call( cudaEventRecord(parallel_events_[i], parallel_streams_[i]) );
-            blas_cuda_call( cudaStreamWaitEvent(default_stream_, parallel_events_[i], 0) );
+        for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
+            event_record( parallel_events_[i], parallel_streams_[i] );
+            stream_wait_event( default_stream_, parallel_events_[i], 0 );
         }
 
         // assign current stream
@@ -183,19 +315,17 @@ void Queue::join()
         num_active_streams_   = 1;
         current_stream_       = &default_stream_;
 
-        // assign cublas handle to current stream
-        blas_cublas_call( cublasSetStream( handle_, *current_stream_ ) );
-    #else
-        // TODO: rocBLAS equivalent
+        // assign current stream to blas handle
+        handle_set_stream( handle_, *current_stream_ );
     #endif
 }
 
 // -----------------------------------------------------------------------------
-/// in fork mode, switch execution to the next-in-line stream
-/// in join mode, no effect
+/// In fork mode, switch execution to the next-in-line stream.
+/// In join mode, no effect.
 void Queue::revolve()
 {
-    #ifdef BLAS_HAVE_CUBLAS
+    #if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
         // return if not in fork mode
         if (current_stream_ == &default_stream_)
             return;
@@ -204,34 +334,8 @@ void Queue::revolve()
         current_stream_index_ = (current_stream_index_ + 1) % num_active_streams_;
         current_stream_       = &parallel_streams_[ current_stream_index_ ];
 
-        // assign cublas handle to current stream
-        blas_cublas_call( cublasSetStream( handle_, *current_stream_ ) );
-    #else
-        // TODO: rocBLAS equivalent
-    #endif
-}
-
-// -----------------------------------------------------------------------------
-// default destructor
-Queue::~Queue()
-{
-    blas::device_free( devPtrArray );
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call( cublasDestroy( handle_ ) );
-        blas_cuda_call( cudaStreamDestroy( default_stream_ ) );
-
-        // destroy parallel streams
-        for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; i++) {
-            blas_cuda_call(cudaStreamDestroy( parallel_streams_[ i ] ));
-        }
-
-        // destroy events
-        blas_cuda_call( cudaEventDestroy( default_event_ ) );
-        for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; i++) {
-            blas_cuda_call( cudaEventDestroy(parallel_events_[ i ]) );
-        }
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: rocBLAS equivalent
+        // assign current stream to blas handle
+        handle_set_stream( handle_, *current_stream_ );
     #endif
 }
 

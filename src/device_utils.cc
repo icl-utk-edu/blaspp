@@ -14,10 +14,11 @@ namespace blas {
 void set_device(blas::Device device)
 {
     #ifdef BLAS_HAVE_CUBLAS
-        blas_cuda_call(
+        blas_dev_call(
             cudaSetDevice((device_blas_int)device) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: rocBLAS equivalent
+    #elif defined(BLAS_HAVE_ROCBLAS)
+        blas_dev_call(
+            hipSetDevice((device_blas_int)device) );
     #endif
 }
 
@@ -28,10 +29,11 @@ void get_device(blas::Device *device)
     device_blas_int dev;
 
     #ifdef BLAS_HAVE_CUBLAS
-        blas_cuda_call(
+        blas_dev_call(
             cudaGetDevice(&dev) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: rocBLAS equivalent
+    #elif defined(BLAS_HAVE_ROCBLAS)
+        blas_dev_call(
+            hipGetDevice(&dev) );
     #endif
 
     (*device) = (blas::Device)dev;
@@ -108,10 +110,11 @@ device_side_t device_side_const(blas::Side side)
 void device_free(void* ptr)
 {
     #ifdef BLAS_HAVE_CUBLAS
-        blas_cuda_call(
+        blas_dev_call(
             cudaFree( ptr ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: free memory for AMD GPUs
+    #elif defined(BLAS_HAVE_ROCBLAS)
+        blas_dev_call(
+            hipFree( ptr ) );
     #endif
 }
 
@@ -120,10 +123,11 @@ void device_free(void* ptr)
 void device_free_pinned(void* ptr)
 {
     #ifdef BLAS_HAVE_CUBLAS
-        blas_cuda_call(
+        blas_dev_call(
             cudaFreeHost( ptr ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: free memory using AMD driver API
+    #elif defined(BLAS_HAVE_ROCBLAS)
+        blas_dev_call(
+            hipHostFree( ptr ) );
     #endif
 }
 

@@ -69,7 +69,7 @@ void blas::batch::gemm(
 
         size_t batch_limit = queue.get_batch_limit();
         float **dAarray, **dBarray, **dCarray;
-        dAarray = (float**)queue.get_devPtrArray();
+        dAarray = (float**)queue.get_dev_ptr_array();
         dBarray = dAarray + batch_limit;
         dCarray = dBarray + batch_limit;
 
@@ -184,7 +184,7 @@ void blas::batch::gemm(
 
         size_t batch_limit = queue.get_batch_limit();
         double **dAarray, **dBarray, **dCarray;
-        dAarray = (double**)queue.get_devPtrArray();
+        dAarray = (double**)queue.get_dev_ptr_array();
         dBarray = dAarray + batch_limit;
         dCarray = dBarray + batch_limit;
 
@@ -300,7 +300,7 @@ void blas::batch::gemm(
 
         size_t batch_limit = queue.get_batch_limit();
         std::complex<float> **dAarray, **dBarray, **dCarray;
-        dAarray = (std::complex<float> **)queue.get_devPtrArray();
+        dAarray = (std::complex<float> **)queue.get_dev_ptr_array();
         dBarray = dAarray + batch_limit;
         dCarray = dBarray + batch_limit;
 
@@ -416,7 +416,7 @@ void blas::batch::gemm(
 
         size_t batch_limit = queue.get_batch_limit();
         std::complex<double> **dAarray, **dBarray, **dCarray;
-        dAarray = (std::complex<double> **)queue.get_devPtrArray();
+        dAarray = (std::complex<double> **)queue.get_dev_ptr_array();
         dBarray = dAarray + batch_limit;
         dCarray = dBarray + batch_limit;
 
@@ -557,7 +557,7 @@ void blas::batch::gemm(
 
         // each group is submitted to a different stream using strides of batch_limit
         // first, get the device pointer array for the current stream
-        dAarray = (float**)queue.get_devPtrArray();
+        dAarray = (float**)queue.get_dev_ptr_array();
         dBarray = dAarray + batch_limit;
         dCarray = dBarray + batch_limit;
         for (size_t ib = 0; ib < batch; ib += batch_limit) {
@@ -679,7 +679,7 @@ void blas::batch::gemm(
 
         // each group is submitted to a different stream using strides of batch_limit
         // first, get the device pointer array for the current stream
-        dAarray = (double**)queue.get_devPtrArray();
+        dAarray = (double**)queue.get_dev_ptr_array();
         dBarray = dAarray + batch_limit;
         dCarray = dBarray + batch_limit;
         for (size_t ib = 0; ib < batch; ib += batch_limit) {
@@ -801,7 +801,7 @@ void blas::batch::gemm(
 
         // each group is submitted to a different stream using strides of batch_limit
         // first, get the device pointer array for the current stream
-        dAarray = (std::complex<float>**)queue.get_devPtrArray();
+        dAarray = (std::complex<float>**)queue.get_dev_ptr_array();
         dBarray = dAarray + batch_limit;
         dCarray = dBarray + batch_limit;
         for (size_t ib = 0; ib < batch; ib += batch_limit) {
@@ -923,7 +923,7 @@ void blas::batch::gemm(
 
         // each group is submitted to a different stream using strides of batch_limit
         // first, get the device pointer array for the current stream
-        dAarray = (std::complex<double>**)queue.get_devPtrArray();
+        dAarray = (std::complex<double>**)queue.get_dev_ptr_array();
         dBarray = dAarray + batch_limit;
         dCarray = dBarray + batch_limit;
         for (size_t ib = 0; ib < batch; ib += batch_limit) {

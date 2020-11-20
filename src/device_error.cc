@@ -27,8 +27,8 @@ const char* blas::device_error_string(device_error_t error)
 {
     #ifdef BLAS_HAVE_CUBLAS
         return cudaGetErrorString( error );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: return error string for rocblas
+    #elif defined(BLAS_HAVE_ROCBLAS)
+        return hipGetErrorString( error );
     #endif
 }
 
@@ -36,8 +36,8 @@ const char* blas::device_error_string(device_error_t error)
 // return string of blas error
 const char* blas::device_error_string(device_blas_status_t status)
 {
-    switch (status) {
     #ifdef BLAS_HAVE_CUBLAS
+    switch (status) {
         case CUBLAS_STATUS_SUCCESS:
             return "device blas: success";
 
@@ -67,10 +67,12 @@ const char* blas::device_error_string(device_blas_status_t status)
 
         case CUBLAS_STATUS_LICENSE_ERROR:
             return "device blas: license error";
-    #elif defined(HAVE_ROCBLAS)
-    // TODO: return error string for rocblas
-    #endif
+
         default:
             return "unknown device blas error code";
     }
+
+    #elif defined(BLAS_HAVE_ROCBLAS)
+        return rocblas_status_to_string( status );
+    #endif
 }

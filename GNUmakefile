@@ -61,6 +61,8 @@ endif
 
 ifeq ($(devtarget),cuda)
     lib_src  = $(wildcard src/*.cc)
+else ifeq ($(devtarget),rocm)
+    lib_src  = $(wildcard src/*.cc)
 else
     lib_src  = $(filter-out src/device_%.cc, $(wildcard src/*.cc))
 endif
@@ -68,6 +70,8 @@ lib_obj  = $(addsuffix .o, $(basename $(lib_src)))
 dep     += $(addsuffix .d, $(basename $(lib_src)))
 
 ifeq ($(devtarget),cuda)
+    tester_src = $(wildcard test/*.cc)
+else ifeq ($(devtarget),rocm)
     tester_src = $(wildcard test/*.cc)
 else
     tester_src = $(filter-out test/%_device.cc, $(wildcard test/*.cc))

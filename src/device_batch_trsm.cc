@@ -75,7 +75,7 @@ void blas::batch::trsm(
 
         size_t batch_limit = queue.get_batch_limit();
         float **dAarray, **dBarray;
-        dAarray = (float**)queue.get_devPtrArray();
+        dAarray = (float**)queue.get_dev_ptr_array();
         dBarray = dAarray + batch_limit;
 
         for (size_t ib = 0; ib < batch; ib += batch_limit) {
@@ -181,7 +181,7 @@ void blas::batch::trsm(
 
         size_t batch_limit = queue.get_batch_limit();
         double **dAarray, **dBarray;
-        dAarray = (double**)queue.get_devPtrArray();
+        dAarray = (double**)queue.get_dev_ptr_array();
         dBarray = dAarray + batch_limit;
 
         for (size_t ib = 0; ib < batch; ib += batch_limit) {
@@ -287,7 +287,7 @@ void blas::batch::trsm(
 
         size_t batch_limit = queue.get_batch_limit();
         std::complex<float> **dAarray, **dBarray;
-        dAarray = (std::complex<float>**)queue.get_devPtrArray();
+        dAarray = (std::complex<float>**)queue.get_dev_ptr_array();
         dBarray = dAarray + batch_limit;
 
         for (size_t ib = 0; ib < batch; ib += batch_limit) {
@@ -393,7 +393,7 @@ void blas::batch::trsm(
 
         size_t batch_limit = queue.get_batch_limit();
         std::complex<double> **dAarray, **dBarray;
-        dAarray = (std::complex<double>**)queue.get_devPtrArray();
+        dAarray = (std::complex<double>**)queue.get_dev_ptr_array();
         dBarray = dAarray + batch_limit;
 
         for (size_t ib = 0; ib < batch; ib += batch_limit) {

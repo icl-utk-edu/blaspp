@@ -13,25 +13,49 @@
 // constants -- defined as needed.
 // Only needed are those shared between cublas and rocblas
 // Constants that exist on only one side should be explicitly handled
-#define    DevSuccess        cudaSuccess
-#define    DevBlasSuccess    CUBLAS_STATUS_SUCCESS
 
-// trans
-#define    DevNoTrans        CUBLAS_OP_N
-#define    DevTrans          CUBLAS_OP_T
-#define    DevConjTrans      CUBLAS_OP_C
+#ifdef BLAS_HAVE_CUBLAS
+    #define    DevSuccess        cudaSuccess
+    #define    DevBlasSuccess    CUBLAS_STATUS_SUCCESS
 
-// diag
-#define    DevDiagUnit       CUBLAS_DIAG_UNIT
-#define    DevDiagNonUnit    CUBLAS_DIAG_NON_UNIT
+    // trans
+    #define    DevNoTrans        CUBLAS_OP_N
+    #define    DevTrans          CUBLAS_OP_T
+    #define    DevConjTrans      CUBLAS_OP_C
 
-// uplo
-#define    DevUploUpper      CUBLAS_FILL_MODE_UPPER
-#define    DevUploLower      CUBLAS_FILL_MODE_LOWER
+    // diag
+    #define    DevDiagUnit       CUBLAS_DIAG_UNIT
+    #define    DevDiagNonUnit    CUBLAS_DIAG_NON_UNIT
 
-// side
-#define    DevSideLeft       CUBLAS_SIDE_LEFT
-#define    DevSideRight      CUBLAS_SIDE_RIGHT
+    // uplo
+    #define    DevUploUpper      CUBLAS_FILL_MODE_UPPER
+    #define    DevUploLower      CUBLAS_FILL_MODE_LOWER
+
+    // side
+    #define    DevSideLeft       CUBLAS_SIDE_LEFT
+    #define    DevSideRight      CUBLAS_SIDE_RIGHT
+
+#elif defined(BLAS_HAVE_ROCBLAS)
+    #define    DevSuccess        hipSuccess
+    #define    DevBlasSuccess    rocblas_status_success
+
+    // trans
+    #define    DevNoTrans        rocblas_operation_none
+    #define    DevTrans          rocblas_operation_transpose
+    #define    DevConjTrans      rocblas_operation_conjugate_transpose
+
+    // diag
+    #define    DevDiagUnit       rocblas_diagonal_unit
+    #define    DevDiagNonUnit    rocblas_diagonal_non_unit
+
+    // uplo
+    #define    DevUploUpper      rocblas_fill_upper
+    #define    DevUploLower      rocblas_fill_lower
+
+    // side
+    #define    DevSideLeft       rocblas_side_left
+    #define    DevSideRight      rocblas_side_right
+#endif
 
 namespace blas {
 namespace device {

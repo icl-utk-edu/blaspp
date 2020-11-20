@@ -5,6 +5,8 @@
 
 #include "blas/device.hh"
 
+#ifdef BLAS_HAVE_ROCBLAS
+
 namespace blas {
 namespace device {
 
@@ -35,16 +37,13 @@ void sgemm(
     float beta,
     float       *dC, device_blas_int lddc)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasSgemm(
-                handle, transA, transB,
-                m, n, k,
-                &alpha, dA, ldda, dB, lddb,
-                &beta,  dC, lddc ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_sgemm(
+            handle, transA, transB,
+            m, n, k,
+            &alpha, dA, ldda,
+                    dB, lddb,
+            &beta,  dC, lddc ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -59,16 +58,13 @@ void dgemm(
     double beta,
     double       *dC, device_blas_int lddc)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasDgemm(
-                handle, transA, transB,
-                m, n, k,
-                &alpha, dA, ldda, dB, lddb,
-                &beta,  dC, lddc ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_dgemm(
+            handle, transA, transB,
+            m, n, k,
+            &alpha, dA, ldda,
+                    dB, lddb,
+            &beta,  dC, lddc ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -83,15 +79,14 @@ void cgemm(
     std::complex<float> beta,
     std::complex<float>       *dC, device_blas_int lddc)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasCgemm(
-                handle, transA, transB, m, n, k,
-                (cuComplex*)&alpha, (cuComplex*)dA, ldda, (cuComplex*)dB, lddb,
-                (cuComplex*)&beta,  (cuComplex*)dC, lddc ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_cgemm(
+            handle, transA, transB, m, n, k,
+            (rocblas_float_complex*) &alpha,
+            (rocblas_float_complex*) dA, ldda,
+            (rocblas_float_complex*) dB, lddb,
+            (rocblas_float_complex*) &beta,
+            (rocblas_float_complex*) dC, lddc ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -106,16 +101,15 @@ void zgemm(
     std::complex<double> beta,
     std::complex<double>       *dC, device_blas_int lddc)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasZgemm(
-                handle, transA, transB,
-                m, n, k,
-                (cuDoubleComplex*)&alpha, (cuDoubleComplex*)dA, ldda, (cuDoubleComplex*)dB, lddb,
-                (cuDoubleComplex*)&beta,  (cuDoubleComplex*)dC, lddc ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_zgemm(
+            handle, transA, transB,
+            m, n, k,
+            (rocblas_double_complex*) &alpha,
+            (rocblas_double_complex*) dA, ldda,
+            (rocblas_double_complex*) dB, lddb,
+            (rocblas_double_complex*) &beta,
+            (rocblas_double_complex*) dC, lddc ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -130,16 +124,13 @@ void strsm(
     float const *dA, device_blas_int ldda,
     float       *dB, device_blas_int lddb)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasStrsm(
-                handle, side, uplo, trans, diag,
-                m, n, &alpha,
-                dA, ldda,
-                dB, lddb ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_strsm(
+            handle, side, uplo, trans, diag,
+            m, n,
+            &alpha,
+            dA, ldda,
+            dB, lddb ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -152,16 +143,13 @@ void dtrsm(
     double const *dA, device_blas_int ldda,
     double       *dB, device_blas_int lddb)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasDtrsm(
-                handle, side, uplo, trans, diag,
-                m, n, &alpha,
-                dA, ldda,
-                dB, lddb ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_dtrsm(
+            handle, side, uplo, trans, diag,
+            m, n,
+            &alpha,
+            dA, ldda,
+            dB, lddb ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -174,16 +162,13 @@ void ctrsm(
     std::complex<float> const *dA, device_blas_int ldda,
     std::complex<float>       *dB, device_blas_int lddb)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasCtrsm(
-                handle, side, uplo, trans, diag,
-                m, n, (cuComplex*)&alpha,
-                (cuComplex*)dA, ldda,
-                (cuComplex*)dB, lddb ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_ctrsm(
+            handle, side, uplo, trans, diag,
+            m, n,
+            (rocblas_float_complex*) &alpha,
+            (rocblas_float_complex*) dA, ldda,
+            (rocblas_float_complex*) dB, lddb ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -196,16 +181,13 @@ void ztrsm(
     std::complex<double> const *dA, device_blas_int ldda,
     std::complex<double>       *dB, device_blas_int lddb)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasZtrsm(
-                handle, side, uplo, trans, diag,
-                m, n, (cuDoubleComplex*)&alpha,
-                (cuDoubleComplex*)dA, ldda,
-                (cuDoubleComplex*)dB, lddb ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_ztrsm(
+            handle, side, uplo, trans, diag,
+            m, n,
+            (rocblas_double_complex*) &alpha,
+            (rocblas_double_complex*) dA, ldda,
+            (rocblas_double_complex*) dB, lddb ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -220,17 +202,13 @@ void strmm(
     float const *dA, device_blas_int ldda,
     float       *dB, device_blas_int lddb)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasStrmm(
-                handle, side, uplo, trans, diag,
-                m, n, &alpha,
-                dA, ldda,
-                dB, lddb,
-                dB, lddb ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_strmm(
+            handle, side, uplo, trans, diag,
+            m, n,
+            &alpha,
+            dA, ldda,
+            dB, lddb ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -243,17 +221,13 @@ void dtrmm(
     double const *dA, device_blas_int ldda,
     double       *dB, device_blas_int lddb)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasDtrmm(
-                handle, side, uplo, trans, diag,
-                m, n, &alpha,
-                dA, ldda,
-                dB, lddb,
-                dB, lddb ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_dtrmm(
+            handle, side, uplo, trans, diag,
+            m, n,
+            &alpha,
+            dA, ldda,
+            dB, lddb ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -266,17 +240,13 @@ void ctrmm(
     std::complex<float> const *dA, device_blas_int ldda,
     std::complex<float>       *dB, device_blas_int lddb)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasCtrmm(
-                handle, side, uplo, trans, diag,
-                m, n, (cuComplex*)&alpha,
-                (cuComplex*)dA, ldda,
-                (cuComplex*)dB, lddb,
-                (cuComplex*)dB, lddb ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_ctrmm(
+            handle, side, uplo, trans, diag,
+            m, n,
+            (rocblas_float_complex*) &alpha,
+            (rocblas_float_complex*) dA, ldda,
+            (rocblas_float_complex*) dB, lddb ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -289,17 +259,13 @@ void ztrmm(
     std::complex<double> const *dA, device_blas_int ldda,
     std::complex<double>       *dB, device_blas_int lddb)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasZtrmm(
-                handle, side, uplo, trans, diag,
-                m, n, (cuDoubleComplex*)&alpha,
-                (cuDoubleComplex*)dA, ldda,
-                (cuDoubleComplex*)dB, lddb,
-                (cuDoubleComplex*)dB, lddb ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_ztrmm(
+            handle, side, uplo, trans, diag,
+            m, n,
+            (rocblas_double_complex*) &alpha,
+            (rocblas_double_complex*) dA, ldda,
+            (rocblas_double_complex*) dB, lddb ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -316,17 +282,15 @@ void chemm(
     std::complex<float>  beta,
     std::complex<float>* dC, device_blas_int lddc)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasChemm(
-                handle, side, uplo,
-                m, n,
-                (cuComplex*)&alpha, (cuComplex*)dA, ldda,
-                (cuComplex*)dB, lddb,
-                (cuComplex*)&beta,  (cuComplex*)dC, lddc ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_chemm(
+            handle, side, uplo,
+            m, n,
+            (rocblas_float_complex*) &alpha,
+            (rocblas_float_complex*) dA, ldda,
+            (rocblas_float_complex*) dB, lddb,
+            (rocblas_float_complex*) &beta,
+            (rocblas_float_complex*) dC, lddc ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -341,17 +305,15 @@ void zhemm(
     std::complex<double>  beta,
     std::complex<double>* dC, device_blas_int lddc)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasZhemm(
-                handle, side, uplo,
-                m, n,
-                (cuDoubleComplex*)&alpha, (cuDoubleComplex*)dA, ldda,
-                (cuDoubleComplex*)dB, lddb,
-                (cuDoubleComplex*)&beta,  (cuDoubleComplex*)dC, lddc ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_zhemm(
+            handle, side, uplo,
+            m, n,
+            (rocblas_double_complex*) &alpha,
+            (rocblas_double_complex*) dA, ldda,
+            (rocblas_double_complex*) dB, lddb,
+            (rocblas_double_complex*) &beta,
+            (rocblas_double_complex*) dC, lddc ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -368,17 +330,13 @@ void ssymm(
     float  beta,
     float* dC, device_blas_int lddc)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasSsymm(
-                handle, side, uplo,
-                m, n,
-                &alpha, dA, ldda,
-                dB, lddb,
-                &beta,  dC, lddc ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_ssymm(
+            handle, side, uplo,
+            m, n,
+            &alpha, dA, ldda,
+                    dB, lddb,
+            &beta,  dC, lddc ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -393,17 +351,13 @@ void dsymm(
     double  beta,
     double* dC, device_blas_int lddc)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasDsymm(
-                handle, side, uplo,
-                m, n,
-                &alpha, dA, ldda,
-                dB, lddb,
-                &beta,  dC, lddc ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_dsymm(
+            handle, side, uplo,
+            m, n,
+            &alpha, dA, ldda,
+                    dB, lddb,
+            &beta,  dC, lddc ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -418,17 +372,15 @@ void csymm(
     std::complex<float>  beta,
     std::complex<float>* dC, device_blas_int lddc)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasCsymm(
-                handle, side, uplo,
-                m, n,
-                (cuComplex*)&alpha, (cuComplex*)dA, ldda,
-                (cuComplex*)dB, lddb,
-                (cuComplex*)&beta,  (cuComplex*)dC, lddc ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_csymm(
+            handle, side, uplo,
+            m, n,
+            (rocblas_float_complex*) &alpha,
+            (rocblas_float_complex*) dA, ldda,
+            (rocblas_float_complex*) dB, lddb,
+            (rocblas_float_complex*) &beta,
+            (rocblas_float_complex*) dC, lddc ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -443,17 +395,15 @@ void zsymm(
     std::complex<double>  beta,
     std::complex<double>* dC, device_blas_int lddc)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasZsymm(
-                handle, side, uplo,
-                m, n,
-                (cuDoubleComplex*)&alpha, (cuDoubleComplex*)dA, ldda,
-                (cuDoubleComplex*)dB, lddb,
-                (cuDoubleComplex*)&beta,  (cuDoubleComplex*)dC, lddc ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_zsymm(
+            handle, side, uplo,
+            m, n,
+            (rocblas_double_complex*) &alpha,
+            (rocblas_double_complex*) dA, ldda,
+            (rocblas_double_complex*) dB, lddb,
+            (rocblas_double_complex*) &beta,
+            (rocblas_double_complex*) dC, lddc ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -469,16 +419,12 @@ void cherk(
     float  beta,
     std::complex<float>* dC, device_blas_int lddc)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasCherk(
-                handle, uplo, trans,
-                n, k,
-                &alpha, (cuComplex*)dA, ldda,
-                &beta,  (cuComplex*)dC, lddc ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_cherk(
+            handle, uplo, trans,
+            n, k,
+            &alpha, (rocblas_float_complex*) dA, ldda,
+            &beta,  (rocblas_float_complex*) dC, lddc ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -492,16 +438,12 @@ void zherk(
     double  beta,
     std::complex<double>* dC, device_blas_int lddc)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasZherk(
-                handle, uplo, trans,
-                n, k,
-                &alpha, (cuDoubleComplex*)dA, ldda,
-                &beta,  (cuDoubleComplex*)dC, lddc ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_zherk(
+            handle, uplo, trans,
+            n, k,
+            &alpha, (rocblas_double_complex*) dA, ldda,
+            &beta,  (rocblas_double_complex*) dC, lddc ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -517,16 +459,12 @@ void ssyrk(
     float  beta,
     float* dC, device_blas_int lddc)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasSsyrk(
-                handle, uplo, trans,
-                n, k,
-                &alpha, dA, ldda,
-                &beta,  dC, lddc ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_ssyrk(
+            handle, uplo, trans,
+            n, k,
+            &alpha, dA, ldda,
+            &beta,  dC, lddc ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -540,16 +478,12 @@ void dsyrk(
     double  beta,
     double* dC, device_blas_int lddc)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasDsyrk(
-                handle, uplo, trans,
-                n, k,
-                &alpha, dA, ldda,
-                &beta,  dC, lddc ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_dsyrk(
+            handle, uplo, trans,
+            n, k,
+            &alpha, dA, ldda,
+            &beta,  dC, lddc ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -563,16 +497,14 @@ void csyrk(
     std::complex<float>  beta,
     std::complex<float>* dC, device_blas_int lddc)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasCsyrk(
-                handle, uplo, trans,
-                n, k,
-                (cuComplex*)&alpha, (cuComplex*)dA, ldda,
-                (cuComplex*)&beta,  (cuComplex*)dC, lddc ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_csyrk(
+            handle, uplo, trans,
+            n, k,
+            (rocblas_float_complex*) &alpha,
+            (rocblas_float_complex*) dA, ldda,
+            (rocblas_float_complex*) &beta,
+            (rocblas_float_complex*) dC, lddc ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -586,16 +518,14 @@ void zsyrk(
     std::complex<double>  beta,
     std::complex<double>* dC, device_blas_int lddc)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasZsyrk(
-                handle, uplo, trans,
-                n, k,
-                (cuDoubleComplex*)&alpha, (cuDoubleComplex*)dA, ldda,
-                (cuDoubleComplex*)&beta,  (cuDoubleComplex*)dC, lddc ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_zsyrk(
+            handle, uplo, trans,
+            n, k,
+            (rocblas_double_complex*) &alpha,
+            (rocblas_double_complex*) dA, ldda,
+            (rocblas_double_complex*) &beta,
+            (rocblas_double_complex*) dC, lddc ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -612,17 +542,15 @@ void cher2k(
     float  beta,
     std::complex<float>* dC, device_blas_int lddc)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasCher2k(
-                handle, uplo, trans,
-                n, k,
-                (cuComplex*)&alpha, (cuComplex*)dA, ldda,
-                (cuComplex*)dB, lddb,
-                &beta,              (cuComplex*)dC, lddc ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_cher2k(
+            handle, uplo, trans,
+            n, k,
+            (rocblas_float_complex*) &alpha,
+            (rocblas_float_complex*) dA, ldda,
+            (rocblas_float_complex*) dB, lddb,
+            &beta,
+            (rocblas_float_complex*) dC, lddc ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -631,23 +559,21 @@ void zher2k(
     device_blas_handle_t handle,
     device_uplo_t uplo, device_trans_t trans,
     device_blas_int n, device_blas_int k,
-    std::complex<double>  alpha,
+    std::complex<double> alpha,
     std::complex<double> const *dA, device_blas_int ldda,
     std::complex<double> const *dB, device_blas_int lddb,
     double  beta,
     std::complex<double>* dC, device_blas_int lddc)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasZher2k(
-                handle, uplo, trans,
-                n, k,
-                (cuDoubleComplex*)&alpha, (cuDoubleComplex*)dA, ldda,
-                (cuDoubleComplex*)dB, lddb,
-                &beta,                    (cuDoubleComplex*)dC, lddc ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_zher2k(
+            handle, uplo, trans,
+            n, k,
+            (rocblas_double_complex*) &alpha,
+            (rocblas_double_complex*) dA, ldda,
+            (rocblas_double_complex*) dB, lddb,
+            &beta,
+            (rocblas_double_complex*) dC, lddc ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -664,17 +590,13 @@ void ssyr2k(
     float  beta,
     float* dC, device_blas_int lddc)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasSsyr2k(
-                handle, uplo, trans,
-                n, k,
-                &alpha, dA, ldda,
-                dB, lddb,
-                &beta,  dC, lddc ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_ssyr2k(
+            handle, uplo, trans,
+            n, k,
+            &alpha, dA, ldda,
+                    dB, lddb,
+            &beta,  dC, lddc ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -689,17 +611,13 @@ void dsyr2k(
     double  beta,
     double* dC, device_blas_int lddc)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasDsyr2k(
-                handle, uplo, trans,
-                n, k,
-                &alpha, dA, ldda,
-                dB, lddb,
-                &beta,  dC, lddc ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_dsyr2k(
+            handle, uplo, trans,
+            n, k,
+            &alpha, dA, ldda,
+                    dB, lddb,
+            &beta,  dC, lddc ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -714,17 +632,15 @@ void csyr2k(
     std::complex<float>  beta,
     std::complex<float>* dC, device_blas_int lddc)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasCsyr2k(
-                handle, uplo, trans,
-                n, k,
-                (cuComplex*)&alpha, (cuComplex*)dA, ldda,
-                (cuComplex*)dB, lddb,
-                (cuComplex*)&beta,  (cuComplex*)dC, lddc ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_csyr2k(
+            handle, uplo, trans,
+            n, k,
+            (rocblas_float_complex*) &alpha,
+            (rocblas_float_complex*) dA, ldda,
+            (rocblas_float_complex*) dB, lddb,
+            (rocblas_float_complex*) &beta,
+            (rocblas_float_complex*) dC, lddc ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -739,17 +655,15 @@ void zsyr2k(
     std::complex<double>  beta,
     std::complex<double>* dC, device_blas_int lddc)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasZsyr2k(
-                handle, uplo, trans,
-                n, k,
-                (cuDoubleComplex*)&alpha, (cuDoubleComplex*)dA, ldda,
-                (cuDoubleComplex*)dB, lddb,
-                (cuDoubleComplex*)&beta,  (cuDoubleComplex*)dC, lddc ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_zsyr2k(
+            handle, uplo, trans,
+            n, k,
+            (rocblas_double_complex*) &alpha,
+            (rocblas_double_complex*) dA, ldda,
+            (rocblas_double_complex*) dB, lddb,
+            (rocblas_double_complex*) &beta,
+            (rocblas_double_complex*) dC, lddc ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -767,16 +681,16 @@ void batch_sgemm(
     float** dCarray, device_blas_int lddc,
     device_blas_int batch_size)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasSgemmBatched(
-                handle, transA, transB,
-                m, n, k,
-                &alpha, (const float**)dAarray, ldda, (const float**)dBarray, lddb,
-                &beta,                 dCarray, lddc, batch_size ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_sgemm_batched(
+            handle, transA, transB,
+            m, n, k,
+            &alpha,
+            (float const**) dAarray, ldda,
+            (float const**) dBarray, lddb,
+            &beta,
+            dCarray, lddc,
+            batch_size ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -792,16 +706,16 @@ void batch_dgemm(
     double** dCarray, device_blas_int lddc,
     device_blas_int batch_size)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasDgemmBatched(
-                handle, transA, transB,
-                m, n, k,
-                &alpha, (const double**)dAarray, ldda, (const double**)dBarray, lddb,
-                &beta,                  dCarray, lddc, batch_size ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_dgemm_batched(
+            handle, transA, transB,
+            m, n, k,
+            &alpha,
+            (double const**) dAarray, ldda,
+            (double const**) dBarray, lddb,
+            &beta,
+            dCarray, lddc,
+            batch_size ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -817,16 +731,16 @@ void batch_cgemm(
     std::complex<float>** dCarray, device_blas_int lddc,
     device_blas_int batch_size)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasCgemmBatched(
-                handle, transA, transB,
-                m, n, k,
-                (cuComplex*)&alpha, (const cuComplex**)dAarray, ldda, (const cuComplex**)dBarray, lddb,
-                (cuComplex*)&beta,  (      cuComplex**)dCarray, lddc, batch_size ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_cgemm_batched(
+            handle, transA, transB,
+            m, n, k,
+            (rocblas_float_complex*)        &alpha,
+            (rocblas_float_complex const**) dAarray, ldda,
+            (rocblas_float_complex const**) dBarray, lddb,
+            (rocblas_float_complex*)        &beta,
+            (rocblas_float_complex**)       dCarray, lddc,
+            batch_size ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -842,16 +756,16 @@ void batch_zgemm(
     std::complex<double>** dCarray, device_blas_int lddc,
     device_blas_int batch_size)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasZgemmBatched(
-                handle, transA, transB,
-                m, n, k,
-                (cuDoubleComplex*)&alpha, (const cuDoubleComplex**)dAarray, ldda, (const cuDoubleComplex**)dBarray, lddb,
-                (cuDoubleComplex*)&beta,  (      cuDoubleComplex**)dCarray, lddc, batch_size ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_zgemm_batched(
+            handle, transA, transB,
+            m, n, k,
+            (rocblas_double_complex*)        &alpha,
+            (rocblas_double_complex const**) dAarray, ldda,
+            (rocblas_double_complex const**) dBarray, lddb,
+            (rocblas_double_complex*)        &beta,
+            (rocblas_double_complex**)       dCarray, lddc,
+            batch_size ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -866,16 +780,14 @@ void batch_strsm(
     device_blas_int batch_size)
 
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasStrsmBatched(
-                handle, side, uplo, trans, diag,
-                m, n, &alpha,
-                (const float**)dAarray, ldda,
-                (      float**)dBarray, lddb, batch_size ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_strsm_batched(
+            handle, side, uplo, trans, diag,
+            m, n,
+            &alpha,
+            (float const**) dAarray, ldda,
+            (float**)       dBarray, lddb,
+            batch_size ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -889,16 +801,14 @@ void batch_dtrsm(
     double const * const * dBarray, device_blas_int lddb,
     device_blas_int batch_size)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasDtrsmBatched(
-                handle, side, uplo, trans, diag,
-                m, n, &alpha,
-                (const double**)dAarray, ldda,
-                (      double**)dBarray, lddb, batch_size ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_dtrsm_batched(
+            handle, side, uplo, trans, diag,
+            m, n,
+            &alpha,
+            (double const**) dAarray, ldda,
+            (double**)       dBarray, lddb,
+            batch_size ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -912,16 +822,14 @@ void batch_ctrsm(
     std::complex<float> const * const * dBarray, device_blas_int lddb,
     device_blas_int batch_size)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasCtrsmBatched(
-                handle, side, uplo, trans, diag,
-                m, n, (cuComplex*)&alpha,
-                (const cuComplex**)dAarray, ldda,
-                (      cuComplex**)dBarray, lddb, batch_size ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_ctrsm_batched(
+            handle, side, uplo, trans, diag,
+            m, n,
+            (rocblas_float_complex*)        &alpha,
+            (rocblas_float_complex const**) dAarray, ldda,
+            (rocblas_float_complex**)       dBarray, lddb,
+            batch_size ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -935,17 +843,17 @@ void batch_ztrsm(
     std::complex<double> const * const * dBarray, device_blas_int lddb,
     device_blas_int batch_size)
 {
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_cublas_call(
-            cublasZtrsmBatched(
-                handle, side, uplo, trans, diag,
-                m, n, (cuDoubleComplex*)&alpha,
-                (const cuDoubleComplex**)dAarray, ldda,
-                (      cuDoubleComplex**)dBarray, lddb, batch_size ) );
-    #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocBLAS
-    #endif
+    blas_dev_call(
+        rocblas_ztrsm_batched(
+            handle, side, uplo, trans, diag,
+            m, n,
+            (rocblas_double_complex*)        &alpha,
+            (rocblas_double_complex const**) dAarray, ldda,
+            (rocblas_double_complex**)       dBarray, lddb,
+            batch_size ) );
 }
 
 }  // namespace device
 }  // namespace blas
+
+#endif  // BLAS_HAVE_ROCBLAS

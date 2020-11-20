@@ -208,7 +208,6 @@ else()
             src/device_batch_syrk.cc
             src/device_batch_trmm.cc
             src/device_batch_trsm.cc
-            src/device_blas_wrappers.cc
             src/device_error.cc
             src/device_gemm.cc
             src/device_hemm.cc
@@ -221,6 +220,8 @@ else()
             src/device_trmm.cc
             src/device_trsm.cc
             src/device_utils.cc
+            src/cublas_wrappers.cc
+            src/rocblas_wrappers.cc
         )
 
         # CMake 3.17 adds find_package( CUDAToolkit )

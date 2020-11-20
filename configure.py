@@ -43,8 +43,8 @@ def main():
     config.prog_cxx_flags([
         '-O2', '-std=c++11', '-MMD',
         '-Wall',
-        '-pedantic',
-        '-Wshadow',
+        # '-pedantic',  # todo: conflict with ROCm 3.9.0
+        # '-Wshadow',   # todo: conflict with ROCm 3.9.0
         '-Wno-unused-local-typedefs',
         '-Wno-unused-function',
         #'-Wmissing-declarations',

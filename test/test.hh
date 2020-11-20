@@ -152,26 +152,26 @@ void test_batch_trsm  ( Params& params, bool run );
 
 // -----------------------------------------------------------------------------
 // Level 3 GPU BLAS
-#ifdef BLAS_HAVE_CUBLAS
+#if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
 void test_gemm_device  ( Params& params, bool run );
-void test_trsm_device  ( Params& params, bool run );
-void test_trmm_device  ( Params& params, bool run );
 void test_hemm_device  ( Params& params, bool run );
-void test_symm_device  ( Params& params, bool run );
+void test_her2k_device ( Params& params, bool run );
 void test_herk_device  ( Params& params, bool run );
+void test_symm_device  ( Params& params, bool run );
+void test_syr2k_device ( Params& params, bool run );
 void test_syrk_device  ( Params& params, bool run );
-void test_her2k_device  ( Params& params, bool run );
-void test_syr2k_device  ( Params& params, bool run );
+void test_trmm_device  ( Params& params, bool run );
+void test_trsm_device  ( Params& params, bool run );
 
-void test_batch_gemm_device( Params& params, bool run );
-void test_batch_trsm_device( Params& params, bool run );
-void test_batch_trmm_device( Params& params, bool run );
-void test_batch_hemm_device( Params& params, bool run );
-void test_batch_symm_device( Params& params, bool run );
-void test_batch_herk_device( Params& params, bool run );
-void test_batch_syrk_device( Params& params, bool run );
-void test_batch_her2k_device( Params& params, bool run );
-void test_batch_syr2k_device( Params& params, bool run );
+void test_batch_gemm_device  ( Params& params, bool run );
+void test_batch_hemm_device  ( Params& params, bool run );
+void test_batch_her2k_device ( Params& params, bool run );
+void test_batch_herk_device  ( Params& params, bool run );
+void test_batch_symm_device  ( Params& params, bool run );
+void test_batch_syr2k_device ( Params& params, bool run );
+void test_batch_syrk_device  ( Params& params, bool run );
+void test_batch_trmm_device  ( Params& params, bool run );
+void test_batch_trsm_device  ( Params& params, bool run );
 #endif
 
 // -----------------------------------------------------------------------------
