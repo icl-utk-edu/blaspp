@@ -293,6 +293,42 @@ void device_getvector(
     #endif
 }
 
+//------------------------------------------------------------------------------
+// device memset
+template <typename T>
+void device_memset(
+    T* ptr,
+    int value, int64_t nelements, Queue& queue)
+{
+    #ifdef BLAS_WITH_CUBLAS
+        blas_cuda_call(
+            cudaMemsetAsync(
+                ptr, value,
+                nelements * sizeof(T), queue.stream() ) );
+    #elif defined(HAVE_ROCBLAS)
+        // TODO: call rocblas_memset
+    #endif
+}
+
+//------------------------------------------------------------------------------
+// device get memcpy
+template <typename T>
+void device_memcpy(
+    void* devPtr,
+    void* hostPtr,
+    int64_t nelements, enum cudaMemcpyKind memcpy_kind, Queue& queue)
+{
+    #ifdef BLAS_WITH_CUBLAS
+        blas_cuda_call(
+            cudaMemcpyAsync(devPtr, hostPtr,
+                sizeof(T)*nelements,
+                memcpy_kind,
+                queue.stream() ) );
+    #elif defined(HAVE_ROCBLAS)
+        // TODO: call rocblas_memcpy
+    #endif
+}
+
 }  // namespace blas
 
 #endif        //  #ifndef BLAS_DEVICE_HH
