@@ -24,7 +24,7 @@ void blas::batch::hemm(
     const size_t batch,                    std::vector<int64_t>       &info )
 {
     blas_error_if( batch < 0 );
-    blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
+    blas_error_if( ! (info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if (info.size() > 0) {
         // perform error checking
         blas::batch::hemm_check<float>(
@@ -74,7 +74,7 @@ void blas::batch::hemm(
     const size_t batch,                     std::vector<int64_t>       &info )
 {
     blas_error_if( batch < 0 );
-    blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
+    blas_error_if( ! (info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if (info.size() > 0) {
         // perform error checking
         blas::batch::hemm_check<double>(
@@ -124,7 +124,7 @@ void blas::batch::hemm(
     const size_t batch,                                  std::vector<int64_t>       &info )
 {
     blas_error_if( batch < 0 );
-    blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
+    blas_error_if( ! (info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if (info.size() > 0) {
         // perform error checking
         blas::batch::hemm_check<std::complex<float>>(
@@ -174,7 +174,7 @@ void blas::batch::hemm(
     const size_t batch,                                   std::vector<int64_t>       &info )
 {
     blas_error_if( batch < 0 );
-    blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
+    blas_error_if( ! (info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if (info.size() > 0) {
         // perform error checking
         blas::batch::hemm_check<std::complex<double>>(

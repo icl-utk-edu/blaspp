@@ -25,7 +25,7 @@ void blas::batch::herk(
 {
     blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
-    blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
+    blas_error_if( ! (info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if (info.size() > 0) {
         // perform error checking
         blas::batch::herk_check<float, float>(
@@ -78,7 +78,7 @@ void blas::batch::herk(
 {
     blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
-    blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
+    blas_error_if( ! (info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if (info.size() > 0) {
         // perform error checking
         blas::batch::herk_check<double, double>(
@@ -131,7 +131,7 @@ void blas::batch::herk(
 {
     blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
-    blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
+    blas_error_if( ! (info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if (info.size() > 0) {
         // perform error checking
         blas::batch::herk_check<std::complex<float>, float>(
@@ -184,7 +184,7 @@ void blas::batch::herk(
 {
     blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
-    blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
+    blas_error_if( ! (info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if (info.size() > 0) {
         // perform error checking
         blas::batch::herk_check<std::complex<double>, double>(

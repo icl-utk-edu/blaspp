@@ -29,7 +29,7 @@ void blas::batch::trsm(
 {
     blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
-    blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
+    blas_error_if( ! (info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if (info.size() > 0) {
         // perform error checking
         blas::batch::trsm_check<float>( layout, side, uplo, trans, diag,
@@ -136,7 +136,7 @@ void blas::batch::trsm(
 {
     blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
-    blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
+    blas_error_if( ! (info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if (info.size() > 0) {
         // perform error checking
         blas::batch::trsm_check<double>( layout, side, uplo, trans, diag,
@@ -243,7 +243,7 @@ void blas::batch::trsm(
 {
     blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
-    blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
+    blas_error_if( ! (info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if (info.size() > 0) {
         // perform error checking
         blas::batch::trsm_check<std::complex<float>>( layout, side, uplo, trans, diag,
@@ -350,7 +350,7 @@ void blas::batch::trsm(
 {
     blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch < 0 );
-    blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
+    blas_error_if( ! (info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if (info.size() > 0) {
         // perform error checking
         blas::batch::trsm_check<std::complex<double>>( layout, side, uplo, trans, diag,

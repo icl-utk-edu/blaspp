@@ -25,7 +25,7 @@ void blas::batch::gemm(
     const size_t batch,                  std::vector<int64_t>       &info )
 {
     blas_error_if( batch < 0 );
-    blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
+    blas_error_if( ! (info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if (info.size() > 0) {
         // perform error checking
         blas::batch::gemm_check<float>( layout, transA, transB,
@@ -69,15 +69,15 @@ void blas::batch::gemm(
     std::vector<int64_t>  const &n,
     std::vector<int64_t>  const &k,
     std::vector<double >  const &alpha,
-    std::vector<double*>  const &Aarray, std::vector<int64_t>  const &ldda,
-    std::vector<double*>  const &Barray, std::vector<int64_t>  const &lddb,
+    std::vector<double*>  const &Aarray, std::vector<int64_t> const &ldda,
+    std::vector<double*>  const &Barray, std::vector<int64_t> const &lddb,
     std::vector<double >  const &beta,
     std::vector<double*>  const &Carray, std::vector<int64_t> const &lddc,
     const size_t batch,                  std::vector<int64_t>       &info )
 {
 
     blas_error_if( batch < 0 );
-    blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
+    blas_error_if( ! (info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if (info.size() > 0) {
         // perform error checking
         blas::batch::gemm_check<double>( layout, transA, transB,
@@ -120,16 +120,16 @@ void blas::batch::gemm(
     std::vector<int64_t>  const &m,
     std::vector<int64_t>  const &n,
     std::vector<int64_t>  const &k,
-    std::vector< std::complex<float>  >   const &alpha,
-    std::vector< std::complex<float>* >   const &Aarray, std::vector<int64_t> const &ldda,
-    std::vector< std::complex<float>* >   const &Barray, std::vector<int64_t> const &lddb,
-    std::vector< std::complex<float>  >   const &beta,
-    std::vector< std::complex<float>* >   const &Carray, std::vector<int64_t> const &lddc,
-    const size_t batch,                                  std::vector<int64_t>  &info )
+    std::vector< std::complex<float>  > const &alpha,
+    std::vector< std::complex<float>* > const &Aarray, std::vector<int64_t> const &ldda,
+    std::vector< std::complex<float>* > const &Barray, std::vector<int64_t> const &lddb,
+    std::vector< std::complex<float>  > const &beta,
+    std::vector< std::complex<float>* > const &Carray, std::vector<int64_t> const &lddc,
+    const size_t batch,                                std::vector<int64_t> &info )
 {
 
     blas_error_if( batch < 0 );
-    blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
+    blas_error_if( ! (info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if (info.size() > 0) {
         // perform error checking
         blas::batch::gemm_check< std::complex<float> >( layout, transA, transB,
@@ -172,16 +172,16 @@ void blas::batch::gemm(
     std::vector<int64_t>  const &m,
     std::vector<int64_t>  const &n,
     std::vector<int64_t>  const &k,
-    std::vector< std::complex<double>  >   const &alpha,
-    std::vector< std::complex<double>* >   const &Aarray, std::vector<int64_t> const &ldda,
-    std::vector< std::complex<double>* >   const &Barray, std::vector<int64_t> const &lddb,
-    std::vector< std::complex<double>  >   const &beta,
-    std::vector< std::complex<double>* >   const &Carray, std::vector<int64_t> const &lddc,
-    const size_t batch,                                   std::vector<int64_t>       &info )
+    std::vector< std::complex<double>  > const &alpha,
+    std::vector< std::complex<double>* > const &Aarray, std::vector<int64_t> const &ldda,
+    std::vector< std::complex<double>* > const &Barray, std::vector<int64_t> const &lddb,
+    std::vector< std::complex<double>  > const &beta,
+    std::vector< std::complex<double>* > const &Carray, std::vector<int64_t> const &lddc,
+    const size_t batch,                                 std::vector<int64_t>       &info )
 {
 
     blas_error_if( batch < 0 );
-    blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
+    blas_error_if( ! (info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if (info.size() > 0) {
         // perform error checking
         blas::batch::gemm_check< std::complex<double> >( layout, transA, transB,

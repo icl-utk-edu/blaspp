@@ -24,7 +24,7 @@ void blas::batch::trmm(
     const size_t batch,                    std::vector<int64_t>       &info )
 {
     blas_error_if( batch < 0 );
-    blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
+    blas_error_if( ! (info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if (info.size() > 0) {
         // perform error checking
         blas::batch::trmm_check<float>( layout, side, uplo, trans, diag,
@@ -71,7 +71,7 @@ void blas::batch::trmm(
     const size_t batch,                     std::vector<int64_t>       &info )
 {
     blas_error_if( batch < 0 );
-    blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
+    blas_error_if( ! (info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if (info.size() > 0) {
         // perform error checking
         blas::batch::trmm_check<double>( layout, side, uplo, trans, diag,
@@ -118,7 +118,7 @@ void blas::batch::trmm(
     const size_t batch,                                  std::vector<int64_t>       &info )
 {
     blas_error_if( batch < 0 );
-    blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
+    blas_error_if( ! (info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if (info.size() > 0) {
         // perform error checking
         blas::batch::trmm_check<std::complex<float>>(
@@ -165,7 +165,7 @@ void blas::batch::trmm(
     const size_t batch,                                   std::vector<int64_t>       &info )
 {
     blas_error_if( batch < 0 );
-    blas_error_if( !(info.size() == 0 || info.size() == 1 || info.size() == batch) );
+    blas_error_if( ! (info.size() == 0 || info.size() == 1 || info.size() == batch) );
     if (info.size() > 0) {
         // perform error checking
         blas::batch::trmm_check<std::complex<double>>(
