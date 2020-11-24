@@ -63,12 +63,10 @@ void blas::syrk(
         trans = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
     }
 
-    device_uplo_t uplo_ = device_uplo_const( uplo );
-    device_trans_t trans_ = device_trans_const( trans );
     blas::set_device( queue.device() );
     device::ssyrk(
-            queue.handle(),
-            uplo_, trans_,
+            queue,
+            uplo, trans,
             n_, k_,
             alpha, dA, ldda_,
             beta,  dC, lddc_ );
@@ -125,12 +123,10 @@ void blas::syrk(
         trans = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
     }
 
-    device_uplo_t uplo_ = device_uplo_const( uplo );
-    device_trans_t trans_ = device_trans_const( trans );
     blas::set_device( queue.device() );
     device::dsyrk(
-            queue.handle(),
-            uplo_, trans_,
+            queue,
+            uplo, trans,
             n_, k_,
             alpha, dA, ldda_,
             beta,  dC, lddc_ );
@@ -186,12 +182,10 @@ void blas::syrk(
         trans = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
     }
 
-    device_uplo_t uplo_ = device_uplo_const( uplo );
-    device_trans_t trans_ = device_trans_const( trans );
     blas::set_device( queue.device() );
     device::csyrk(
-            queue.handle(),
-            uplo_, trans_,
+            queue,
+            uplo, trans,
             n_, k_,
             alpha, dA, ldda_,
             beta,  dC, lddc_ );
@@ -247,12 +241,10 @@ void blas::syrk(
         trans = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
     }
 
-    device_uplo_t uplo_ = device_uplo_const( uplo );
-    device_trans_t trans_ = device_trans_const( trans );
     blas::set_device( queue.device() );
     device::zsyrk(
-            queue.handle(),
-            uplo_, trans_,
+            queue,
+            uplo, trans,
             n_, k_,
             alpha, dA, ldda_,
             beta,  dC, lddc_ );

@@ -6,56 +6,9 @@
 #ifndef BLAS_DEVICE_NAMES_HH
 #define BLAS_DEVICE_NAMES_HH
 
-#include "blas/device_types.hh"
+#include "blas/device.hh"
 
 #include <complex>
-
-// constants -- defined as needed.
-// Only needed are those shared between cublas and rocblas
-// Constants that exist on only one side should be explicitly handled
-
-#ifdef BLAS_HAVE_CUBLAS
-    #define    DevSuccess        cudaSuccess
-    #define    DevBlasSuccess    CUBLAS_STATUS_SUCCESS
-
-    // trans
-    #define    DevNoTrans        CUBLAS_OP_N
-    #define    DevTrans          CUBLAS_OP_T
-    #define    DevConjTrans      CUBLAS_OP_C
-
-    // diag
-    #define    DevDiagUnit       CUBLAS_DIAG_UNIT
-    #define    DevDiagNonUnit    CUBLAS_DIAG_NON_UNIT
-
-    // uplo
-    #define    DevUploUpper      CUBLAS_FILL_MODE_UPPER
-    #define    DevUploLower      CUBLAS_FILL_MODE_LOWER
-
-    // side
-    #define    DevSideLeft       CUBLAS_SIDE_LEFT
-    #define    DevSideRight      CUBLAS_SIDE_RIGHT
-
-#elif defined(BLAS_HAVE_ROCBLAS)
-    #define    DevSuccess        hipSuccess
-    #define    DevBlasSuccess    rocblas_status_success
-
-    // trans
-    #define    DevNoTrans        rocblas_operation_none
-    #define    DevTrans          rocblas_operation_transpose
-    #define    DevConjTrans      rocblas_operation_conjugate_transpose
-
-    // diag
-    #define    DevDiagUnit       rocblas_diagonal_unit
-    #define    DevDiagNonUnit    rocblas_diagonal_non_unit
-
-    // uplo
-    #define    DevUploUpper      rocblas_fill_upper
-    #define    DevUploLower      rocblas_fill_lower
-
-    // side
-    #define    DevSideLeft       rocblas_side_left
-    #define    DevSideRight      rocblas_side_right
-#endif
 
 namespace blas {
 namespace device {
@@ -76,8 +29,8 @@ namespace device {
 // -----------------------------------------------------------------------------
 // gemm
 void sgemm(
-    device_blas_handle_t handle,
-    device_trans_t transA, device_trans_t transB,
+    blas::Queue& queue,
+    blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     float alpha,
     float const *dA, device_blas_int ldda,
@@ -86,8 +39,8 @@ void sgemm(
     float       *dC, device_blas_int lddc);
 
 void dgemm(
-    device_blas_handle_t handle,
-    device_trans_t transA, device_trans_t transB,
+    blas::Queue& queue,
+    blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     double alpha,
     double const *dA, device_blas_int ldda,
@@ -96,8 +49,8 @@ void dgemm(
     double       *dC, device_blas_int lddc);
 
 void cgemm(
-    device_blas_handle_t handle,
-    device_trans_t transA, device_trans_t transB,
+    blas::Queue& queue,
+    blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     std::complex<float> alpha,
     std::complex<float> const *dA, device_blas_int ldda,
@@ -106,8 +59,8 @@ void cgemm(
     std::complex<float>       *dC, device_blas_int lddc);
 
 void zgemm(
-    device_blas_handle_t handle,
-    device_trans_t transA, device_trans_t transB,
+    blas::Queue& queue,
+    blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     std::complex<double> alpha,
     std::complex<double> const *dA, device_blas_int ldda,
@@ -118,32 +71,32 @@ void zgemm(
 // -----------------------------------------------------------------------------
 // trsm
 void strsm(
-    device_blas_handle_t handle,
-    device_side_t side, device_uplo_t uplo, device_trans_t trans, device_diag_t diag,
+    blas::Queue& queue,
+    blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     float alpha,
     float const *dA, device_blas_int ldda,
     float       *dB, device_blas_int lddb);
 
 void dtrsm(
-    device_blas_handle_t handle,
-    device_side_t side, device_uplo_t uplo, device_trans_t trans, device_diag_t diag,
+    blas::Queue& queue,
+    blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     double alpha,
     double const *dA, device_blas_int ldda,
     double       *dB, device_blas_int lddb);
 
 void ctrsm(
-    device_blas_handle_t handle,
-    device_side_t side, device_uplo_t uplo, device_trans_t trans, device_diag_t diag,
+    blas::Queue& queue,
+    blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     std::complex<float>  alpha,
     std::complex<float> const *dA, device_blas_int ldda,
     std::complex<float>       *dB, device_blas_int lddb);
 
 void ztrsm(
-    device_blas_handle_t handle,
-    device_side_t side, device_uplo_t uplo, device_trans_t trans, device_diag_t diag,
+    blas::Queue& queue,
+    blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     std::complex<double>  alpha,
     std::complex<double> const *dA, device_blas_int ldda,
@@ -152,32 +105,32 @@ void ztrsm(
 // -----------------------------------------------------------------------------
 // trmm
 void strmm(
-    device_blas_handle_t handle,
-    device_side_t side, device_uplo_t uplo, device_trans_t trans, device_diag_t diag,
+    blas::Queue& queue,
+    blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     float alpha,
     float const *dA, device_blas_int ldda,
     float       *dB, device_blas_int lddb);
 
 void dtrmm(
-    device_blas_handle_t handle,
-    device_side_t side, device_uplo_t uplo, device_trans_t trans, device_diag_t diag,
+    blas::Queue& queue,
+    blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     double alpha,
     double const *dA, device_blas_int ldda,
     double       *dB, device_blas_int lddb);
 
 void ctrmm(
-    device_blas_handle_t handle,
-    device_side_t side, device_uplo_t uplo, device_trans_t trans, device_diag_t diag,
+    blas::Queue& queue,
+    blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     std::complex<float>  alpha,
     std::complex<float> const *dA, device_blas_int ldda,
     std::complex<float>       *dB, device_blas_int lddb);
 
 void ztrmm(
-    device_blas_handle_t handle,
-    device_side_t side, device_uplo_t uplo, device_trans_t trans, device_diag_t diag,
+    blas::Queue& queue,
+    blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     std::complex<double>  alpha,
     std::complex<double> const *dA, device_blas_int ldda,
@@ -186,8 +139,8 @@ void ztrmm(
 // -----------------------------------------------------------------------------
 // hemm
 void chemm(
-    device_blas_handle_t handle,
-    device_side_t side, device_uplo_t uplo,
+    blas::Queue& queue,
+    blas::Side side, blas::Uplo uplo,
     device_blas_int m, device_blas_int n,
     std::complex<float> alpha,
     std::complex<float> const *dA, device_blas_int ldda,
@@ -196,8 +149,8 @@ void chemm(
     std::complex<float>* dC, device_blas_int lddc);
 
 void zhemm(
-    device_blas_handle_t handle,
-    device_side_t side, device_uplo_t uplo,
+    blas::Queue& queue,
+    blas::Side side, blas::Uplo uplo,
     device_blas_int m, device_blas_int n,
     std::complex<double> alpha,
     std::complex<double> const *dA, device_blas_int ldda,
@@ -208,8 +161,8 @@ void zhemm(
 // -----------------------------------------------------------------------------
 // symm
 void ssymm(
-    device_blas_handle_t handle,
-    device_side_t side, device_uplo_t uplo,
+    blas::Queue& queue,
+    blas::Side side, blas::Uplo uplo,
     device_blas_int m, device_blas_int n,
     float  alpha,
     float const *dA, device_blas_int ldda,
@@ -218,8 +171,8 @@ void ssymm(
     float* dC, device_blas_int lddc);
 
 void dsymm(
-    device_blas_handle_t handle,
-    device_side_t side, device_uplo_t uplo,
+    blas::Queue& queue,
+    blas::Side side, blas::Uplo uplo,
     device_blas_int m, device_blas_int n,
     double  alpha,
     double const *dA, device_blas_int ldda,
@@ -228,8 +181,8 @@ void dsymm(
     double* dC, device_blas_int lddc);
 
 void csymm(
-    device_blas_handle_t handle,
-    device_side_t side, device_uplo_t uplo,
+    blas::Queue& queue,
+    blas::Side side, blas::Uplo uplo,
     device_blas_int m, device_blas_int n,
     std::complex<float> alpha,
     std::complex<float> const *dA, device_blas_int ldda,
@@ -238,8 +191,8 @@ void csymm(
     std::complex<float>* dC, device_blas_int lddc);
 
 void zsymm(
-    device_blas_handle_t handle,
-    device_side_t side, device_uplo_t uplo,
+    blas::Queue& queue,
+    blas::Side side, blas::Uplo uplo,
     device_blas_int m, device_blas_int n,
     std::complex<double> alpha,
     std::complex<double> const *dA, device_blas_int ldda,
@@ -250,8 +203,8 @@ void zsymm(
 // -----------------------------------------------------------------------------
 // herk
 void cherk(
-    device_blas_handle_t handle,
-    device_uplo_t uplo, device_trans_t trans,
+    blas::Queue& queue,
+    blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     float alpha,
     std::complex<float> const *dA, device_blas_int ldda,
@@ -259,8 +212,8 @@ void cherk(
     std::complex<float>* dC, device_blas_int lddc);
 
 void zherk(
-    device_blas_handle_t handle,
-    device_uplo_t uplo, device_trans_t trans,
+    blas::Queue& queue,
+    blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     double alpha,
     std::complex<double> const *dA, device_blas_int ldda,
@@ -270,8 +223,8 @@ void zherk(
 // -----------------------------------------------------------------------------
 // syrk
 void ssyrk(
-    device_blas_handle_t handle,
-    device_uplo_t uplo, device_trans_t trans,
+    blas::Queue& queue,
+    blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     float alpha,
     float const *dA, device_blas_int ldda,
@@ -279,8 +232,8 @@ void ssyrk(
     float* dC, device_blas_int lddc);
 
 void dsyrk(
-    device_blas_handle_t handle,
-    device_uplo_t uplo, device_trans_t trans,
+    blas::Queue& queue,
+    blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     double alpha,
     double const *dA, device_blas_int ldda,
@@ -288,8 +241,8 @@ void dsyrk(
     double* dC, device_blas_int lddc);
 
 void csyrk(
-    device_blas_handle_t handle,
-    device_uplo_t uplo, device_trans_t trans,
+    blas::Queue& queue,
+    blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     std::complex<float>  alpha,
     std::complex<float> const *dA, device_blas_int ldda,
@@ -297,8 +250,8 @@ void csyrk(
     std::complex<float>* dC, device_blas_int lddc);
 
 void zsyrk(
-    device_blas_handle_t handle,
-    device_uplo_t uplo, device_trans_t trans,
+    blas::Queue& queue,
+    blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     std::complex<double>  alpha,
     std::complex<double> const *dA, device_blas_int ldda,
@@ -308,8 +261,8 @@ void zsyrk(
 // -----------------------------------------------------------------------------
 // her2k
 void cher2k(
-    device_blas_handle_t handle,
-    device_uplo_t uplo, device_trans_t trans,
+    blas::Queue& queue,
+    blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     std::complex<float>  alpha,
     std::complex<float> const *dA, device_blas_int ldda,
@@ -318,8 +271,8 @@ void cher2k(
     std::complex<float>* dC, device_blas_int lddc);
 
 void zher2k(
-    device_blas_handle_t handle,
-    device_uplo_t uplo, device_trans_t trans,
+    blas::Queue& queue,
+    blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     std::complex<double>  alpha,
     std::complex<double> const *dA, device_blas_int ldda,
@@ -330,8 +283,8 @@ void zher2k(
 // -----------------------------------------------------------------------------
 // syr2k
 void ssyr2k(
-    device_blas_handle_t handle,
-    device_uplo_t uplo, device_trans_t trans,
+    blas::Queue& queue,
+    blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     float  alpha,
     float const *dA, device_blas_int ldda,
@@ -340,8 +293,8 @@ void ssyr2k(
     float* dC, device_blas_int lddc);
 
 void dsyr2k(
-    device_blas_handle_t handle,
-    device_uplo_t uplo, device_trans_t trans,
+    blas::Queue& queue,
+    blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     double  alpha,
     double const *dA, device_blas_int ldda,
@@ -350,8 +303,8 @@ void dsyr2k(
     double* dC, device_blas_int lddc);
 
 void csyr2k(
-    device_blas_handle_t handle,
-    device_uplo_t uplo, device_trans_t trans,
+    blas::Queue& queue,
+    blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     std::complex<float>  alpha,
     std::complex<float> const *dA, device_blas_int ldda,
@@ -360,8 +313,8 @@ void csyr2k(
     std::complex<float>* dC, device_blas_int lddc);
 
 void zsyr2k(
-    device_blas_handle_t handle,
-    device_uplo_t uplo, device_trans_t trans,
+    blas::Queue& queue,
+    blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     std::complex<double>  alpha,
     std::complex<double> const *dA, device_blas_int ldda,
@@ -372,8 +325,8 @@ void zsyr2k(
 // -----------------------------------------------------------------------------
 // batch gemm
 void batch_sgemm(
-    device_blas_handle_t handle,
-    device_trans_t transA, device_trans_t transB,
+    blas::Queue& queue,
+    blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     float alpha,
     float const * const * dAarray, device_blas_int ldda,
@@ -383,8 +336,8 @@ void batch_sgemm(
     device_blas_int batch_size);
 
 void batch_dgemm(
-    device_blas_handle_t handle,
-    device_trans_t transA, device_trans_t transB,
+    blas::Queue& queue,
+    blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     double alpha,
     double const * const * dAarray, device_blas_int ldda,
@@ -394,8 +347,8 @@ void batch_dgemm(
     device_blas_int batch_size);
 
 void batch_cgemm(
-    device_blas_handle_t handle,
-    device_trans_t transA, device_trans_t transB,
+    blas::Queue& queue,
+    blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     std::complex<float> alpha,
     std::complex<float> const * const * dAarray, device_blas_int ldda,
@@ -405,8 +358,8 @@ void batch_cgemm(
     device_blas_int batch_size);
 
 void batch_zgemm(
-    device_blas_handle_t handle,
-    device_trans_t transA, device_trans_t transB,
+    blas::Queue& queue,
+    blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     std::complex<double> alpha,
     std::complex<double> const * const * dAarray, device_blas_int ldda,
@@ -418,8 +371,8 @@ void batch_zgemm(
 // -----------------------------------------------------------------------------
 // batch trsm
 void batch_strsm(
-    device_blas_handle_t handle,
-    device_side_t side, device_uplo_t uplo, device_trans_t trans, device_diag_t diag,
+    blas::Queue& queue,
+    blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     float alpha,
     float const * const * dAarray, device_blas_int ldda,
@@ -427,8 +380,8 @@ void batch_strsm(
     device_blas_int batch_size);
 
 void batch_dtrsm(
-    device_blas_handle_t handle,
-    device_side_t side, device_uplo_t uplo, device_trans_t trans, device_diag_t diag,
+    blas::Queue& queue,
+    blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     double alpha,
     double const * const * dAarray, device_blas_int ldda,
@@ -436,8 +389,8 @@ void batch_dtrsm(
     device_blas_int batch_size);
 
 void batch_ctrsm(
-    device_blas_handle_t handle,
-    device_side_t side, device_uplo_t uplo, device_trans_t trans, device_diag_t diag,
+    blas::Queue& queue,
+    blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     std::complex<float> alpha,
     std::complex<float> const * const * dAarray, device_blas_int ldda,
@@ -445,8 +398,8 @@ void batch_ctrsm(
     device_blas_int batch_size);
 
 void batch_ztrsm(
-    device_blas_handle_t handle,
-    device_side_t side, device_uplo_t uplo, device_trans_t trans, device_diag_t diag,
+    blas::Queue& queue,
+    blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     std::complex<double> alpha,
     std::complex<double> const * const * dAarray, device_blas_int ldda,

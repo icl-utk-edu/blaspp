@@ -7,72 +7,46 @@
 
 #include "device_internal.hh"
 
-// -----------------------------------------------------------------------------
-// return true on runtime errors
-bool blas::is_device_error(device_error_t error)
-{
-    return (error != DevSuccess);
-}
-
-// -----------------------------------------------------------------------------
-// return true on blas errors
-bool blas::is_device_error(device_blas_status_t status)
-{
-    return (status != DevBlasSuccess);
-}
-
-// -----------------------------------------------------------------------------
-// return string of runtime error
-const char* blas::device_error_string(device_error_t error)
-{
-    #ifdef BLAS_HAVE_CUBLAS
-        return cudaGetErrorString( error );
-    #elif defined(BLAS_HAVE_ROCBLAS)
-        return hipGetErrorString( error );
-    #endif
-}
+#ifdef BLAS_HAVE_CUBLAS
 
 // -----------------------------------------------------------------------------
 // return string of blas error
-const char* blas::device_error_string(device_blas_status_t status)
+const char* blas::device_error_string( cublasStatus_t error )
 {
-    #ifdef BLAS_HAVE_CUBLAS
-    switch (status) {
+    switch (error) {
         case CUBLAS_STATUS_SUCCESS:
-            return "device blas: success";
+            return "cublas: success";
 
         case CUBLAS_STATUS_NOT_INITIALIZED:
-            return "device blas: not initialized";
+            return "cublas: not initialized";
 
         case CUBLAS_STATUS_ALLOC_FAILED:
-            return "device blas: out of memory";
+            return "cublas: out of memory";
 
         case CUBLAS_STATUS_INVALID_VALUE:
-            return "device blas: invalid value";
+            return "cublas: invalid value";
 
         case CUBLAS_STATUS_ARCH_MISMATCH:
-            return "device blas: architecture mismatch";
+            return "cublas: architecture mismatch";
 
         case CUBLAS_STATUS_MAPPING_ERROR:
-            return "device blas: memory mapping error";
+            return "cublas: memory mapping error";
 
         case CUBLAS_STATUS_EXECUTION_FAILED:
-            return "device blas: execution failed";
+            return "cublas: execution failed";
 
         case CUBLAS_STATUS_INTERNAL_ERROR:
-            return "device blas: internal error";
+            return "cublas: internal error";
 
         case CUBLAS_STATUS_NOT_SUPPORTED:
-            return "device blas: functionality not supported";
+            return "cublas: functionality not supported";
 
         case CUBLAS_STATUS_LICENSE_ERROR:
-            return "device blas: license error";
+            return "cublas: license error";
 
         default:
-            return "unknown device blas error code";
+            return "cublas: unknown error code";
     }
-
-    #elif defined(BLAS_HAVE_ROCBLAS)
-        return rocblas_status_to_string( status );
-    #endif
 }
+
+#endif  // HAVE_CUBLAS

@@ -64,8 +64,6 @@ void blas::gemm(
         blas_error_if( lddc > std::numeric_limits<device_blas_int>::max() );
     }
 
-    device_trans_t  transA_ = blas::device_trans_const( transA );
-    device_trans_t  transB_ = blas::device_trans_const( transB );
     device_blas_int m_      = (device_blas_int) m;
     device_blas_int n_      = (device_blas_int) n;
     device_blas_int k_      = (device_blas_int) k;
@@ -77,14 +75,14 @@ void blas::gemm(
     if (layout == Layout::RowMajor) {
         // swap transA <=> transB, m <=> n, B <=> A
         device::sgemm(
-                queue.handle(), transB_, transA_,
+                queue, transB, transA,
                 n_, m_, k_,
                 alpha, dB, lddb_, dA, ldda_,
                 beta,  dC, lddc_);
     }
     else {
         device::sgemm(
-                queue.handle(), transA_, transB_,
+                queue, transA, transB,
                 m_, n_, k_,
                 alpha, dA, ldda_, dB, lddb_,
                 beta,  dC, lddc_);
@@ -156,8 +154,6 @@ void blas::gemm(
         blas_error_if( lddc > std::numeric_limits<device_blas_int>::max() );
     }
 
-    device_trans_t  transA_ = blas::device_trans_const( transA );
-    device_trans_t  transB_ = blas::device_trans_const( transB );
     device_blas_int m_      = (device_blas_int) m;
     device_blas_int n_      = (device_blas_int) n;
     device_blas_int k_      = (device_blas_int) k;
@@ -169,14 +165,14 @@ void blas::gemm(
     if (layout == Layout::RowMajor) {
         // swap transA <=> transB, m <=> n, B <=> A
         device::dgemm(
-                queue.handle(), transB_, transA_,
+                queue, transB, transA,
                 n_, m_, k_,
                 alpha, dB, lddb_, dA, ldda_,
                 beta,  dC, lddc_);
     }
     else {
         device::dgemm(
-                queue.handle(), transA_, transB_,
+                queue, transA, transB,
                 m_, n_, k_,
                 alpha, dA, ldda_, dB, lddb_,
                 beta,  dC, lddc_);
@@ -247,8 +243,6 @@ void blas::gemm(
         blas_error_if( lddc > std::numeric_limits<device_blas_int>::max() );
     }
 
-    device_trans_t  transA_ = blas::device_trans_const( transA );
-    device_trans_t  transB_ = blas::device_trans_const( transB );
     device_blas_int m_      = (device_blas_int) m;
     device_blas_int n_      = (device_blas_int) n;
     device_blas_int k_      = (device_blas_int) k;
@@ -260,14 +254,14 @@ void blas::gemm(
     if (layout == Layout::RowMajor) {
         // swap transA <=> transB, m <=> n, B <=> A
         device::cgemm(
-                queue.handle(), transB_, transA_,
+                queue, transB, transA,
                 n_, m_, k_,
                 alpha, dB, lddb_, dA, ldda_,
                 beta,  dC, lddc_);
     }
     else {
         device::cgemm(
-                queue.handle(), transA_, transB_,
+                queue, transA, transB,
                 m_, n_, k_,
                 alpha, dA, ldda_, dB, lddb_,
                 beta,  dC, lddc_);
@@ -338,8 +332,6 @@ void blas::gemm(
         blas_error_if( lddc > std::numeric_limits<device_blas_int>::max() );
     }
 
-    device_trans_t  transA_ = blas::device_trans_const( transA );
-    device_trans_t  transB_ = blas::device_trans_const( transB );
     device_blas_int m_      = (device_blas_int) m;
     device_blas_int n_      = (device_blas_int) n;
     device_blas_int k_      = (device_blas_int) k;
@@ -351,14 +343,14 @@ void blas::gemm(
     if (layout == Layout::RowMajor) {
         // swap transA <=> transB, m <=> n, B <=> A
         device::zgemm(
-                queue.handle(), transB_, transA_,
+                queue, transB, transA,
                 n_, m_, k_,
                 alpha, dB, lddb_, dA, ldda_,
                 beta,  dC, lddc_);
     }
     else {
         device::zgemm(
-                queue.handle(), transA_, transB_,
+                queue, transA, transB,
                 m_, n_, k_,
                 alpha, dA, ldda_, dB, lddb_,
                 beta,  dC, lddc_);

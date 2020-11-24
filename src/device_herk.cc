@@ -94,12 +94,10 @@ void blas::herk(
         trans = (trans == Op::NoTrans ? Op::ConjTrans : Op::NoTrans);
     }
 
-    device_uplo_t  uplo_  = device_uplo_const( uplo );
-    device_trans_t trans_ = device_trans_const( trans );
     blas::set_device( queue.device() );
     device::cherk(
-            queue.handle(),
-            uplo_, trans_,
+            queue,
+            uplo, trans,
             n_, k_,
             alpha, dA, ldda_,
             beta,  dC, lddc_ );
@@ -155,12 +153,10 @@ void blas::herk(
         trans = (trans == Op::NoTrans ? Op::ConjTrans : Op::NoTrans);
     }
 
-    device_uplo_t  uplo_  = device_uplo_const( uplo );
-    device_trans_t trans_ = device_trans_const( trans );
     blas::set_device( queue.device() );
     device::zherk(
-            queue.handle(),
-            uplo_, trans_,
+            queue,
+            uplo, trans,
             n_, k_,
             alpha, dA, ldda_,
             beta,  dC, lddc_ );

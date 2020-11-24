@@ -72,15 +72,10 @@ void blas::trmm(
         std::swap( m_, n_ );
     }
 
-    device_side_t side_   = blas::device_side_const( side );
-    device_uplo_t uplo_   = blas::device_uplo_const( uplo );
-    device_trans_t trans_ = blas::device_trans_const( trans );
-    device_diag_t diag_   = blas::device_diag_const( diag );
-
     blas::set_device( queue.device() );
     device::strmm(
-            queue.handle(),
-            side_, uplo_, trans_, diag_,
+            queue,
+            side, uplo, trans, diag,
             m_, n_, alpha,
             dA, ldda_,
             dB, lddb_ );
@@ -146,15 +141,10 @@ void blas::trmm(
         std::swap( m_, n_ );
     }
 
-    device_side_t side_   = blas::device_side_const( side );
-    device_uplo_t uplo_   = blas::device_uplo_const( uplo );
-    device_trans_t trans_ = blas::device_trans_const( trans );
-    device_diag_t diag_   = blas::device_diag_const( diag );
-
     blas::set_device( queue.device() );
     device::dtrmm(
-            queue.handle(),
-            side_, uplo_, trans_, diag_,
+            queue,
+            side, uplo, trans, diag,
             m_, n_, alpha,
             dA, ldda_,
             dB, lddb_ );
@@ -220,15 +210,10 @@ void blas::trmm(
         std::swap( m_, n_ );
     }
 
-    device_side_t side_   = blas::device_side_const( side );
-    device_uplo_t uplo_   = blas::device_uplo_const( uplo );
-    device_trans_t trans_ = blas::device_trans_const( trans );
-    device_diag_t diag_   = blas::device_diag_const( diag );
-
     blas::set_device( queue.device() );
     device::ctrmm(
-            queue.handle(),
-            side_, uplo_, trans_, diag_,
+            queue,
+            side, uplo, trans, diag,
             m_, n_, alpha,
             dA, ldda_,
             dB, lddb_ );
@@ -294,15 +279,10 @@ void blas::trmm(
         std::swap( m_, n_ );
     }
 
-    device_side_t side_   = blas::device_side_const( side );
-    device_uplo_t uplo_   = blas::device_uplo_const( uplo );
-    device_trans_t trans_ = blas::device_trans_const( trans );
-    device_diag_t diag_   = blas::device_diag_const( diag );
-
     blas::set_device( queue.device() );
     device::ztrmm(
-            queue.handle(),
-            side_, uplo_, trans_, diag_,
+            queue,
+            side, uplo, trans, diag,
             m_, n_, alpha,
             dA, ldda_,
             dB, lddb_ );

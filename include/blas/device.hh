@@ -7,7 +7,6 @@
 #define BLAS_DEVICE_HH
 
 #include "blas/util.hh"
-#include "blas/device_types.hh"
 #include "blas/defines.h"
 
 #ifdef BLAS_HAVE_CUBLAS
@@ -20,8 +19,23 @@
 
 namespace blas {
 
+// -----------------------------------------------------------------------------
+// types
 typedef int Device;
 
+#ifdef BLAS_HAVE_CUBLAS
+    typedef int                  device_blas_int;
+    typedef cudaMemcpyKind       device_memcpy_t;
+#elif defined(BLAS_HAVE_ROCBLAS)
+    typedef int                  device_blas_int;
+    typedef hipMemcpyKind        device_memcpy_t;
+#else
+    typedef int                  device_blas_int;
+    enum device_memcpy_t         {};
+#endif
+
+// -----------------------------------------------------------------------------
+// constants
 const int DEV_QUEUE_DEFAULT_BATCH_LIMIT = 50000;
 const int DEV_QUEUE_FORK_SIZE           = 10;
 
@@ -109,15 +123,57 @@ private:
 };
 
 // -----------------------------------------------------------------------------
+// Light wrappers around CUDA and cuBLAS functions.
+#ifdef BLAS_HAVE_CUBLAS
+
+inline bool is_device_error( cudaError_t error )
+{
+    return (error != cudaSuccess);
+}
+
+inline bool is_device_error( cublasStatus_t error )
+{
+    return (error != CUBLAS_STATUS_SUCCESS);
+}
+
+inline const char* device_error_string( cudaError_t error )
+{
+    return cudaGetErrorString( error );
+}
+
+// see device_error.cc
+const char* device_error_string( cublasStatus_t error );
+
+#endif  // HAVE_CUBLAS
+
+// -----------------------------------------------------------------------------
+// Light wrappers around HIP and rocBLAS functions.
+#ifdef BLAS_HAVE_ROCBLAS
+
+inline bool is_device_error( hipError_t error )
+{
+    return (error != hipSuccess);
+}
+
+inline bool is_device_error( rocblas_status error )
+{
+    return (error != rocblas_status_success);
+}
+
+inline const char* device_error_string( hipError_t error )
+{
+    return hipGetErrorString( error );
+}
+
+inline const char* device_error_string( rocblas_status error )
+{
+    return rocblas_status_to_string( error );
+}
+
+#endif  // HAVE_ROCBLAS
+
+// -----------------------------------------------------------------------------
 // device errors
-bool is_device_error( device_error_t error );
-
-bool is_device_error( device_blas_status_t status );
-
-const char* device_error_string( device_error_t error );
-
-const char* device_error_string( device_blas_status_t status );
-
 #if defined(BLAS_ERROR_NDEBUG) || (defined(BLAS_ERROR_ASSERT) && defined(NDEBUG))
 
     // blaspp does no error checking on device errors;
@@ -152,12 +208,7 @@ void set_device( blas::Device device );
 void get_device( blas::Device *device );
 
 // -----------------------------------------------------------------------------
-// conversion functions
-device_trans_t   device_trans_const( blas::Op trans );
-device_diag_t    device_diag_const( blas::Diag diag );
-device_uplo_t    device_uplo_const( blas::Uplo uplo );
-device_side_t    device_side_const( blas::Side side );
-
+// memory functions
 void device_free( void* ptr );
 void device_free_pinned( void* ptr );
 

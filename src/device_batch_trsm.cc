@@ -59,19 +59,18 @@ void blas::batch::trsm(
         device_blas_int ldda_   = (device_blas_int) ldda[0];
         device_blas_int lddb_   = (device_blas_int) lddb[0];
 
-        blas::Uplo luplo = uplo[0]; // local value
-        blas::Side lside = side[0]; // local value
+        // local values
+        blas::Uplo uplo_  = uplo[0];
+        blas::Side side_  = side[0];
+        blas::Op   trans_ = trans[0];
+        blas::Diag diag_  = diag[0];
+
         if (layout == Layout::RowMajor) {
             // swap lower <=> upper, left <=> right, m <=> n
-            luplo = (luplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
-            lside = (lside == Side::Left ? Side::Right : Side::Left);
+            uplo_ = (uplo_ == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
+            side_ = (side_ == Side::Left ? Side::Right : Side::Left);
             std::swap( m_, n_ );
         }
-
-        device_side_t   side_   = blas::device_side_const( lside );
-        device_uplo_t   uplo_   = blas::device_uplo_const( luplo );
-        device_trans_t  trans_  = blas::device_trans_const( trans[0] );
-        device_diag_t   diag_   = blas::device_diag_const( diag[0] );
 
         size_t batch_limit = queue.get_batch_limit();
         float **dAarray, **dBarray;
@@ -85,7 +84,7 @@ void blas::batch::trsm(
             device_setvector<float*>(ibatch, (float**)&Aarray[ib], 1, dAarray, 1, queue);
             device_setvector<float*>(ibatch, (float**)&Barray[ib], 1, dBarray, 1, queue);
 
-            device::batch_strsm( queue.handle(),
+            device::batch_strsm( queue,
                                 side_, uplo_, trans_, diag_,
                                 m_, n_, alpha[0],
                                 dAarray, ldda_,
@@ -165,19 +164,18 @@ void blas::batch::trsm(
         device_blas_int ldda_   = (device_blas_int) ldda[0];
         device_blas_int lddb_   = (device_blas_int) lddb[0];
 
-        blas::Uplo luplo = uplo[0]; // local value
-        blas::Side lside = side[0]; // local value
+        // local values
+        blas::Uplo uplo_  = uplo[0];
+        blas::Side side_  = side[0];
+        blas::Op   trans_ = trans[0];
+        blas::Diag diag_  = diag[0];
+
         if (layout == Layout::RowMajor) {
             // swap lower <=> upper, left <=> right, m <=> n
-            luplo = (luplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
-            lside = (lside == Side::Left ? Side::Right : Side::Left);
+            uplo_ = (uplo_ == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
+            side_ = (side_ == Side::Left ? Side::Right : Side::Left);
             std::swap( m_, n_ );
         }
-
-        device_side_t   side_   = blas::device_side_const( lside );
-        device_uplo_t   uplo_   = blas::device_uplo_const( luplo );
-        device_trans_t  trans_  = blas::device_trans_const( trans[0] );
-        device_diag_t   diag_   = blas::device_diag_const( diag[0] );
 
         size_t batch_limit = queue.get_batch_limit();
         double **dAarray, **dBarray;
@@ -191,7 +189,7 @@ void blas::batch::trsm(
             device_setvector<double*>(ibatch, (double**)&Aarray[ib], 1, dAarray, 1, queue);
             device_setvector<double*>(ibatch, (double**)&Barray[ib], 1, dBarray, 1, queue);
 
-            device::batch_dtrsm( queue.handle(),
+            device::batch_dtrsm( queue,
                                 side_, uplo_, trans_, diag_,
                                 m_, n_, alpha[0],
                                 dAarray, ldda_,
@@ -271,19 +269,18 @@ void blas::batch::trsm(
         device_blas_int ldda_   = (device_blas_int) ldda[0];
         device_blas_int lddb_   = (device_blas_int) lddb[0];
 
-        blas::Uplo luplo = uplo[0]; // local value
-        blas::Side lside = side[0]; // local value
+        // local values
+        blas::Uplo uplo_  = uplo[0];
+        blas::Side side_  = side[0];
+        blas::Op   trans_ = trans[0];
+        blas::Diag diag_  = diag[0];
+
         if (layout == Layout::RowMajor) {
             // swap lower <=> upper, left <=> right, m <=> n
-            luplo = (luplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
-            lside = (lside == Side::Left ? Side::Right : Side::Left);
+            uplo_ = (uplo_ == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
+            side_ = (side_ == Side::Left ? Side::Right : Side::Left);
             std::swap( m_, n_ );
         }
-
-        device_side_t   side_   = blas::device_side_const( lside );
-        device_uplo_t   uplo_   = blas::device_uplo_const( luplo );
-        device_trans_t  trans_  = blas::device_trans_const( trans[0] );
-        device_diag_t   diag_   = blas::device_diag_const( diag[0] );
 
         size_t batch_limit = queue.get_batch_limit();
         std::complex<float> **dAarray, **dBarray;
@@ -297,7 +294,7 @@ void blas::batch::trsm(
             device_setvector< std::complex<float>* >(ibatch, (std::complex<float>**)&Aarray[ib], 1, dAarray, 1, queue);
             device_setvector< std::complex<float>* >(ibatch, (std::complex<float>**)&Barray[ib], 1, dBarray, 1, queue);
 
-            device::batch_ctrsm( queue.handle(),
+            device::batch_ctrsm( queue,
                                 side_, uplo_, trans_, diag_,
                                 m_, n_, alpha[0],
                                 dAarray, ldda_,
@@ -377,19 +374,18 @@ void blas::batch::trsm(
         device_blas_int ldda_   = (device_blas_int) ldda[0];
         device_blas_int lddb_   = (device_blas_int) lddb[0];
 
-        blas::Uplo luplo = uplo[0]; // local value
-        blas::Side lside = side[0]; // local value
+        // local values
+        blas::Uplo uplo_  = uplo[0];
+        blas::Side side_  = side[0];
+        blas::Op   trans_ = trans[0];
+        blas::Diag diag_  = diag[0];
+
         if (layout == Layout::RowMajor) {
             // swap lower <=> upper, left <=> right, m <=> n
-            luplo = (luplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
-            lside = (lside == Side::Left ? Side::Right : Side::Left);
+            uplo_ = (uplo_ == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
+            side_ = (side_ == Side::Left ? Side::Right : Side::Left);
             std::swap( m_, n_ );
         }
-
-        device_side_t   side_   = blas::device_side_const( lside );
-        device_uplo_t   uplo_   = blas::device_uplo_const( luplo );
-        device_trans_t  trans_  = blas::device_trans_const( trans[0] );
-        device_diag_t   diag_   = blas::device_diag_const( diag[0] );
 
         size_t batch_limit = queue.get_batch_limit();
         std::complex<double> **dAarray, **dBarray;
@@ -403,7 +399,7 @@ void blas::batch::trsm(
             device_setvector< std::complex<double>* >(ibatch, (std::complex<double>**)&Aarray[ib], 1, dAarray, 1, queue);
             device_setvector< std::complex<double>* >(ibatch, (std::complex<double>**)&Barray[ib], 1, dBarray, 1, queue);
 
-            device::batch_ztrsm( queue.handle(),
+            device::batch_ztrsm( queue,
                                 side_, uplo_, trans_, diag_,
                                 m_, n_, alpha[0],
                                 dAarray, ldda_,

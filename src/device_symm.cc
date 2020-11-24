@@ -74,12 +74,10 @@ void blas::symm(
         std::swap( m_, n_ );
     }
 
-    device_side_t side_ = device_side_const( side );
-    device_uplo_t uplo_ = device_uplo_const( uplo );
     blas::set_device( queue.device() );
     device::ssymm(
-            queue.handle(),
-            side_, uplo_, m_, n_,
+            queue,
+            side, uplo, m_, n_,
             alpha, dA, ldda_,
                    dB, lddb_,
             beta,  dC, lddc_ );
@@ -147,12 +145,10 @@ void blas::symm(
         std::swap( m_, n_ );
     }
 
-    device_side_t side_ = device_side_const( side );
-    device_uplo_t uplo_ = device_uplo_const( uplo );
     blas::set_device( queue.device() );
     device::dsymm(
-            queue.handle(),
-            side_, uplo_, m_, n_,
+            queue,
+            side, uplo, m_, n_,
             alpha, dA, ldda_,
                    dB, lddb_,
             beta,  dC, lddc_ );
@@ -220,12 +216,10 @@ void blas::symm(
         std::swap( m_, n_ );
     }
 
-    device_side_t side_ = device_side_const( side );
-    device_uplo_t uplo_ = device_uplo_const( uplo );
     blas::set_device( queue.device() );
     device::csymm(
-            queue.handle(),
-            side_, uplo_, m_, n_,
+            queue,
+            side, uplo, m_, n_,
             alpha, dA, ldda_,
                    dB, lddb_,
             beta,  dC, lddc_ );
@@ -293,12 +287,10 @@ void blas::symm(
         std::swap( m_, n_ );
     }
 
-    device_side_t side_ = device_side_const( side );
-    device_uplo_t uplo_ = device_uplo_const( uplo );
     blas::set_device( queue.device() );
     device::zsymm(
-            queue.handle(),
-            side_, uplo_, m_, n_,
+            queue,
+            side, uplo, m_, n_,
             alpha, dA, ldda_,
                    dB, lddb_,
             beta,  dC, lddc_ );

@@ -58,8 +58,8 @@ void blas::batch::gemm(
     blas::set_device( queue.device() );
     if (fixed_size) {
         // call the vendor routine
-        device_trans_t  transA_ = blas::device_trans_const( transA[0] );
-        device_trans_t  transB_ = blas::device_trans_const( transB[0] );
+        blas::Op        transA_ = transA[0];
+        blas::Op        transB_ = transB[0];
         device_blas_int m_      = (device_blas_int) m[0];
         device_blas_int n_      = (device_blas_int) n[0];
         device_blas_int k_      = (device_blas_int) k[0];
@@ -83,7 +83,7 @@ void blas::batch::gemm(
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
-                device::batch_sgemm( queue.handle(),
+                device::batch_sgemm( queue,
                                     transB_, transA_,
                                     n_, m_, k_,
                                     alpha[0], dBarray, lddb_, dAarray, ldda_,
@@ -91,7 +91,7 @@ void blas::batch::gemm(
                                     ibatch);
             }
             else {
-                device::batch_sgemm( queue.handle(),
+                device::batch_sgemm( queue,
                                     transA_, transB_,
                                     m_, n_, k_,
                                     alpha[0], dAarray, ldda_, dBarray, lddb_,
@@ -103,8 +103,8 @@ void blas::batch::gemm(
     else {
         queue.fork();
         for (size_t i = 0; i < batch; ++i) {
-            Op transA_   = blas::batch::extract<Op>(transA, i);
-            Op transB_   = blas::batch::extract<Op>(transB, i);
+            blas::Op transA_ = blas::batch::extract<Op>(transA, i);
+            blas::Op transB_ = blas::batch::extract<Op>(transB, i);
             int64_t m_   = blas::batch::extract<int64_t>(m, i);
             int64_t n_   = blas::batch::extract<int64_t>(n, i);
             int64_t k_   = blas::batch::extract<int64_t>(k, i);
@@ -173,8 +173,8 @@ void blas::batch::gemm(
     blas::set_device( queue.device() );
     if (fixed_size) {
         // call the vendor routine
-        device_trans_t  transA_ = blas::device_trans_const( transA[0] );
-        device_trans_t  transB_ = blas::device_trans_const( transB[0] );
+        blas::Op        transA_ = transA[0];
+        blas::Op        transB_ = transB[0];
         device_blas_int m_      = (device_blas_int) m[0];
         device_blas_int n_      = (device_blas_int) n[0];
         device_blas_int k_      = (device_blas_int) k[0];
@@ -198,7 +198,7 @@ void blas::batch::gemm(
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
-                device::batch_dgemm( queue.handle(),
+                device::batch_dgemm( queue,
                                     transB_, transA_,
                                     n_, m_, k_,
                                     alpha[0], dBarray, lddb_, dAarray, ldda_,
@@ -206,7 +206,7 @@ void blas::batch::gemm(
                                     ibatch);
             }
             else {
-                device::batch_dgemm( queue.handle(),
+                device::batch_dgemm( queue,
                                     transA_, transB_,
                                     m_, n_, k_,
                                     alpha[0], dAarray, ldda_, dBarray, lddb_,
@@ -218,8 +218,8 @@ void blas::batch::gemm(
     else {
         queue.fork();
         for (size_t i = 0; i < batch; ++i) {
-            Op transA_    = blas::batch::extract<Op>(transA, i);
-            Op transB_    = blas::batch::extract<Op>(transB, i);
+            blas::Op transA_ = blas::batch::extract<Op>(transA, i);
+            blas::Op transB_ = blas::batch::extract<Op>(transB, i);
             int64_t m_    = blas::batch::extract<int64_t>(m, i);
             int64_t n_    = blas::batch::extract<int64_t>(n, i);
             int64_t k_    = blas::batch::extract<int64_t>(k, i);
@@ -289,8 +289,8 @@ void blas::batch::gemm(
 
     if (fixed_size) {
         // call the vendor routine
-        device_trans_t  transA_ = blas::device_trans_const( transA[0] );
-        device_trans_t  transB_ = blas::device_trans_const( transB[0] );
+        blas::Op        transA_ = transA[0];
+        blas::Op        transB_ = transB[0];
         device_blas_int m_      = (device_blas_int) m[0];
         device_blas_int n_      = (device_blas_int) n[0];
         device_blas_int k_      = (device_blas_int) k[0];
@@ -314,7 +314,7 @@ void blas::batch::gemm(
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
-                device::batch_cgemm( queue.handle(),
+                device::batch_cgemm( queue,
                                     transB_, transA_,
                                     n_, m_, k_,
                                     alpha[0], dBarray, lddb_, dAarray, ldda_,
@@ -322,7 +322,7 @@ void blas::batch::gemm(
                                     ibatch);
             }
             else {
-                device::batch_cgemm( queue.handle(),
+                device::batch_cgemm( queue,
                                     transA_, transB_,
                                     m_, n_, k_,
                                     alpha[0], dAarray, ldda_, dBarray, lddb_,
@@ -334,8 +334,8 @@ void blas::batch::gemm(
     else {
         queue.fork();
         for (size_t i = 0; i < batch; ++i) {
-            Op transA_    = blas::batch::extract<Op>(transA, i);
-            Op transB_    = blas::batch::extract<Op>(transB, i);
+            blas::Op transA_ = blas::batch::extract<Op>(transA, i);
+            blas::Op transB_ = blas::batch::extract<Op>(transB, i);
             int64_t m_    = blas::batch::extract<int64_t>(m, i);
             int64_t n_    = blas::batch::extract<int64_t>(n, i);
             int64_t k_    = blas::batch::extract<int64_t>(k, i);
@@ -405,8 +405,8 @@ void blas::batch::gemm(
 
     if (fixed_size) {
         // call the vendor routine
-        device_trans_t  transA_ = blas::device_trans_const( transA[0] );
-        device_trans_t  transB_ = blas::device_trans_const( transB[0] );
+        blas::Op        transA_ = transA[0];
+        blas::Op        transB_ = transB[0];
         device_blas_int m_      = (device_blas_int) m[0];
         device_blas_int n_      = (device_blas_int) n[0];
         device_blas_int k_      = (device_blas_int) k[0];
@@ -430,7 +430,7 @@ void blas::batch::gemm(
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
-                device::batch_zgemm( queue.handle(),
+                device::batch_zgemm( queue,
                                     transB_, transA_,
                                     n_, m_, k_,
                                     alpha[0], dBarray, lddb_, dAarray, ldda_,
@@ -438,7 +438,7 @@ void blas::batch::gemm(
                                     ibatch);
             }
             else {
-                device::batch_zgemm( queue.handle(),
+                device::batch_zgemm( queue,
                                     transA_, transB_,
                                     m_, n_, k_,
                                     alpha[0], dAarray, ldda_, dBarray, lddb_,
@@ -450,8 +450,8 @@ void blas::batch::gemm(
     else {
         queue.fork();
         for (size_t i = 0; i < batch; ++i) {
-            Op transA_    = blas::batch::extract<Op>(transA, i);
-            Op transB_    = blas::batch::extract<Op>(transB, i);
+            blas::Op transA_ = blas::batch::extract<Op>(transA, i);
+            blas::Op transB_ = blas::batch::extract<Op>(transB, i);
             int64_t m_    = blas::batch::extract<int64_t>(m, i);
             int64_t n_    = blas::batch::extract<int64_t>(n, i);
             int64_t k_    = blas::batch::extract<int64_t>(k, i);
@@ -545,9 +545,9 @@ void blas::batch::gemm(
 
     for (size_t ig = 0; ig < group_count; ig++) {
         // extract params for the current group
+        blas::Op        transA_ = transA[ ig ];
+        blas::Op        transB_ = transB[ ig ];
         size_t          batch   = group_size[ ig ];
-        device_trans_t  transA_ = blas::device_trans_const( transA[ ig ] );
-        device_trans_t  transB_ = blas::device_trans_const( transB[ ig ] );
         device_blas_int m_      = (device_blas_int) m[ ig ];
         device_blas_int n_      = (device_blas_int) n[ ig ];
         device_blas_int k_      = (device_blas_int) k[ ig ];
@@ -570,7 +570,7 @@ void blas::batch::gemm(
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
-                device::batch_sgemm( queue.handle(),
+                device::batch_sgemm( queue,
                                     transB_, transA_,
                                     n_, m_, k_,
                                     alpha[ig], dBarray, lddb_, dAarray, ldda_,
@@ -578,7 +578,7 @@ void blas::batch::gemm(
                                     ibatch);
             }
             else {
-                device::batch_sgemm( queue.handle(),
+                device::batch_sgemm( queue,
                                     transA_, transB_,
                                     m_, n_, k_,
                                     alpha[ig], dAarray, ldda_, dBarray, lddb_,
@@ -667,9 +667,9 @@ void blas::batch::gemm(
 
     for (size_t ig = 0; ig < group_count; ig++) {
         // extract params for the current group
+        blas::Op        transA_ = transA[ ig ];
+        blas::Op        transB_ = transB[ ig ];
         size_t          batch   = group_size[ ig ];
-        device_trans_t  transA_ = blas::device_trans_const( transA[ ig ] );
-        device_trans_t  transB_ = blas::device_trans_const( transB[ ig ] );
         device_blas_int m_      = (device_blas_int) m[ ig ];
         device_blas_int n_      = (device_blas_int) n[ ig ];
         device_blas_int k_      = (device_blas_int) k[ ig ];
@@ -692,7 +692,7 @@ void blas::batch::gemm(
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
-                device::batch_dgemm( queue.handle(),
+                device::batch_dgemm( queue,
                                     transB_, transA_,
                                     n_, m_, k_,
                                     alpha[ig], dBarray, lddb_, dAarray, ldda_,
@@ -700,7 +700,7 @@ void blas::batch::gemm(
                                     ibatch);
             }
             else {
-                device::batch_dgemm( queue.handle(),
+                device::batch_dgemm( queue,
                                     transA_, transB_,
                                     m_, n_, k_,
                                     alpha[ig], dAarray, ldda_, dBarray, lddb_,
@@ -789,9 +789,9 @@ void blas::batch::gemm(
 
     for (size_t ig = 0; ig < group_count; ig++) {
         // extract params for the current group
+        blas::Op        transA_ = transA[ ig ];
+        blas::Op        transB_ = transB[ ig ];
         size_t          batch   = group_size[ ig ];
-        device_trans_t  transA_ = blas::device_trans_const( transA[ ig ] );
-        device_trans_t  transB_ = blas::device_trans_const( transB[ ig ] );
         device_blas_int m_      = (device_blas_int) m[ ig ];
         device_blas_int n_      = (device_blas_int) n[ ig ];
         device_blas_int k_      = (device_blas_int) k[ ig ];
@@ -814,7 +814,7 @@ void blas::batch::gemm(
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
-                device::batch_cgemm( queue.handle(),
+                device::batch_cgemm( queue,
                                     transB_, transA_,
                                     n_, m_, k_,
                                     alpha[ig], dBarray, lddb_, dAarray, ldda_,
@@ -822,7 +822,7 @@ void blas::batch::gemm(
                                     ibatch);
             }
             else {
-                device::batch_cgemm( queue.handle(),
+                device::batch_cgemm( queue,
                                     transA_, transB_,
                                     m_, n_, k_,
                                     alpha[ig], dAarray, ldda_, dBarray, lddb_,
@@ -912,8 +912,8 @@ void blas::batch::gemm(
     for (size_t ig = 0; ig < group_count; ig++) {
         // extract params for the current group
         size_t          batch   = group_size[ ig ];
-        device_trans_t  transA_ = blas::device_trans_const( transA[ ig ] );
-        device_trans_t  transB_ = blas::device_trans_const( transB[ ig ] );
+        blas::Op        transA_ = transA[ ig ];
+        blas::Op        transB_ = transB[ ig ];
         device_blas_int m_      = (device_blas_int) m[ ig ];
         device_blas_int n_      = (device_blas_int) n[ ig ];
         device_blas_int k_      = (device_blas_int) k[ ig ];
@@ -936,7 +936,7 @@ void blas::batch::gemm(
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
-                device::batch_zgemm( queue.handle(),
+                device::batch_zgemm( queue,
                                     transB_, transA_,
                                     n_, m_, k_,
                                     alpha[ig], dBarray, lddb_, dAarray, ldda_,
@@ -944,7 +944,7 @@ void blas::batch::gemm(
                                     ibatch);
             }
             else {
-                device::batch_zgemm( queue.handle(),
+                device::batch_zgemm( queue,
                                     transA_, transB_,
                                     m_, n_, k_,
                                     alpha[ig], dAarray, ldda_, dBarray, lddb_,
