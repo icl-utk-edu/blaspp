@@ -241,6 +241,9 @@ else()
     endif()
 endif()
 
+# Clean stale defines.h from Makefile-based build.
+file( REMOVE "${CMAKE_CURRENT_SOURCE_DIR}/include/blas/defines.h" )
+
 # Include directory.
 # During build it's {source}/include; after install it's {prefix}/include.
 target_include_directories(
