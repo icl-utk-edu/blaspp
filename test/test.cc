@@ -115,21 +115,21 @@ std::vector< testsweeper::routines_t > routines = {
     { "",              nullptr,          Section::newline },
 
 #if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
-    { "dev-gemm"      ,   test_gemm_device      ,   Section::device_blas3   },
+    { "dev-gemm",         test_gemm_device,         Section::device_blas3   },
     { "",                 nullptr,                  Section::newline },
 
-    { "dev-hemm"      ,   test_hemm_device      ,   Section::device_blas3   },
-    { "dev-herk"      ,   test_herk_device      ,   Section::device_blas3   },
-    { "dev-her2k"     ,   test_her2k_device     ,   Section::device_blas3   },
+    { "dev-hemm",         test_hemm_device,         Section::device_blas3   },
+    { "dev-herk",         test_herk_device,         Section::device_blas3   },
+    { "dev-her2k",        test_her2k_device,        Section::device_blas3   },
     { "",                 nullptr,                  Section::newline },
 
-    { "dev-symm"      ,   test_symm_device      ,   Section::device_blas3   },
-    { "dev-syrk"      ,   test_syrk_device      ,   Section::device_blas3   },
-    { "dev-syr2k"     ,   test_syr2k_device     ,   Section::device_blas3   },
+    { "dev-symm",         test_symm_device,         Section::device_blas3   },
+    { "dev-syrk",         test_syrk_device,         Section::device_blas3   },
+    { "dev-syr2k",        test_syr2k_device,        Section::device_blas3   },
     { "",                 nullptr,                  Section::newline },
 
-    { "dev-trmm"      ,   test_trmm_device      ,   Section::device_blas3   },
-    { "dev-trsm"      ,   test_trsm_device      ,   Section::device_blas3   },
+    { "dev-trmm",         test_trmm_device,         Section::device_blas3   },
+    { "dev-trsm",         test_trsm_device,         Section::device_blas3   },
     { "",                 nullptr,                  Section::newline },
 
     { "dev-batch-gemm",   test_batch_gemm_device,   Section::device_blas3   },
