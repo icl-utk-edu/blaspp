@@ -417,17 +417,22 @@ void device_memcpy2D(
     void*  devPtr, int64_t  devPitch,
     void* hostPtr, int64_t hostPitch,
     int64_t width, int64_t height,
-    enum cudaMemcpyKind memcpy_kind, Queue& queue)
+    device_memcpy_t memcpy_kind, Queue& queue)
 {
     #ifdef BLAS_WITH_CUBLAS
-        blas_cuda_call(
+        blas_dev_call(
             cudaMemcpy2DAsync(
                  devPtr, sizeof(T)* devPitch,
                 hostPtr, sizeof(T)*hostPitch,
                 sizeof(T)*width, sizeof(T)*height,
                 memcpy_kind, queue.stream() ) );
     #elif defined(HAVE_ROCBLAS)
-        // TODO: call rocblas_memcpy
+         blas_dev_call(
+            hipMemcpy2DAsync(
+                 devPtr, sizeof(T)* devPitch,
+                hostPtr, sizeof(T)*hostPitch,
+                sizeof(T)*width, sizeof(T)*height,
+                memcpy_kind, queue.stream() ) );
     #endif
 }
 
