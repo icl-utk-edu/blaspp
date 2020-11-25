@@ -206,6 +206,7 @@ inline const char* device_error_string( rocblas_status error )
 // set/get device functions
 void set_device( blas::Device device );
 void get_device( blas::Device *device );
+device_blas_int get_device_count();
 
 // -----------------------------------------------------------------------------
 // memory functions
@@ -408,6 +409,28 @@ void device_memcpy(
                 memcpy_kind, queue.stream() ) );
     #endif
 }
+
+//------------------------------------------------------------------------------
+// device memcpy 2D
+template <typename T>
+void device_memcpy2D(
+    void*  devPtr, int64_t  devPitch,
+    void* hostPtr, int64_t hostPitch,
+    int64_t width, int64_t height,
+    enum cudaMemcpyKind memcpy_kind, Queue& queue)
+{
+    #ifdef BLAS_WITH_CUBLAS
+        blas_cuda_call(
+            cudaMemcpy2DAsync(
+                 devPtr, sizeof(T)* devPitch,
+                hostPtr, sizeof(T)*hostPitch,
+                sizeof(T)*width, sizeof(T)*height,
+                memcpy_kind, queue.stream() ) );
+    #elif defined(HAVE_ROCBLAS)
+        // TODO: call rocblas_memcpy
+    #endif
+}
+
 
 }  // namespace blas
 
