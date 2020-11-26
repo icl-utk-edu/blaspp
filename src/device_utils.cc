@@ -40,7 +40,7 @@ void get_device(blas::Device *device)
 }
 
 // -----------------------------------------------------------------------------
-// @return device counts
+// @return number of GPU devices
 device_blas_int get_device_count()
 {
     device_blas_int dev_counts;

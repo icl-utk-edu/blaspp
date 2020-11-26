@@ -414,28 +414,26 @@ void device_memcpy(
 // device memcpy 2D
 template <typename T>
 void device_memcpy2D(
-    void*  devPtr, int64_t  devPitch,
-    void* hostPtr, int64_t hostPitch,
-    int64_t width, int64_t height,
-    device_memcpy_t memcpy_kind, Queue& queue)
+    void*  dev_ptr, int64_t  dev_pitch,
+    void* host_ptr, int64_t host_pitch,
+    int64_t width, int64_t height, device_memcpy_t memcpy_kind, Queue& queue)
 {
     #ifdef BLAS_WITH_CUBLAS
         blas_dev_call(
             cudaMemcpy2DAsync(
-                 devPtr, sizeof(T)* devPitch,
-                hostPtr, sizeof(T)*hostPitch,
+                 dev_ptr, sizeof(T)* dev_pitch,
+                host_ptr, sizeof(T)*host_pitch,
                 sizeof(T)*width, sizeof(T)*height,
                 memcpy_kind, queue.stream() ) );
     #elif defined(HAVE_ROCBLAS)
          blas_dev_call(
             hipMemcpy2DAsync(
-                 devPtr, sizeof(T)* devPitch,
-                hostPtr, sizeof(T)*hostPitch,
+                 dev_ptr, sizeof(T)* dev_pitch,
+                host_ptr, sizeof(T)*host_pitch,
                 sizeof(T)*width, sizeof(T)*height,
                 memcpy_kind, queue.stream() ) );
     #endif
 }
-
 
 }  // namespace blas
 
