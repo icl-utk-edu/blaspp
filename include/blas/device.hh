@@ -25,13 +25,50 @@ typedef int Device;
 
 #ifdef BLAS_HAVE_CUBLAS
     typedef int                  device_blas_int;
-    typedef cudaMemcpyKind       device_memcpy_t;
 #elif defined(BLAS_HAVE_ROCBLAS)
     typedef int                  device_blas_int;
-    typedef hipMemcpyKind        device_memcpy_t;
 #else
     typedef int                  device_blas_int;
-    enum device_memcpy_t         {};
+#endif
+
+// -----------------------------------------------------------------------------
+enum class MemcpyKind : int {
+    HostToHost     = 0,
+    HostToDevice   = 1,
+    DeviceToHost   = 2,
+    DeviceToDevice = 3,
+    Default        = 4,
+};
+
+// -----------------------------------------------------------------------------
+#if defined(BLAS_HAVE_CUBLAS)
+// -----------------------------------------------------------------------------
+// Convert enum to cuda-style memcpy enum.
+inline cudaMemcpyKind memcpy2cuda( MemcpyKind kind )
+{
+    switch (kind) {
+        case MemcpyKind::HostToHost:     return cudaMemcpyHostToHost;
+        case MemcpyKind::HostToDevice:   return cudaMemcpyHostToDevice;
+        case MemcpyKind::DeviceToHost:   return cudaMemcpyDeviceToHost;
+        case MemcpyKind::DeviceToDevice: return cudaMemcpyDeviceToDevice;
+        case MemcpyKind::Default:        return cudaMemcpyDefault;
+        default: throw cudaErrorInvalidMemcpyDirection;
+    }
+}
+#elif defined(BLAS_HAVE_ROCBLAS)
+// -----------------------------------------------------------------------------
+// Convert enum to hip-style memcpy enum.
+inline hipMemcpyKind memcpy2hip( MemcpyKind kind )
+{
+    switch (kind) {
+        case MemcpyKind::HostToHost:     return hipMemcpyHostToHost;
+        case MemcpyKind::HostToDevice:   return hipMemcpyHostToDevice;
+        case MemcpyKind::DeviceToHost:   return hipMemcpyDeviceToHost;
+        case MemcpyKind::DeviceToDevice: return hipMemcpyDeviceToDevice;
+        case MemcpyKind::Default:        return hipMemcpyDefault;
+        default: throw hipErrorInvalidMemcpyDirection;
+    }
+}
 #endif
 
 // -----------------------------------------------------------------------------
@@ -393,19 +430,19 @@ template <typename T>
 void device_memcpy(
     void* dev_ptr,
     void* host_ptr,
-    int64_t nelements, device_memcpy_t memcpy_kind, Queue& queue)
+    int64_t nelements, Queue& queue, MemcpyKind kind=MemcpyKind::Default)
 {
     #ifdef BLAS_HAVE_CUBLAS
         blas_dev_call(
             cudaMemcpyAsync(
                 dev_ptr, host_ptr, sizeof(T)*nelements,
-                memcpy_kind, queue.stream() ) );
+                memcpy2cuda(kind), queue.stream() ) );
 
     #elif defined(BLAS_HAVE_ROCBLAS)
         blas_dev_call(
             hipMemcpyAsync(
                 dev_ptr, host_ptr, sizeof(T)*nelements,
-                memcpy_kind, queue.stream() ) );
+                memcpy2hip(kind), queue.stream() ) );
     #endif
 }
 
