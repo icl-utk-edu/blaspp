@@ -86,30 +86,35 @@ add_executable(
     lapack_wrappers.cc
 )
 
+# Used if building with HIP or CUDA
+set( shared_cuda_hip_src_ 
+    test_batch_gemm_device.cc
+    test_batch_hemm_device.cc
+    test_batch_her2k_device.cc
+    test_batch_herk_device.cc
+    test_batch_symm_device.cc
+    test_batch_syr2k_device.cc
+    test_batch_syrk_device.cc
+    test_batch_trmm_device.cc
+    test_batch_trsm_device.cc
+    test_swap_device.cc
+    test_gemm_device.cc
+    test_hemm_device.cc
+    test_her2k_device.cc
+    test_herk_device.cc
+    test_symm_device.cc
+    test_syr2k_device.cc
+    test_syrk_device.cc
+    test_trmm_device.cc
+    test_trsm_device.cc
+)
+
 if (CMAKE_CUDA_COMPILER)
     message( STATUS "Building CUDA wrapper testers." )
     target_sources(
         ${tester}
         PRIVATE
-        test_batch_gemm_device.cc
-        test_batch_hemm_device.cc
-        test_batch_her2k_device.cc
-        test_batch_herk_device.cc
-        test_batch_symm_device.cc
-        test_batch_syr2k_device.cc
-        test_batch_syrk_device.cc
-        test_batch_trmm_device.cc
-        test_batch_trsm_device.cc
-        test_swap_device.cc
-        test_gemm_device.cc
-        test_hemm_device.cc
-        test_her2k_device.cc
-        test_herk_device.cc
-        test_symm_device.cc
-        test_syr2k_device.cc
-        test_syrk_device.cc
-        test_trmm_device.cc
-        test_trsm_device.cc
+        ${shared_cuda_hip_src_}
     )
 else()
     message( STATUS "No CUDA support in testers" )
@@ -121,24 +126,7 @@ if (EXISTS ${ROCMDIR})
     target_sources(
         ${tester}
         PRIVATE
-        test_batch_gemm_device.cc
-        test_batch_hemm_device.cc
-        test_batch_her2k_device.cc
-        test_batch_herk_device.cc
-        test_batch_symm_device.cc
-        test_batch_syr2k_device.cc
-        test_batch_syrk_device.cc
-        test_batch_trmm_device.cc
-        test_batch_trsm_device.cc
-        test_gemm_device.cc
-        test_hemm_device.cc
-        test_her2k_device.cc
-        test_herk_device.cc
-        test_symm_device.cc
-        test_syr2k_device.cc
-        test_syrk_device.cc
-        test_trmm_device.cc
-        test_trsm_device.cc
+        ${shared_cuda_hip_src_}
     )
 else()
     message( STATUS "No HIP support in testers" )

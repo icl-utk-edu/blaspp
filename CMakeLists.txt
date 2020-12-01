@@ -189,6 +189,34 @@ add_library(
     src/version.cc
 )
 
+# Used if building with HIP or CUDA
+set( shared_cuda_hip_src_
+    src/device_batch_gemm.cc
+    src/device_batch_hemm.cc
+    src/device_batch_her2k.cc
+    src/device_batch_herk.cc
+    src/device_batch_symm.cc
+    src/device_batch_syr2k.cc
+    src/device_batch_syrk.cc
+    src/device_batch_trmm.cc
+    src/device_batch_trsm.cc
+    src/device_error.cc
+    src/device_gemm.cc
+    src/device_hemm.cc
+    src/device_her2k.cc
+    src/device_herk.cc
+    src/device_queue.cc
+    src/device_symm.cc
+    src/device_syr2k.cc
+    src/device_syrk.cc
+    src/device_trmm.cc
+    src/device_trsm.cc
+    src/device_utils.cc
+    src/device_swap.cc
+    src/cublas_wrappers.cc
+    src/rocblas_wrappers.cc
+)
+
 # CUDA is not required, use if it is available
 if (NOT use_cuda)
     message( STATUS "User has requested to NOT use CUDA" )
@@ -203,30 +231,7 @@ else()
         target_sources(
             blaspp
             PRIVATE
-            src/device_batch_gemm.cc
-            src/device_batch_hemm.cc
-            src/device_batch_her2k.cc
-            src/device_batch_herk.cc
-            src/device_batch_symm.cc
-            src/device_batch_syr2k.cc
-            src/device_batch_syrk.cc
-            src/device_batch_trmm.cc
-            src/device_batch_trsm.cc
-            src/device_error.cc
-            src/device_gemm.cc
-            src/device_hemm.cc
-            src/device_her2k.cc
-            src/device_herk.cc
-            src/device_queue.cc
-            src/device_symm.cc
-            src/device_syr2k.cc
-            src/device_syrk.cc
-            src/device_trmm.cc
-            src/device_trsm.cc
-            src/device_utils.cc
-            src/device_swap.cc
-            src/cublas_wrappers.cc
-            src/rocblas_wrappers.cc
+            ${shared_cuda_hip_src_}
         )
 
         # CMake 3.17 adds find_package( CUDAToolkit )
@@ -256,46 +261,22 @@ else()
         target_sources(
             blaspp
             PRIVATE
-            src/device_batch_gemm.cc
-            src/device_batch_hemm.cc
-            src/device_batch_her2k.cc
-            src/device_batch_herk.cc
-            src/device_batch_symm.cc
-            src/device_batch_syr2k.cc
-            src/device_batch_syrk.cc
-            src/device_batch_trmm.cc
-            src/device_batch_trsm.cc
-            src/device_error.cc
-            src/device_gemm.cc
-            src/device_hemm.cc
-            src/device_her2k.cc
-            src/device_herk.cc
-            src/device_queue.cc
-            src/device_symm.cc
-            src/device_syr2k.cc
-            src/device_syrk.cc
-            src/device_trmm.cc
-            src/device_trsm.cc
-            src/device_utils.cc
-            src/cublas_wrappers.cc
-            src/rocblas_wrappers.cc
+            ${shared_cuda_hip_src_}
         )
 
         find_library( amdhip64_lib amdhip64 ${ROCMDIR}/lib )
         find_library( rocblas_lib rocblas ${ROCMDIR}/lib )
 
-        set( blaspp_defs_hip_ "-DBLAS_HAVE_ROCBLAS -D__HIP_PLATFORM_HCC__" )
+        set( blaspp_defs_hip_ "-DBLAS_HAVE_ROCBLAS" "-D__HIP_PLATFORM_HCC__" )
 
         # Some platforms need these to be public libraries.
         target_link_libraries( blaspp PUBLIC "${amdhip64_lib}" "${rocblas_lib}" )
         target_include_directories(
-            blaspp PUBLIC "/opt/rocm/include" )
+            blaspp PUBLIC "${ROCMDIR}/include" )
     else()
         message( STATUS "No HIP support in BLAS++" )
     endif()
 endif()
-
-
 
 
 # Clean stale defines.h from Makefile-based build.
