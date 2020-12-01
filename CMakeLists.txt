@@ -42,8 +42,11 @@ option( BUILD_SHARED_LIBS "Build shared libraries" true )
 option( build_tests "Build test suite" "${blaspp_is_project}" )
 option( color "Use ANSI color output" true )
 option( use_cmake_find_blas "Use CMake's find_package( BLAS ) rather than the search in BLAS++" false )
+option( use_hip "Use HIP, if available" true )
 option( use_cuda "Use CUDA, if available" true )
 option( use_openmp "Use OpenMP, if available" true )
+
+set( ROCMDIR "/opt/rocm" CACHE STRING "Directory for HIP/ROCm installation")
 
 # Default prefix=/opt/slate
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT
@@ -117,6 +120,7 @@ blas_threaded          = ${blas_threaded}
 build_tests            = ${build_tests}
 color                  = ${color}
 use_cmake_find_blas    = ${use_cmake_find_blas}
+use_hip               = ${use_hip}
 use_cuda               = ${use_cuda}
 use_openmp             = ${use_openmp}
 blaspp_is_project      = ${blaspp_is_project}
@@ -242,6 +246,58 @@ else()
     endif()
 endif()
 
+# HIP is not required, use if it is available
+if (NOT use_hip)
+    message( STATUS "User has requested to NOT use HIP" )
+else()
+    # TODO: other detection?
+    if (EXISTS "${ROCMDIR}")
+        message( STATUS "Building accelerated HIP/ROCm wrappers." )
+        target_sources(
+            blaspp
+            PRIVATE
+            src/device_batch_gemm.cc
+            src/device_batch_hemm.cc
+            src/device_batch_her2k.cc
+            src/device_batch_herk.cc
+            src/device_batch_symm.cc
+            src/device_batch_syr2k.cc
+            src/device_batch_syrk.cc
+            src/device_batch_trmm.cc
+            src/device_batch_trsm.cc
+            src/device_error.cc
+            src/device_gemm.cc
+            src/device_hemm.cc
+            src/device_her2k.cc
+            src/device_herk.cc
+            src/device_queue.cc
+            src/device_symm.cc
+            src/device_syr2k.cc
+            src/device_syrk.cc
+            src/device_trmm.cc
+            src/device_trsm.cc
+            src/device_utils.cc
+            src/cublas_wrappers.cc
+            src/rocblas_wrappers.cc
+        )
+
+        find_library( amdhip64_lib amdhip64 ${ROCMDIR}/lib )
+        find_library( rocblas_lib rocblas ${ROCMDIR}/lib )
+
+        set( blaspp_defs_hip_ "-DBLAS_HAVE_ROCBLAS -D__HIP_PLATFORM_HCC__" )
+
+        # Some platforms need these to be public libraries.
+        target_link_libraries( blaspp PUBLIC "${amdhip64_lib}" "${rocblas_lib}" )
+        target_include_directories(
+            blaspp PUBLIC "/opt/rocm/include" )
+    else()
+        message( STATUS "No HIP support in BLAS++" )
+    endif()
+endif()
+
+
+
+
 # Clean stale defines.h from Makefile-based build.
 file( REMOVE "${CMAKE_CURRENT_SOURCE_DIR}/include/blas/defines.h" )
 
@@ -316,7 +372,7 @@ set( blaspp_defs_ "${blaspp_defs_}"
      CACHE INTERNAL "Constants defined for BLAS" )
 
 # Concat defines.
-set( blaspp_defines  ${blaspp_defs_} ${blaspp_defs_cuda_} CACHE INTERNAL "")
+set( blaspp_defines ${blaspp_defs_} ${blaspp_defs_cuda_} ${blaspp_defs_hip_}  CACHE INTERNAL "")
 
 if (true)
     # Extract definitions as #define VAR or #define VAR VALUE.

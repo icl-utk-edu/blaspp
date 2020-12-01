@@ -7,6 +7,10 @@
 
 #ifdef BLAS_HAVE_ROCBLAS
 
+#ifdef __HIP_PLATFORM_NVCC__
+    #warning Compiling with rocBLAS on NVCC mode... This is an odd configuration. (Consider using NVCC only)
+#endif
+
 namespace blas {
 namespace device {
 

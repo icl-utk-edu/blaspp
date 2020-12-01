@@ -115,6 +115,35 @@ else()
     message( STATUS "No CUDA support in testers" )
 endif()
 
+# TODO: see if we want another variable
+if (EXISTS ${ROCMDIR})
+    message( STATUS "Building HIP wrapper testers." )
+    target_sources(
+        ${tester}
+        PRIVATE
+        test_batch_gemm_device.cc
+        test_batch_hemm_device.cc
+        test_batch_her2k_device.cc
+        test_batch_herk_device.cc
+        test_batch_symm_device.cc
+        test_batch_syr2k_device.cc
+        test_batch_syrk_device.cc
+        test_batch_trmm_device.cc
+        test_batch_trsm_device.cc
+        test_gemm_device.cc
+        test_hemm_device.cc
+        test_her2k_device.cc
+        test_herk_device.cc
+        test_symm_device.cc
+        test_syr2k_device.cc
+        test_syrk_device.cc
+        test_trmm_device.cc
+        test_trsm_device.cc
+    )
+else()
+    message( STATUS "No HIP support in testers" )
+endif()
+
 # C++11 is inherited from blaspp, but disabling extensions is not.
 set_target_properties( ${tester} PROPERTIES CXX_EXTENSIONS false )
 
