@@ -413,7 +413,7 @@ void device_memcpy(
 //------------------------------------------------------------------------------
 // device memcpy 2D
 template <typename T>
-void device_memcpy2D(
+void device_memcpy_2d(
     void*  dev_ptr, int64_t  dev_pitch,
     void* host_ptr, int64_t host_pitch,
     int64_t width, int64_t height, device_memcpy_t memcpy_kind, Queue& queue)
