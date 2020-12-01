@@ -32,7 +32,7 @@ typedef int Device;
 #endif
 
 // -----------------------------------------------------------------------------
-enum class MemcpyKind : int {
+enum class MemcpyKind : device_blas_int {
     HostToHost     = 0,
     HostToDevice   = 1,
     DeviceToHost   = 2,
