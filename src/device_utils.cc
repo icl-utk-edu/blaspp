@@ -48,7 +48,7 @@ device_blas_int get_device_count()
     #ifdef BLAS_HAVE_CUBLAS
         blas_dev_call(
             cudaGetDeviceCount(&dev_counts) );
-    #elif defined(HAVE_ROCBLAS)
+    #elif defined(BLAS_HAVE_ROCBLAS)
          blas_dev_call(
             hipGetDeviceCount(&dev_counts) );
     #endif
