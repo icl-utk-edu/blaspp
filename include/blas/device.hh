@@ -42,29 +42,29 @@ enum class MemcpyKind : device_blas_int {
 
 // -----------------------------------------------------------------------------
 #if defined(BLAS_HAVE_CUBLAS)
-    // Convert enum to cuda-style memcpy enum.
+    /// @return the corresponding cuda memcpy kind constant
     inline cudaMemcpyKind memcpy2cuda( MemcpyKind kind )
     {
         switch (kind) {
-            case MemcpyKind::HostToHost:     return cudaMemcpyHostToHost;
-            case MemcpyKind::HostToDevice:   return cudaMemcpyHostToDevice;
-            case MemcpyKind::DeviceToHost:   return cudaMemcpyDeviceToHost;
-            case MemcpyKind::DeviceToDevice: return cudaMemcpyDeviceToDevice;
+            case MemcpyKind::HostToHost:     return cudaMemcpyHostToHost;     break;
+            case MemcpyKind::HostToDevice:   return cudaMemcpyHostToDevice;   break;
+            case MemcpyKind::DeviceToHost:   return cudaMemcpyDeviceToHost;   break;
+            case MemcpyKind::DeviceToDevice: return cudaMemcpyDeviceToDevice; break;
             case MemcpyKind::Default:        return cudaMemcpyDefault;
-            default: throw cudaErrorInvalidMemcpyDirection;
+            default: throw blas::Error( "unknown memcpy direction" );
         }
     }
 #elif defined(BLAS_HAVE_ROCBLAS)
-    // Convert enum to hip-style memcpy enum.
+    /// @return the corresponding hip memcpy kind constant
     inline hipMemcpyKind memcpy2hip( MemcpyKind kind )
     {
         switch (kind) {
-            case MemcpyKind::HostToHost:     return hipMemcpyHostToHost;
-            case MemcpyKind::HostToDevice:   return hipMemcpyHostToDevice;
-            case MemcpyKind::DeviceToHost:   return hipMemcpyDeviceToHost;
-            case MemcpyKind::DeviceToDevice: return hipMemcpyDeviceToDevice;
+            case MemcpyKind::HostToHost:     return hipMemcpyHostToHost;     break; 
+            case MemcpyKind::HostToDevice:   return hipMemcpyHostToDevice;   break; 
+            case MemcpyKind::DeviceToHost:   return hipMemcpyDeviceToHost;   break; 
+            case MemcpyKind::DeviceToDevice: return hipMemcpyDeviceToDevice; break; 
             case MemcpyKind::Default:        return hipMemcpyDefault;
-            default: throw hipErrorInvalidMemcpyDirection;
+            default: throw blas::Error( "unknown memcpy direction" );
         }
     }
 #endif
@@ -429,7 +429,7 @@ template <typename T>
 void device_memcpy(
     void* dev_ptr,
     void* host_ptr,
-    int64_t nelements, Queue& queue, MemcpyKind kind=MemcpyKind::Default)
+    int64_t nelements, MemcpyKind kind, Queue& queue)
 {
     #ifdef BLAS_HAVE_CUBLAS
         blas_dev_call(
@@ -444,6 +444,18 @@ void device_memcpy(
                 memcpy2hip(kind), queue.stream() ) );
     #endif
 }
+// overloaded device memcpy with memcpy direction set to default
+template <typename T>
+void device_memcpy(
+    void* dev_ptr,
+    void* host_ptr,
+    int64_t nelements, Queue& queue)
+{
+    device_memcpy<T>(
+        dev_ptr,
+        host_ptr,
+        nelements, MemcpyKind::Default, queue);
+}
 
 //------------------------------------------------------------------------------
 // device memcpy 2D
@@ -451,8 +463,7 @@ template <typename T>
 void device_memcpy_2d(
     void*  dev_ptr, int64_t  dev_pitch,
     void* host_ptr, int64_t host_pitch,
-    int64_t width, int64_t height, Queue& queue,
-    MemcpyKind kind=MemcpyKind::Default)
+    int64_t width, int64_t height, MemcpyKind kind, Queue& queue)
 {
     #ifdef BLAS_HAVE_CUBLAS
         blas_dev_call(
@@ -469,6 +480,18 @@ void device_memcpy_2d(
                 sizeof(T)*width, sizeof(T)*height,
                 memcpy2hip(kind), queue.stream() ) );
     #endif
+}
+// overloaded device memcpy 2D with memcpy direction set to default
+template <typename T>
+void device_memcpy_2d(
+    void*  dev_ptr, int64_t  dev_pitch,
+    void* host_ptr, int64_t host_pitch,
+    int64_t width, int64_t height, Queue& queue)
+{
+    device_memcpy_2d<T>(
+         dev_ptr,  dev_pitch,
+        host_ptr, host_pitch,
+        width, height, MemcpyKind::Default, queue);
 }
 
 }  // namespace blas
