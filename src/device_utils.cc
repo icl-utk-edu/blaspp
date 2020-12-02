@@ -40,6 +40,23 @@ void get_device(blas::Device *device)
 }
 
 // -----------------------------------------------------------------------------
+// @return number of GPU devices
+device_blas_int get_device_count()
+{
+    device_blas_int dev_counts;
+
+    #ifdef BLAS_HAVE_CUBLAS
+        blas_dev_call(
+            cudaGetDeviceCount(&dev_counts) );
+    #elif defined(BLAS_HAVE_ROCBLAS)
+         blas_dev_call(
+            hipGetDeviceCount(&dev_counts) );
+    #endif
+
+    return dev_counts;
+}
+
+// -----------------------------------------------------------------------------
 /// free a device pointer
 void device_free(void* ptr)
 {
