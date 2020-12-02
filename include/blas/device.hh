@@ -42,33 +42,31 @@ enum class MemcpyKind : device_blas_int {
 
 // -----------------------------------------------------------------------------
 #if defined(BLAS_HAVE_CUBLAS)
-// -----------------------------------------------------------------------------
-// Convert enum to cuda-style memcpy enum.
-inline cudaMemcpyKind memcpy2cuda( MemcpyKind kind )
-{
-    switch (kind) {
-        case MemcpyKind::HostToHost:     return cudaMemcpyHostToHost;
-        case MemcpyKind::HostToDevice:   return cudaMemcpyHostToDevice;
-        case MemcpyKind::DeviceToHost:   return cudaMemcpyDeviceToHost;
-        case MemcpyKind::DeviceToDevice: return cudaMemcpyDeviceToDevice;
-        case MemcpyKind::Default:        return cudaMemcpyDefault;
-        default: throw cudaErrorInvalidMemcpyDirection;
+    // Convert enum to cuda-style memcpy enum.
+    inline cudaMemcpyKind memcpy2cuda( MemcpyKind kind )
+    {
+        switch (kind) {
+            case MemcpyKind::HostToHost:     return cudaMemcpyHostToHost;
+            case MemcpyKind::HostToDevice:   return cudaMemcpyHostToDevice;
+            case MemcpyKind::DeviceToHost:   return cudaMemcpyDeviceToHost;
+            case MemcpyKind::DeviceToDevice: return cudaMemcpyDeviceToDevice;
+            case MemcpyKind::Default:        return cudaMemcpyDefault;
+            default: throw cudaErrorInvalidMemcpyDirection;
+        }
     }
-}
 #elif defined(BLAS_HAVE_ROCBLAS)
-// -----------------------------------------------------------------------------
-// Convert enum to hip-style memcpy enum.
-inline hipMemcpyKind memcpy2hip( MemcpyKind kind )
-{
-    switch (kind) {
-        case MemcpyKind::HostToHost:     return hipMemcpyHostToHost;
-        case MemcpyKind::HostToDevice:   return hipMemcpyHostToDevice;
-        case MemcpyKind::DeviceToHost:   return hipMemcpyDeviceToHost;
-        case MemcpyKind::DeviceToDevice: return hipMemcpyDeviceToDevice;
-        case MemcpyKind::Default:        return hipMemcpyDefault;
-        default: throw hipErrorInvalidMemcpyDirection;
+    // Convert enum to hip-style memcpy enum.
+    inline hipMemcpyKind memcpy2hip( MemcpyKind kind )
+    {
+        switch (kind) {
+            case MemcpyKind::HostToHost:     return hipMemcpyHostToHost;
+            case MemcpyKind::HostToDevice:   return hipMemcpyHostToDevice;
+            case MemcpyKind::DeviceToHost:   return hipMemcpyDeviceToHost;
+            case MemcpyKind::DeviceToDevice: return hipMemcpyDeviceToDevice;
+            case MemcpyKind::Default:        return hipMemcpyDefault;
+            default: throw hipErrorInvalidMemcpyDirection;
+        }
     }
-}
 #endif
 
 // -----------------------------------------------------------------------------
@@ -453,7 +451,8 @@ template <typename T>
 void device_memcpy_2d(
     void*  dev_ptr, int64_t  dev_pitch,
     void* host_ptr, int64_t host_pitch,
-    int64_t width, int64_t height, device_memcpy_t memcpy_kind, Queue& queue)
+    int64_t width, int64_t height, Queue& queue,
+    MemcpyKind kind=MemcpyKind::Default)
 {
     #ifdef BLAS_HAVE_CUBLAS
         blas_dev_call(
@@ -461,14 +460,14 @@ void device_memcpy_2d(
                  dev_ptr, sizeof(T)* dev_pitch,
                 host_ptr, sizeof(T)*host_pitch,
                 sizeof(T)*width, sizeof(T)*height,
-                memcpy_kind, queue.stream() ) );
+                memcpy2cuda(kind), queue.stream() ) );
     #elif defined(BLAS_HAVE_ROCBLAS)
          blas_dev_call(
             hipMemcpy2DAsync(
                  dev_ptr, sizeof(T)* dev_pitch,
                 host_ptr, sizeof(T)*host_pitch,
                 sizeof(T)*width, sizeof(T)*height,
-                memcpy_kind, queue.stream() ) );
+                memcpy2hip(kind), queue.stream() ) );
     #endif
 }
 
