@@ -470,13 +470,13 @@ void device_memcpy_2d(
             cudaMemcpy2DAsync(
                        (void*)dev_ptr, sizeof(T)* dev_pitch,
                 (const void*)host_ptr, sizeof(T)*host_pitch,
-                width, height, memcpy2cuda(kind), queue.stream() ) );
+                sizeof(T)*width, height, memcpy2cuda(kind), queue.stream() ) );
     #elif defined(BLAS_HAVE_ROCBLAS)
          blas_dev_call(
             hipMemcpy2DAsync(
                        (void*)dev_ptr, sizeof(T)* dev_pitch,
                 (const void*)host_ptr, sizeof(T)*host_pitch,
-                width, height, memcpy2hip(kind), queue.stream() ) );
+                sizeof(T)*width, height, memcpy2hip(kind), queue.stream() ) );
     #endif
 }
 // overloaded device memcpy 2D with memcpy direction set to default
