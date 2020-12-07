@@ -315,7 +315,7 @@ set( blaspp_defs_ "${blaspp_defs_}"
      CACHE INTERNAL "Constants defined for BLAS" )
 
 # Concat defines.
-set( blaspp_defines ${blaspp_defs_} ${blaspp_defs_cuda_} )
+set( blaspp_defines "${blaspp_defs_};${blaspp_defs_cuda_}" CACHE INTERNAL "")
 
 if (true)
     # Extract definitions as #define VAR or #define VAR VALUE.
