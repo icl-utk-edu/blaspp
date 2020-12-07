@@ -427,28 +427,28 @@ void device_memset(
 // device memcpy
 template <typename T>
 void device_memcpy(
-    void* dev_ptr,
-    void* host_ptr,
+    T*        dev_ptr,
+    T const* host_ptr,
     int64_t nelements, MemcpyKind kind, Queue& queue)
 {
     #ifdef BLAS_HAVE_CUBLAS
         blas_dev_call(
             cudaMemcpyAsync(
-                dev_ptr, host_ptr, sizeof(T)*nelements,
+                (void*)dev_ptr, (const void*)host_ptr, sizeof(T)*nelements,
                 memcpy2cuda(kind), queue.stream() ) );
 
     #elif defined(BLAS_HAVE_ROCBLAS)
         blas_dev_call(
             hipMemcpyAsync(
-                dev_ptr, host_ptr, sizeof(T)*nelements,
+                (void*)dev_ptr, (const void*)host_ptr, sizeof(T)*nelements,
                 memcpy2hip(kind), queue.stream() ) );
     #endif
 }
 // overloaded device memcpy with memcpy direction set to default
 template <typename T>
 void device_memcpy(
-    void* dev_ptr,
-    void* host_ptr,
+    T*        dev_ptr,
+    T const* host_ptr,
     int64_t nelements, Queue& queue)
 {
     device_memcpy<T>(
@@ -461,22 +461,22 @@ void device_memcpy(
 // device memcpy 2D
 template <typename T>
 void device_memcpy_2d(
-    void*  dev_ptr, int64_t  dev_pitch,
-    void* host_ptr, int64_t host_pitch,
+    T*        dev_ptr, int64_t  dev_pitch,
+    T const* host_ptr, int64_t host_pitch,
     int64_t width, int64_t height, MemcpyKind kind, Queue& queue)
 {
     #ifdef BLAS_HAVE_CUBLAS
         blas_dev_call(
             cudaMemcpy2DAsync(
-                 dev_ptr, sizeof(T)* dev_pitch,
-                host_ptr, sizeof(T)*host_pitch,
+                       (void*)dev_ptr, sizeof(T)* dev_pitch,
+                (const void*)host_ptr, sizeof(T)*host_pitch,
                 sizeof(T)*width, sizeof(T)*height,
                 memcpy2cuda(kind), queue.stream() ) );
     #elif defined(BLAS_HAVE_ROCBLAS)
          blas_dev_call(
             hipMemcpy2DAsync(
-                 dev_ptr, sizeof(T)* dev_pitch,
-                host_ptr, sizeof(T)*host_pitch,
+                       (void*)dev_ptr, sizeof(T)* dev_pitch,
+                (const void*)host_ptr, sizeof(T)*host_pitch,
                 sizeof(T)*width, sizeof(T)*height,
                 memcpy2hip(kind), queue.stream() ) );
     #endif
@@ -484,8 +484,8 @@ void device_memcpy_2d(
 // overloaded device memcpy 2D with memcpy direction set to default
 template <typename T>
 void device_memcpy_2d(
-    void*  dev_ptr, int64_t  dev_pitch,
-    void* host_ptr, int64_t host_pitch,
+    T*        dev_ptr, int64_t  dev_pitch,
+    T const* host_ptr, int64_t host_pitch,
     int64_t width, int64_t height, Queue& queue)
 {
     device_memcpy_2d<T>(
