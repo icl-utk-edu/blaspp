@@ -434,13 +434,13 @@ void device_memcpy(
     #ifdef BLAS_HAVE_CUBLAS
         blas_dev_call(
             cudaMemcpyAsync(
-                (void*)dev_ptr, (const void*)host_ptr, sizeof(T)*nelements,
+                dev_ptr, host_ptr, sizeof(T)*nelements,
                 memcpy2cuda(kind), queue.stream() ) );
 
     #elif defined(BLAS_HAVE_ROCBLAS)
         blas_dev_call(
             hipMemcpyAsync(
-                (void*)dev_ptr, (const void*)host_ptr, sizeof(T)*nelements,
+                dev_ptr, host_ptr, sizeof(T)*nelements,
                 memcpy2hip(kind), queue.stream() ) );
     #endif
 }
@@ -468,14 +468,14 @@ void device_memcpy_2d(
     #ifdef BLAS_HAVE_CUBLAS
         blas_dev_call(
             cudaMemcpy2DAsync(
-                       (void*)dev_ptr, sizeof(T)* dev_pitch,
-                (const void*)host_ptr, sizeof(T)*host_pitch,
+                 dev_ptr, sizeof(T)* dev_pitch,
+                host_ptr, sizeof(T)*host_pitch,
                 sizeof(T)*width, height, memcpy2cuda(kind), queue.stream() ) );
     #elif defined(BLAS_HAVE_ROCBLAS)
          blas_dev_call(
             hipMemcpy2DAsync(
-                       (void*)dev_ptr, sizeof(T)* dev_pitch,
-                (const void*)host_ptr, sizeof(T)*host_pitch,
+                 dev_ptr, sizeof(T)* dev_pitch,
+                host_ptr, sizeof(T)*host_pitch,
                 sizeof(T)*width, height, memcpy2hip(kind), queue.stream() ) );
     #endif
 }
