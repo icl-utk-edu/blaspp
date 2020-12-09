@@ -151,6 +151,12 @@ void test_batch_trmm  ( Params& params, bool run );
 void test_batch_trsm  ( Params& params, bool run );
 
 // -----------------------------------------------------------------------------
+// Level 1 GPU BLAS
+#if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
+void test_swap_device  ( Params& params, bool run );
+#endif
+
+// -----------------------------------------------------------------------------
 // Level 3 GPU BLAS
 #if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
 void test_gemm_device  ( Params& params, bool run );

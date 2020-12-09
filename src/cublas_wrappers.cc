@@ -59,6 +59,67 @@ cublasSideMode_t side2cublas(blas::Side side)
 // Level 1 BLAS - Device Interfaces
 
 // -----------------------------------------------------------------------------
+// swap
+// -----------------------------------------------------------------------------
+// sswap
+void sswap(
+    blas::Queue& queue,
+    device_blas_int n,
+    float *dx, device_blas_int incdx,
+    float *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        cublasSswap(
+            queue.handle(),
+            n,
+            dx, incdx,
+            dy, incdy) );
+}
+// -----------------------------------------------------------------------------
+// dswap
+void dswap(
+    blas::Queue& queue,
+    device_blas_int n,
+    double *dx, device_blas_int incdx,
+    double *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        cublasDswap(
+            queue.handle(),
+            n,
+            dx, incdx,
+            dy, incdy) );
+}
+// -----------------------------------------------------------------------------
+// cswap
+void cswap(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        cublasCswap(
+            queue.handle(),
+            n,
+            (cuComplex*) dx, incdx,
+            (cuComplex*) dy, incdy) );
+}
+// -----------------------------------------------------------------------------
+// zswap
+void zswap(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        cublasZswap(
+            queue.handle(),
+            n,
+            (cuDoubleComplex*) dx, incdx,
+            (cuDoubleComplex*) dy, incdy) );
+}
 
 // =============================================================================
 // Level 2 BLAS - Device Interfaces

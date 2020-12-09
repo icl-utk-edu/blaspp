@@ -56,6 +56,7 @@ group_size.add_argument(       '--dim',    action='store',      help='explicitly
 group_cat = parser.add_argument_group( 'category (default is all)' )
 categories = [
     group_cat.add_argument( '--blas1', action='store_true', help='run Level 1 BLAS tests' ),
+    group_cat.add_argument( '--blas1-device', action='store_true', help='run Level 1 BLAS on devices (GPUs)' ),
     group_cat.add_argument( '--blas2', action='store_true', help='run Level 2 BLAS tests' ),
     group_cat.add_argument( '--blas3', action='store_true', help='run Level 3 BLAS tests' ),
     group_cat.add_argument( '--batch-blas3', action='store_true', help='run Level 3 Batch BLAS tests' ),
@@ -254,6 +255,11 @@ if (opts.blas1):
     [ 'rotm',  dtype_real + n + incx + incy ],
     [ 'scal',  dtype      + n + incx_pos ],
     [ 'swap',  dtype      + n + incx + incy ],
+    ]
+
+if (opts.blas1_device):
+    cmds += [
+    [ 'dev-swap',  dtype + n + incx_pos + incy_pos ],
     ]
 
 # Level 2

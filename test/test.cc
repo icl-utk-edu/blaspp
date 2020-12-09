@@ -26,6 +26,7 @@ using testsweeper::ansi_normal;
 enum Section {
     newline = 0,  // zero flag forces newline
     blas1,
+    device_blas1,
     blas2,
     blas3,
     device_blas3,
@@ -36,6 +37,7 @@ enum Section {
 const char* section_names[] = {
    "",  // none
    "Level 1 BLAS",
+   "Level 1 BLAS (Device)",
    "Level 2 BLAS",
    "Level 3 BLAS",
    "Level 3 BLAS (Device)",
@@ -58,6 +60,12 @@ std::vector< testsweeper::routines_t > routines = {
     { "rotmg",  test_rotmg,  Section::blas1   },
     { "scal",   test_scal,   Section::blas1   },
     { "swap",   test_swap,   Section::blas1   },
+    { "",       nullptr,     Section::newline },
+
+#if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
+    { "dev-swap",         test_swap_device,         Section::device_blas1   },
+    { "",                 nullptr,                  Section::newline },
+#endif
 
     // Level 2 BLAS
     { "gemv",   test_gemv,   Section::blas2   },

@@ -60,6 +60,67 @@ rocblas_side side2rocblas(blas::Side side)
 // Level 1 BLAS - Device Interfaces
 
 // -----------------------------------------------------------------------------
+// swap
+// -----------------------------------------------------------------------------
+// sswap
+void sswap(
+    blas::Queue& queue,
+    device_blas_int n,
+    float *dx, device_blas_int incdx,
+    float *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        rocblas_sswap(
+            queue.handle(),
+            n,
+            dx, incdx,
+            dy, incdy) );
+}
+// -----------------------------------------------------------------------------
+// dswap
+void dswap(
+    blas::Queue& queue,
+    device_blas_int n,
+    double *dx, device_blas_int incdx,
+    double *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        rocblas_dswap(
+            queue.handle(),
+            n,
+            dx, incdx,
+            dy, incdy) );
+}
+// -----------------------------------------------------------------------------
+// cswap
+void cswap(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        rocblas_cswap(
+            queue.handle(),
+            n,
+            (rocblas_float_complex*) dx, incdx,
+            (rocblas_float_complex*) dy, incdy) );
+}
+// -----------------------------------------------------------------------------
+// zswap
+void zswap(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        rocblas_zswap(
+            queue.handle(),
+            n,
+            (rocblas_double_complex*) dx, incdx,
+            (rocblas_double_complex*) dy, incdy) );
+}
 
 // =============================================================================
 // Level 2 BLAS - Device Interfaces

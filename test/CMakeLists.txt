@@ -100,6 +100,7 @@ if (CMAKE_CUDA_COMPILER)
         test_batch_syrk_device.cc
         test_batch_trmm_device.cc
         test_batch_trsm_device.cc
+        test_swap_device.cc
         test_gemm_device.cc
         test_hemm_device.cc
         test_her2k_device.cc

@@ -220,6 +220,7 @@ else()
             src/device_trmm.cc
             src/device_trsm.cc
             src/device_utils.cc
+            src/device_swap.cc
             src/cublas_wrappers.cc
             src/rocblas_wrappers.cc
         )
