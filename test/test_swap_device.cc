@@ -63,12 +63,9 @@ void test_swap_device_work( Params& params, bool run )
     cblas_copy( n, x, incx, xref, incx );
     cblas_copy( n, y, incy, yref, incy );
 
-    require( incx >= 0 ); // device setvector requires positive inc, otherwise it will throw CUBLAS_STATUS_INVALID_VALUE
-    require( incy >= 0 ); // device setvector requires positive inc, otherwise it will throw CUBLAS_STATUS_INVALID_VALUE
-
     // todo: should we have different incdx and incdy
-    blas::device_setvector(n, x, incx, dx, incx, queue);
-    blas::device_setvector(n, y, incy, dy, incy, queue);
+    blas::device_setvector(n, x, std::abs(incx), dx, std::abs(incx), queue);
+    blas::device_setvector(n, y, std::abs(incy), dy, std::abs(incy), queue);
     queue.sync();
 
     // test error exits
@@ -102,8 +99,8 @@ void test_swap_device_work( Params& params, bool run )
     params.gbytes() = gbyte / time;
 
     // todo: should we have different incdx and incdy
-    blas::device_getvector(n, dx, incx, x, incx, queue);
-    blas::device_getvector(n, dy, incy, y, incy, queue);
+    blas::device_getvector(n, dx, std::abs(incx), x, std::abs(incx), queue);
+    blas::device_getvector(n, dy, std::abs(incy), y, std::abs(incy), queue);
     queue.sync();
 
     if (verbose >= 2) {

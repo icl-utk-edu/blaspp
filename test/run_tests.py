@@ -259,7 +259,7 @@ if (opts.blas1):
 
 if (opts.blas1_device):
     cmds += [
-    [ 'dev-swap',  dtype + n + incx_pos + incy_pos ],
+    [ 'dev-swap',  dtype + n + incx + incy ],
     ]
 
 # Level 2
