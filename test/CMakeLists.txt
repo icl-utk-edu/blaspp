@@ -122,12 +122,16 @@ endif()
 
 # TODO: see if we want another variable
 if (EXISTS ${ROCMDIR})
-    message( STATUS "Building HIP wrapper testers." )
-    target_sources(
-        ${tester}
-        PRIVATE
-        ${shared_cuda_hip_src_}
-    )
+    if (CMAKE_CUDA_COMPILER)
+        # Already added the relevant code for CUDA
+    else()
+        message( STATUS "Building HIP wrapper testers." )
+        target_sources(
+            ${tester}
+            PRIVATE
+            ${shared_cuda_hip_src_}
+        )
+    else()
 else()
     message( STATUS "No HIP support in testers" )
 endif()
