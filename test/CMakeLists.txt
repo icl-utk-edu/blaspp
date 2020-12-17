@@ -116,25 +116,17 @@ if (CMAKE_CUDA_COMPILER)
         PRIVATE
         ${shared_cuda_hip_src_}
     )
+elseif (EXISTS ${ROCMDIR})
+    message( STATUS "Building HIP wrapper testers." )
+    target_sources(
+        ${tester}
+        PRIVATE
+        ${shared_cuda_hip_src_}
+    )
 else()
-    message( STATUS "No CUDA support in testers" )
+    message( STATUS "No CUDA or HIP support in testers" )
 endif()
 
-# TODO: see if we want another variable
-if (EXISTS ${ROCMDIR})
-    if (CMAKE_CUDA_COMPILER)
-        # Already added the relevant code for CUDA
-    else()
-        message( STATUS "Building HIP wrapper testers." )
-        target_sources(
-            ${tester}
-            PRIVATE
-            ${shared_cuda_hip_src_}
-        )
-    else()
-else()
-    message( STATUS "No HIP support in testers" )
-endif()
 
 # C++11 is inherited from blaspp, but disabling extensions is not.
 set_target_properties( ${tester} PROPERTIES CXX_EXTENSIONS false )
