@@ -255,7 +255,7 @@ endif()
 if (NOT use_hip)
     message( STATUS "User has requested to NOT use HIP" )
 elseif (CMAKE_CUDA_COMPILER)
-    message( STATUS "Both HIP and CUDA detected, so we are defaulting to HIP. Use -Duse_cuda=off to force HIP" )
+    message( STATUS "Both HIP and CUDA detected, so we are defaulting to CUDA. Use -Duse_cuda=off to build for HIP" )
 else()
     # TODO: other detection?
     if (EXISTS "${ROCMDIR}")
