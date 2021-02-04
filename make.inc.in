@@ -20,4 +20,5 @@ prefix   = @prefix@
 
 static   = @static@
 
+# seems to be no longer used
 devtarget = @devtarget@

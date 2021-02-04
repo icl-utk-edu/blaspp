@@ -80,6 +80,7 @@ void sswap(
             dx, incdx,
             dy, incdy) );
 }
+
 // -----------------------------------------------------------------------------
 // dswap
 void dswap(
@@ -95,6 +96,7 @@ void dswap(
             dx, incdx,
             dy, incdy) );
 }
+
 // -----------------------------------------------------------------------------
 // cswap
 void cswap(
@@ -110,6 +112,7 @@ void cswap(
             (rocblas_float_complex*) dx, incdx,
             (rocblas_float_complex*) dy, incdy) );
 }
+
 // -----------------------------------------------------------------------------
 // zswap
 void zswap(

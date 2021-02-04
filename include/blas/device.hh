@@ -63,10 +63,10 @@ enum class MemcpyKind : device_blas_int {
     inline hipMemcpyKind memcpy2hip( MemcpyKind kind )
     {
         switch (kind) {
-            case MemcpyKind::HostToHost:     return hipMemcpyHostToHost;     break; 
-            case MemcpyKind::HostToDevice:   return hipMemcpyHostToDevice;   break; 
-            case MemcpyKind::DeviceToHost:   return hipMemcpyDeviceToHost;   break; 
-            case MemcpyKind::DeviceToDevice: return hipMemcpyDeviceToDevice; break; 
+            case MemcpyKind::HostToHost:     return hipMemcpyHostToHost;     break;
+            case MemcpyKind::HostToDevice:   return hipMemcpyHostToDevice;   break;
+            case MemcpyKind::DeviceToHost:   return hipMemcpyDeviceToHost;   break;
+            case MemcpyKind::DeviceToDevice: return hipMemcpyDeviceToDevice; break;
             case MemcpyKind::Default:        return hipMemcpyDefault;
             default: throw blas::Error( "unknown memcpy direction" );
         }
@@ -158,6 +158,12 @@ private:
 
         hipEvent_t   default_event_;
         hipEvent_t   parallel_events_[DEV_QUEUE_FORK_SIZE];
+    #else
+        // pointer to current stream (default or fork mode)
+        void** current_stream_;
+
+        // default CUDA stream for this queue; may be NULL
+        void*  default_stream_;
     #endif
 };
 
@@ -318,6 +324,12 @@ void device_setmatrix(
                 m_, n_, sizeof(T),
                 host_ptr, ldh_,
                 dev_ptr,  ldd_, queue.stream() ) );
+    #else
+        throw blas::Error( "device BLAS not available", __func__ );
+        blas_unused( m_ );
+        blas_unused( n_ );
+        blas_unused( ldd_ );
+        blas_unused( ldh_ );
     #endif
 }
 
@@ -347,6 +359,12 @@ void device_getmatrix(
                 m_, n_, sizeof(T),
                 dev_ptr,  ldd_,
                 host_ptr, ldh_, queue.stream() ) );
+    #else
+        throw blas::Error( "device BLAS not available", __func__ );
+        blas_unused( m_ );
+        blas_unused( n_ );
+        blas_unused( ldd_ );
+        blas_unused( ldh_ );
     #endif
 }
 
@@ -375,6 +393,11 @@ void device_setvector(
                 n_, sizeof(T),
                 host_ptr, inch_,
                 dev_ptr,  incd_, queue.stream() ) );
+    #else
+        throw blas::Error( "device BLAS not available", __func__ );
+        blas_unused( n_ );
+        blas_unused( incd_ );
+        blas_unused( inch_ );
     #endif
 }
 
@@ -403,6 +426,11 @@ void device_getvector(
                 n_, sizeof(T),
                 dev_ptr,  incd_,
                 host_ptr, inch_, queue.stream() ) );
+    #else
+        throw blas::Error( "device BLAS not available", __func__ );
+        blas_unused( n_ );
+        blas_unused( incd_ );
+        blas_unused( inch_ );
     #endif
 }
 

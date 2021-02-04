@@ -329,6 +329,28 @@ void test_make_scalar()
 }
 
 // -----------------------------------------------------------------------------
+void test_device()
+{
+    int cnt = blas::get_device_count();
+    //printf( "get_device_count %d\n", cnt );
+    require( cnt >= 0 );
+
+    blas::Device dev;
+    blas::get_device( &dev );
+    //printf( "get_device %d\n", dev );
+    if (cnt > 0)
+        require( dev >= 0 );
+    else
+        require( dev < 0 );
+
+    if (cnt > 0) {
+        blas::set_device( cnt-1 );
+        blas::get_device( &dev );
+        require( dev == cnt-1 );
+    }
+}
+
+// -----------------------------------------------------------------------------
 void test_util( Params& params, bool run )
 {
     int64_t m = params.dim.m();
@@ -347,6 +369,7 @@ void test_util( Params& params, bool run )
     test_scalar_type();
     test_scalar_type();
     test_make_scalar();
+    test_device();
 
     params.okay() = true;
 }

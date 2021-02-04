@@ -14,6 +14,9 @@
 
 namespace blas {
 
+/// Use to silence compiler warning of unused variable.
+#define blas_unused( var ) ((void)var)
+
 // -----------------------------------------------------------------------------
 enum class Layout : char { ColMajor = 'C', RowMajor = 'R' };
 enum class Op     : char { NoTrans  = 'N', Trans    = 'T', ConjTrans = 'C' };

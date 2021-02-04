@@ -56,12 +56,17 @@ group_size.add_argument(       '--dim',    action='store',      help='explicitly
 group_cat = parser.add_argument_group( 'category (default is all)' )
 categories = [
     group_cat.add_argument( '--blas1', action='store_true', help='run Level 1 BLAS tests' ),
-    group_cat.add_argument( '--blas1-device', action='store_true', help='run Level 1 BLAS on devices (GPUs)' ),
     group_cat.add_argument( '--blas2', action='store_true', help='run Level 2 BLAS tests' ),
     group_cat.add_argument( '--blas3', action='store_true', help='run Level 3 BLAS tests' ),
     group_cat.add_argument( '--batch-blas3', action='store_true', help='run Level 3 Batch BLAS tests' ),
+
+    group_cat.add_argument( '--host', action='store_true', help='run all CPU host routines' ),
+
+    group_cat.add_argument( '--blas1-device', action='store_true', help='run Level 1 BLAS on devices (GPUs)' ),
     group_cat.add_argument( '--blas3-device', action='store_true', help='run Level 3 BLAS on devices (GPUs)' ),
     group_cat.add_argument( '--batch-blas3-device', action='store_true', help='run Level 3 Batch BLAS on devices (GPUs)' ),
+
+    group_cat.add_argument( '--device', action='store_true', help='run all GPU device routines' ),
 ]
 # map category objects to category names: ['lu', 'chol', ...]
 categories = list( map( lambda x: x.dest, categories ) )
@@ -107,10 +112,22 @@ if (not (opts.square or opts.tall or opts.wide or opts.mnk)):
     opts.wide   = True
     opts.mnk    = True
 
-# by default, run all categories
+# By default, or if specific test routines given, enable all categories
+# to get whichever has the routines.
 if (opts.tests or not any( map( lambda c: opts.__dict__[ c ], categories ))):
+    opts.host   = True
+    opts.device = True
+
+# If --host, run all non-device categories.
+if (opts.host):
     for c in categories:
         if (not c.endswith('device')):
+            opts.__dict__[ c ] = True
+
+# If --device, run all device categories.
+if (opts.device):
+    for c in categories:
+        if (c.endswith('_device')):
             opts.__dict__[ c ] = True
 
 # ------------------------------------------------------------------------------

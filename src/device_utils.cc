@@ -26,7 +26,7 @@ void set_device(blas::Device device)
 // get current device
 void get_device(blas::Device *device)
 {
-    device_blas_int dev;
+    device_blas_int dev = -1;
 
     #ifdef BLAS_HAVE_CUBLAS
         blas_dev_call(
@@ -43,7 +43,7 @@ void get_device(blas::Device *device)
 // @return number of GPU devices
 device_blas_int get_device_count()
 {
-    device_blas_int dev_counts;
+    device_blas_int dev_counts = 0;
 
     #ifdef BLAS_HAVE_CUBLAS
         blas_dev_call(

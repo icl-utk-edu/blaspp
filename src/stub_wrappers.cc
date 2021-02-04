@@ -5,55 +5,10 @@
 
 #include "blas/device.hh"
 
-#ifdef BLAS_HAVE_CUBLAS
+#if ! defined(BLAS_HAVE_CUBLAS) && ! defined(BLAS_HAVE_ROCBLAS)
 
 namespace blas {
 namespace device {
-
-// -----------------------------------------------------------------------------
-/// @return the corresponding device trans constant
-cublasOperation_t op2cublas(blas::Op trans)
-{
-    switch (trans) {
-        case Op::NoTrans:   return CUBLAS_OP_N; break;
-        case Op::Trans:     return CUBLAS_OP_T; break;
-        case Op::ConjTrans: return CUBLAS_OP_C; break;
-        default: throw blas::Error( "unknown op" );
-    }
-}
-
-// -----------------------------------------------------------------------------
-/// @return the corresponding device diag constant
-cublasDiagType_t diag2cublas(blas::Diag diag)
-{
-    switch (diag) {
-        case Diag::Unit:    return CUBLAS_DIAG_UNIT;     break;
-        case Diag::NonUnit: return CUBLAS_DIAG_NON_UNIT; break;
-        default: throw blas::Error( "unknown diag" );
-    }
-}
-
-// -----------------------------------------------------------------------------
-/// @return the corresponding device uplo constant
-cublasFillMode_t uplo2cublas(blas::Uplo uplo)
-{
-    switch (uplo) {
-        case Uplo::Upper: return CUBLAS_FILL_MODE_UPPER; break;
-        case Uplo::Lower: return CUBLAS_FILL_MODE_LOWER; break;
-        default: throw blas::Error( "unknown uplo" );
-    }
-}
-
-// -----------------------------------------------------------------------------
-/// @return the corresponding device side constant
-cublasSideMode_t side2cublas(blas::Side side)
-{
-    switch (side) {
-        case Side::Left:  return CUBLAS_SIDE_LEFT;  break;
-        case Side::Right: return CUBLAS_SIDE_RIGHT; break;
-        default: throw blas::Error( "unknown side" );
-    }
-}
 
 // =============================================================================
 // Level 1 BLAS - Device Interfaces
@@ -68,12 +23,7 @@ void sswap(
     float *dx, device_blas_int incdx,
     float *dy, device_blas_int incdy)
 {
-    blas_dev_call(
-        cublasSswap(
-            queue.handle(),
-            n,
-            dx, incdx,
-            dy, incdy) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -84,12 +34,7 @@ void dswap(
     double *dx, device_blas_int incdx,
     double *dy, device_blas_int incdy)
 {
-    blas_dev_call(
-        cublasDswap(
-            queue.handle(),
-            n,
-            dx, incdx,
-            dy, incdy) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -100,12 +45,7 @@ void cswap(
     std::complex<float> *dx, device_blas_int incdx,
     std::complex<float> *dy, device_blas_int incdy)
 {
-    blas_dev_call(
-        cublasCswap(
-            queue.handle(),
-            n,
-            (cuComplex*) dx, incdx,
-            (cuComplex*) dy, incdy) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -116,12 +56,7 @@ void zswap(
     std::complex<double> *dx, device_blas_int incdx,
     std::complex<double> *dy, device_blas_int incdy)
 {
-    blas_dev_call(
-        cublasZswap(
-            queue.handle(),
-            n,
-            (cuDoubleComplex*) dx, incdx,
-            (cuDoubleComplex*) dy, incdy) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // =============================================================================
@@ -146,14 +81,7 @@ void sgemm(
     float beta,
     float       *dC, device_blas_int lddc)
 {
-    blas_dev_call(
-        cublasSgemm(
-            queue.handle(),
-            op2cublas(transA), op2cublas(transB),
-            m, n, k,
-            &alpha, dA, ldda,
-                    dB, lddb,
-            &beta,  dC, lddc ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -168,14 +96,7 @@ void dgemm(
     double beta,
     double       *dC, device_blas_int lddc)
 {
-    blas_dev_call(
-        cublasDgemm(
-            queue.handle(),
-            op2cublas(transA), op2cublas(transB),
-            m, n, k,
-            &alpha, dA, ldda,
-                    dB, lddb,
-            &beta,  dC, lddc ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -190,15 +111,7 @@ void cgemm(
     std::complex<float> beta,
     std::complex<float>       *dC, device_blas_int lddc)
 {
-    blas_dev_call(
-        cublasCgemm(
-            queue.handle(),
-            op2cublas(transA), op2cublas(transB), m, n, k,
-            (cuComplex*) &alpha,
-            (cuComplex*) dA, ldda,
-            (cuComplex*) dB, lddb,
-            (cuComplex*) &beta,
-            (cuComplex*) dC, lddc ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -213,16 +126,7 @@ void zgemm(
     std::complex<double> beta,
     std::complex<double>       *dC, device_blas_int lddc)
 {
-    blas_dev_call(
-        cublasZgemm(
-            queue.handle(),
-            op2cublas(transA), op2cublas(transB),
-            m, n, k,
-            (cuDoubleComplex*) &alpha,
-            (cuDoubleComplex*) dA, ldda,
-            (cuDoubleComplex*) dB, lddb,
-            (cuDoubleComplex*) &beta,
-            (cuDoubleComplex*) dC, lddc ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -237,14 +141,7 @@ void strsm(
     float const *dA, device_blas_int ldda,
     float       *dB, device_blas_int lddb)
 {
-    blas_dev_call(
-        cublasStrsm(
-            queue.handle(),
-            side2cublas(side), uplo2cublas(uplo), op2cublas(trans), diag2cublas(diag),
-            m, n,
-            &alpha,
-            dA, ldda,
-            dB, lddb ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -257,14 +154,7 @@ void dtrsm(
     double const *dA, device_blas_int ldda,
     double       *dB, device_blas_int lddb)
 {
-    blas_dev_call(
-        cublasDtrsm(
-            queue.handle(),
-            side2cublas(side), uplo2cublas(uplo), op2cublas(trans), diag2cublas(diag),
-            m, n,
-            &alpha,
-            dA, ldda,
-            dB, lddb ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -277,14 +167,7 @@ void ctrsm(
     std::complex<float> const *dA, device_blas_int ldda,
     std::complex<float>       *dB, device_blas_int lddb)
 {
-    blas_dev_call(
-        cublasCtrsm(
-            queue.handle(),
-            side2cublas(side), uplo2cublas(uplo), op2cublas(trans), diag2cublas(diag),
-            m, n,
-            (cuComplex*) &alpha,
-            (cuComplex*) dA, ldda,
-            (cuComplex*) dB, lddb ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -297,14 +180,7 @@ void ztrsm(
     std::complex<double> const *dA, device_blas_int ldda,
     std::complex<double>       *dB, device_blas_int lddb)
 {
-    blas_dev_call(
-        cublasZtrsm(
-            queue.handle(),
-            side2cublas(side), uplo2cublas(uplo), op2cublas(trans), diag2cublas(diag),
-            m, n,
-            (cuDoubleComplex*) &alpha,
-            (cuDoubleComplex*) dA, ldda,
-            (cuDoubleComplex*) dB, lddb ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -319,15 +195,7 @@ void strmm(
     float const *dA, device_blas_int ldda,
     float       *dB, device_blas_int lddb)
 {
-    blas_dev_call(
-        cublasStrmm(
-            queue.handle(),
-            side2cublas(side), uplo2cublas(uplo), op2cublas(trans), diag2cublas(diag),
-            m, n,
-            &alpha,
-            dA, ldda,
-            dB, lddb,
-            dB, lddb ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -340,15 +208,7 @@ void dtrmm(
     double const *dA, device_blas_int ldda,
     double       *dB, device_blas_int lddb)
 {
-    blas_dev_call(
-        cublasDtrmm(
-            queue.handle(),
-            side2cublas(side), uplo2cublas(uplo), op2cublas(trans), diag2cublas(diag),
-            m, n,
-            &alpha,
-            dA, ldda,
-            dB, lddb,
-            dB, lddb ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -361,15 +221,7 @@ void ctrmm(
     std::complex<float> const *dA, device_blas_int ldda,
     std::complex<float>       *dB, device_blas_int lddb)
 {
-    blas_dev_call(
-        cublasCtrmm(
-            queue.handle(),
-            side2cublas(side), uplo2cublas(uplo), op2cublas(trans), diag2cublas(diag),
-            m, n,
-            (cuComplex*) &alpha,
-            (cuComplex*) dA, ldda,
-            (cuComplex*) dB, lddb,
-            (cuComplex*) dB, lddb ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -382,15 +234,7 @@ void ztrmm(
     std::complex<double> const *dA, device_blas_int ldda,
     std::complex<double>       *dB, device_blas_int lddb)
 {
-    blas_dev_call(
-        cublasZtrmm(
-            queue.handle(),
-            side2cublas(side), uplo2cublas(uplo), op2cublas(trans), diag2cublas(diag),
-            m, n,
-            (cuDoubleComplex*) &alpha,
-            (cuDoubleComplex*) dA, ldda,
-            (cuDoubleComplex*) dB, lddb,
-            (cuDoubleComplex*) dB, lddb ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -407,16 +251,7 @@ void chemm(
     std::complex<float>  beta,
     std::complex<float>* dC, device_blas_int lddc)
 {
-    blas_dev_call(
-        cublasChemm(
-            queue.handle(),
-            side2cublas(side), uplo2cublas(uplo),
-            m, n,
-            (cuComplex*) &alpha,
-            (cuComplex*) dA, ldda,
-            (cuComplex*) dB, lddb,
-            (cuComplex*) &beta,
-            (cuComplex*) dC, lddc ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -431,16 +266,7 @@ void zhemm(
     std::complex<double>  beta,
     std::complex<double>* dC, device_blas_int lddc)
 {
-    blas_dev_call(
-        cublasZhemm(
-            queue.handle(),
-            side2cublas(side), uplo2cublas(uplo),
-            m, n,
-            (cuDoubleComplex*) &alpha,
-            (cuDoubleComplex*) dA, ldda,
-            (cuDoubleComplex*) dB, lddb,
-            (cuDoubleComplex*) &beta,
-            (cuDoubleComplex*) dC, lddc ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -457,14 +283,7 @@ void ssymm(
     float  beta,
     float* dC, device_blas_int lddc)
 {
-    blas_dev_call(
-        cublasSsymm(
-            queue.handle(),
-            side2cublas(side), uplo2cublas(uplo),
-            m, n,
-            &alpha, dA, ldda,
-                    dB, lddb,
-            &beta,  dC, lddc ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -479,14 +298,7 @@ void dsymm(
     double  beta,
     double* dC, device_blas_int lddc)
 {
-    blas_dev_call(
-        cublasDsymm(
-            queue.handle(),
-            side2cublas(side), uplo2cublas(uplo),
-            m, n,
-            &alpha, dA, ldda,
-                    dB, lddb,
-            &beta,  dC, lddc ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -501,16 +313,7 @@ void csymm(
     std::complex<float>  beta,
     std::complex<float>* dC, device_blas_int lddc)
 {
-    blas_dev_call(
-        cublasCsymm(
-            queue.handle(),
-            side2cublas(side), uplo2cublas(uplo),
-            m, n,
-            (cuComplex*) &alpha,
-            (cuComplex*) dA, ldda,
-            (cuComplex*) dB, lddb,
-            (cuComplex*) &beta,
-            (cuComplex*) dC, lddc ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -525,16 +328,7 @@ void zsymm(
     std::complex<double>  beta,
     std::complex<double>* dC, device_blas_int lddc)
 {
-    blas_dev_call(
-        cublasZsymm(
-            queue.handle(),
-            side2cublas(side), uplo2cublas(uplo),
-            m, n,
-            (cuDoubleComplex*) &alpha,
-            (cuDoubleComplex*) dA, ldda,
-            (cuDoubleComplex*) dB, lddb,
-            (cuDoubleComplex*) &beta,
-            (cuDoubleComplex*) dC, lddc ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -550,13 +344,7 @@ void cherk(
     float  beta,
     std::complex<float>* dC, device_blas_int lddc)
 {
-    blas_dev_call(
-        cublasCherk(
-            queue.handle(),
-            uplo2cublas(uplo), op2cublas(trans),
-            n, k,
-            &alpha, (cuComplex*) dA, ldda,
-            &beta,  (cuComplex*) dC, lddc ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -570,13 +358,7 @@ void zherk(
     double  beta,
     std::complex<double>* dC, device_blas_int lddc)
 {
-    blas_dev_call(
-        cublasZherk(
-            queue.handle(),
-            uplo2cublas(uplo), op2cublas(trans),
-            n, k,
-            &alpha, (cuDoubleComplex*) dA, ldda,
-            &beta,  (cuDoubleComplex*) dC, lddc ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -592,13 +374,7 @@ void ssyrk(
     float  beta,
     float* dC, device_blas_int lddc)
 {
-    blas_dev_call(
-        cublasSsyrk(
-            queue.handle(),
-            uplo2cublas(uplo), op2cublas(trans),
-            n, k,
-            &alpha, dA, ldda,
-            &beta,  dC, lddc ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -612,13 +388,7 @@ void dsyrk(
     double  beta,
     double* dC, device_blas_int lddc)
 {
-    blas_dev_call(
-        cublasDsyrk(
-            queue.handle(),
-            uplo2cublas(uplo), op2cublas(trans),
-            n, k,
-            &alpha, dA, ldda,
-            &beta,  dC, lddc ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -632,15 +402,7 @@ void csyrk(
     std::complex<float>  beta,
     std::complex<float>* dC, device_blas_int lddc)
 {
-    blas_dev_call(
-        cublasCsyrk(
-            queue.handle(),
-            uplo2cublas(uplo), op2cublas(trans),
-            n, k,
-            (cuComplex*) &alpha,
-            (cuComplex*) dA, ldda,
-            (cuComplex*) &beta,
-            (cuComplex*) dC, lddc ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -654,15 +416,7 @@ void zsyrk(
     std::complex<double>  beta,
     std::complex<double>* dC, device_blas_int lddc)
 {
-    blas_dev_call(
-        cublasZsyrk(
-            queue.handle(),
-            uplo2cublas(uplo), op2cublas(trans),
-            n, k,
-            (cuDoubleComplex*) &alpha,
-            (cuDoubleComplex*) dA, ldda,
-            (cuDoubleComplex*) &beta,
-            (cuDoubleComplex*) dC, lddc ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -679,16 +433,7 @@ void cher2k(
     float  beta,
     std::complex<float>* dC, device_blas_int lddc)
 {
-    blas_dev_call(
-        cublasCher2k(
-            queue.handle(),
-            uplo2cublas(uplo), op2cublas(trans),
-            n, k,
-            (cuComplex*) &alpha,
-            (cuComplex*) dA, ldda,
-            (cuComplex*) dB, lddb,
-            &beta,
-            (cuComplex*) dC, lddc ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -703,16 +448,7 @@ void zher2k(
     double  beta,
     std::complex<double>* dC, device_blas_int lddc)
 {
-    blas_dev_call(
-        cublasZher2k(
-            queue.handle(),
-            uplo2cublas(uplo), op2cublas(trans),
-            n, k,
-            (cuDoubleComplex*) &alpha,
-            (cuDoubleComplex*) dA, ldda,
-            (cuDoubleComplex*) dB, lddb,
-            &beta,
-            (cuDoubleComplex*) dC, lddc ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -729,14 +465,7 @@ void ssyr2k(
     float  beta,
     float* dC, device_blas_int lddc)
 {
-    blas_dev_call(
-        cublasSsyr2k(
-            queue.handle(),
-            uplo2cublas(uplo), op2cublas(trans),
-            n, k,
-            &alpha, dA, ldda,
-                    dB, lddb,
-            &beta,  dC, lddc ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -751,14 +480,7 @@ void dsyr2k(
     double  beta,
     double* dC, device_blas_int lddc)
 {
-    blas_dev_call(
-        cublasDsyr2k(
-            queue.handle(),
-            uplo2cublas(uplo), op2cublas(trans),
-            n, k,
-            &alpha, dA, ldda,
-                    dB, lddb,
-            &beta,  dC, lddc ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -773,16 +495,7 @@ void csyr2k(
     std::complex<float>  beta,
     std::complex<float>* dC, device_blas_int lddc)
 {
-    blas_dev_call(
-        cublasCsyr2k(
-            queue.handle(),
-            uplo2cublas(uplo), op2cublas(trans),
-            n, k,
-            (cuComplex*) &alpha,
-            (cuComplex*) dA, ldda,
-            (cuComplex*) dB, lddb,
-            (cuComplex*) &beta,
-            (cuComplex*) dC, lddc ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -797,16 +510,7 @@ void zsyr2k(
     std::complex<double>  beta,
     std::complex<double>* dC, device_blas_int lddc)
 {
-    blas_dev_call(
-        cublasZsyr2k(
-            queue.handle(),
-            uplo2cublas(uplo), op2cublas(trans),
-            n, k,
-            (cuDoubleComplex*) &alpha,
-            (cuDoubleComplex*) dA, ldda,
-            (cuDoubleComplex*) dB, lddb,
-            (cuDoubleComplex*) &beta,
-            (cuDoubleComplex*) dC, lddc ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -824,17 +528,7 @@ void batch_sgemm(
     float** dCarray, device_blas_int lddc,
     device_blas_int batch_size)
 {
-    blas_dev_call(
-        cublasSgemmBatched(
-            queue.handle(),
-            op2cublas(transA), op2cublas(transB),
-            m, n, k,
-            &alpha,
-            (float const**) dAarray, ldda,
-            (float const**) dBarray, lddb,
-            &beta,
-            dCarray, lddc,
-            batch_size ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -850,17 +544,7 @@ void batch_dgemm(
     double** dCarray, device_blas_int lddc,
     device_blas_int batch_size)
 {
-    blas_dev_call(
-        cublasDgemmBatched(
-            queue.handle(),
-            op2cublas(transA), op2cublas(transB),
-            m, n, k,
-            &alpha,
-            (double const**) dAarray, ldda,
-            (double const**) dBarray, lddb,
-            &beta,
-            dCarray, lddc,
-            batch_size ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -876,17 +560,7 @@ void batch_cgemm(
     std::complex<float>** dCarray, device_blas_int lddc,
     device_blas_int batch_size)
 {
-    blas_dev_call(
-        cublasCgemmBatched(
-            queue.handle(),
-            op2cublas(transA), op2cublas(transB),
-            m, n, k,
-            (cuComplex*)        &alpha,
-            (cuComplex const**) dAarray, ldda,
-            (cuComplex const**) dBarray, lddb,
-            (cuComplex*)        &beta,
-            (cuComplex**)       dCarray, lddc,
-            batch_size ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -902,17 +576,7 @@ void batch_zgemm(
     std::complex<double>** dCarray, device_blas_int lddc,
     device_blas_int batch_size)
 {
-    blas_dev_call(
-        cublasZgemmBatched(
-            queue.handle(),
-            op2cublas(transA), op2cublas(transB),
-            m, n, k,
-            (cuDoubleComplex*)        &alpha,
-            (cuDoubleComplex const**) dAarray, ldda,
-            (cuDoubleComplex const**) dBarray, lddb,
-            (cuDoubleComplex*)        &beta,
-            (cuDoubleComplex**)       dCarray, lddc,
-            batch_size ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -927,15 +591,7 @@ void batch_strsm(
     device_blas_int batch_size)
 
 {
-    blas_dev_call(
-        cublasStrsmBatched(
-            queue.handle(),
-            side2cublas(side), uplo2cublas(uplo), op2cublas(trans), diag2cublas(diag),
-            m, n,
-            &alpha,
-            (float const**) dAarray, ldda,
-            (float**)       dBarray, lddb,
-            batch_size ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -949,15 +605,7 @@ void batch_dtrsm(
     double const * const * dBarray, device_blas_int lddb,
     device_blas_int batch_size)
 {
-    blas_dev_call(
-        cublasDtrsmBatched(
-            queue.handle(),
-            side2cublas(side), uplo2cublas(uplo), op2cublas(trans), diag2cublas(diag),
-            m, n,
-            &alpha,
-            (double const**) dAarray, ldda,
-            (double**)       dBarray, lddb,
-            batch_size ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -971,15 +619,7 @@ void batch_ctrsm(
     std::complex<float> const * const * dBarray, device_blas_int lddb,
     device_blas_int batch_size)
 {
-    blas_dev_call(
-        cublasCtrsmBatched(
-            queue.handle(),
-            side2cublas(side), uplo2cublas(uplo), op2cublas(trans), diag2cublas(diag),
-            m, n,
-            (cuComplex*)        &alpha,
-            (cuComplex const**) dAarray, ldda,
-            (cuComplex**)       dBarray, lddb,
-            batch_size ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
@@ -993,15 +633,7 @@ void batch_ztrsm(
     std::complex<double> const * const * dBarray, device_blas_int lddb,
     device_blas_int batch_size)
 {
-    blas_dev_call(
-        cublasZtrsmBatched(
-            queue.handle(),
-            side2cublas(side), uplo2cublas(uplo), op2cublas(trans), diag2cublas(diag),
-            m, n,
-            (cuDoubleComplex*)        &alpha,
-            (cuDoubleComplex const**) dAarray, ldda,
-            (cuDoubleComplex**)       dBarray, lddb,
-            batch_size ) );
+    throw blas::Error( "device BLAS not available", __func__ );
 }
 
 }  // namespace device
