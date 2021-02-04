@@ -35,6 +35,16 @@ stages {
                             sload cuda
                         fi
 
+                        # run HIP tests on caffeine
+                        if [ "${host}" = "caffeine" ]; then
+                            if [ -e /opt/rocm ]; then
+                                export PATH=${PATH}:/opt/rocm/bin
+                                export CPATH=${CPATH}:/opt/rocm/include
+                                export LIBRARY_PATH=${LIBRARY_PATH}:/opt/rocm/lib
+                                export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/opt/rocm/lib
+                            fi
+                        fi
+
                         echo "========================================"
                         echo "maker ${maker}"
                         if [ "${maker}" = "make" ]; then
@@ -63,10 +73,9 @@ stages {
                         ./run_tests.py --blas1 --blas2 --blas3 --small --xml ${top}/report-${maker}.xml
                         ./run_tests.py --batch-blas3          --xsmall --xml ${top}/report-${maker}-batch.xml
 
-                        if [ "${host}" = "lips" ]; then
-                            ./run_tests.py --blas3-device        --small --xml ${top}/report-${maker}-device.xml
-                            ./run_tests.py --batch-blas3-device --xsmall --xml ${top}/report-${maker}-batch-device.xml
-                        fi
+                        # CUDA or HIP
+                        ./run_tests.py --blas3-device          --small --xml ${top}/report-${maker}-device.xml
+                        ./run_tests.py --batch-blas3-device   --xsmall --xml ${top}/report-${maker}-batch-device.xml
                         '''
                     } // steps
 
