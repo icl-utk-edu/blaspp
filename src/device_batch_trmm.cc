@@ -36,9 +36,17 @@ void blas::batch::trmm(
                                         batch, info );
     }
 
+    // rocm 4.0 seems to have bug with trmm when using multiple streams.
+    #ifdef BLAS_HAVE_ROCBLAS
+        const bool fork = false;
+    #else
+        const bool fork = true;
+    #endif
+
     blas::set_device( queue.device() );
 
-    queue.fork();
+    if (fork)
+        queue.fork();
     for (size_t i = 0; i < batch; ++i) {
         Side side_   = blas::batch::extract<Side>(side, i);
         Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
@@ -55,9 +63,11 @@ void blas::batch::trmm(
             layout, side_, uplo_, trans_, diag_, m_, n_,
             alpha_, dA_, lda_,
                     dB_, ldb_, queue );
-        queue.revolve();
+        if (fork)
+            queue.revolve();
     }
-    queue.join();
+    if (fork)
+        queue.join();
 }
 
 
@@ -89,9 +99,17 @@ void blas::batch::trmm(
                                         batch, info );
     }
 
+    // rocm 4.0 seems to have bug with trmm when using multiple streams.
+    #ifdef BLAS_HAVE_ROCBLAS
+        const bool fork = false;
+    #else
+        const bool fork = true;
+    #endif
+
     blas::set_device( queue.device() );
 
-    queue.fork();
+    if (fork)
+        queue.fork();
     for (size_t i = 0; i < batch; ++i) {
         Side side_   = blas::batch::extract<Side>(side, i);
         Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
@@ -108,9 +126,11 @@ void blas::batch::trmm(
             layout, side_, uplo_, trans_, diag_, m_, n_,
             alpha_, dA_, lda_,
                     dB_, ldb_, queue );
-        queue.revolve();
+        if (fork)
+            queue.revolve();
     }
-    queue.join();
+    if (fork)
+        queue.join();
 }
 
 
@@ -142,9 +162,17 @@ void blas::batch::trmm(
                                         batch, info );
     }
 
+    // rocm 4.0 seems to have bug with trmm when using multiple streams.
+    #ifdef BLAS_HAVE_ROCBLAS
+        const bool fork = false;
+    #else
+        const bool fork = true;
+    #endif
+
     blas::set_device( queue.device() );
 
-    queue.fork();
+    if (fork)
+        queue.fork();
     for (size_t i = 0; i < batch; ++i) {
         Side side_   = blas::batch::extract<Side>(side, i);
         Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
@@ -161,9 +189,11 @@ void blas::batch::trmm(
             layout, side_, uplo_, trans_, diag_, m_, n_,
             alpha_, dA_, lda_,
                     dB_, ldb_, queue );
-        queue.revolve();
+        if (fork)
+            queue.revolve();
     }
-    queue.join();
+    if (fork)
+        queue.join();
 }
 
 // -----------------------------------------------------------------------------
@@ -194,9 +224,17 @@ void blas::batch::trmm(
                                         batch, info );
     }
 
+    // rocm 4.0 seems to have bug with trmm when using multiple streams.
+    #ifdef BLAS_HAVE_ROCBLAS
+        const bool fork = false;
+    #else
+        const bool fork = true;
+    #endif
+
     blas::set_device( queue.device() );
 
-    queue.fork();
+    if (fork)
+        queue.fork();
     for (size_t i = 0; i < batch; ++i) {
         Side side_   = blas::batch::extract<Side>(side, i);
         Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
@@ -213,7 +251,9 @@ void blas::batch::trmm(
             layout, side_, uplo_, trans_, diag_, m_, n_,
             alpha_, dA_, lda_,
                     dB_, ldb_, queue );
-        queue.revolve();
+        if (fork)
+            queue.revolve();
     }
-    queue.join();
+    if (fork)
+        queue.join();
 }
