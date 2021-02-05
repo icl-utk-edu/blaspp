@@ -591,6 +591,9 @@ void ssyrk(
     float  beta,
     float* dC, device_blas_int lddc)
 {
+    // rocblas doesn't accept ConjTrans.
+    if (trans == Op::ConjTrans)
+        trans = Op::Trans;
     blas_dev_call(
         rocblas_ssyrk(
             queue.handle(),
@@ -611,6 +614,9 @@ void dsyrk(
     double  beta,
     double* dC, device_blas_int lddc)
 {
+    // rocblas doesn't accept ConjTrans.
+    if (trans == Op::ConjTrans)
+        trans = Op::Trans;
     blas_dev_call(
         rocblas_dsyrk(
             queue.handle(),
@@ -728,6 +734,9 @@ void ssyr2k(
     float  beta,
     float* dC, device_blas_int lddc)
 {
+    // rocblas doesn't accept ConjTrans.
+    if (trans == Op::ConjTrans)
+        trans = Op::Trans;
     blas_dev_call(
         rocblas_ssyr2k(
             queue.handle(),
@@ -750,6 +759,9 @@ void dsyr2k(
     double  beta,
     double* dC, device_blas_int lddc)
 {
+    // rocblas doesn't accept ConjTrans.
+    if (trans == Op::ConjTrans)
+        trans = Op::Trans;
     blas_dev_call(
         rocblas_dsyr2k(
             queue.handle(),
