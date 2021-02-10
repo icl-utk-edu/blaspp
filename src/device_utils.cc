@@ -46,11 +46,13 @@ device_blas_int get_device_count()
     device_blas_int dev_counts = 0;
 
     #ifdef BLAS_HAVE_CUBLAS
-        blas_dev_call(
-            cudaGetDeviceCount(&dev_counts) );
+        auto err = cudaGetDeviceCount(&dev_counts);
+        if (err != cudaSuccess && err != cudaErrorNoDevice)
+            blas_dev_call( err );
     #elif defined(BLAS_HAVE_ROCBLAS)
-         blas_dev_call(
-            hipGetDeviceCount(&dev_counts) );
+        auto err = hipGetDeviceCount(&dev_counts);
+        if (err != hipSuccess && err != hipErrorNoDevice)
+            blas_dev_call( err );
     #endif
 
     return dev_counts;
