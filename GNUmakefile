@@ -255,9 +255,10 @@ test/docs: docs
 #-------------------------------------------------------------------------------
 # general rules
 clean: lib/clean test/clean headers/clean
+	$(RM) $(dep)
 
 distclean: clean
-	$(RM) make.inc include/blas/defines.h $(dep)
+	$(RM) make.inc include/blas/defines.h
 
 %.o: %.cc
 	$(CXX) $(CXXFLAGS) -c $< -o $@
