@@ -276,6 +276,8 @@ T* device_malloc(
     #elif defined(BLAS_HAVE_ROCBLAS)
         blas_dev_call(
             hipMalloc( (void**)&ptr, nelements * sizeof(T) ) );
+    #else
+        throw blas::Error( "device BLAS not available", __func__ );
     #endif
     return ptr;
 }
@@ -294,6 +296,8 @@ T* device_malloc_pinned(
     #elif defined(BLAS_HAVE_ROCBLAS)
         blas_dev_call(
             hipHostMalloc( (void**)&ptr, nelements * sizeof(T) ) );
+    #else
+        throw blas::Error( "device BLAS not available", __func__ );
     #endif
     return ptr;
 }
@@ -452,6 +456,8 @@ void device_memset(
             hipMemsetAsync(
                 ptr, value,
                 nelements * sizeof(T), queue.stream() ) );
+    #else
+        throw blas::Error( "device BLAS not available", __func__ );
     #endif
 }
 
@@ -474,8 +480,11 @@ void device_memcpy(
             hipMemcpyAsync(
                 dev_ptr, host_ptr, sizeof(T)*nelements,
                 memcpy2hip(kind), queue.stream() ) );
+    #else
+        throw blas::Error( "device BLAS not available", __func__ );
     #endif
 }
+
 // overloaded device memcpy with memcpy direction set to default
 template <typename T>
 void device_memcpy(
@@ -509,8 +518,11 @@ void device_memcpy_2d(
                  dev_ptr, sizeof(T)* dev_pitch,
                 host_ptr, sizeof(T)*host_pitch,
                 sizeof(T)*width, height, memcpy2hip(kind), queue.stream() ) );
+    #else
+        throw blas::Error( "device BLAS not available", __func__ );
     #endif
 }
+
 // overloaded device memcpy 2D with memcpy direction set to default
 template <typename T>
 void device_memcpy_2d(

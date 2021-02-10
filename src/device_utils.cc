@@ -19,6 +19,8 @@ void set_device(blas::Device device)
     #elif defined(BLAS_HAVE_ROCBLAS)
         blas_dev_call(
             hipSetDevice((device_blas_int)device) );
+    #else
+        throw blas::Error( "device BLAS not available", __func__ );
     #endif
 }
 
@@ -34,6 +36,8 @@ void get_device(blas::Device *device)
     #elif defined(BLAS_HAVE_ROCBLAS)
         blas_dev_call(
             hipGetDevice(&dev) );
+    #else
+        throw blas::Error( "device BLAS not available", __func__ );
     #endif
 
     (*device) = (blas::Device)dev;
@@ -43,19 +47,21 @@ void get_device(blas::Device *device)
 // @return number of GPU devices
 device_blas_int get_device_count()
 {
-    device_blas_int dev_counts = 0;
+    device_blas_int dev_count = 0;
 
     #ifdef BLAS_HAVE_CUBLAS
-        auto err = cudaGetDeviceCount(&dev_counts);
+        auto err = cudaGetDeviceCount(&dev_count);
         if (err != cudaSuccess && err != cudaErrorNoDevice)
             blas_dev_call( err );
     #elif defined(BLAS_HAVE_ROCBLAS)
-        auto err = hipGetDeviceCount(&dev_counts);
+        auto err = hipGetDeviceCount(&dev_count);
         if (err != hipSuccess && err != hipErrorNoDevice)
             blas_dev_call( err );
+    #else
+        // return dev_count = 0
     #endif
 
-    return dev_counts;
+    return dev_count;
 }
 
 // -----------------------------------------------------------------------------
@@ -68,6 +74,8 @@ void device_free(void* ptr)
     #elif defined(BLAS_HAVE_ROCBLAS)
         blas_dev_call(
             hipFree( ptr ) );
+    #else
+        throw blas::Error( "device BLAS not available", __func__ );
     #endif
 }
 
@@ -81,6 +89,8 @@ void device_free_pinned(void* ptr)
     #elif defined(BLAS_HAVE_ROCBLAS)
         blas_dev_call(
             hipHostFree( ptr ) );
+    #else
+        throw blas::Error( "device BLAS not available", __func__ );
     #endif
 }
 
