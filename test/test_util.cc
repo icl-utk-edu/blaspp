@@ -10,6 +10,8 @@
 // -----------------------------------------------------------------------------
 void test_enums()
 {
+    printf( "%s\n", __func__ );
+
     using str = std::string;
 
     require( blas::layout2char( blas::Layout::ColMajor ) == 'C' );
@@ -69,6 +71,8 @@ void test_enums()
 // -----------------------------------------------------------------------------
 void test_exceptions()
 {
+    printf( "%s\n", __func__ );
+
     using str = std::string;
 
     try {
@@ -121,6 +125,8 @@ void test_exceptions()
 // -----------------------------------------------------------------------------
 void test_abs1()
 {
+    printf( "%s\n", __func__ );
+
     float sx = -3.141592653589793f;
     require( blas::abs1( sx ) == -sx );
 
@@ -139,6 +145,8 @@ void test_abs1()
 // -----------------------------------------------------------------------------
 void test_is_complex()
 {
+    printf( "%s\n", __func__ );
+
     require( ! blas::is_complex< int >::value );
     require( ! blas::is_complex< int64_t >::value );
     require( ! blas::is_complex< float >::value );
@@ -150,6 +158,8 @@ void test_is_complex()
 // -----------------------------------------------------------------------------
 void test_real_imag_conj()
 {
+    printf( "%s\n", __func__ );
+
     using blas::real;  // same as std::real
     using blas::imag;  // same as std::imag
     using blas::conj;  // different than std::conj for real types
@@ -222,6 +232,8 @@ void test_real_imag_conj()
 // -----------------------------------------------------------------------------
 void test_real_type()
 {
+    printf( "%s\n", __func__ );
+
     // Extra parens needed to avoid confusing preprocessor: require( (...) );
     require( (std::is_same< blas::real_type< float  >, float  >::value) );
     require( (std::is_same< blas::real_type< double >, double >::value) );
@@ -252,6 +264,8 @@ void test_real_type()
 // -----------------------------------------------------------------------------
 void test_complex_type()
 {
+    printf( "%s\n", __func__ );
+
     // Extra parens needed to avoid confusing preprocessor: require( (...) );
     require( (std::is_same< blas::complex_type< float  >, std::complex<float>  >::value) );
     require( (std::is_same< blas::complex_type< double >, std::complex<double> >::value) );
@@ -282,6 +296,8 @@ void test_complex_type()
 // -----------------------------------------------------------------------------
 void test_scalar_type()
 {
+    printf( "%s\n", __func__ );
+
     // Extra parens needed to avoid confusing preprocessor: require( (...) );
     require( (std::is_same< blas::scalar_type< float  >, float  >::value) );
     require( (std::is_same< blas::scalar_type< double >, double >::value) );
@@ -312,6 +328,8 @@ void test_scalar_type()
 // -----------------------------------------------------------------------------
 void test_make_scalar()
 {
+    printf( "%s\n", __func__ );
+
     float  sxr = 3.141592653589793f;
     double dxr = 3.141592653589793;
     float  sxi = 2.718281828459045f;
@@ -331,21 +349,28 @@ void test_make_scalar()
 // -----------------------------------------------------------------------------
 void test_device()
 {
+    printf( "%s\n", __func__ );
+    int verbose = 3;
+
     int cnt = blas::get_device_count();
-    //printf( "get_device_count %d\n", cnt );
+    printf( "    get_device_count %d\n", cnt );
     require( cnt >= 0 );
 
     blas::Device dev;
-    blas::get_device( &dev );
-    //printf( "get_device %d\n", dev );
-    if (cnt > 0)
+    if (cnt > 0) {
+        blas::get_device( &dev );
+        printf( "    get_device %d\n", dev );
         require( dev >= 0 );
-    else
-        require( dev < 0 );
+    }
+    else {
+        assert_throw( blas::get_device( &dev ), blas::Error );
+    }
 
     if (cnt > 0) {
         blas::set_device( cnt-1 );
+        printf( "    set_device %d\n", cnt-1 );
         blas::get_device( &dev );
+        printf( "    get_device %d\n", dev );
         require( dev == cnt-1 );
     }
 }
@@ -359,17 +384,21 @@ void test_util( Params& params, bool run )
     if (! run)
         return;
 
-    test_enums();
-    test_exceptions();
-    test_abs1();
-    test_is_complex();
-    test_real_imag_conj();
-    test_real_type();
-    test_complex_type();
-    test_scalar_type();
-    test_scalar_type();
-    test_make_scalar();
-    test_device();
+    static bool first = true;
+    if (first) {
+        first = false;
+        test_enums();
+        test_exceptions();
+        test_abs1();
+        test_is_complex();
+        test_real_imag_conj();
+        test_real_type();
+        test_complex_type();
+        test_scalar_type();
+        test_scalar_type();
+        test_make_scalar();
+        test_device();
+    }
 
     params.okay() = true;
 }
