@@ -88,7 +88,7 @@ enum class MemcpyKind : device_blas_int {
     /*
      * the memcpy method in the sycl::queue class does not accept
      * a direction (i.e. always operates in default mode).
-     * for interface compatibility with cuda/hip, return a default integer
+     * for interface compatibility with cuda/hip, return a default value
     */
     inline int64_t memcpy2sycl( MemcpyKind kind ) { return 0; }
 #endif
@@ -181,11 +181,12 @@ private:
 
         hipEvent_t   default_event_;
         hipEvent_t   parallel_events_[DEV_QUEUE_FORK_SIZE];
-    #elif defined(BLAS_HAVE_ONMKL)
+
+    #elif defined(BLAS_HAVE_ONEMKL)
         // default sycl queue for this blas queue
         cl::sycl::queue  default_stream_;
-
         cl::sycl::event  default_event_;
+
     #else
         // pointer to current stream (default or fork mode)
         void** current_stream_;
@@ -269,10 +270,11 @@ inline const char* device_error_string( rocblas_status error )
             blas::internal::abort_if( true, __func__, \
                                       "%s", e.what() ); \
         } \
-        catch (const char* msg) { \
+        catch (...) { \
             blas::internal::abort_if( true, __func__, \
-                                      "%s", msg ); \
+                                      "%s", "unknown exception" ); \
         }
+
     #else
     #define blas_dev_call( error ) \
         do { \
@@ -297,10 +299,11 @@ inline const char* device_error_string( rocblas_status error )
             blas::internal::throw_if( true, \
                                       e.what(), __func__ ); \
         } \
-        catch (const char* msg) { \
+        catch (...) { \
             blas::internal::throw_if( true, \
                                       msg, __func__ ); \
         }
+
     #else
     #define blas_dev_call( error ) \
         do { \
