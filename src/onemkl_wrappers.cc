@@ -793,17 +793,18 @@ void batch_sgemm(
     float** dCarray, device_blas_int lddc,
     device_blas_int batch_size)
 {
+    oneapi::mkl::transpose transA_ = op2onemkl(transA);
+    oneapi::mkl::transpose transB_ = op2onemkl(transB);
     blas_dev_call(
-        cublasSgemmBatched(
+        oneapi::mkl::blas::gemm_batch(
             queue.stream(),
-            op2onemkl(transA), op2onemkl(transB),
-            m, n, k,
-            alpha,
-            (float const**) dAarray, ldda,
-            (float const**) dBarray, lddb,
-            beta,
-            dCarray, lddc,
-            batch_size ) );
+            &transA_, &transB_,
+            &m, &n, &k, &alpha,
+            dA_array, &ldda,
+            dB_array, &lddb,
+            &beta,
+            dC_array, &lddc,
+            1, &batch_size ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -819,17 +820,18 @@ void batch_dgemm(
     double** dCarray, device_blas_int lddc,
     device_blas_int batch_size)
 {
+    oneapi::mkl::transpose transA_ = op2onemkl(transA);
+    oneapi::mkl::transpose transB_ = op2onemkl(transB);
     blas_dev_call(
-        cublasDgemmBatched(
+        oneapi::mkl::blas::gemm_batch(
             queue.stream(),
-            op2onemkl(transA), op2onemkl(transB),
-            m, n, k,
-            alpha,
-            (double const**) dAarray, ldda,
-            (double const**) dBarray, lddb,
-            beta,
-            dCarray, lddc,
-            batch_size ) );
+            &transA_, &transB_,
+            &m, &n, &k, &alpha,
+            dA_array, &ldda,
+            dB_array, &lddb,
+            &beta,
+            dC_array, &lddc,
+            1, &batch_size ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -845,17 +847,18 @@ void batch_cgemm(
     std::complex<float>** dCarray, device_blas_int lddc,
     device_blas_int batch_size)
 {
+    oneapi::mkl::transpose transA_ = op2onemkl(transA);
+    oneapi::mkl::transpose transB_ = op2onemkl(transB);
     blas_dev_call(
-        cublasCgemmBatched(
+        oneapi::mkl::blas::gemm_batch(
             queue.stream(),
-            op2onemkl(transA), op2onemkl(transB),
-            m, n, k,
-            (cuComplex*)        alpha,
-            (cuComplex const**) dAarray, ldda,
-            (cuComplex const**) dBarray, lddb,
-            (cuComplex*)        beta,
-            (cuComplex**)       dCarray, lddc,
-            batch_size ) );
+            &transA_, &transB_,
+            &m, &n, &k, &alpha,
+            dA_array, &ldda,
+            dB_array, &lddb,
+            &beta,
+            dC_array, &lddc,
+            1, &batch_size ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -871,17 +874,18 @@ void batch_zgemm(
     std::complex<double>** dCarray, device_blas_int lddc,
     device_blas_int batch_size)
 {
+    oneapi::mkl::transpose transA_ = op2onemkl(transA);
+    oneapi::mkl::transpose transB_ = op2onemkl(transB);
     blas_dev_call(
-        cublasZgemmBatched(
+        oneapi::mkl::blas::gemm_batch(
             queue.stream(),
-            op2onemkl(transA), op2onemkl(transB),
-            m, n, k,
-            (cuDoubleComplex*)        alpha,
-            (cuDoubleComplex const**) dAarray, ldda,
-            (cuDoubleComplex const**) dBarray, lddb,
-            (cuDoubleComplex*)        beta,
-            (cuDoubleComplex**)       dCarray, lddc,
-            batch_size ) );
+            &transA_, &transB_,
+            &m, &n, &k, &alpha,
+            dA_array, &ldda,
+            dB_array, &lddb,
+            &beta,
+            dC_array, &lddc,
+            1, &batch_size ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -896,15 +900,19 @@ void batch_strsm(
     device_blas_int batch_size)
 
 {
+    oneapi::mkl::transpose side_  = op2onemkl(side);
+    oneapi::mkl::transpose uplo_  = op2onemkl(uplo);
+    oneapi::mkl::transpose trans_ = op2onemkl(trans);
+    oneapi::mkl::transpose diag_  = op2onemkl(diag);
     blas_dev_call(
-        cublasStrsmBatched(
-            queue.stream(),
-            side2onemkl(side), uplo2onemkl(uplo), op2onemkl(trans), diag2onemkl(diag),
-            m, n,
-            alpha,
-            (float const**) dAarray, ldda,
-            (float**)       dBarray, lddb,
-            batch_size ) );
+        oneapi::mkl::blas::trsm_batch(
+        queue.stream(),
+        &side_, &uplo_ , &trans_, &diag_,
+        &m, &n,
+        &alpha,
+        dA_array, &ldda,
+        dB_array, &lddb,
+        1, &batch_size ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -918,15 +926,19 @@ void batch_dtrsm(
     double const * const * dBarray, device_blas_int lddb,
     device_blas_int batch_size)
 {
+    oneapi::mkl::transpose side_  = op2onemkl(side);
+    oneapi::mkl::transpose uplo_  = op2onemkl(uplo);
+    oneapi::mkl::transpose trans_ = op2onemkl(trans);
+    oneapi::mkl::transpose diag_  = op2onemkl(diag);
     blas_dev_call(
-        cublasDtrsmBatched(
-            queue.stream(),
-            side2onemkl(side), uplo2onemkl(uplo), op2onemkl(trans), diag2onemkl(diag),
-            m, n,
-            alpha,
-            (double const**) dAarray, ldda,
-            (double**)       dBarray, lddb,
-            batch_size ) );
+        oneapi::mkl::blas::trsm_batch(
+        queue.stream(),
+        &side_, &uplo_ , &trans_, &diag_,
+        &m, &n,
+        &alpha,
+        dA_array, &ldda,
+        dB_array, &lddb,
+        1, &batch_size ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -940,15 +952,19 @@ void batch_ctrsm(
     std::complex<float> const * const * dBarray, device_blas_int lddb,
     device_blas_int batch_size)
 {
+    oneapi::mkl::transpose side_  = op2onemkl(side);
+    oneapi::mkl::transpose uplo_  = op2onemkl(uplo);
+    oneapi::mkl::transpose trans_ = op2onemkl(trans);
+    oneapi::mkl::transpose diag_  = op2onemkl(diag);
     blas_dev_call(
-        cublasCtrsmBatched(
-            queue.stream(),
-            side2onemkl(side), uplo2onemkl(uplo), op2onemkl(trans), diag2onemkl(diag),
-            m, n,
-            (cuComplex*)        alpha,
-            (cuComplex const**) dAarray, ldda,
-            (cuComplex**)       dBarray, lddb,
-            batch_size ) );
+        oneapi::mkl::blas::trsm_batch(
+        queue.stream(),
+        &side_, &uplo_ , &trans_, &diag_,
+        &m, &n,
+        &alpha,
+        dA_array, &ldda,
+        dB_array, &lddb,
+        1, &batch_size ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -962,15 +978,19 @@ void batch_ztrsm(
     std::complex<double> const * const * dBarray, device_blas_int lddb,
     device_blas_int batch_size)
 {
+    oneapi::mkl::transpose side_  = op2onemkl(side);
+    oneapi::mkl::transpose uplo_  = op2onemkl(uplo);
+    oneapi::mkl::transpose trans_ = op2onemkl(trans);
+    oneapi::mkl::transpose diag_  = op2onemkl(diag);
     blas_dev_call(
-        cublasZtrsmBatched(
-            queue.stream(),
-            side2onemkl(side), uplo2onemkl(uplo), op2onemkl(trans), diag2onemkl(diag),
-            m, n,
-            (cuDoubleComplex*)        alpha,
-            (cuDoubleComplex const**) dAarray, ldda,
-            (cuDoubleComplex**)       dBarray, lddb,
-            batch_size ) );
+        oneapi::mkl::blas::trsm_batch(
+        queue.stream(),
+        &side_, &uplo_ , &trans_, &diag_,
+        &m, &n,
+        &alpha,
+        dA_array, &ldda,
+        dB_array, &lddb,
+        1, &batch_size ) );
 }
 
 }  // namespace device
