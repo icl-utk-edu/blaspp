@@ -85,6 +85,9 @@ class Queue
 public:
      Queue();
      Queue( blas::Device device, int64_t batch_size );
+     // Disable copying; must construct anew.
+     Queue( Queue const& ) = delete;
+     Queue& operator=( Queue const& ) = delete;
     ~Queue();
 
     blas::Device           device() const { return device_; }
