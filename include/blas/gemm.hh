@@ -100,7 +100,7 @@ void gemm(
     TC       *C, int64_t ldc )
 {
     if (layout == Layout::RowMajor)
-        return gemm<TB,TA,TC>(
+        return gemm(
              Layout::ColMajor,
              transB,
              transA,

@@ -780,6 +780,8 @@ void trsv(
 // Level 3 BLAS
 
 // -----------------------------------------------------------------------------
+#ifndef USE_TEMPLATED_GEMM
+
 /// @ingroup gemm
 void gemm(
     blas::Layout layout,
@@ -827,6 +829,8 @@ void gemm(
     std::complex<double> const *B, int64_t ldb,
     std::complex<double> beta,
     std::complex<double>       *C, int64_t ldc );
+
+#endif
 
 // -----------------------------------------------------------------------------
 /// @ingroup hemm
