@@ -128,8 +128,7 @@ public:
         hipStream_t    stream() const { return *current_stream_; }
         rocblas_handle handle() const { return handle_; }
     #elif defined(BLAS_HAVE_ONEMKL)
-        cl::sycl::queue  stream()     const { return  default_stream_; }
-        cl::sycl::queue* stream_ptr() const { return &default_stream_; }
+        cl::sycl::queue  stream()     const { return *default_stream_; }
     #endif
 
 private:
@@ -184,7 +183,7 @@ private:
 
     #elif defined(BLAS_HAVE_ONEMKL)
         // default sycl queue for this blas queue
-        cl::sycl::queue  default_stream_;
+        cl::sycl::queue *default_stream_;
         cl::sycl::event  default_event_;
 
     #else
@@ -288,8 +287,9 @@ inline const char* device_error_string( rocblas_status error )
 
     // blaspp throws device errors (default)
     #if defined(BLAS_HAVE_ONEMKL)
-    try { \
-            error; \
+    #define blas_dev_call( error ) \
+        try { \
+                error; \
         } \
         catch (cl::sycl::exception const& e) { \
             blas::internal::throw_if( true, \
@@ -301,7 +301,7 @@ inline const char* device_error_string( rocblas_status error )
         } \
         catch (...) { \
             blas::internal::throw_if( true, \
-                                      msg, __func__ ); \
+                                      "unknown exception", __func__ ); \
         }
 
     #else
@@ -369,7 +369,7 @@ T* device_malloc(
         blas_dev_call(
                 hipMalloc( (void**)&ptr, nelements * sizeof(T) ) );
 
-    #ifdef BLAS_HAVE_ONEMKL
+    #elif defined(BLAS_HAVE_ONEMKL)
         cl::sycl::queue tmp_queue( device );
         blas_dev_call(
             ptr = (T*)cl::sycl::malloc_device(nelements*sizeof(T), tmp_queue) );
@@ -439,7 +439,7 @@ void device_setmatrix(
         if( ldh_ == m_ && ldd_ == m_ ) {
             /* one memcpy */
             blas_dev_call(
-                (queue.stream_ptr())->memcpy(dev_ptr, host_ptr, m_*n_*sizeof(T));
+                (queue.stream()).memcpy(dev_ptr, host_ptr, m_*n_*sizeof(T));
             );
         }
         else {
@@ -451,7 +451,7 @@ void device_setmatrix(
                 dptr = dev_ptr[ic*ldd_];
                 hptr = host_ptr[ic*ldh_];
                 blas_dev_call(
-                    (queue.stream_ptr())->memcpy(dptr, hptr, m_*sizeof(T)) );
+                    (queue.stream()).memcpy(dptr, hptr, m_*sizeof(T)) );
             }
         }
 
@@ -495,7 +495,7 @@ void device_getmatrix(
         if( ldh_ == m_ && ldd_ == m_ ) {
             /* one memcpy */
             blas_dev_call(
-                (queue.stream_ptr())->memcpy(host_ptr, dev_ptr, m_*n_*sizeof(T)) );
+                (queue.stream()).memcpy(host_ptr, dev_ptr, m_*n_*sizeof(T)) );
         }
         else {
             /* will have to do several mem-copies
@@ -506,7 +506,7 @@ void device_getmatrix(
                 dptr = dev_ptr[ic*ldd_];
                 hptr = host_ptr[ic*ldh_];
                 blas_dev_call(
-                    (queue.stream_ptr())->memcpy(hptr, dptr, m_*sizeof(T)) );
+                    (queue.stream()).memcpy(hptr, dptr, m_*sizeof(T)) );
             }
         }
 
@@ -549,15 +549,15 @@ void device_setvector(
         if( inch_ == incd_ ) {
             /* this could be slow if inc >> n */
             blas_dev_call(
-                (queue.stream_ptr())->memcpy(host_ptr, dev_ptr, n_*inch_*sizeof(T)) );
+                (queue.stream()).memcpy(host_ptr, dev_ptr, n_*inch_*sizeof(T)) );
         }
         else {
             T *hptr=NULL, *dptr=NULL;
             for(int64_t ie = 0; ie < n_; ++ie) {
                 hptr = host_ptr + ie * inch;
-                pptr = dev_ptr  + ie * incd;
+                dptr = dev_ptr  + ie * incd;
                 blas_dev_call(
-                    (queue.stream_ptr())->memcpy(hptr, dptr, sizeof(T)) );
+                    (queue.stream()).memcpy(hptr, dptr, sizeof(T)) );
             }
         }
 
@@ -599,15 +599,15 @@ void device_getvector(
         if( inch_ == incd_ ) {
             /* this could be slow if inc >> n */
             blas_dev_call(
-                (queue.stream_ptr())->memcpy(host_ptr, dev_ptr, n_*inch_*sizeof(T)) );
+                (queue.stream()).memcpy(host_ptr, dev_ptr, n_*inch_*sizeof(T)) );
         }
         else {
             T *hptr=NULL, *dptr=NULL;
             for(int64_t ie = 0; ie < n_; ++ie) {
                 hptr = host_ptr + ie * inch;
-                pptr = dev_ptr  + ie * incd;
+                dptr = dev_ptr  + ie * incd;
                 blas_dev_call(
-                    (queue.stream_ptr())->memcpy(hptr, dptr, sizeof(T)) );
+                    (queue.stream()).memcpy(hptr, dptr, sizeof(T)) );
             }
         }
 
@@ -640,7 +640,7 @@ void device_memset(
 
     #elif defined(BLAS_HAVE_ONEMKL)
         blas_dev_call(
-            (queue.stream_ptr())->memset(ptr, value, nelements * sizeof(T)) );
+            (queue.stream()).memset(ptr, value, nelements * sizeof(T)) );
 
     #else
         throw blas::Error( "device BLAS not available", __func__ );
@@ -669,7 +669,7 @@ void device_memcpy(
 
     #elif defined(BLAS_HAVE_ONEMKL)
         blas_dev_call(
-            (queue.stream_ptr())->memcpy(dev_ptr, host_ptr, sizeof(T)*nelements) );
+            (queue.stream()).memcpy(dev_ptr, host_ptr, sizeof(T)*nelements) );
 
     #else
         throw blas::Error( "device BLAS not available", __func__ );
