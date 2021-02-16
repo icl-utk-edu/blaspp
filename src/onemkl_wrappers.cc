@@ -808,6 +808,31 @@ void batch_sgemm(
 }
 
 // -----------------------------------------------------------------------------
+// batch sgemm - group api
+void batch_sgemm(
+    blas::Queue& queue,
+    blas::Op *transA, blas::Op *transB,
+    device_blas_int *m, device_blas_int *n, device_blas_int *k,
+    float *alpha,
+    float const * const * dAarray, device_blas_int *ldda,
+    float const * const * dBarray, device_blas_int *lddb,
+    float *beta,
+    float** dCarray, device_blas_int *lddc,
+    device_blas_int group_count, device_blas_int *group_size)
+{
+    blas_dev_call(
+        oneapi::mkl::blas::gemm_batch(
+            queue.stream(),
+            transA, transB,
+            m, n, k, alpha,
+            dA_array, ldda,
+            dB_array, lddb,
+            beta,
+            dC_array, lddc,
+            group_count, group_size ) );
+}
+
+// -----------------------------------------------------------------------------
 // batch dgemm
 void batch_dgemm(
     blas::Queue& queue,
@@ -832,6 +857,31 @@ void batch_dgemm(
             &beta,
             dC_array, &lddc,
             1, &batch_size ) );
+}
+
+// -----------------------------------------------------------------------------
+// batch dgemm - group api
+void batch_dgemm(
+    blas::Queue& queue,
+    blas::Op *transA, blas::Op *transB,
+    device_blas_int *m, device_blas_int *n, device_blas_int *k,
+    double *alpha,
+    double const * const * dAarray, device_blas_int *ldda,
+    double const * const * dBarray, device_blas_int *lddb,
+    double *beta,
+    double** dCarray, device_blas_int *lddc,
+    device_blas_int group_count, device_blas_int *group_size)
+{
+    blas_dev_call(
+        oneapi::mkl::blas::gemm_batch(
+            queue.stream(),
+            transA, transB,
+            m, n, k, alpha,
+            dA_array, ldda,
+            dB_array, lddb,
+            beta,
+            dC_array, lddc,
+            group_count, group_size ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -862,6 +912,31 @@ void batch_cgemm(
 }
 
 // -----------------------------------------------------------------------------
+// batch cgemm - group api
+void batch_cgemm(
+    blas::Queue& queue,
+    blas::Op *transA, blas::Op *transB,
+    device_blas_int *m, device_blas_int *n, device_blas_int *k,
+    std::complex<float> *alpha,
+    std::complex<float> const * const * dAarray, device_blas_int *ldda,
+    std::complex<float> const * const * dBarray, device_blas_int *lddb,
+    std::complex<float> *beta,
+    std::complex<float>** dCarray, device_blas_int *lddc,
+    device_blas_int group_count, device_blas_int *group_size)
+{
+    blas_dev_call(
+        oneapi::mkl::blas::gemm_batch(
+            queue.stream(),
+            transA, transB,
+            m, n, k, alpha,
+            dA_array, ldda,
+            dB_array, lddb,
+            beta,
+            dC_array, lddc,
+            group_count, group_size ) );
+}
+
+// -----------------------------------------------------------------------------
 // batch zgemm
 void batch_zgemm(
     blas::Queue& queue,
@@ -886,6 +961,31 @@ void batch_zgemm(
             &beta,
             dC_array, &lddc,
             1, &batch_size ) );
+}
+
+// -----------------------------------------------------------------------------
+// batch zgemm - group api
+void batch_zgemm(
+    blas::Queue& queue,
+    blas::Op *transA, blas::Op *transB,
+    device_blas_int *m, device_blas_int *n, device_blas_int *k,
+    std::complex<double> *alpha,
+    std::complex<double> const * const * dAarray, device_blas_int *ldda,
+    std::complex<double> const * const * dBarray, device_blas_int *lddb,
+    std::complex<double> *beta,
+    std::complex<double>** dCarray, device_blas_int *lddc,
+    device_blas_int group_count, device_blas_int *group_size)
+{
+    blas_dev_call(
+        oneapi::mkl::blas::gemm_batch(
+            queue.stream(),
+            transA, transB,
+            m, n, k, alpha,
+            dA_array, ldda,
+            dB_array, lddb,
+            beta,
+            dC_array, lddc,
+            group_count, group_size ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -916,6 +1016,29 @@ void batch_strsm(
 }
 
 // -----------------------------------------------------------------------------
+// batch strsm - group api
+void batch_strsm(
+    blas::Queue& queue,
+    blas::Side *side, blas::Uplo *uplo, blas::Op *trans, blas::Diag *diag,
+    device_blas_int *m, device_blas_int *n,
+    float *alpha,
+    float const * const * dAarray, device_blas_int *ldda,
+    float const * const * dBarray, device_blas_int *lddb,
+    device_blas_int group_count, device_blas_int *group_size)
+
+{
+    blas_dev_call(
+        oneapi::mkl::blas::trsm_batch(
+        queue.stream(),
+        side, uplo, trans, diag,
+        m, n,
+        alpha,
+        dA_array, ldda,
+        dB_array, lddb,
+        group_count, group_size ) );
+}
+
+// -----------------------------------------------------------------------------
 // batch dtrsm
 void batch_dtrsm(
     blas::Queue& queue,
@@ -939,6 +1062,29 @@ void batch_dtrsm(
         dA_array, &ldda,
         dB_array, &lddb,
         1, &batch_size ) );
+}
+
+// -----------------------------------------------------------------------------
+// batch dtrsm - group api
+void batch_dtrsm(
+    blas::Queue& queue,
+    blas::Side *side, blas::Uplo *uplo, blas::Op *trans, blas::Diag *diag,
+    device_blas_int *m, device_blas_int *n,
+    double *alpha,
+    double const * const * dAarray, device_blas_int *ldda,
+    double const * const * dBarray, device_blas_int *lddb,
+    device_blas_int group_count, device_blas_int *group_size)
+
+{
+    blas_dev_call(
+        oneapi::mkl::blas::trsm_batch(
+        queue.stream(),
+        side, uplo, trans, diag,
+        m, n,
+        alpha,
+        dA_array, ldda,
+        dB_array, lddb,
+        group_count, group_size ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -968,6 +1114,29 @@ void batch_ctrsm(
 }
 
 // -----------------------------------------------------------------------------
+// batch ctrsm - group api
+void batch_ctrsm(
+    blas::Queue& queue,
+    blas::Side *side, blas::Uplo *uplo, blas::Op *trans, blas::Diag *diag,
+    device_blas_int *m, device_blas_int *n,
+    std::complex<float> *alpha,
+    std::complex<float> const * const * dAarray, device_blas_int *ldda,
+    std::complex<float> const * const * dBarray, device_blas_int *lddb,
+    device_blas_int group_count, device_blas_int *group_size)
+
+{
+    blas_dev_call(
+        oneapi::mkl::blas::trsm_batch(
+        queue.stream(),
+        side, uplo, trans, diag,
+        m, n,
+        alpha,
+        dA_array, ldda,
+        dB_array, lddb,
+        group_count, group_size ) );
+}
+
+// -----------------------------------------------------------------------------
 // batch ztrsm
 void batch_ztrsm(
     blas::Queue& queue,
@@ -991,6 +1160,29 @@ void batch_ztrsm(
         dA_array, &ldda,
         dB_array, &lddb,
         1, &batch_size ) );
+}
+
+// -----------------------------------------------------------------------------
+// batch ztrsm - group api
+void batch_ztrsm(
+    blas::Queue& queue,
+    blas::Side *side, blas::Uplo *uplo, blas::Op *trans, blas::Diag *diag,
+    device_blas_int *m, device_blas_int *n,
+    std::complex<double> *alpha,
+    std::complex<double> const * const * dAarray, device_blas_int *ldda,
+    std::complex<double> const * const * dBarray, device_blas_int *lddb,
+    device_blas_int group_count, device_blas_int *group_size)
+
+{
+    blas_dev_call(
+        oneapi::mkl::blas::trsm_batch(
+        queue.stream(),
+        side, uplo, trans, diag,
+        m, n,
+        alpha,
+        dA_array, ldda,
+        dB_array, lddb,
+        group_count, group_size ) );
 }
 
 }  // namespace device
