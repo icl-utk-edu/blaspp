@@ -145,15 +145,16 @@ void stream_wait_event( hipStream_t stream, hipEvent_t event, unsigned int flags
 /// Default constructor.
 Queue::Queue()
 {
-    // get the currently set device ID
-    get_device( &device_ );
-    batch_limit_ = DEV_QUEUE_DEFAULT_BATCH_LIMIT;
-    // compute workspace for pointer arrays in the queue
-    // fork size + 1 (def. stream), each need 3 pointer arrays
-    size_t workspace_size = 3 * batch_limit_ * ( DEV_QUEUE_FORK_SIZE + 1 );
-    dev_ptr_array_ = device_malloc<void*>( workspace_size );
-
     #if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
+        // get the currently set device ID
+        get_device( &device_ );
+
+        batch_limit_ = DEV_QUEUE_DEFAULT_BATCH_LIMIT;
+        // compute workspace for pointer arrays in the queue
+        // fork size + 1 (def. stream), each need 3 pointer arrays
+        size_t workspace_size = 3 * batch_limit_ * ( DEV_QUEUE_FORK_SIZE + 1 );
+        dev_ptr_array_ = device_malloc<void*>( workspace_size );
+
         // default stream
         stream_create( &default_stream_ );
         handle_create( &handle_ );
@@ -172,23 +173,26 @@ Queue::Queue()
         for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
             event_create(&parallel_events_[ i ]);
         }
+    #elif defined(BLAS_HAVE_ONEMKL)
+        throw blas::Error( "a device must be specified for sycl backend", __func__ );
+        blas_unused( workspace_size );
     #endif
 }
 
 // -----------------------------------------------------------------------------
 /// Constructor with device and batch init.
 // todo: merge with default constructor.
-Queue::Queue( blas::Device device, int64_t batch_size )
+Queue::Queue( blas::Device device, int64_t batch_size = DEV_QUEUE_DEFAULT_BATCH_LIMIT)
 {
     #if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
         device_ = device;
         batch_limit_ = batch_size;
-        set_device( device_ );
         // compute workspace for pointer arrays in the queue
         // fork size + 1 (def. stream), each need 3 pointer arrays
         size_t workspace_size = 3 * batch_limit_ * ( DEV_QUEUE_FORK_SIZE + 1 );
         dev_ptr_array_ = device_malloc<void*>( workspace_size );
 
+        set_device( device_ );
         stream_create( &default_stream_ );
         handle_create( &handle_ );
         handle_set_stream( handle_, default_stream_ );
@@ -206,6 +210,20 @@ Queue::Queue( blas::Device device, int64_t batch_size )
         for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
             event_create( &parallel_events_[ i ] );
         }
+    #elif defined(BLAS_HAVE_ONEMKL)
+        device_ = device;
+        batch_limit_ = batch_size;
+        // compute workspace for pointer arrays in the queue
+        // fork size + 1 (def. stream), each need 3 pointer arrays
+        // fork size is currently zero for onemkl (fork-join is disabled)
+        size_t fork_size      = 0; // instead of DEV_QUEUE_FORK_SIZE
+        size_t workspace_size = 3 * batch_limit_ * ( fork_size + 1 );
+        dev_ptr_array_ = device_malloc<void*>( workspace_size );
+
+        default_stream_       = new sycl::queue( device_ );
+        current_stream_       = default_stream_;
+        num_active_streams_   = 1;
+        current_stream_index_ = 0;
     #endif
 }
 
@@ -229,6 +247,9 @@ Queue::~Queue()
             for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
                 event_destroy( parallel_events_[ i ] );
             }
+
+        #elif defined(BLAS_HAVE_ONEMKL)
+            delete default_stream_;
         #endif
     }
     catch (...) {
@@ -252,6 +273,9 @@ void Queue::sync()
                 stream_synchronize( parallel_streams_[ i ] );
             }
         }
+    #elif defined(BLAS_HAVE_ONEMKL)
+        // todo: see wait_and_throw()
+        default_stream_->wait();
     #endif
 }
 
@@ -259,6 +283,7 @@ void Queue::sync()
 /// Get device array pointer for the current stream.
 void**  Queue::get_dev_ptr_array()
 {
+    #if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
     // in default (join) mode, return dev_ptr_array with no offset
     if (current_stream_ == &default_stream_)
         return dev_ptr_array_;
@@ -266,6 +291,10 @@ void**  Queue::get_dev_ptr_array()
     // in fork mode, return dev_ptr_array_ + offset
     size_t offset = (current_stream_index_ + 1) * 3 * batch_limit_;
     return (dev_ptr_array_ + offset);
+
+    #else // includes BLAS_HAVE_ONEMKL
+       return dev_ptr_array_;
+    #endif
 }
 
 // -----------------------------------------------------------------------------
@@ -291,6 +320,10 @@ void Queue::fork()
 
         // assign cublas handle to current stream
         handle_set_stream( handle_, *current_stream_ );
+
+    #elif defined(BLAS_HAVE_ONEMKL)
+        // to do: see possible implementations for sycl
+        return;
     #endif
 }
 
@@ -317,6 +350,10 @@ void Queue::join()
 
         // assign current stream to blas handle
         handle_set_stream( handle_, *current_stream_ );
+
+    #elif defined(BLAS_HAVE_ONEMKL)
+         // to do: see possible implementations for sycl
+        return;
     #endif
 }
 
@@ -336,6 +373,10 @@ void Queue::revolve()
 
         // assign current stream to blas handle
         handle_set_stream( handle_, *current_stream_ );
+
+    #elif defined(BLAS_HAVE_ONEMKL)
+         // to do: see possible implementations for sycl
+        return;
     #endif
 }
 
