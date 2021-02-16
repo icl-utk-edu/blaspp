@@ -77,31 +77,31 @@ void test_gemm_work( Params& params, bool run )
     real_t Cnorm = lapack_lange( "f", Cm, Cn, C, ldc, work );
 
     // test error exits
-    assert_throw((blas::gemm<TA,TB,TC>( Layout(0), transA, transB,  m,  n,  k, alpha, A, lda, B, ldb, beta, C, ldc )), blas::Error );
-    assert_throw((blas::gemm<TA,TB,TC>( layout,    Op(0),  transB,  m,  n,  k, alpha, A, lda, B, ldb, beta, C, ldc )), blas::Error );
-    assert_throw((blas::gemm<TA,TB,TC>( layout,    transA, Op(0),   m,  n,  k, alpha, A, lda, B, ldb, beta, C, ldc )), blas::Error );
-    assert_throw((blas::gemm<TA,TB,TC>( layout,    transA, transB, -1,  n,  k, alpha, A, lda, B, ldb, beta, C, ldc )), blas::Error );
-    assert_throw((blas::gemm<TA,TB,TC>( layout,    transA, transB,  m, -1,  k, alpha, A, lda, B, ldb, beta, C, ldc )), blas::Error );
-    assert_throw((blas::gemm<TA,TB,TC>( layout,    transA, transB,  m,  n, -1, alpha, A, lda, B, ldb, beta, C, ldc )), blas::Error );
+    assert_throw( (blas::gemm<TA, TB, TC>( Layout(0), transA, transB,  m,  n,  k, alpha, A, lda, B, ldb, beta, C, ldc )), blas::Error );
+    assert_throw( (blas::gemm<TA, TB, TC>( layout,    Op(0),  transB,  m,  n,  k, alpha, A, lda, B, ldb, beta, C, ldc )), blas::Error );
+    assert_throw( (blas::gemm<TA, TB, TC>( layout,    transA, Op(0),   m,  n,  k, alpha, A, lda, B, ldb, beta, C, ldc )), blas::Error );
+    assert_throw( (blas::gemm<TA, TB, TC>( layout,    transA, transB, -1,  n,  k, alpha, A, lda, B, ldb, beta, C, ldc )), blas::Error );
+    assert_throw( (blas::gemm<TA, TB, TC>( layout,    transA, transB,  m, -1,  k, alpha, A, lda, B, ldb, beta, C, ldc )), blas::Error );
+    assert_throw( (blas::gemm<TA, TB, TC>( layout,    transA, transB,  m,  n, -1, alpha, A, lda, B, ldb, beta, C, ldc )), blas::Error );
 
-    assert_throw((blas::gemm<TA,TB,TC>( Layout::ColMajor, Op::NoTrans,   Op::NoTrans, m, n, k, alpha, A, m-1, B, ldb, beta, C, ldc )), blas::Error );
-    assert_throw((blas::gemm<TA,TB,TC>( Layout::ColMajor, Op::Trans,     Op::NoTrans, m, n, k, alpha, A, k-1, B, ldb, beta, C, ldc )), blas::Error );
-    assert_throw((blas::gemm<TA,TB,TC>( Layout::ColMajor, Op::ConjTrans, Op::NoTrans, m, n, k, alpha, A, k-1, B, ldb, beta, C, ldc )), blas::Error );
+    assert_throw( (blas::gemm<TA, TB, TC>( Layout::ColMajor, Op::NoTrans,   Op::NoTrans, m, n, k, alpha, A, m-1, B, ldb, beta, C, ldc )), blas::Error );
+    assert_throw( (blas::gemm<TA ,TB, TC>( Layout::ColMajor, Op::Trans,     Op::NoTrans, m, n, k, alpha, A, k-1, B, ldb, beta, C, ldc )), blas::Error );
+    assert_throw( (blas::gemm<TA, TB, TC>( Layout::ColMajor, Op::ConjTrans, Op::NoTrans, m, n, k, alpha, A, k-1, B, ldb, beta, C, ldc )), blas::Error );
 
-    assert_throw((blas::gemm<TA,TB,TC>( Layout::RowMajor, Op::NoTrans,   Op::NoTrans, m, n, k, alpha, A, k-1, B, ldb, beta, C, ldc )), blas::Error );
-    assert_throw((blas::gemm<TA,TB,TC>( Layout::RowMajor, Op::Trans,     Op::NoTrans, m, n, k, alpha, A, m-1, B, ldb, beta, C, ldc )), blas::Error );
-    assert_throw((blas::gemm<TA,TB,TC>( Layout::RowMajor, Op::ConjTrans, Op::NoTrans, m, n, k, alpha, A, m-1, B, ldb, beta, C, ldc )), blas::Error );
+    assert_throw( (blas::gemm<TA, TB, TC>( Layout::RowMajor, Op::NoTrans,   Op::NoTrans, m, n, k, alpha, A, k-1, B, ldb, beta, C, ldc )), blas::Error );
+    assert_throw( (blas::gemm<TA, TB, TC>( Layout::RowMajor, Op::Trans,     Op::NoTrans, m, n, k, alpha, A, m-1, B, ldb, beta, C, ldc )), blas::Error );
+    assert_throw( (blas::gemm<TA, TB, TC>( Layout::RowMajor, Op::ConjTrans, Op::NoTrans, m, n, k, alpha, A, m-1, B, ldb, beta, C, ldc )), blas::Error );
 
-    assert_throw((blas::gemm<TA,TB,TC>( Layout::ColMajor, Op::NoTrans, Op::NoTrans,   m, n, k, alpha, A, lda, B, k-1, beta, C, ldc )), blas::Error );
-    assert_throw((blas::gemm<TA,TB,TC>( Layout::ColMajor, Op::NoTrans, Op::Trans,     m, n, k, alpha, A, lda, B, n-1, beta, C, ldc )), blas::Error );
-    assert_throw((blas::gemm<TA,TB,TC>( Layout::ColMajor, Op::NoTrans, Op::ConjTrans, m, n, k, alpha, A, lda, B, n-1, beta, C, ldc )), blas::Error );
+    assert_throw( (blas::gemm<TA, TB, TC>( Layout::ColMajor, Op::NoTrans, Op::NoTrans,   m, n, k, alpha, A, lda, B, k-1, beta, C, ldc )), blas::Error );
+    assert_throw( (blas::gemm<TA, TB, TC>( Layout::ColMajor, Op::NoTrans, Op::Trans,     m, n, k, alpha, A, lda, B, n-1, beta, C, ldc )), blas::Error );
+    assert_throw( (blas::gemm<TA, TB, TC>( Layout::ColMajor, Op::NoTrans, Op::ConjTrans, m, n, k, alpha, A, lda, B, n-1, beta, C, ldc )), blas::Error );
 
-    assert_throw((blas::gemm<TA,TB,TC>( Layout::RowMajor, Op::NoTrans, Op::NoTrans,   m, n, k, alpha, A, lda, B, n-1, beta, C, ldc )), blas::Error );
-    assert_throw((blas::gemm<TA,TB,TC>( Layout::RowMajor, Op::NoTrans, Op::Trans,     m, n, k, alpha, A, lda, B, k-1, beta, C, ldc )), blas::Error );
-    assert_throw((blas::gemm<TA,TB,TC>( Layout::RowMajor, Op::NoTrans, Op::ConjTrans, m, n, k, alpha, A, lda, B, k-1, beta, C, ldc )), blas::Error );
+    assert_throw( (blas::gemm<TA, TB, TC>( Layout::RowMajor, Op::NoTrans, Op::NoTrans,   m, n, k, alpha, A, lda, B, n-1, beta, C, ldc )), blas::Error );
+    assert_throw( (blas::gemm<TA, TB, TC>( Layout::RowMajor, Op::NoTrans, Op::Trans,     m, n, k, alpha, A, lda, B, k-1, beta, C, ldc )), blas::Error );
+    assert_throw( (blas::gemm<TA, TB, TC>( Layout::RowMajor, Op::NoTrans, Op::ConjTrans, m, n, k, alpha, A, lda, B, k-1, beta, C, ldc )), blas::Error );
 
-    assert_throw((blas::gemm<TA,TB,TC>( Layout::ColMajor, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, m-1 )), blas::Error );
-    assert_throw((blas::gemm<TA,TB,TC>( Layout::RowMajor, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, n-1 )), blas::Error );
+    assert_throw( (blas::gemm<TA, TB, TC>( Layout::ColMajor, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, m-1 )), blas::Error );
+    assert_throw( (blas::gemm<TA, TB, TC>( Layout::RowMajor, transA, transB, m, n, k, alpha, A, lda, B, ldb, beta, C, n-1 )), blas::Error );
 
     if (verbose >= 1) {
         printf( "\n"
@@ -124,7 +124,7 @@ void test_gemm_work( Params& params, bool run )
     // run test
     testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
-    blas::gemm<TA,TB,TC>( layout, transA, transB, m, n, k,
+    blas::gemm<TA, TB, TC>( layout, transA, transB, m, n, k,
                 alpha, A, lda, B, ldb, beta, C, ldc );
     time = get_wtime() - time;
 
@@ -188,9 +188,6 @@ void test_gemm( Params& params, bool run )
         case testsweeper::DataType::DoubleComplex:
             test_gemm_work< std::complex<double>, std::complex<double>,
                             std::complex<double> >( params, run );
-
-//            test_gemm_work< std::complex<double>, std::complex<float>,
-//                            std::complex<float> >( params, run );
             break;
 
         default:
