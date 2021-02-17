@@ -9,6 +9,8 @@
 
 namespace blas {
 
+#ifndef USE_TEMPLATED_BLAS
+
 // =============================================================================
 // Level 1 BLAS
 
@@ -232,6 +234,8 @@ void rot(
     double c,
     std::complex<double> s );
 
+#endif
+
 // -----------------------------------------------------------------------------
 /// @ingroup rotg
 void rotg(
@@ -260,6 +264,8 @@ void rotg(
     std::complex<double> *b,  // const in BLAS implementation, oddly
     double *c,
     std::complex<double> *s );
+
+#ifndef USE_TEMPLATED_BLAS
 
 // -----------------------------------------------------------------------------
 // only real
@@ -780,8 +786,6 @@ void trsv(
 // Level 3 BLAS
 
 // -----------------------------------------------------------------------------
-#ifndef USE_TEMPLATED_GEMM
-
 /// @ingroup gemm
 void gemm(
     blas::Layout layout,
