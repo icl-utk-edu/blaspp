@@ -3,8 +3,6 @@
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
-#ifndef USE_TEMPLATED_GEMM
-
 #include "blas/fortran.h"
 #include "blas.hh"
 
@@ -352,5 +350,3 @@ void gemm(
 }
 
 }  // namespace blas
-
-#endif
