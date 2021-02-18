@@ -181,6 +181,8 @@ double nrm2(
     int64_t n,
     std::complex<double> const *x, int64_t incx );
 
+#endif
+
 // -----------------------------------------------------------------------------
 /// @ingroup rot
 void rot(
@@ -234,8 +236,6 @@ void rot(
     double c,
     std::complex<double> s );
 
-#endif
-
 // -----------------------------------------------------------------------------
 /// @ingroup rotg
 void rotg(
@@ -264,8 +264,6 @@ void rotg(
     std::complex<double> *b,  // const in BLAS implementation, oddly
     double *c,
     std::complex<double> *s );
-
-#ifndef USE_TEMPLATED_BLAS
 
 // -----------------------------------------------------------------------------
 // only real
@@ -300,6 +298,8 @@ void rotmg(
     double *a,
     double  b,
     double  param[5] );
+
+#ifndef USE_TEMPLATED_BLAS
 
 // -----------------------------------------------------------------------------
 /// @ingroup scal
