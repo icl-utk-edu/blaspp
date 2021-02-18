@@ -782,6 +782,9 @@ void trsv(
     int64_t n,
     std::complex<double> const *A, int64_t lda,
     std::complex<double>       *x, int64_t incx );
+
+#endif
+
 // =============================================================================
 // Level 3 BLAS
 

@@ -49,7 +49,7 @@ void scal(
     }
     else {
         // non-unit stride
-        for (int64_t i = 0; i < n; i += incx) {
+        for (int64_t i = 0; i < n*incx; i += incx) {
             x[i] *= alpha;
         }
     }
