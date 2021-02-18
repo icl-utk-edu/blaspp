@@ -834,8 +834,6 @@ void gemm(
     std::complex<double> beta,
     std::complex<double>       *C, int64_t ldc );
 
-#endif
-
 // -----------------------------------------------------------------------------
 /// @ingroup hemm
 void hemm(

@@ -51,7 +51,7 @@ void blas::batch::gemm(
         float* dA_   = blas::batch::extract<float*>(Aarray, i);
         float* dB_   = blas::batch::extract<float*>(Barray, i);
         float* dC_   = blas::batch::extract<float*>(Carray, i);
-        blas::gemm(
+        blas::gemm<float, float, float>(
             layout, transA_, transB_, m_, n_, k_,
             alpha_, dA_, lda_,
                     dB_, ldb_,
@@ -103,7 +103,7 @@ void blas::batch::gemm(
         double* dA_   = blas::batch::extract<double*>(Aarray, i);
         double* dB_   = blas::batch::extract<double*>(Barray, i);
         double* dC_   = blas::batch::extract<double*>(Carray, i);
-        blas::gemm(
+        blas::gemm<double, double, double>(
             layout, transA_, transB_, m_, n_, k_,
             alpha_, dA_, lda_,
                     dB_, ldb_,
@@ -155,7 +155,7 @@ void blas::batch::gemm(
         std::complex<float>* dA_   = blas::batch::extract<std::complex<float>*>(Aarray, i);
         std::complex<float>* dB_   = blas::batch::extract<std::complex<float>*>(Barray, i);
         std::complex<float>* dC_   = blas::batch::extract<std::complex<float>*>(Carray, i);
-        blas::gemm(
+        blas::gemm<std::complex<float>, std::complex<float>, std::complex<float>>(
             layout, transA_, transB_, m_, n_, k_,
             alpha_, dA_, lda_,
                     dB_, ldb_,
@@ -207,7 +207,7 @@ void blas::batch::gemm(
         std::complex<double>* dA_   = blas::batch::extract<std::complex<double>*>(Aarray, i);
         std::complex<double>* dB_   = blas::batch::extract<std::complex<double>*>(Barray, i);
         std::complex<double>* dC_   = blas::batch::extract<std::complex<double>*>(Carray, i);
-        blas::gemm(
+        blas::gemm<std::complex<double>, std::complex<double>, std::complex<double>>(
             layout, transA_, transB_, m_, n_, k_,
             alpha_, dA_, lda_,
                     dB_, ldb_,
