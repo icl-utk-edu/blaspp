@@ -5,7 +5,7 @@
 
 #include "blas/device.hh"
 
-#if ! defined(BLAS_HAVE_CUBLAS) && ! defined(BLAS_HAVE_ROCBLAS)
+#if ! defined(BLAS_HAVE_CUBLAS) && ! defined(BLAS_HAVE_ROCBLAS) && ! defined(BLAS_HAVE_ONEMKL)
 
 namespace blas {
 namespace device {
@@ -639,4 +639,4 @@ void batch_ztrsm(
 }  // namespace device
 }  // namespace blas
 
-#endif  // BLAS_HAVE_CUBLAS
+#endif  // ! defined(BLAS_HAVE_CUBLAS) && ! defined(BLAS_HAVE_ROCBLAS) ! defined(BLAS_HAVE_ONEMKL)
