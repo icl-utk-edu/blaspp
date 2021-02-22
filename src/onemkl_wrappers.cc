@@ -68,9 +68,10 @@ void sswap(
     float *dx, device_blas_int incdx,
     float *dy, device_blas_int incdy)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::swap(
-        queue.stream(),
+        dev_queue,
         n,
         dx, incdx,
         dy, incdy) );
@@ -83,9 +84,10 @@ void dswap(
     double *dx, device_blas_int incdx,
     double *dy, device_blas_int incdy)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::swap(
-        queue.stream(),
+        dev_queue,
         n,
         dx, incdx,
         dy, incdy) );
@@ -98,9 +100,10 @@ void cswap(
     std::complex<float> *dx, device_blas_int incdx,
     std::complex<float> *dy, device_blas_int incdy)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::swap(
-        queue.stream(),
+        dev_queue,
         n,
         dx, incdx,
         dy, incdy) );
@@ -113,9 +116,10 @@ void zswap(
     std::complex<double> *dx, device_blas_int incdx,
     std::complex<double> *dy, device_blas_int incdy)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::swap(
-        queue.stream(),
+        dev_queue,
         n,
         dx, incdx,
         dy, incdy) );
@@ -143,10 +147,11 @@ void sgemm(
     float beta,
     float       *dC, device_blas_int lddc)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::gemm(
-            queue.stream(),
-            op2onemkl(transA), op2onemkl(transB),
+            dev_queue,
+            op2onemkl( transA ), op2onemkl( transB ),
             m, n, k,
             alpha, dA, ldda,
                    dB, lddb,
@@ -165,10 +170,11 @@ void dgemm(
     double beta,
     double       *dC, device_blas_int lddc)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::gemm(
-            queue.stream(),
-            op2onemkl(transA), op2onemkl(transB),
+            dev_queue,
+            op2onemkl( transA ), op2onemkl( transB ),
             m, n, k,
             alpha, dA, ldda,
                    dB, lddb,
@@ -187,10 +193,12 @@ void cgemm(
     std::complex<float> beta,
     std::complex<float>       *dC, device_blas_int lddc)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::gemm(
-            queue.stream(),
-            op2onemkl(transA), op2onemkl(transB), m, n, k,
+            dev_queue,
+            op2onemkl( transA ), op2onemkl( transB ),
+            m, n, k,
             alpha, dA, ldda,
                    dB, lddb,
             beta,  dC, lddc ) );
@@ -208,10 +216,11 @@ void zgemm(
     std::complex<double> beta,
     std::complex<double>       *dC, device_blas_int lddc)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::gemm(
-            queue.stream(),
-            op2onemkl(transA), op2onemkl(transB),
+            dev_queue,
+            op2onemkl( transA ), op2onemkl( transB ),
             m, n, k,
             alpha, dA, ldda,
                    dB, lddb,
@@ -230,10 +239,12 @@ void strsm(
     float const *dA, device_blas_int ldda,
     float       *dB, device_blas_int lddb)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::trsm(
-            queue.stream(),
-            side2onemkl(side), uplo2onemkl(uplo), op2onemkl(trans), diag2onemkl(diag),
+            dev_queue,
+            side2onemkl( side ), uplo2onemkl( uplo ),
+            op2onemkl( trans ), diag2onemkl( diag ),
             m, n,
             alpha,
             dA, ldda,
@@ -250,10 +261,12 @@ void dtrsm(
     double const *dA, device_blas_int ldda,
     double       *dB, device_blas_int lddb)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::trsm(
-            queue.stream(),
-            side2onemkl(side), uplo2onemkl(uplo), op2onemkl(trans), diag2onemkl(diag),
+            dev_queue,
+            side2onemkl( side ), uplo2onemkl( uplo ),
+            op2onemkl( trans ), diag2onemkl( diag ),
             m, n,
             alpha,
             dA, ldda,
@@ -270,10 +283,12 @@ void ctrsm(
     std::complex<float> const *dA, device_blas_int ldda,
     std::complex<float>       *dB, device_blas_int lddb)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::trsm(
-            queue.stream(),
-            side2onemkl(side), uplo2onemkl(uplo), op2onemkl(trans), diag2onemkl(diag),
+            dev_queue,
+            side2onemkl( side ), uplo2onemkl( uplo ),
+            op2onemkl( trans ), diag2onemkl( diag ),
             m, n,
             alpha,
             dA, ldda,
@@ -290,10 +305,12 @@ void ztrsm(
     std::complex<double> const *dA, device_blas_int ldda,
     std::complex<double>       *dB, device_blas_int lddb)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::trsm(
-            queue.stream(),
-            side2onemkl(side), uplo2onemkl(uplo), op2onemkl(trans), diag2onemkl(diag),
+            dev_queue,
+            side2onemkl( side ), uplo2onemkl( uplo ),
+            op2onemkl( trans ), diag2onemkl( diag ),
             m, n,
             alpha,
             dA, ldda,
@@ -312,10 +329,12 @@ void strmm(
     float const *dA, device_blas_int ldda,
     float       *dB, device_blas_int lddb)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::trmm(
-            queue.stream(),
-            side2onemkl(side), uplo2onemkl(uplo), op2onemkl(trans), diag2onemkl(diag),
+            dev_queue,
+            side2onemkl( side ), uplo2onemkl( uplo ),
+            op2onemkl( trans ), diag2onemkl( diag ),
             m, n,
             alpha,
             dA, ldda,
@@ -332,10 +351,12 @@ void dtrmm(
     double const *dA, device_blas_int ldda,
     double       *dB, device_blas_int lddb)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::trmm(
-            queue.stream(),
-            side2onemkl(side), uplo2onemkl(uplo), op2onemkl(trans), diag2onemkl(diag),
+            dev_queue,
+            side2onemkl( side ), uplo2onemkl( uplo ),
+            op2onemkl( trans ), diag2onemkl( diag ),
             m, n,
             alpha,
             dA, ldda,
@@ -352,10 +373,12 @@ void ctrmm(
     std::complex<float> const *dA, device_blas_int ldda,
     std::complex<float>       *dB, device_blas_int lddb)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::trmm(
-            queue.stream(),
-            side2onemkl(side), uplo2onemkl(uplo), op2onemkl(trans), diag2onemkl(diag),
+            dev_queue,
+            side2onemkl( side ), uplo2onemkl( uplo ),
+            op2onemkl( trans ), diag2onemkl( diag ),
             m, n,
             alpha,
             dA, ldda,
@@ -372,10 +395,12 @@ void ztrmm(
     std::complex<double> const *dA, device_blas_int ldda,
     std::complex<double>       *dB, device_blas_int lddb)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::trmm(
-            queue.stream(),
-            side2onemkl(side), uplo2onemkl(uplo), op2onemkl(trans), diag2onemkl(diag),
+            dev_queue,
+            side2onemkl( side ), uplo2onemkl( uplo ),
+            op2onemkl( trans ), diag2onemkl( diag ),
             m, n,
             alpha,
             dA, ldda,
@@ -396,10 +421,11 @@ void chemm(
     std::complex<float>  beta,
     std::complex<float>* dC, device_blas_int lddc)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::hemm(
-            queue.stream(),
-            side2onemkl(side), uplo2onemkl(uplo),
+            dev_queue,
+            side2onemkl( side ), uplo2onemkl( uplo ),
             m, n,
             alpha, dA, ldda,
                    dB, lddb,
@@ -418,10 +444,11 @@ void zhemm(
     std::complex<double>  beta,
     std::complex<double>* dC, device_blas_int lddc)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::hemm(
-            queue.stream(),
-            side2onemkl(side), uplo2onemkl(uplo),
+            dev_queue,
+            side2onemkl( side ), uplo2onemkl( uplo ),
             m, n,
             alpha, dA, ldda,
                    dB, lddb,
@@ -442,10 +469,11 @@ void ssymm(
     float  beta,
     float* dC, device_blas_int lddc)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::symm(
-            queue.stream(),
-            side2onemkl(side), uplo2onemkl(uplo),
+            dev_queue,
+            side2onemkl( side ), uplo2onemkl( uplo ),
             m, n,
             alpha, dA, ldda,
                    dB, lddb,
@@ -464,10 +492,11 @@ void dsymm(
     double  beta,
     double* dC, device_blas_int lddc)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::symm(
-            queue.stream(),
-            side2onemkl(side), uplo2onemkl(uplo),
+            dev_queue,
+            side2onemkl( side ), uplo2onemkl( uplo ),
             m, n,
             alpha, dA, ldda,
                    dB, lddb,
@@ -486,10 +515,11 @@ void csymm(
     std::complex<float>  beta,
     std::complex<float>* dC, device_blas_int lddc)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::symm(
-            queue.stream(),
-            side2onemkl(side), uplo2onemkl(uplo),
+            dev_queue,
+            side2onemkl( side ), uplo2onemkl( uplo ),
             m, n,
             alpha, dA, ldda,
                    dB, lddb,
@@ -508,10 +538,11 @@ void zsymm(
     std::complex<double>  beta,
     std::complex<double>* dC, device_blas_int lddc)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::symm(
-            queue.stream(),
-            side2onemkl(side), uplo2onemkl(uplo),
+            dev_queue,
+            side2onemkl( side ), uplo2onemkl( uplo ),
             m, n,
             alpha, dA, ldda,
                    dB, lddb,
@@ -531,10 +562,11 @@ void cherk(
     float  beta,
     std::complex<float>* dC, device_blas_int lddc)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::herk(
-            queue.stream(),
-            uplo2onemkl(uplo), op2onemkl(trans),
+            dev_queue,
+            uplo2onemkl( uplo ), op2onemkl( trans ),
             n, k,
             alpha, dA, ldda,
             beta,  dC, lddc ) );
@@ -551,10 +583,11 @@ void zherk(
     double  beta,
     std::complex<double>* dC, device_blas_int lddc)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::herk(
-            queue.stream(),
-            uplo2onemkl(uplo), op2onemkl(trans),
+            dev_queue,
+            uplo2onemkl( uplo ), op2onemkl( trans ),
             n, k,
             alpha, dA, ldda,
             beta,  dC, lddc ) );
@@ -573,10 +606,11 @@ void ssyrk(
     float  beta,
     float* dC, device_blas_int lddc)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::syrk(
-            queue.stream(),
-            uplo2onemkl(uplo), op2onemkl(trans),
+            dev_queue,
+            uplo2onemkl( uplo ), op2onemkl( trans ),
             n, k,
             alpha, dA, ldda,
             beta,  dC, lddc ) );
@@ -593,10 +627,11 @@ void dsyrk(
     double  beta,
     double* dC, device_blas_int lddc)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::syrk(
-            queue.stream(),
-            uplo2onemkl(uplo), op2onemkl(trans),
+            dev_queue,
+            uplo2onemkl( uplo ), op2onemkl( trans ),
             n, k,
             alpha, dA, ldda,
             beta,  dC, lddc ) );
@@ -613,10 +648,11 @@ void csyrk(
     std::complex<float>  beta,
     std::complex<float>* dC, device_blas_int lddc)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::syrk(
-            queue.stream(),
-            uplo2onemkl(uplo), op2onemkl(trans),
+            dev_queue,
+            uplo2onemkl( uplo ), op2onemkl( trans ),
             n, k,
             alpha, dA, ldda,
             beta,  dC, lddc ) );
@@ -633,10 +669,11 @@ void zsyrk(
     std::complex<double>  beta,
     std::complex<double>* dC, device_blas_int lddc)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::syrk(
-            queue.stream(),
-            uplo2onemkl(uplo), op2onemkl(trans),
+            dev_queue,
+            uplo2onemkl( uplo ), op2onemkl( trans ),
             n, k,
             alpha, dA, ldda,
             beta,  dC, lddc ) );
@@ -656,10 +693,11 @@ void cher2k(
     float  beta,
     std::complex<float>* dC, device_blas_int lddc)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::her2k(
-            queue.stream(),
-            uplo2onemkl(uplo), op2onemkl(trans),
+            dev_queue,
+            uplo2onemkl( uplo ), op2onemkl( trans ),
             n, k,
             alpha, dA, ldda,
                    dB, lddb,
@@ -678,10 +716,11 @@ void zher2k(
     double  beta,
     std::complex<double>* dC, device_blas_int lddc)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::her2k(
-            queue.stream(),
-            uplo2onemkl(uplo), op2onemkl(trans),
+            dev_queue,
+            uplo2onemkl( uplo ), op2onemkl( trans ),
             n, k,
             alpha, dA, ldda,
                    dB, lddb,
@@ -702,10 +741,11 @@ void ssyr2k(
     float  beta,
     float* dC, device_blas_int lddc)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::syr2k(
-            queue.stream(),
-            uplo2onemkl(uplo), op2onemkl(trans),
+            dev_queue,
+            uplo2onemkl( uplo ), op2onemkl( trans ),
             n, k,
             alpha, dA, ldda,
                    dB, lddb,
@@ -724,10 +764,11 @@ void dsyr2k(
     double  beta,
     double* dC, device_blas_int lddc)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
          oneapi::mkl::blas::syr2k(
-            queue.stream(),
-            uplo2onemkl(uplo), op2onemkl(trans),
+            dev_queue,
+            uplo2onemkl( uplo ), op2onemkl( trans ),
             n, k,
             alpha, dA, ldda,
                    dB, lddb,
@@ -746,10 +787,11 @@ void csyr2k(
     std::complex<float>  beta,
     std::complex<float>* dC, device_blas_int lddc)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::syr2k(
-            queue.stream(),
-            uplo2onemkl(uplo), op2onemkl(trans),
+            dev_queue,
+            uplo2onemkl( uplo ), op2onemkl( trans ),
             n, k,
             alpha, dA, ldda,
                    dB, lddb,
@@ -768,10 +810,11 @@ void zsyr2k(
     std::complex<double>  beta,
     std::complex<double>* dC, device_blas_int lddc)
 {
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::syr2k(
-            queue.stream(),
-            uplo2onemkl(uplo), op2onemkl(trans),
+            dev_queue,
+            uplo2onemkl( uplo ), op2onemkl( trans ),
             n, k,
             alpha, dA, ldda,
                    dB, lddb,
@@ -793,17 +836,19 @@ void batch_sgemm(
     float** dCarray, device_blas_int lddc,
     device_blas_int batch_size)
 {
-    oneapi::mkl::transpose transA_ = op2onemkl(transA);
-    oneapi::mkl::transpose transB_ = op2onemkl(transB);
+    oneapi::mkl::transpose transA_ = op2onemkl( transA );
+    oneapi::mkl::transpose transB_ = op2onemkl( transB );
+    sycl::queue dev_queue = queue.stream();
+
     blas_dev_call(
         oneapi::mkl::blas::gemm_batch(
-            queue.stream(),
+            dev_queue,
             &transA_, &transB_,
             &m, &n, &k, &alpha,
-            dA_array, &ldda,
-            dB_array, &lddb,
+            (const float**)dAarray, &ldda,
+            (const float**)dBarray, &lddb,
             &beta,
-            dC_array, &lddc,
+            dCarray, &lddc,
             1, &batch_size ) );
 }
 
@@ -820,15 +865,24 @@ void batch_sgemm(
     float** dCarray, device_blas_int *lddc,
     device_blas_int group_count, device_blas_int *group_size)
 {
+    sycl::queue dev_queue = queue.stream();
+    // todo: probably move transA_/transB_ to blas::Queue
+    std::vector<oneapi::mkl::transpose> transA_(group_count);
+    std::vector<oneapi::mkl::transpose> transB_(group_count);
+    for(auto i = 0; i < group_count; ++i) {
+        transA_[i] = op2onemkl( transA[i] );
+        transB_[i] = op2onemkl( transB[i] );
+    }
+
     blas_dev_call(
         oneapi::mkl::blas::gemm_batch(
-            queue.stream(),
-            transA, transB,
+            dev_queue,
+            transA_.data(), transB_.data(),
             m, n, k, alpha,
-            dA_array, ldda,
-            dB_array, lddb,
+            (const float**)dAarray, ldda,
+            (const float**)dBarray, lddb,
             beta,
-            dC_array, lddc,
+            dCarray, lddc,
             group_count, group_size ) );
 }
 
@@ -845,17 +899,19 @@ void batch_dgemm(
     double** dCarray, device_blas_int lddc,
     device_blas_int batch_size)
 {
-    oneapi::mkl::transpose transA_ = op2onemkl(transA);
-    oneapi::mkl::transpose transB_ = op2onemkl(transB);
+    oneapi::mkl::transpose transA_ = op2onemkl( transA );
+    oneapi::mkl::transpose transB_ = op2onemkl( transB );
+    sycl::queue dev_queue = queue.stream();
+
     blas_dev_call(
         oneapi::mkl::blas::gemm_batch(
-            queue.stream(),
+            dev_queue,
             &transA_, &transB_,
             &m, &n, &k, &alpha,
-            dA_array, &ldda,
-            dB_array, &lddb,
+            (const double**)dAarray, &ldda,
+            (const double**)dBarray, &lddb,
             &beta,
-            dC_array, &lddc,
+            dCarray, &lddc,
             1, &batch_size ) );
 }
 
@@ -872,15 +928,24 @@ void batch_dgemm(
     double** dCarray, device_blas_int *lddc,
     device_blas_int group_count, device_blas_int *group_size)
 {
+    sycl::queue dev_queue = queue.stream();
+    // todo: probably move transA_/transB_ to blas::Queue
+    std::vector<oneapi::mkl::transpose> transA_(group_count);
+    std::vector<oneapi::mkl::transpose> transB_(group_count);
+    for(auto i = 0; i < group_count; ++i) {
+        transA_[i] = op2onemkl( transA[i] );
+        transB_[i] = op2onemkl( transB[i] );
+    }
+
     blas_dev_call(
         oneapi::mkl::blas::gemm_batch(
-            queue.stream(),
-            transA, transB,
+            dev_queue,
+            transA_.data(), transB_.data(),
             m, n, k, alpha,
-            dA_array, ldda,
-            dB_array, lddb,
+            (const double**)dAarray, ldda,
+            (const double**)dBarray, lddb,
             beta,
-            dC_array, lddc,
+            dCarray, lddc,
             group_count, group_size ) );
 }
 
@@ -897,17 +962,19 @@ void batch_cgemm(
     std::complex<float>** dCarray, device_blas_int lddc,
     device_blas_int batch_size)
 {
-    oneapi::mkl::transpose transA_ = op2onemkl(transA);
-    oneapi::mkl::transpose transB_ = op2onemkl(transB);
+    oneapi::mkl::transpose transA_ = op2onemkl( transA );
+    oneapi::mkl::transpose transB_ = op2onemkl( transB );
+    sycl::queue dev_queue = queue.stream();
+
     blas_dev_call(
         oneapi::mkl::blas::gemm_batch(
-            queue.stream(),
+            dev_queue,
             &transA_, &transB_,
             &m, &n, &k, &alpha,
-            dA_array, &ldda,
-            dB_array, &lddb,
+            (const std::complex<float>**)dAarray, &ldda,
+            (const std::complex<float>**)dBarray, &lddb,
             &beta,
-            dC_array, &lddc,
+            dCarray, &lddc,
             1, &batch_size ) );
 }
 
@@ -924,15 +991,24 @@ void batch_cgemm(
     std::complex<float>** dCarray, device_blas_int *lddc,
     device_blas_int group_count, device_blas_int *group_size)
 {
+    sycl::queue dev_queue = queue.stream();
+    // todo: probably move transA_/transB_ to blas::Queue
+    std::vector<oneapi::mkl::transpose> transA_(group_count);
+    std::vector<oneapi::mkl::transpose> transB_(group_count);
+    for(auto i = 0; i < group_count; ++i) {
+        transA_[i] = op2onemkl( transA[i] );
+        transB_[i] = op2onemkl( transB[i] );
+    }
+
     blas_dev_call(
         oneapi::mkl::blas::gemm_batch(
-            queue.stream(),
-            transA, transB,
+            dev_queue,
+            transA_.data(), transB_.data(),
             m, n, k, alpha,
-            dA_array, ldda,
-            dB_array, lddb,
+            (const std::complex<float>**)dAarray, ldda,
+            (const std::complex<float>**)dBarray, lddb,
             beta,
-            dC_array, lddc,
+            dCarray, lddc,
             group_count, group_size ) );
 }
 
@@ -949,17 +1025,19 @@ void batch_zgemm(
     std::complex<double>** dCarray, device_blas_int lddc,
     device_blas_int batch_size)
 {
-    oneapi::mkl::transpose transA_ = op2onemkl(transA);
-    oneapi::mkl::transpose transB_ = op2onemkl(transB);
+    oneapi::mkl::transpose transA_ = op2onemkl( transA );
+    oneapi::mkl::transpose transB_ = op2onemkl( transB );
+    sycl::queue dev_queue = queue.stream();
+
     blas_dev_call(
         oneapi::mkl::blas::gemm_batch(
-            queue.stream(),
+            dev_queue,
             &transA_, &transB_,
             &m, &n, &k, &alpha,
-            dA_array, &ldda,
-            dB_array, &lddb,
+            (const std::complex<double>**)dAarray, &ldda,
+            (const std::complex<double>**)dBarray, &lddb,
             &beta,
-            dC_array, &lddc,
+            dCarray, &lddc,
             1, &batch_size ) );
 }
 
@@ -976,15 +1054,24 @@ void batch_zgemm(
     std::complex<double>** dCarray, device_blas_int *lddc,
     device_blas_int group_count, device_blas_int *group_size)
 {
+    sycl::queue dev_queue = queue.stream();
+    // todo: probably move transA_/transB_ to blas::Queue
+    std::vector<oneapi::mkl::transpose> transA_(group_count);
+    std::vector<oneapi::mkl::transpose> transB_(group_count);
+    for(auto i = 0; i < group_count; ++i) {
+        transA_[i] = op2onemkl( transA[i] );
+        transB_[i] = op2onemkl( transB[i] );
+    }
+
     blas_dev_call(
         oneapi::mkl::blas::gemm_batch(
-            queue.stream(),
-            transA, transB,
+            dev_queue,
+            transA_.data(), transB_.data(),
             m, n, k, alpha,
-            dA_array, ldda,
-            dB_array, lddb,
+            (const std::complex<double>**)dAarray, ldda,
+            (const std::complex<double>**)dBarray, lddb,
             beta,
-            dC_array, lddc,
+            dCarray, lddc,
             group_count, group_size ) );
 }
 
@@ -1000,18 +1087,20 @@ void batch_strsm(
     device_blas_int batch_size)
 
 {
-    oneapi::mkl::transpose side_  = op2onemkl(side);
-    oneapi::mkl::transpose uplo_  = op2onemkl(uplo);
-    oneapi::mkl::transpose trans_ = op2onemkl(trans);
-    oneapi::mkl::transpose diag_  = op2onemkl(diag);
+    oneapi::mkl::side side_       = side2onemkl( side );
+    oneapi::mkl::uplo uplo_       = uplo2onemkl( uplo );
+    oneapi::mkl::transpose trans_ = op2onemkl( trans );
+    oneapi::mkl::diag diag_       = diag2onemkl( diag );
+    sycl::queue dev_queue = queue.stream();
+
     blas_dev_call(
         oneapi::mkl::blas::trsm_batch(
-        queue.stream(),
+        dev_queue,
         &side_, &uplo_ , &trans_, &diag_,
         &m, &n,
         &alpha,
-        dA_array, &ldda,
-        dB_array, &lddb,
+        (const float**)dAarray, &ldda,
+        (      float**)dBarray, &lddb,
         1, &batch_size ) );
 }
 
@@ -1027,14 +1116,28 @@ void batch_strsm(
     device_blas_int group_count, device_blas_int *group_size)
 
 {
+    sycl::queue dev_queue = queue.stream();
+    // todo: probably move options to blas::Queue
+    std::vector<oneapi::mkl::side>      side_(group_count);
+    std::vector<oneapi::mkl::uplo>      uplo_(group_count);
+    std::vector<oneapi::mkl::transpose> trans_(group_count);
+    std::vector<oneapi::mkl::diag>      diag_(group_count);
+
+    for(auto i = 0; i < group_count; ++i) {
+        side_[i]  = side2onemkl( side[i] );
+        uplo_[i]  = uplo2onemkl( uplo[i] );
+        trans_[i] = op2onemkl( trans[i] );
+        diag_[i]  = diag2onemkl( diag[i] );
+    }
+
     blas_dev_call(
         oneapi::mkl::blas::trsm_batch(
-        queue.stream(),
-        side, uplo, trans, diag,
+        dev_queue,
+        side_.data(), uplo_.data(), trans_.data(), diag_.data(),
         m, n,
         alpha,
-        dA_array, ldda,
-        dB_array, lddb,
+        (const float**)dAarray, ldda,
+        (      float**)dBarray, lddb,
         group_count, group_size ) );
 }
 
@@ -1049,18 +1152,20 @@ void batch_dtrsm(
     double const * const * dBarray, device_blas_int lddb,
     device_blas_int batch_size)
 {
-    oneapi::mkl::transpose side_  = op2onemkl(side);
-    oneapi::mkl::transpose uplo_  = op2onemkl(uplo);
-    oneapi::mkl::transpose trans_ = op2onemkl(trans);
-    oneapi::mkl::transpose diag_  = op2onemkl(diag);
+    oneapi::mkl::side side_       = side2onemkl( side );
+    oneapi::mkl::uplo uplo_       = uplo2onemkl( uplo );
+    oneapi::mkl::transpose trans_ = op2onemkl( trans );
+    oneapi::mkl::diag diag_       = diag2onemkl( diag );
+    sycl::queue dev_queue = queue.stream();
+
     blas_dev_call(
         oneapi::mkl::blas::trsm_batch(
-        queue.stream(),
+        dev_queue,
         &side_, &uplo_ , &trans_, &diag_,
         &m, &n,
         &alpha,
-        dA_array, &ldda,
-        dB_array, &lddb,
+        (const double**)dAarray, &ldda,
+        (      double**)dBarray, &lddb,
         1, &batch_size ) );
 }
 
@@ -1076,14 +1181,28 @@ void batch_dtrsm(
     device_blas_int group_count, device_blas_int *group_size)
 
 {
+    sycl::queue dev_queue = queue.stream();
+    // todo: probably move options to blas::Queue
+    std::vector<oneapi::mkl::side>      side_(group_count);
+    std::vector<oneapi::mkl::uplo>      uplo_(group_count);
+    std::vector<oneapi::mkl::transpose> trans_(group_count);
+    std::vector<oneapi::mkl::diag>      diag_(group_count);
+
+    for(auto i = 0; i < group_count; ++i) {
+        side_[i]  = side2onemkl( side[i] );
+        uplo_[i]  = uplo2onemkl( uplo[i] );
+        trans_[i] = op2onemkl( trans[i] );
+        diag_[i]  = diag2onemkl( diag[i] );
+    }
+
     blas_dev_call(
         oneapi::mkl::blas::trsm_batch(
-        queue.stream(),
-        side, uplo, trans, diag,
+        dev_queue,
+        side_.data(), uplo_.data(), trans_.data(), diag_.data(),
         m, n,
         alpha,
-        dA_array, ldda,
-        dB_array, lddb,
+        (const double**)dAarray, ldda,
+        (      double**)dBarray, lddb,
         group_count, group_size ) );
 }
 
@@ -1098,18 +1217,20 @@ void batch_ctrsm(
     std::complex<float> const * const * dBarray, device_blas_int lddb,
     device_blas_int batch_size)
 {
-    oneapi::mkl::transpose side_  = op2onemkl(side);
-    oneapi::mkl::transpose uplo_  = op2onemkl(uplo);
-    oneapi::mkl::transpose trans_ = op2onemkl(trans);
-    oneapi::mkl::transpose diag_  = op2onemkl(diag);
+    oneapi::mkl::side side_       = side2onemkl( side );
+    oneapi::mkl::uplo uplo_       = uplo2onemkl( uplo );
+    oneapi::mkl::transpose trans_ = op2onemkl( trans );
+    oneapi::mkl::diag diag_       = diag2onemkl( diag );
+    sycl::queue dev_queue = queue.stream();
+
     blas_dev_call(
         oneapi::mkl::blas::trsm_batch(
-        queue.stream(),
+        dev_queue,
         &side_, &uplo_ , &trans_, &diag_,
         &m, &n,
         &alpha,
-        dA_array, &ldda,
-        dB_array, &lddb,
+        (const std::complex<float>**)dAarray, &ldda,
+        (      std::complex<float>**)dBarray, &lddb,
         1, &batch_size ) );
 }
 
@@ -1125,14 +1246,28 @@ void batch_ctrsm(
     device_blas_int group_count, device_blas_int *group_size)
 
 {
+    sycl::queue dev_queue = queue.stream();
+    // todo: probably move options to blas::Queue
+    std::vector<oneapi::mkl::side>      side_(group_count);
+    std::vector<oneapi::mkl::uplo>      uplo_(group_count);
+    std::vector<oneapi::mkl::transpose> trans_(group_count);
+    std::vector<oneapi::mkl::diag>      diag_(group_count);
+
+    for(auto i = 0; i < group_count; ++i) {
+        side_[i]  = side2onemkl( side[i] );
+        uplo_[i]  = uplo2onemkl( uplo[i] );
+        trans_[i] = op2onemkl( trans[i] );
+        diag_[i]  = diag2onemkl( diag[i] );
+    }
+
     blas_dev_call(
         oneapi::mkl::blas::trsm_batch(
-        queue.stream(),
-        side, uplo, trans, diag,
+        dev_queue,
+        side_.data(), uplo_.data(), trans_.data(), diag_.data(),
         m, n,
         alpha,
-        dA_array, ldda,
-        dB_array, lddb,
+        (const std::complex<float>**)dAarray, ldda,
+        (      std::complex<float>**)dBarray, lddb,
         group_count, group_size ) );
 }
 
@@ -1147,18 +1282,20 @@ void batch_ztrsm(
     std::complex<double> const * const * dBarray, device_blas_int lddb,
     device_blas_int batch_size)
 {
-    oneapi::mkl::transpose side_  = op2onemkl(side);
-    oneapi::mkl::transpose uplo_  = op2onemkl(uplo);
-    oneapi::mkl::transpose trans_ = op2onemkl(trans);
-    oneapi::mkl::transpose diag_  = op2onemkl(diag);
+    oneapi::mkl::side side_       = side2onemkl( side );
+    oneapi::mkl::uplo uplo_       = uplo2onemkl( uplo );
+    oneapi::mkl::transpose trans_ = op2onemkl( trans );
+    oneapi::mkl::diag diag_       = diag2onemkl( diag );
+    sycl::queue dev_queue = queue.stream();
+
     blas_dev_call(
         oneapi::mkl::blas::trsm_batch(
-        queue.stream(),
+        dev_queue,
         &side_, &uplo_ , &trans_, &diag_,
         &m, &n,
         &alpha,
-        dA_array, &ldda,
-        dB_array, &lddb,
+        (const std::complex<double>**)dAarray, &ldda,
+        (      std::complex<double>**)dBarray, &lddb,
         1, &batch_size ) );
 }
 
@@ -1174,14 +1311,28 @@ void batch_ztrsm(
     device_blas_int group_count, device_blas_int *group_size)
 
 {
+    sycl::queue dev_queue = queue.stream();
+    // todo: probably move options to blas::Queue
+    std::vector<oneapi::mkl::side>      side_(group_count);
+    std::vector<oneapi::mkl::uplo>      uplo_(group_count);
+    std::vector<oneapi::mkl::transpose> trans_(group_count);
+    std::vector<oneapi::mkl::diag>      diag_(group_count);
+
+    for(auto i = 0; i < group_count; ++i) {
+        side_[i]  = side2onemkl( side[i] );
+        uplo_[i]  = uplo2onemkl( uplo[i] );
+        trans_[i] = op2onemkl( trans[i] );
+        diag_[i]  = diag2onemkl( diag[i] );
+    }
+
     blas_dev_call(
         oneapi::mkl::blas::trsm_batch(
-        queue.stream(),
-        side, uplo, trans, diag,
+        dev_queue,
+        side_.data(), uplo_.data(), trans_.data(), diag_.data(),
         m, n,
         alpha,
-        dA_array, ldda,
-        dB_array, lddb,
+        (const std::complex<double>**)dAarray, ldda,
+        (      std::complex<double>**)dBarray, lddb,
         group_count, group_size ) );
 }
 
