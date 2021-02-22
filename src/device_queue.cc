@@ -175,7 +175,6 @@ Queue::Queue()
         }
     #elif defined(BLAS_HAVE_ONEMKL)
         throw blas::Error( "a device must be specified for sycl backend", __func__ );
-        blas_unused( workspace_size );
     #endif
 }
 
