@@ -186,6 +186,9 @@ private:
         cl::sycl::queue *default_stream_;
         cl::sycl::event  default_event_;
 
+        // pointer to current stream (default or fork mode)
+        cl::sycl::queue *current_stream_;
+
     #else
         // pointer to current stream (default or fork mode)
         void** current_stream_;
@@ -320,6 +323,7 @@ inline const char* device_error_string( rocblas_status error )
 void set_device( blas::Device device );
 void get_device( blas::Device *device );
 device_blas_int get_device_count();
+device_blas_int enumerate_devices(std::vector<blas::Device> &devices);
 
 // -----------------------------------------------------------------------------
 // memory functions
@@ -439,17 +443,17 @@ void device_setmatrix(
         if( ldh_ == m_ && ldd_ == m_ ) {
             /* one memcpy */
             blas_dev_call(
-                (queue.stream()).memcpy(dev_ptr, host_ptr, m_*n_*sizeof(T));
-            );
+                (queue.stream()).memcpy( (      void*)dev_ptr,
+                                         (const void*)host_ptr,
+                                         m_*n_*sizeof(T) ) );
         }
         else {
             /* will have to do several mem-copies
              * sycl does not support set/get matrix
             */
-            T *dptr=NULL, *hptr=NULL;
             for(int64_t ic = 0; ic < n_; ++ic) {
-                dptr = dev_ptr[ic*ldd_];
-                hptr = host_ptr[ic*ldh_];
+                void       *dptr = (      void*) (dev_ptr  + ic*ldd_);
+                const void *hptr = (const void*) (host_ptr + ic*ldh_);
                 blas_dev_call(
                     (queue.stream()).memcpy(dptr, hptr, m_*sizeof(T)) );
             }
@@ -495,16 +499,17 @@ void device_getmatrix(
         if( ldh_ == m_ && ldd_ == m_ ) {
             /* one memcpy */
             blas_dev_call(
-                (queue.stream()).memcpy(host_ptr, dev_ptr, m_*n_*sizeof(T)) );
+                (queue.stream()).memcpy( (      void*)host_ptr,
+                                         (const void*)dev_ptr,
+                                         m_*n_*sizeof(T) ) );
         }
         else {
             /* will have to do several mem-copies
              * sycl does not support set/get matrix
             */
-            T *dptr=NULL, *hptr=NULL;
             for(int64_t ic = 0; ic < n_; ++ic) {
-                dptr = dev_ptr[ic*ldd_];
-                hptr = host_ptr[ic*ldh_];
+                const void *dptr = (const void*) (dev_ptr  + ic*ldd_);
+                void       *hptr = (      void*) (host_ptr + ic*ldh_);
                 blas_dev_call(
                     (queue.stream()).memcpy(hptr, dptr, m_*sizeof(T)) );
             }
@@ -549,13 +554,14 @@ void device_setvector(
         if( inch_ == incd_ ) {
             /* this could be slow if inc >> n */
             blas_dev_call(
-                (queue.stream()).memcpy(host_ptr, dev_ptr, n_*inch_*sizeof(T)) );
+                (queue.stream()).memcpy( (      void*)host_ptr,
+                                         (const void*)dev_ptr,
+                                         n_*inch_*sizeof(T)) );
         }
         else {
-            T *hptr=NULL, *dptr=NULL;
             for(int64_t ie = 0; ie < n_; ++ie) {
-                hptr = host_ptr + ie * inch;
-                dptr = dev_ptr  + ie * incd;
+                void       *hptr = (      void*)(host_ptr + ie * inch);
+                const void *dptr = (const void*)(dev_ptr  + ie * incd);
                 blas_dev_call(
                     (queue.stream()).memcpy(hptr, dptr, sizeof(T)) );
             }
@@ -599,13 +605,14 @@ void device_getvector(
         if( inch_ == incd_ ) {
             /* this could be slow if inc >> n */
             blas_dev_call(
-                (queue.stream()).memcpy(host_ptr, dev_ptr, n_*inch_*sizeof(T)) );
+                (queue.stream()).memcpy( (      void*)host_ptr,
+                                         (const void*)dev_ptr,
+                                         n_*inch_*sizeof(T) ) );
         }
         else {
-            T *hptr=NULL, *dptr=NULL;
             for(int64_t ie = 0; ie < n_; ++ie) {
-                hptr = host_ptr + ie * inch;
-                dptr = dev_ptr  + ie * incd;
+                void       *hptr = (      void*) (host_ptr + ie * inch);
+                const void *dptr = (const void*) (dev_ptr  + ie * incd);
                 blas_dev_call(
                     (queue.stream()).memcpy(hptr, dptr, sizeof(T)) );
             }
