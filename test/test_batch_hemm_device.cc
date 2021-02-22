@@ -22,16 +22,16 @@ void test_batch_hemm_device_work( Params& params, bool run )
 
     // get & mark input values
     blas::Layout layout = params.layout();
-    blas::Side side_ = params.side();
-    blas::Uplo uplo_ = params.uplo();
-    scalar_t alpha_  = params.alpha();
-    scalar_t beta_   = params.beta();
-    int64_t m_       = params.dim.m();
-    int64_t n_       = params.dim.n();
-    size_t  batch    = params.batch();
-    int64_t device      = params.device();
-    int64_t align    = params.align();
-    int64_t verbose  = params.verbose();
+    blas::Side side_    = params.side();
+    blas::Uplo uplo_    = params.uplo();
+    scalar_t alpha_     = params.alpha();
+    scalar_t beta_      = params.beta();
+    int64_t m_          = params.dim.m();
+    int64_t n_          = params.dim.n();
+    size_t  batch       = params.batch();
+    int64_t device_id   = params.device();
+    int64_t align       = params.align();
+    int64_t verbose     = params.verbose();
 
     // mark non-standard output values
     params.gflops();
@@ -59,7 +59,9 @@ void test_batch_hemm_device_work( Params& params, bool run )
     TC* Cref = new TC[ batch * size_C ];
 
     // device specifics
-    blas::Queue queue(device, batch);
+    std::vector<blas::Device> devices;
+    blas::enumerate_devices( devices );
+    blas::Queue queue(devices[ device_id ], batch);
     TA* dA = blas::device_malloc<TA>( batch * size_A );
     TB* dB = blas::device_malloc<TB>( batch * size_B );
     TC* dC = blas::device_malloc<TC>( batch * size_C );

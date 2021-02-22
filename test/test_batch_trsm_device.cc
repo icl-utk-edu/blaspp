@@ -23,17 +23,17 @@ void test_device_batch_trsm_work( Params& params, bool run )
 
     // get & mark input values
     blas::Layout layout = params.layout();
-    blas::Side side_ = params.side();
-    blas::Uplo uplo_ = params.uplo();
-    blas::Op trans_  = params.trans();
-    blas::Diag diag_ = params.diag();
-    scalar_t alpha_  = params.alpha();
-    int64_t m_       = params.dim.m();
-    int64_t n_       = params.dim.n();
-    size_t batch     = params.batch();
-    int64_t device  = params.device();
-    int64_t align    = params.align();
-    int64_t verbose  = params.verbose();
+    blas::Side side_    = params.side();
+    blas::Uplo uplo_    = params.uplo();
+    blas::Op trans_     = params.trans();
+    blas::Diag diag_    = params.diag();
+    scalar_t alpha_     = params.alpha();
+    int64_t m_          = params.dim.m();
+    int64_t n_          = params.dim.n();
+    size_t batch        = params.batch();
+    int64_t device_id   = params.device();
+    int64_t align       = params.align();
+    int64_t verbose     = params.verbose();
 
     // mark non-standard output values
     params.gflops();
@@ -59,7 +59,9 @@ void test_device_batch_trsm_work( Params& params, bool run )
     TB* Bref      = new TB[ batch * size_B ];
 
     // device specifics
-    blas::Queue queue(device, batch);
+    std::vector<blas::Device> devices;
+    blas::enumerate_devices( devices );
+    blas::Queue queue(devices[ device_id ], batch);
     TA* dA;
     TB* dB;
 

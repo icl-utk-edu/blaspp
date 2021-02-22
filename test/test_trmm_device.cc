@@ -22,16 +22,16 @@ void test_trmm_device_work( Params& params, bool run )
 
     // get & mark input values
     blas::Layout layout = params.layout();
-    blas::Side side = params.side();
-    blas::Uplo uplo = params.uplo();
-    blas::Op trans  = params.trans();
-    blas::Diag diag = params.diag();
-    scalar_t alpha  = params.alpha();
-    int64_t m       = params.dim.m();
-    int64_t n       = params.dim.n();
-    int64_t device  = params.device();
-    int64_t align   = params.align();
-    int64_t verbose = params.verbose();
+    blas::Side side     = params.side();
+    blas::Uplo uplo     = params.uplo();
+    blas::Op trans      = params.trans();
+    blas::Diag diag     = params.diag();
+    scalar_t alpha      = params.alpha();
+    int64_t m           = params.dim.m();
+    int64_t n           = params.dim.n();
+    int64_t device_id   = params.device();
+    int64_t align       = params.align();
+    int64_t verbose     = params.verbose();
 
     // mark non-standard output values
     params.gflops();
@@ -57,7 +57,9 @@ void test_trmm_device_work( Params& params, bool run )
     TB* Bref = new TB[ size_B ];
 
     // device specifics
-    blas::Queue queue(device,0);
+    std::vector<blas::Device> devices;
+    blas::enumerate_devices( devices );
+    blas::Queue queue(devices[ device_id ], 0);
     TA* dA;
     TB* dB;
 

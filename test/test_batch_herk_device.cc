@@ -22,14 +22,14 @@ void test_batch_herk_device_work( Params& params, bool run )
 
     // get & mark input values
     blas::Layout layout = params.layout();
-    blas::Op trans_      = params.trans();
-    blas::Uplo uplo_     = params.uplo();
-    real_t alpha_        = params.alpha();  // note: real
-    real_t beta_         = params.beta();   // note: real
-    int64_t n_           = params.dim.n();
-    int64_t k_           = params.dim.k();
+    blas::Op trans_     = params.trans();
+    blas::Uplo uplo_    = params.uplo();
+    real_t alpha_       = params.alpha();  // note: real
+    real_t beta_        = params.beta();   // note: real
+    int64_t n_          = params.dim.n();
+    int64_t k_          = params.dim.k();
     size_t  batch       = params.batch();
-    int64_t device      = params.device();
+    int64_t device_id   = params.device();
     int64_t align       = params.align();
     int64_t verbose     = params.verbose();
 
@@ -55,7 +55,9 @@ void test_batch_herk_device_work( Params& params, bool run )
     TC* Cref = new TC[ batch * size_C ];
 
     // device specifics
-    blas::Queue queue(device, batch);
+    std::vector<blas::Device> devices;
+    blas::enumerate_devices( devices );
+    blas::Queue queue(devices[ device_id ], batch);
     TA* dA = blas::device_malloc<TA>( batch * size_A );
     TC* dC = blas::device_malloc<TC>( batch * size_C );
 
