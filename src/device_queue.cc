@@ -153,7 +153,7 @@ Queue::Queue()
         // compute workspace for pointer arrays in the queue
         // fork size + 1 (def. stream), each need 3 pointer arrays
         size_t workspace_size = 3 * batch_limit_ * ( DEV_QUEUE_FORK_SIZE + 1 );
-        dev_ptr_array_ = device_malloc<void*>( workspace_size );
+        dev_ptr_array_ = device_malloc<void*>( device, workspace_size );
 
         // default stream
         stream_create( &default_stream_ );
@@ -189,7 +189,7 @@ Queue::Queue( blas::Device device, int64_t batch_size = DEV_QUEUE_DEFAULT_BATCH_
         // compute workspace for pointer arrays in the queue
         // fork size + 1 (def. stream), each need 3 pointer arrays
         size_t workspace_size = 3 * batch_limit_ * ( DEV_QUEUE_FORK_SIZE + 1 );
-        dev_ptr_array_ = device_malloc<void*>( workspace_size );
+        dev_ptr_array_ = device_malloc<void*>( device, workspace_size );
 
         set_device( device_ );
         stream_create( &default_stream_ );
@@ -217,7 +217,7 @@ Queue::Queue( blas::Device device, int64_t batch_size = DEV_QUEUE_DEFAULT_BATCH_
         // fork size is currently zero for onemkl (fork-join is disabled)
         size_t fork_size      = 0; // instead of DEV_QUEUE_FORK_SIZE
         size_t workspace_size = 3 * batch_limit_ * ( fork_size + 1 );
-        dev_ptr_array_ = device_malloc<void*>( workspace_size );
+        dev_ptr_array_ = device_malloc<void*>( device, workspace_size );
 
         default_stream_       = new sycl::queue( device_ );
         current_stream_       = default_stream_;
