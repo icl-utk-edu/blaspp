@@ -41,4 +41,10 @@
 #define blas_complex_float  blas_complex_float
 #define blas_complex_double blas_complex_double
 
+#ifdef BLAS_HAVE_ONEMKL
+// see https://software.intel.com/content/www/us/en/develop/articles/use-of-intel-mkl-data-types-in-cc-applications.html
+#define MKL_Complex8  blas_complex_float
+#define MKL_Complex16 blas_complex_double
+#endif        // BLAS_HAVE_ONEMKL
+
 #endif        //  #ifndef BLAS_CONFIG_H
