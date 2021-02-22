@@ -51,12 +51,13 @@ void test_swap_device_work( Params& params, bool run )
     // device specifics
     std::vector<blas::Device> devices;
     blas::enumerate_devices( devices );
-    blas::Queue queue(devices[ device_id ], 0);
+    blas::Device device = devices[ device_id ];
+    blas::Queue queue(device, 0);
     TX* dx;
     TY* dy;
 
-    dx = blas::device_malloc<TX>(size_x);
-    dy = blas::device_malloc<TY>(size_y);
+    dx = blas::device_malloc<TX>(device, size_x);
+    dy = blas::device_malloc<TY>(device, size_y);
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };

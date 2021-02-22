@@ -61,7 +61,8 @@ void test_device_batch_trsm_work( Params& params, bool run )
     // device specifics
     std::vector<blas::Device> devices;
     blas::enumerate_devices( devices );
-    blas::Queue queue(devices[ device_id ], batch);
+    blas::Device device = devices[ device_id ];
+    blas::Queue queue(device, batch);
     TA* dA;
     TB* dB;
 

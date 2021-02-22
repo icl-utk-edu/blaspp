@@ -56,12 +56,13 @@ void test_herk_device_work( Params& params, bool run )
     // device specifics
     std::vector<blas::Device> devices;
     blas::enumerate_devices( devices );
-    blas::Queue queue(devices[ device_id ], 0);
+    blas::Device device = devices[ device_id ];
+    blas::Queue queue(device, 0);
     TA* dA;
     TC* dC;
 
-    dA = blas::device_malloc<TA>(size_A);
-    dC = blas::device_malloc<TC>(size_C);
+    dA = blas::device_malloc<TA>(device, size_A);
+    dC = blas::device_malloc<TC>(device, size_C);
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };

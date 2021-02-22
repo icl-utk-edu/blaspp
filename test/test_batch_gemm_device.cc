@@ -70,10 +70,11 @@ void test_device_batch_gemm_work( Params& params, bool run )
     // device specifics
     std::vector<blas::Device> devices;
     blas::enumerate_devices( devices );
-    blas::Queue queue(devices[ device_id ], batch);
-    TA* dA = blas::device_malloc<TA>( batch * size_A );
-    TB* dB = blas::device_malloc<TB>( batch * size_B );
-    TC* dC = blas::device_malloc<TC>( batch * size_C );
+    blas::Device device = devices[ device_id ];
+    blas::Queue queue(device, batch);
+    TA* dA = blas::device_malloc<TA>( device, batch * size_A );
+    TB* dB = blas::device_malloc<TB>( device, batch * size_B );
+    TC* dC = blas::device_malloc<TC>( device, batch * size_C );
 
     // pointer arrays
     std::vector<TA*>    Aarray( batch );

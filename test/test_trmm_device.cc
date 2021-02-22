@@ -59,12 +59,13 @@ void test_trmm_device_work( Params& params, bool run )
     // device specifics
     std::vector<blas::Device> devices;
     blas::enumerate_devices( devices );
-    blas::Queue queue(devices[ device_id ], 0);
+    blas::Device device = devices[ device_id ];
+    blas::Queue queue(device, 0);
     TA* dA;
     TB* dB;
 
-    dA = blas::device_malloc<TA>(size_A);
-    dB = blas::device_malloc<TB>(size_B);
+    dA = blas::device_malloc<TA>(device, size_A);
+    dB = blas::device_malloc<TB>(device, size_B);
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
