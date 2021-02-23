@@ -9,7 +9,7 @@
 
 namespace blas {
 
-#ifndef USE_TEMPLATED_BLAS
+#ifndef BLAS_USE_TEMPLATE
 
 // =============================================================================
 // Level 1 BLAS
@@ -299,7 +299,7 @@ void rotmg(
     double  b,
     double  param[5] );
 
-#ifndef USE_TEMPLATED_BLAS
+#ifndef BLAS_USE_TEMPLATE
 
 // -----------------------------------------------------------------------------
 /// @ingroup scal
