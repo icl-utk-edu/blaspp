@@ -780,7 +780,7 @@ void trsv(
 // Level 3 BLAS
 
 // -----------------------------------------------------------------------------
-#ifndef USE_TEMPLATED_GEMM
+#ifndef BLAS_USE_TEMPLATE_GEMM
 
 /// @ingroup gemm
 void gemm(
