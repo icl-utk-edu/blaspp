@@ -170,8 +170,8 @@ void test_batch_trmm_work_device( Params& params, bool run )
     delete[] Anorm;
     delete[] Bnorm;
 
-    blas::device_free( dA );
-    blas::device_free( dB );
+    blas::device_free( device, dA );
+    blas::device_free( device, dB );
 }
 
 // -----------------------------------------------------------------------------

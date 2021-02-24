@@ -183,8 +183,8 @@ void test_trsm_device_work( Params& params, bool run )
     delete[] B;
     delete[] Bref;
 
-    blas::device_free( dA );
-    blas::device_free( dB );
+    blas::device_free( device, dA );
+    blas::device_free( device, dB );
 }
 
 // -----------------------------------------------------------------------------

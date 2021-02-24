@@ -159,8 +159,8 @@ void test_herk_device_work( Params& params, bool run )
     delete[] C;
     delete[] Cref;
 
-    blas::device_free( dA );
-    blas::device_free( dC );
+    blas::device_free( device, dA );
+    blas::device_free( device, dC );
 }
 
 // -----------------------------------------------------------------------------

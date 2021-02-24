@@ -142,8 +142,8 @@ void test_swap_device_work( Params& params, bool run )
     delete[] xref;
     delete[] yref;
 
-    blas::device_free( dx );
-    blas::device_free( dy );
+    blas::device_free( device, dx );
+    blas::device_free( device, dy );
 }
 
 // -----------------------------------------------------------------------------
