@@ -555,16 +555,16 @@ void device_setvector(
         if( inch_ == incd_ ) {
             /* this could be slow if inc >> n */
             blas_dev_call(
-                (queue.stream()).memcpy( (      void*)host_ptr,
-                                         (const void*)dev_ptr,
+                (queue.stream()).memcpy( (      void*)dev_ptr,
+                                         (const void*)host_ptr,
                                          n_*inch_*sizeof(T)) );
         }
         else {
             for(int64_t ie = 0; ie < n_; ++ie) {
-                void       *hptr = (      void*)(host_ptr + ie * inch);
-                const void *dptr = (const void*)(dev_ptr  + ie * incd);
+                const void *hptr = (const void*)(host_ptr + ie * inch);
+                      void *dptr = (      void*)(dev_ptr  + ie * incd);
                 blas_dev_call(
-                    (queue.stream()).memcpy(hptr, dptr, sizeof(T)) );
+                    (queue.stream()).memcpy(dptr, hptr, sizeof(T)) );
             }
         }
 
