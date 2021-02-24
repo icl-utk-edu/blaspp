@@ -102,7 +102,9 @@ void blas::her2k(
         trans = (trans == Op::NoTrans ? Op::ConjTrans : Op::NoTrans);
     }
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     device::cher2k(
             queue,
             uplo, trans, n_, k_,
@@ -167,7 +169,9 @@ void blas::her2k(
         trans = (trans == Op::NoTrans ? Op::ConjTrans : Op::NoTrans);
     }
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     device::zher2k(
             queue,
             uplo, trans, n_, k_,

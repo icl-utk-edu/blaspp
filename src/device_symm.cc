@@ -74,7 +74,9 @@ void blas::symm(
         std::swap( m_, n_ );
     }
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     device::ssymm(
             queue,
             side, uplo, m_, n_,
@@ -145,7 +147,9 @@ void blas::symm(
         std::swap( m_, n_ );
     }
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     device::dsymm(
             queue,
             side, uplo, m_, n_,
@@ -216,7 +220,9 @@ void blas::symm(
         std::swap( m_, n_ );
     }
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     device::csymm(
             queue,
             side, uplo, m_, n_,
@@ -287,7 +293,9 @@ void blas::symm(
         std::swap( m_, n_ );
     }
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     device::zsymm(
             queue,
             side, uplo, m_, n_,

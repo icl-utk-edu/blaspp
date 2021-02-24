@@ -72,7 +72,9 @@ void blas::trmm(
         std::swap( m_, n_ );
     }
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     device::strmm(
             queue,
             side, uplo, trans, diag,
@@ -141,7 +143,9 @@ void blas::trmm(
         std::swap( m_, n_ );
     }
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     device::dtrmm(
             queue,
             side, uplo, trans, diag,
@@ -210,7 +214,9 @@ void blas::trmm(
         std::swap( m_, n_ );
     }
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     device::ctrmm(
             queue,
             side, uplo, trans, diag,
@@ -279,7 +285,9 @@ void blas::trmm(
         std::swap( m_, n_ );
     }
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     device::ztrmm(
             queue,
             side, uplo, trans, diag,
