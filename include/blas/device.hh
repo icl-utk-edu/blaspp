@@ -328,6 +328,7 @@ device_blas_int enumerate_devices(std::vector<blas::Device> &devices);
 // -----------------------------------------------------------------------------
 // memory functions
 void device_free( void* ptr );
+void device_free(blas::Device device, void* ptr);
 void device_free_pinned( void* ptr );
 
 // -----------------------------------------------------------------------------
