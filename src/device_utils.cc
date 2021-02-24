@@ -114,7 +114,8 @@ device_blas_int enumerate_devices(std::vector<blas::Device> &devices)
 
     // must remove the if statement below in production mode
     if( devices.size() == 0 ) {
-        devices.push_back( sycl::device(sycl::gpu_selector()) );
+        sycl::device default_device;
+        devices.push_back( default_device );
         dev_count = 1;
     }
     #else
