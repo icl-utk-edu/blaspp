@@ -27,8 +27,8 @@ oneapi::mkl::transpose op2onemkl(blas::Op trans)
 oneapi::mkl::diag diag2onemkl(blas::Diag diag)
 {
     switch (diag) {
-        case Diag::Unit:    return oneapi::mkl::diag::N; break;
-        case Diag::NonUnit: return oneapi::mkl::diag::U; break;
+        case Diag::Unit:    return oneapi::mkl::diag::U; break;
+        case Diag::NonUnit: return oneapi::mkl::diag::N; break;
         default: throw blas::Error( "unknown diag" );
     }
 }
