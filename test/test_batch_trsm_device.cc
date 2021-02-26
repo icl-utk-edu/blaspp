@@ -66,8 +66,8 @@ void test_device_batch_trsm_work( Params& params, bool run )
     TA* dA;
     TB* dB;
 
-    dA = blas::device_malloc<TA>( batch * size_A );
-    dB = blas::device_malloc<TB>( batch * size_B );
+    dA = blas::device_malloc<TA>( device, batch * size_A );
+    dB = blas::device_malloc<TB>( device, batch * size_B );
 
     // pointer arrays
     std::vector<TA*>    Aarray( batch );
