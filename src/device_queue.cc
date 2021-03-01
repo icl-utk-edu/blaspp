@@ -212,18 +212,18 @@ Queue::Queue( blas::Device device, int64_t batch_size = DEV_QUEUE_DEFAULT_BATCH_
     #elif defined(BLAS_HAVE_ONEMKL)
         std::vector<cl::sycl::device> devices;
         enumerate_devices( devices );
-        device_         = device;
-        if( devices.size() < (size_t)device ) {
+        device_ = device;
+        if(devices.size() < (size_t)device) {
             throw blas::Error( " invalid device id ", __func__ );
         }
 
         sycl_device_    = devices[ device ];
         batch_limit_    = batch_size;
         default_stream_ = new sycl::queue( sycl_device_ );
-        // compute workspace for pointer arrays in the queue
-        // fork size + 1 (def. stream), each need 3 pointer arrays
-        // fork size is currently zero for onemkl (fork-join is disabled)
-        size_t fork_size      = 0; // instead of DEV_QUEUE_FORK_SIZE
+        /// Compute workspace for pointer arrays in the queue
+        /// fork_size + 1 (def. stream), each need 3 pointer arrays
+        /// fork_size is currently zero for onemkl (fork-join is disabled)
+        size_t fork_size      = 0;
         size_t workspace_size = 3 * batch_limit_ * ( fork_size + 1 );
         blas_dev_call(
             dev_ptr_array_ = (void**) cl::sycl::malloc_device(
@@ -241,24 +241,24 @@ Queue::Queue( blas::Device device, int64_t batch_size = DEV_QUEUE_DEFAULT_BATCH_
 #ifdef BLAS_HAVE_ONEMKL
 Queue::Queue( cl::sycl::queue &sycl_queue, int64_t batch_size = DEV_QUEUE_DEFAULT_BATCH_LIMIT )
 {
-        // check if the sycl queue is created on a gpu
-        if( ! sycl_queue.get_device().is_gpu() ) {
+        /// Check if the sycl queue is created on a gpu.
+        if(!sycl_queue.get_device().is_gpu()) {
             throw blas::Error( " sycl queue is not attached to a gpu device ",
             __func__ );
         }
 
-        // setting device_ = 0 is not precise, but the integer device_ isn't
-        // probably to be used for sycl backend
-        // a precise setting = enum devices + search
+        /// Setting device_ = 0 is not precise, but the integer device_ isn't
+        /// probably to be used for sycl backend.
+        /// A precise setting = enum devices + search.
         device_            = 0;
         sycl_device_       = sycl_queue.get_device();
         batch_limit_       = batch_size;
         default_stream_    = new sycl::queue;
         (*default_stream_) = sycl_queue;
-        // compute workspace for pointer arrays in the queue
-        // fork size + 1 (def. stream), each need 3 pointer arrays
-        // fork size is currently zero for onemkl (fork-join is disabled)
-        size_t fork_size      = 0; // instead of DEV_QUEUE_FORK_SIZE
+        /// Compute workspace for pointer arrays in the queue.
+        /// fork_size + 1 (def. stream), each need 3 pointer arrays
+        /// fork_size is zero for onemkl (fork-join is disabled)
+        size_t fork_size      = 0;
         size_t workspace_size = 3 * batch_limit_ * ( fork_size + 1 );
         blas_dev_call(
             dev_ptr_array_ = (void**) cl::sycl::malloc_device(

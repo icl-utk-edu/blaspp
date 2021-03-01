@@ -129,10 +129,8 @@ void device_free( void* ptr )
             hipFree( ptr ) );
 
     #elif defined(BLAS_HAVE_ONEMKL)
-        /*
-         * SYCL requires a device/queue to free
-         * disable for now
-        */
+        /// SYCL requires a device/queue to free.
+        /// Disable for now.
         throw blas::Error( "unsupported function for sycl backend", __func__ );
 
     #else
