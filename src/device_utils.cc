@@ -11,7 +11,7 @@ namespace blas {
 
 // -----------------------------------------------------------------------------
 // set device
-void set_device(blas::Device device)
+void set_device( blas::Device device )
 {
     #ifdef BLAS_HAVE_CUBLAS
         blas_dev_call(
@@ -31,7 +31,7 @@ void set_device(blas::Device device)
 
 // -----------------------------------------------------------------------------
 // get current device
-void get_device(blas::Device *device)
+void get_device( blas::Device *device )
 {
     #ifdef BLAS_HAVE_CUBLAS
         device_blas_int dev = -1;
@@ -86,8 +86,9 @@ device_blas_int get_device_count()
 }
 
 // -----------------------------------------------------------------------------
-// @return number of GPU devices
-device_blas_int enumerate_devices(std::vector<blas::Device> &devices)
+// @return a vector of sycl gpu devices
+#ifdef BLAS_HAVE_ONEMKL
+void enumerate_devices(std::vector<cl::sycl::device> &devices)
 {
     device_blas_int dev_count = get_device_count();
 
@@ -96,12 +97,6 @@ device_blas_int enumerate_devices(std::vector<blas::Device> &devices)
         devices.reserve( dev_count );
     }
 
-    #if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
-    for( auto i = 0; i < dev_count; i++) {
-        devices[ i ] = (blas::Device) i;
-    }
-
-    #elif defined(BLAS_HAVE_ONEMKL)
     auto platforms = sycl::platform::get_platforms();
     for (auto &platform : platforms) {
         auto all_devices = platform.get_devices();
@@ -118,16 +113,12 @@ device_blas_int enumerate_devices(std::vector<blas::Device> &devices)
         devices.push_back( default_device );
         dev_count = 1;
     }
-    #else
-    // get_device_count returns 0,
-    // and so devices will become an empty vector
-    #endif
-    return dev_count;
 }
+#endif
 
 // -----------------------------------------------------------------------------
 /// free a device pointer
-void device_free(void* ptr)
+void device_free( void* ptr )
 {
     #ifdef BLAS_HAVE_CUBLAS
         blas_dev_call(
@@ -151,28 +142,27 @@ void device_free(void* ptr)
 
 // -----------------------------------------------------------------------------
 /// free a device pointer for a given device
-void device_free(blas::Device device, void* ptr)
+void device_free( void* ptr, blas::Queue &queue )
 {
     #ifdef BLAS_HAVE_CUBLAS
-        blas::set_device( device );
+        blas::set_device( queue.device() );
         blas_dev_call(
             cudaFree( ptr ) );
 
     #elif defined(BLAS_HAVE_ROCBLAS)
-        blas::set_device( device );
+        blas::set_device( queue.device() );
         blas_dev_call(
             hipFree( ptr ) );
 
     #elif defined(BLAS_HAVE_ONEMKL)
-       cl::sycl::queue tmp_queue( device );
        blas_dev_call(
-           sycl::free(ptr, tmp_queue) );
+           sycl::free( ptr, queue.stream() ) );
     #endif
 }
 
 // -----------------------------------------------------------------------------
 /// free a pinned memory space
-void device_free_pinned(void* ptr)
+void device_free_pinned( void* ptr )
 {
     #ifdef BLAS_HAVE_CUBLAS
         blas_dev_call(
