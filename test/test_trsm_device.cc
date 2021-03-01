@@ -57,15 +57,12 @@ void test_trsm_device_work( Params& params, bool run )
     TB* Bref = new TB[ size_B ];
 
     // device specifics
-    std::vector<blas::Device> devices;
-    blas::enumerate_devices( devices );
-    blas::Device device = devices[ device_id ];
-    blas::Queue queue(device, 0);
+    blas::Queue queue( device_id, 0 );
     TA* dA;
     TB* dB;
 
-    dA = blas::device_malloc<TA>(device, size_A);
-    dB = blas::device_malloc<TB>(device, size_B);
+    dA = blas::device_malloc<TA>( size_A, queue );
+    dB = blas::device_malloc<TB>( size_B, queue );
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
@@ -183,8 +180,8 @@ void test_trsm_device_work( Params& params, bool run )
     delete[] B;
     delete[] Bref;
 
-    blas::device_free( device, dA );
-    blas::device_free( device, dB );
+    blas::device_free( dA, queue );
+    blas::device_free( dB, queue );
 }
 
 // -----------------------------------------------------------------------------

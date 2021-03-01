@@ -54,15 +54,12 @@ void test_syrk_device_work( Params& params, bool run )
     TC* Cref = new TC[ size_C ];
 
     // device specifics
-    std::vector<blas::Device> devices;
-    blas::enumerate_devices( devices );
-    blas::Device device = devices[ device_id ];
-    blas::Queue queue(device, 0);
+    blas::Queue queue( device_id, 0 );
     TA* dA;
     TC* dC;
 
-    dA = blas::device_malloc<TA>(device, size_A);
-    dC = blas::device_malloc<TC>(device, size_C);
+    dA = blas::device_malloc<TA>( size_A, queue );
+    dC = blas::device_malloc<TC>( size_C, queue );
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
@@ -161,8 +158,8 @@ void test_syrk_device_work( Params& params, bool run )
     delete[] C;
     delete[] Cref;
 
-    blas::device_free( device, dA );
-    blas::device_free( device, dC );
+    blas::device_free( dA, queue );
+    blas::device_free( dC, queue );
 }
 
 // -----------------------------------------------------------------------------

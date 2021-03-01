@@ -351,9 +351,7 @@ void test_device()
 {
     printf( "%s\n", __func__ );
 
-    //int cnt = blas::get_device_count();
-    std::vector<blas::Device> devices;
-    int cnt = blas::enumerate_devices( devices );
+    int cnt = blas::get_device_count();
     printf( "    get_device_count %d\n", cnt );
     require( cnt >= 0 );
 

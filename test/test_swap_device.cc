@@ -49,15 +49,12 @@ void test_swap_device_work( Params& params, bool run )
     TY* yref = new TY[ size_y ];
 
     // device specifics
-    std::vector<blas::Device> devices;
-    blas::enumerate_devices( devices );
-    blas::Device device = devices[ device_id ];
-    blas::Queue queue(device, 0);
+    blas::Queue queue( device_id, 0 );
     TX* dx;
     TY* dy;
 
-    dx = blas::device_malloc<TX>(device, size_x);
-    dy = blas::device_malloc<TY>(device, size_y);
+    dx = blas::device_malloc<TX>( size_x, queue );
+    dy = blas::device_malloc<TY>( size_y, queue );
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
@@ -142,8 +139,8 @@ void test_swap_device_work( Params& params, bool run )
     delete[] xref;
     delete[] yref;
 
-    blas::device_free( device, dx );
-    blas::device_free( device, dy );
+    blas::device_free( dx, queue );
+    blas::device_free( dy, queue );
 }
 
 // -----------------------------------------------------------------------------
