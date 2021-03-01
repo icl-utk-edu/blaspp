@@ -31,11 +31,7 @@ namespace blas {
 
 // -----------------------------------------------------------------------------
 // types
-#ifdef BLAS_HAVE_ONEMKL
-typedef cl::sycl::device Device;
-#else
 typedef int Device;
-#endif
 
 #ifdef BLAS_HAVE_CUBLAS
     typedef int                  device_blas_int;
@@ -105,6 +101,9 @@ class Queue
 public:
      Queue();
      Queue( blas::Device device, int64_t batch_size );
+     #ifdef BLAS_HAVE_ONEMKL
+     Queue( cl::sycl::queue &sycl_queue, int64_t batch_size );
+     #endif
     ~Queue();
 
     blas::Device           device() const { return device_; }
@@ -122,13 +121,14 @@ public:
     void revolve();
 
     #ifdef BLAS_HAVE_CUBLAS
-        cudaStream_t   stream() const { return *current_stream_; }
-        cublasHandle_t handle() const { return handle_; }
+        cudaStream_t   stream()        const { return *current_stream_; }
+        cublasHandle_t handle()        const { return handle_; }
     #elif defined(BLAS_HAVE_ROCBLAS)
-        hipStream_t    stream() const { return *current_stream_; }
-        rocblas_handle handle() const { return handle_; }
+        hipStream_t    stream()        const { return *current_stream_; }
+        rocblas_handle handle()        const { return handle_; }
     #elif defined(BLAS_HAVE_ONEMKL)
-        cl::sycl::queue  stream()     const { return *default_stream_; }
+        cl::sycl::device sycl_device() const { return sycl_device_; }
+        cl::sycl::queue  stream()      const { return *default_stream_; }
     #endif
 
 private:
@@ -182,6 +182,10 @@ private:
         hipEvent_t   parallel_events_[DEV_QUEUE_FORK_SIZE];
 
     #elif defined(BLAS_HAVE_ONEMKL)
+        // in addition to the integer device_ member, we need
+        // the sycl device id
+        cl::sycl::device  sycl_device_;
+
         // default sycl queue for this blas queue
         cl::sycl::queue *default_stream_;
         cl::sycl::event  default_event_;
@@ -323,12 +327,14 @@ inline const char* device_error_string( rocblas_status error )
 void set_device( blas::Device device );
 void get_device( blas::Device *device );
 device_blas_int get_device_count();
-device_blas_int enumerate_devices(std::vector<blas::Device> &devices);
+#ifdef BLAS_HAVE_ONEMKL
+void enumerate_devices(std::vector<cl::sycl::device> &devices);
+#endif
 
 // -----------------------------------------------------------------------------
 // memory functions
 void device_free( void* ptr );
-void device_free(blas::Device device, void* ptr);
+void device_free( void* ptr, blas::Queue &queue );
 void device_free_pinned( void* ptr );
 
 // -----------------------------------------------------------------------------
@@ -361,23 +367,22 @@ T* device_malloc(
 /// @return a device pointer to an allocated memory space on specific device
 template <typename T>
 T* device_malloc(
-    blas::Device device, int64_t nelements)
+    int64_t nelements, blas::Queue &queue )
 {
     T* ptr = nullptr;
     #ifdef BLAS_HAVE_CUBLAS
-        blas::set_device( device );
+        blas::set_device( queue.device() );
         blas_dev_call(
                 cudaMalloc( (void**)&ptr, nelements * sizeof(T) ) );
 
     #elif defined(BLAS_HAVE_ROCBLAS)
-        blas::set_device( device );
+        blas::set_device( queue.device() );
         blas_dev_call(
                 hipMalloc( (void**)&ptr, nelements * sizeof(T) ) );
 
     #elif defined(BLAS_HAVE_ONEMKL)
-        cl::sycl::queue tmp_queue( device );
         blas_dev_call(
-            ptr = (T*)cl::sycl::malloc_device(nelements*sizeof(T), tmp_queue) );
+            ptr = (T*)cl::sycl::malloc_device( nelements*sizeof(T), queue.stream() ) );
 
     #else
 
