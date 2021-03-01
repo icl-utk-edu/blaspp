@@ -92,7 +92,7 @@ void enumerate_devices(std::vector<cl::sycl::device> &devices)
 {
     device_blas_int dev_count = get_device_count();
 
-    if( devices.size() != (size_t)dev_count ) {
+    if(devices.size() != (size_t)dev_count) {
         devices.clear();
         devices.reserve( dev_count );
     }
@@ -101,14 +101,14 @@ void enumerate_devices(std::vector<cl::sycl::device> &devices)
     for (auto &platform : platforms) {
         auto all_devices = platform.get_devices();
         for (auto &idevice : all_devices ) {
-            if ( idevice.is_gpu() ) {
+            if (idevice.is_gpu()) {
                 devices.push_back( idevice );
             }
         }
     }
 
     // must remove the if statement below in production mode
-    if( devices.size() == 0 ) {
+    if(devices.size() == 0) {
         sycl::device default_device;
         devices.push_back( default_device );
         dev_count = 1;

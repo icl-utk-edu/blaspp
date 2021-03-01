@@ -21,7 +21,7 @@
     #include <rocblas.h>
 #elif defined(BLAS_HAVE_ONEMKL)
     #if defined(__GNUC__)
-        #include <CL/sycl/detail/cl.h> // for CL version
+        #include <CL/sycl/detail/cl.h>  // For CL version
     #endif
     #include <CL/sycl.hpp>
     #include <oneapi/mkl.hpp>
@@ -81,11 +81,9 @@ enum class MemcpyKind : device_blas_int {
     }
 #elif defined(BLAS_HAVE_ONEMKL)
     /// @return the corresponding sycl memcpy kind constant
-    /*
-     * the memcpy method in the sycl::queue class does not accept
-     * a direction (i.e. always operates in default mode).
-     * for interface compatibility with cuda/hip, return a default value
-    */
+    /// The memcpy method in the sycl::queue class does not accept
+    /// a direction (i.e. always operates in default mode).
+    /// For interface compatibility with cuda/hip, return a default value
     inline int64_t memcpy2sycl( MemcpyKind kind ) { return 0; }
 #endif
 
@@ -357,8 +355,12 @@ T* device_malloc(
             hipMalloc( (void**)&ptr, nelements * sizeof(T) ) );
 
     #elif defined(BLAS_HAVE_ONEMKL)
-        // SYCK requires a device or queue to malloc
+        // SYCL requires a device or queue to malloc
         throw blas::Error( "unsupported function for sycl backend", __func__ );
+
+    #else
+
+        throw blas::Error( "device BLAS not available", __func__ );
     #endif
     return ptr;
 }
