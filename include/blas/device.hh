@@ -20,11 +20,11 @@
     #include <hip/hip_runtime.h>
     #include <rocblas.h>
 #elif defined(BLAS_HAVE_ONEMKL)
-#ifdef __GNUC__
-#include <CL/sycl/detail/cl.h> // for CL version
-#endif
-#include <CL/sycl.hpp>
-#include <oneapi/mkl.hpp>
+    #if defined(__GNUC__)
+        #include <CL/sycl/detail/cl.h> // for CL version
+    #endif
+    #include <CL/sycl.hpp>
+    #include <oneapi/mkl.hpp>
 #endif
 
 namespace blas {
