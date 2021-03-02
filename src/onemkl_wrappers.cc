@@ -838,8 +838,8 @@ void batch_sgemm(
 {
     oneapi::mkl::transpose transA_ = op2onemkl( transA );
     oneapi::mkl::transpose transB_ = op2onemkl( transB );
-    sycl::queue dev_queue = queue.stream();
 
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::gemm_batch(
             dev_queue,
@@ -865,7 +865,6 @@ void batch_sgemm(
     float** dCarray, device_blas_int *lddc,
     device_blas_int group_count, device_blas_int *group_size)
 {
-    sycl::queue dev_queue = queue.stream();
     // todo: probably move transA_/transB_ to blas::Queue
     std::vector<oneapi::mkl::transpose> transA_(group_count);
     std::vector<oneapi::mkl::transpose> transB_(group_count);
@@ -874,6 +873,7 @@ void batch_sgemm(
         transB_[i] = op2onemkl( transB[i] );
     }
 
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::gemm_batch(
             dev_queue,
@@ -901,8 +901,8 @@ void batch_dgemm(
 {
     oneapi::mkl::transpose transA_ = op2onemkl( transA );
     oneapi::mkl::transpose transB_ = op2onemkl( transB );
-    sycl::queue dev_queue = queue.stream();
 
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::gemm_batch(
             dev_queue,
@@ -928,7 +928,6 @@ void batch_dgemm(
     double** dCarray, device_blas_int *lddc,
     device_blas_int group_count, device_blas_int *group_size)
 {
-    sycl::queue dev_queue = queue.stream();
     // todo: probably move transA_/transB_ to blas::Queue
     std::vector<oneapi::mkl::transpose> transA_(group_count);
     std::vector<oneapi::mkl::transpose> transB_(group_count);
@@ -937,6 +936,7 @@ void batch_dgemm(
         transB_[i] = op2onemkl( transB[i] );
     }
 
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::gemm_batch(
             dev_queue,
@@ -964,8 +964,8 @@ void batch_cgemm(
 {
     oneapi::mkl::transpose transA_ = op2onemkl( transA );
     oneapi::mkl::transpose transB_ = op2onemkl( transB );
-    sycl::queue dev_queue = queue.stream();
 
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::gemm_batch(
             dev_queue,
@@ -991,7 +991,6 @@ void batch_cgemm(
     std::complex<float>** dCarray, device_blas_int *lddc,
     device_blas_int group_count, device_blas_int *group_size)
 {
-    sycl::queue dev_queue = queue.stream();
     // todo: probably move transA_/transB_ to blas::Queue
     std::vector<oneapi::mkl::transpose> transA_(group_count);
     std::vector<oneapi::mkl::transpose> transB_(group_count);
@@ -1000,6 +999,7 @@ void batch_cgemm(
         transB_[i] = op2onemkl( transB[i] );
     }
 
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::gemm_batch(
             dev_queue,
@@ -1027,8 +1027,8 @@ void batch_zgemm(
 {
     oneapi::mkl::transpose transA_ = op2onemkl( transA );
     oneapi::mkl::transpose transB_ = op2onemkl( transB );
-    sycl::queue dev_queue = queue.stream();
 
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::gemm_batch(
             dev_queue,
@@ -1054,7 +1054,6 @@ void batch_zgemm(
     std::complex<double>** dCarray, device_blas_int *lddc,
     device_blas_int group_count, device_blas_int *group_size)
 {
-    sycl::queue dev_queue = queue.stream();
     // todo: probably move transA_/transB_ to blas::Queue
     std::vector<oneapi::mkl::transpose> transA_(group_count);
     std::vector<oneapi::mkl::transpose> transB_(group_count);
@@ -1063,6 +1062,7 @@ void batch_zgemm(
         transB_[i] = op2onemkl( transB[i] );
     }
 
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::gemm_batch(
             dev_queue,
@@ -1091,8 +1091,12 @@ void batch_strsm(
     oneapi::mkl::uplo uplo_       = uplo2onemkl( uplo );
     oneapi::mkl::transpose trans_ = op2onemkl( trans );
     oneapi::mkl::diag diag_       = diag2onemkl( diag );
-    sycl::queue dev_queue = queue.stream();
 
+    /// todo: This sync should not be here
+    /// however, the routine fails if removed
+    queue.sync();
+
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::trsm_batch(
         dev_queue,
@@ -1116,7 +1120,6 @@ void batch_strsm(
     device_blas_int group_count, device_blas_int *group_size)
 
 {
-    sycl::queue dev_queue = queue.stream();
     // todo: probably move options to blas::Queue
     std::vector<oneapi::mkl::side>      side_(group_count);
     std::vector<oneapi::mkl::uplo>      uplo_(group_count);
@@ -1130,6 +1133,11 @@ void batch_strsm(
         diag_[i]  = diag2onemkl( diag[i] );
     }
 
+    /// todo: This sync should not be here
+    /// however, the routine fails if removed
+    queue.sync();
+
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::trsm_batch(
         dev_queue,
@@ -1156,8 +1164,12 @@ void batch_dtrsm(
     oneapi::mkl::uplo uplo_       = uplo2onemkl( uplo );
     oneapi::mkl::transpose trans_ = op2onemkl( trans );
     oneapi::mkl::diag diag_       = diag2onemkl( diag );
-    sycl::queue dev_queue = queue.stream();
 
+    /// todo: This sync should not be here
+    /// however, the routine fails if removed
+    queue.sync();
+
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::trsm_batch(
         dev_queue,
@@ -1181,7 +1193,6 @@ void batch_dtrsm(
     device_blas_int group_count, device_blas_int *group_size)
 
 {
-    sycl::queue dev_queue = queue.stream();
     // todo: probably move options to blas::Queue
     std::vector<oneapi::mkl::side>      side_(group_count);
     std::vector<oneapi::mkl::uplo>      uplo_(group_count);
@@ -1195,6 +1206,11 @@ void batch_dtrsm(
         diag_[i]  = diag2onemkl( diag[i] );
     }
 
+    /// todo: This sync should not be here
+    /// however, the routine fails if removed
+    queue.sync();
+
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::trsm_batch(
         dev_queue,
@@ -1221,8 +1237,12 @@ void batch_ctrsm(
     oneapi::mkl::uplo uplo_       = uplo2onemkl( uplo );
     oneapi::mkl::transpose trans_ = op2onemkl( trans );
     oneapi::mkl::diag diag_       = diag2onemkl( diag );
-    sycl::queue dev_queue = queue.stream();
 
+    /// todo: This sync should not be here
+    /// however, the routine fails if removed
+    queue.sync();
+
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::trsm_batch(
         dev_queue,
@@ -1246,7 +1266,6 @@ void batch_ctrsm(
     device_blas_int group_count, device_blas_int *group_size)
 
 {
-    sycl::queue dev_queue = queue.stream();
     // todo: probably move options to blas::Queue
     std::vector<oneapi::mkl::side>      side_(group_count);
     std::vector<oneapi::mkl::uplo>      uplo_(group_count);
@@ -1260,6 +1279,11 @@ void batch_ctrsm(
         diag_[i]  = diag2onemkl( diag[i] );
     }
 
+    /// todo: This sync should not be here
+    /// however, the routine fails if removed
+    queue.sync();
+
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::trsm_batch(
         dev_queue,
@@ -1286,8 +1310,12 @@ void batch_ztrsm(
     oneapi::mkl::uplo uplo_       = uplo2onemkl( uplo );
     oneapi::mkl::transpose trans_ = op2onemkl( trans );
     oneapi::mkl::diag diag_       = diag2onemkl( diag );
-    sycl::queue dev_queue = queue.stream();
 
+    /// todo: This sync should not be here
+    /// however, the routine fails if removed
+    queue.sync();
+
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::trsm_batch(
         dev_queue,
@@ -1311,7 +1339,6 @@ void batch_ztrsm(
     device_blas_int group_count, device_blas_int *group_size)
 
 {
-    sycl::queue dev_queue = queue.stream();
     // todo: probably move options to blas::Queue
     std::vector<oneapi::mkl::side>      side_(group_count);
     std::vector<oneapi::mkl::uplo>      uplo_(group_count);
@@ -1325,6 +1352,11 @@ void batch_ztrsm(
         diag_[i]  = diag2onemkl( diag[i] );
     }
 
+    /// todo: This sync should not be here
+    /// however, the routine fails if removed
+    queue.sync();
+
+    sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::trsm_batch(
         dev_queue,
