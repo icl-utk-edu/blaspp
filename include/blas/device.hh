@@ -95,11 +95,14 @@ const int DEV_QUEUE_FORK_SIZE           = 10;
 class Queue
 {
 public:
-     Queue();
-     Queue( blas::Device device, int64_t batch_size );
-     #ifdef BLAS_HAVE_ONEMKL
-     Queue( cl::sycl::queue &sycl_queue, int64_t batch_size );
-     #endif
+    Queue();
+    Queue( blas::Device device, int64_t batch_size );
+    // Disable copying; must construct anew.
+    Queue( Queue const& ) = delete;
+    Queue& operator=( Queue const& ) = delete;
+    #ifdef BLAS_HAVE_ONEMKL
+    Queue( cl::sycl::queue &sycl_queue, int64_t batch_size );
+    #endif
     ~Queue();
 
     blas::Device           device() const { return device_; }
