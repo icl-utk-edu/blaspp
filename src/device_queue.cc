@@ -213,7 +213,7 @@ Queue::Queue( blas::Device device, int64_t batch_size = DEV_QUEUE_DEFAULT_BATCH_
         std::vector<cl::sycl::device> devices;
         enumerate_devices( devices );
         device_ = device;
-        if(devices.size() < (size_t)device) {
+        if(devices.size() <= (size_t)device) {
             throw blas::Error( " invalid device id ", __func__ );
         }
 
