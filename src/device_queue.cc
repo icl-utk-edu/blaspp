@@ -226,7 +226,7 @@ Queue::Queue( blas::Device device, int64_t batch_size = DEV_QUEUE_DEFAULT_BATCH_
         size_t fork_size      = 0;
         size_t workspace_size = 3 * batch_limit_ * ( fork_size + 1 );
         blas_dev_call(
-            dev_ptr_array_ = (void**) cl::sycl::malloc_device(
+            dev_ptr_array_ = (void**) cl::sycl::malloc_shared(
                               workspace_size*sizeof(void*), *default_stream_ )
         );
 
@@ -261,7 +261,7 @@ Queue::Queue( cl::sycl::queue &sycl_queue, int64_t batch_size = DEV_QUEUE_DEFAUL
         size_t fork_size      = 0;
         size_t workspace_size = 3 * batch_limit_ * ( fork_size + 1 );
         blas_dev_call(
-            dev_ptr_array_ = (void**) cl::sycl::malloc_device(
+            dev_ptr_array_ = (void**) cl::sycl::malloc_shared(
                               workspace_size*sizeof(void*), *default_stream_ )
         );
 

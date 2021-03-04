@@ -384,7 +384,7 @@ T* device_malloc(
 
     #elif defined(BLAS_HAVE_ONEMKL)
         blas_dev_call(
-            ptr = (T*)cl::sycl::malloc_device( nelements*sizeof(T), queue.stream() ) );
+            ptr = (T*)cl::sycl::malloc_shared( nelements*sizeof(T), queue.stream() ) );
 
     #else
 
