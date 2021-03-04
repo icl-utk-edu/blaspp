@@ -1093,7 +1093,7 @@ void batch_strsm(
     oneapi::mkl::diag diag_       = diag2onemkl( diag );
 
     /// todo: This sync should not be here
-    /// however, the routine fails if removed
+    /// however, the routine sometimes fails if removed
     queue.sync();
 
     sycl::queue dev_queue = queue.stream();
@@ -1134,7 +1134,7 @@ void batch_strsm(
     }
 
     /// todo: This sync should not be here
-    /// however, the routine fails if removed
+    /// however, the routine sometimes fails if removed
     queue.sync();
 
     sycl::queue dev_queue = queue.stream();
@@ -1166,7 +1166,7 @@ void batch_dtrsm(
     oneapi::mkl::diag diag_       = diag2onemkl( diag );
 
     /// todo: This sync should not be here
-    /// however, the routine fails if removed
+    /// however, the routine sometimes fails if removed
     queue.sync();
 
     sycl::queue dev_queue = queue.stream();
@@ -1207,7 +1207,7 @@ void batch_dtrsm(
     }
 
     /// todo: This sync should not be here
-    /// however, the routine fails if removed
+    /// however, the routine sometimes fails if removed
     queue.sync();
 
     sycl::queue dev_queue = queue.stream();
@@ -1239,7 +1239,7 @@ void batch_ctrsm(
     oneapi::mkl::diag diag_       = diag2onemkl( diag );
 
     /// todo: This sync should not be here
-    /// however, the routine fails if removed
+    /// however, the routine sometimes fails if removed
     queue.sync();
 
     sycl::queue dev_queue = queue.stream();
@@ -1280,7 +1280,7 @@ void batch_ctrsm(
     }
 
     /// todo: This sync should not be here
-    /// however, the routine fails if removed
+    /// however, the routine sometimes fails if removed
     queue.sync();
 
     sycl::queue dev_queue = queue.stream();
@@ -1312,7 +1312,7 @@ void batch_ztrsm(
     oneapi::mkl::diag diag_       = diag2onemkl( diag );
 
     /// todo: This sync should not be here
-    /// however, the routine fails if removed
+    /// however, the routine sometimes fails if removed
     queue.sync();
 
     sycl::queue dev_queue = queue.stream();
@@ -1353,7 +1353,7 @@ void batch_ztrsm(
     }
 
     /// todo: This sync should not be here
-    /// however, the routine fails if removed
+    /// however, the routine sometimes fails if removed
     queue.sync();
 
     sycl::queue dev_queue = queue.stream();
