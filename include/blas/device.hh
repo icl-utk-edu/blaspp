@@ -20,9 +20,7 @@
     #include <hip/hip_runtime.h>
     #include <rocblas.h>
 #elif defined(BLAS_HAVE_ONEMKL)
-    #if defined(__GNUC__)
-        #include <CL/sycl/detail/cl.h>  // For CL version
-    #endif
+    #include <CL/sycl/detail/cl.h>  // For CL version
     #include <CL/sycl.hpp>
     #include <oneapi/mkl.hpp>
 #endif

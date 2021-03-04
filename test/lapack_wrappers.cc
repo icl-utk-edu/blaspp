@@ -13,7 +13,8 @@
 #include <complex>
 
 #ifdef BLAS_HAVE_ONEMKL
-#include <mkl.hpp>
+    #include <CL/sycl/detail/cl.h>  // For CL version
+    #include <mkl.hpp>
 #endif
 
 // This is a temporary file giving simple LAPACK wrappers,
