@@ -7,6 +7,7 @@
 #define BLAS_BATCH_COMMON_HH
 
 #include "blas/util.hh"
+#include <algorithm>  // std::min/max
 #include <vector>
 
 namespace blas {
