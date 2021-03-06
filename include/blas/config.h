@@ -30,6 +30,10 @@
     #include <complex>
     typedef std::complex<float>  blas_complex_float;
     typedef std::complex<double> blas_complex_double;
+#elif defined(_MSC_VER)
+    /* MSVC has no C99 _Complex */
+    typedef struct { float real, imag; }  blas_complex_float;
+    typedef struct { double real, imag; } blas_complex_double;
 #else
     /* otherwise, by default use C99 _Complex */
     #include <complex.h>
