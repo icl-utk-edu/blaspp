@@ -405,7 +405,11 @@ endif()
 # Install rules.
 # GNU Filesystem Conventions
 include( GNUInstallDirs )
-set( install_configdir "${CMAKE_INSTALL_LIBDIR}/blaspp" )
+if (WIN32)
+    set( install_configdir "blaspp" )
+else()
+    set( install_configdir "${CMAKE_INSTALL_LIBDIR}/blaspp" )
+endif()
 
 # Install library and add to <package>Targets.cmake
 install(
