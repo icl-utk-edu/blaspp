@@ -320,7 +320,10 @@ endif()
 
 # Use and export -std=c++11; don't allow -std=gnu++11 extensions.
 target_compile_features( blaspp PUBLIC cxx_std_11 )
-set_target_properties( blaspp PROPERTIES CXX_EXTENSIONS false )
+set_target_properties( blaspp PROPERTIES
+    CXX_EXTENSIONS OFF
+    WINDOWS_EXPORT_ALL_SYMBOLS ON
+)
 
 if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.15)
     # Conditionally add -Wall. See CMake tutorial.
