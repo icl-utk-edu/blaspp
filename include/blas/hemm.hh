@@ -183,7 +183,7 @@ void hemm(
                 }
             }
         }
-        else { // side == Side::Right
+        else {
             // uplo == Uplo::Lower
             for(int64_t j = 0; j < n; ++j) {
                 for(int64_t i = m-1; i >= 0; --i) {
@@ -203,7 +203,7 @@ void hemm(
             }
         }
     }
-    else  {
+    else { // side == Side::Right
         if (uplo != Uplo::Lower) {
             // uplo == Uplo::Upper or uplo == Uplo::General
             for(int64_t j = 0; j < n; ++j) {

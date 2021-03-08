@@ -780,7 +780,7 @@ void trsv(
 // Level 3 BLAS
 
 // -----------------------------------------------------------------------------
-#ifndef BLAS_USE_TEMPLATE_GEMM
+#ifndef BLAS_USE_TEMPLATE
 
 /// @ingroup gemm
 void gemm(
@@ -829,8 +829,6 @@ void gemm(
     std::complex<double> const *B, int64_t ldb,
     std::complex<double> beta,
     std::complex<double>       *C, int64_t ldc );
-
-#endif
 
 // -----------------------------------------------------------------------------
 /// @ingroup hemm
@@ -1223,6 +1221,8 @@ void trsm(
     std::complex<double> alpha,
     std::complex<double> const *A, int64_t lda,
     std::complex<double>       *B, int64_t ldb );
+
+#endif
 
 // =============================================================================
 //                     Batch BLAS APIs ( host )

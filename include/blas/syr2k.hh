@@ -25,7 +25,6 @@ namespace blas {
 /// and A and B are n-by-k or k-by-n matrices.
 ///
 /// Generic implementation for arbitrary data types.
-/// TODO: generic version not yet implemented.
 ///
 /// @param[in] layout
 ///     Matrix storage, Layout::ColMajor or Layout::RowMajor.
@@ -99,7 +98,184 @@ void syr2k(
     scalar_type<TA, TB, TC> beta,
     TC       *C, int64_t ldc )
 {
-    throw std::exception();  // not yet implemented
+    blas_error_if( trans == Op::ConjTrans && (
+            typeid(TA) != typeid(blas::real_type<TA>) ||
+            typeid(TB) != typeid(blas::real_type<TB>)
+        )
+    );
+    if (trans == Op::ConjTrans)
+        trans = Op::Trans;
+
+    if (layout == Layout::RowMajor) {
+            
+        if (uplo == Uplo::Lower)
+            uplo = Uplo::Upper;
+        else if (uplo == Uplo::Upper)
+            uplo = Uplo::Lower;
+        
+        if (trans == Op::NoTrans)
+            trans = Op::Trans;
+        else if (trans == Op::Trans)
+            trans = Op::NoTrans;
+
+        return syr2k(
+            Layout::ColMajor,
+            uplo,
+            trans,
+            n, k,
+            conj(alpha),
+            A, lda,
+            B, ldb,
+            beta,
+            C, ldc);
+    }
+    
+    typedef blas::scalar_type<TA, TB, TC> scalar_t;
+
+    #define A(i_, j_) A[ (i_) + (j_)*lda ]
+    #define B(i_, j_) B[ (i_) + (j_)*ldb ]
+    #define C(i_, j_) C[ (i_) + (j_)*ldc ]
+
+    // constants
+    const scalar_t zero = 0;
+    const scalar_t one  = 1;
+
+    // check arguments
+    blas_error_if( layout != Layout::ColMajor );
+    blas_error_if( uplo != Uplo::Lower &&
+                   uplo != Uplo::Upper &&
+                   uplo != Uplo::General );
+    blas_error_if( trans != Op::NoTrans &&
+                   trans != Op::Trans );
+
+    blas_error_if( n < 0 );
+    blas_error_if( k < 0 );
+
+    blas_error_if( lda < ((trans == Op::NoTrans) ? n : k) );
+    blas_error_if( ldb < ((trans == Op::NoTrans) ? n : k) );
+    blas_error_if( ldc < n );
+
+    // quick return
+    if (n == 0 || k == 0)
+        return;
+
+    // alpha == zero
+    if (alpha == zero) {
+        if (beta == zero) {
+            if (uplo != Uplo::Upper) {
+                for(int64_t j = 0; j < n; ++j) {
+                    for(int64_t i = 0; i <= j; ++i)
+                        C(i,j) = zero;
+                }
+            }
+            else if (uplo != Uplo::Lower) {
+                for(int64_t j = 0; j < n; ++j) {
+                    for(int64_t i = j; i < n; ++i)
+                        C(i,j) = zero;
+                }
+            }
+            else {
+                for(int64_t j = 0; j < n; ++j) {
+                    for(int64_t i = 0; i < n; ++i)
+                        C(i,j) = zero;
+                }
+            }
+        }
+        else if (beta != one) {
+            if (uplo != Uplo::Upper) {
+                for(int64_t j = 0; j < n; ++j) {
+                    for(int64_t i = 0; i <= j; ++i)
+                        C(i,j) *= beta;
+                }
+            }
+            else if (uplo != Uplo::Lower) {
+                for(int64_t j = 0; j < n; ++j) {
+                    for(int64_t i = j; i < n; ++i)
+                        C(i,j) *= beta;
+                }
+            }
+            else {
+                for(int64_t j = 0; j < n; ++j) {
+                    for(int64_t i = 0; i < n; ++i)
+                        C(i,j) *= beta;
+                }
+            }
+        }
+        return;
+    }
+
+    // alpha != zero
+    if (trans == Op::NoTrans) {
+        if (uplo != Uplo::Lower) {
+        // uplo == Uplo::Upper or uplo == Uplo::General
+            for(int64_t j = 0; j < n; ++j) {
+
+                for(int64_t i = 0; i <= j; ++i)
+                    C(i,j) *= beta;
+
+                for(int64_t l = 0; l < k; ++l) {
+                    scalar_t alphaBjl = alpha*B(j,l);
+                    scalar_t alphaAjl = alpha*A(j,l);
+                    for(int64_t i = 0; i <= j; ++i)
+                        C(i,j) += A(i,l)*alphaBjl + B(i,l)*alphaAjl;
+                }
+            }
+        }
+        else { // uplo == Uplo::Lower
+            for(int64_t j = 0; j < n; ++j) {
+
+                for(int64_t i = j; i < n; ++i)
+                    C(i,j) *= beta;
+
+                for(int64_t l = 0; l < k; ++l) {
+                    scalar_t alphaBjl = alpha*B(j,l);
+                    scalar_t alphaAjl = alpha*A(j,l);
+                    for(int64_t i = j; i < n; ++i)
+                        C(i,j) += A(i,l)*alphaBjl + B(i,l)*alphaAjl;
+                }
+            }
+        }
+    }
+    else { // trans == Op::Trans
+        if (uplo != Uplo::Lower) {
+        // uplo == Uplo::Upper or uplo == Uplo::General
+            for(int64_t j = 0; j < n; ++j) {
+                for(int64_t i = 0; i <= j; ++i) {
+                    scalar_t sum1 = zero;
+                    scalar_t sum2 = zero;
+                    for(int64_t l = 0; l < k; ++l) {
+                        sum1 += A(l,i) * B(l,j);
+                        sum2 += B(l,i) * A(l,j);
+                    }
+                    C(i,j) = alpha*sum1 + alpha*sum2 + beta*C(i,j);
+                }
+            }
+        }
+        else { // uplo == Uplo::Lower
+            for(int64_t j = 0; j < n; ++j) {
+                for(int64_t i = j; i < n; ++i) {
+                    scalar_t sum1 = zero;
+                    scalar_t sum2 = zero;
+                    for(int64_t l = 0; l < k; ++l) {
+                        sum1 +=  A(l,i) * B(l,j);
+                        sum2 +=  B(l,i) * A(l,j);
+                    }
+                    C(i,j) = alpha*sum1 + alpha*sum2 + beta*C(i,j);
+                }
+            }
+        }
+    }
+
+    if (uplo == Uplo::General) {
+        for(int64_t j = 0; j < n; ++j) {
+            for(int64_t i = j+1; i < n; ++i)
+                C(i,j) = C(j,i);
+        }
+    }
+
+    #undef A
+    #undef B
+    #undef C
 }
 
 }  // namespace blas

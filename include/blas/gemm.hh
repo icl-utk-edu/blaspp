@@ -25,7 +25,6 @@ namespace blas {
 /// $op(A)$ an m-by-k matrix, $op(B)$ a k-by-n matrix, and C an m-by-n matrix.
 ///
 /// Generic implementation for arbitrary data types.
-/// TODO: generic version not yet implemented.
 ///
 /// @param[in] layout
 ///     Matrix storage, Layout::ColMajor or Layout::RowMajor.
