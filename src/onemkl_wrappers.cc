@@ -839,6 +839,10 @@ void batch_sgemm(
     oneapi::mkl::transpose transA_ = op2onemkl( transA );
     oneapi::mkl::transpose transB_ = op2onemkl( transB );
 
+    /// todo: This sync should not be here
+    /// however, the routine sometimes fails if removed
+    queue.sync();
+
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::gemm_batch(
@@ -873,6 +877,10 @@ void batch_sgemm(
         transB_[i] = op2onemkl( transB[i] );
     }
 
+    /// todo: This sync should not be here
+    /// however, the routine sometimes fails if removed
+    queue.sync();
+
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::gemm_batch(
@@ -901,6 +909,10 @@ void batch_dgemm(
 {
     oneapi::mkl::transpose transA_ = op2onemkl( transA );
     oneapi::mkl::transpose transB_ = op2onemkl( transB );
+
+    /// todo: This sync should not be here
+    /// however, the routine sometimes fails if removed
+    queue.sync();
 
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -936,6 +948,10 @@ void batch_dgemm(
         transB_[i] = op2onemkl( transB[i] );
     }
 
+    /// todo: This sync should not be here
+    /// however, the routine sometimes fails if removed
+    queue.sync();
+
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::gemm_batch(
@@ -964,6 +980,10 @@ void batch_cgemm(
 {
     oneapi::mkl::transpose transA_ = op2onemkl( transA );
     oneapi::mkl::transpose transB_ = op2onemkl( transB );
+
+    /// todo: This sync should not be here
+    /// however, the routine sometimes fails if removed
+    queue.sync();
 
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -999,6 +1019,10 @@ void batch_cgemm(
         transB_[i] = op2onemkl( transB[i] );
     }
 
+    /// todo: This sync should not be here
+    /// however, the routine sometimes fails if removed
+    queue.sync();
+
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::gemm_batch(
@@ -1027,6 +1051,10 @@ void batch_zgemm(
 {
     oneapi::mkl::transpose transA_ = op2onemkl( transA );
     oneapi::mkl::transpose transB_ = op2onemkl( transB );
+
+    /// todo: This sync should not be here
+    /// however, the routine sometimes fails if removed
+    queue.sync();
 
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -1061,6 +1089,10 @@ void batch_zgemm(
         transA_[i] = op2onemkl( transA[i] );
         transB_[i] = op2onemkl( transB[i] );
     }
+
+    /// todo: This sync should not be here
+    /// however, the routine sometimes fails if removed
+    queue.sync();
 
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
