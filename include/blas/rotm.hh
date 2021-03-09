@@ -23,7 +23,6 @@ namespace blas {
 /// @see rotmg to generate the rotation, and for fuller description.
 ///
 /// Generic implementation for arbitrary data types.
-/// TODO: generic version not yet implemented.
 ///
 /// @param[in] n
 ///     Number of elements in x and y. n >= 0.
@@ -54,29 +53,95 @@ void rotm(
     TY *y, int64_t incy,
     blas::scalar_type<TX, TY> const param[5] )
 {
-    throw std::exception();  // not yet implemented
+    typedef scalar_type<TX, TY> scalar_t;
 
-    // // check arguments
-    // blas_error_if( n < 0 );
-    // blas_error_if( incx == 0 );
-    // blas_error_if( incy == 0 );
-    //
-    // if (incx == 1 && incy == 1) {
-    //     // unit stride
-    //     for (int64_t i = 0; i < n; ++i) {
-    //         // TODO
-    //     }
-    // }
-    // else {
-    //     // non-unit stride
-    //     int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
-    //     int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
-    //     for (int64_t i = 0; i < n; ++i) {
-    //         // TODO
-    //         ix += incx;
-    //         iy += incy;
-    //     }
-    // }
+    // check arguments
+    blas_error_if( n < 0 ); // standard BLAS returns, doesn't fail
+    blas_error_if( incx == 0 );
+    blas_error_if( incy == 0 );
+
+    // quick return
+    if ( n == 0 || param[0] == -2 )
+        return;
+
+    if (incx == 1 && incy == 1) {
+        // unit stride
+        if ( param[0] == -1 ) {
+            const scalar_t& h11 = param[1];
+            const scalar_t& h21 = param[2];
+            const scalar_t& h12 = param[3];
+            const scalar_t& h22 = param[4];
+            for (int64_t i = 0; i < n; ++i) {
+                scalar_t stmp = h11*x[i] + h12*y[i];
+                y[i] = h22*y[i] + h21*x[i];
+                x[i] = stmp;
+            }
+        }
+        else if ( param[0] == 1 ) {
+            const scalar_t& h11 = param[1];
+            const scalar_t& h22 = param[4];
+            for (int64_t i = 0; i < n; ++i) {
+                scalar_t stmp = h11*x[i] + y[i];
+                y[i] = h22*y[i] - x[i];
+                x[i] = stmp;
+            }
+        }
+        else if ( param[0] == 0 ) {
+            const scalar_t& h21 = param[2];
+            const scalar_t& h12 = param[3];
+            for (int64_t i = 0; i < n; ++i) {
+                scalar_t stmp = x[i] + h12*y[i];
+                y[i] = y[i] + h21*x[i];
+                x[i] = stmp;
+            }
+        }
+        else {
+            throw Error("Invalid param[1] in blas::rotm");
+        }
+    }
+    else {
+        // non-unit stride
+        int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
+        int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
+        if ( param[0] == -1 ) {
+            const scalar_t& h11 = param[1];
+            const scalar_t& h21 = param[2];
+            const scalar_t& h12 = param[3];
+            const scalar_t& h22 = param[4];
+            for (int64_t i = 0; i < n; ++i) {
+                scalar_t stmp = h11*x[ix] + h12*y[iy];
+                y[iy] = h22*y[iy] + h21*x[ix];
+                x[ix] = stmp;
+                ix += incx;
+                iy += incy;
+            }
+        }
+        else if ( param[0] == 1 ) {
+            const scalar_t& h11 = param[1];
+            const scalar_t& h22 = param[4];
+            for (int64_t i = 0; i < n; ++i) {
+                scalar_t stmp = h11*x[ix] + y[iy];
+                y[iy] = h22*y[iy] - x[ix];
+                x[ix] = stmp;
+                ix += incx;
+                iy += incy;
+            }
+        }
+        else if ( param[0] == 0 ) {
+            const scalar_t& h21 = param[2];
+            const scalar_t& h12 = param[3];
+            for (int64_t i = 0; i < n; ++i) {
+                scalar_t stmp = x[ix] + h12*y[iy];
+                y[iy] = y[iy] + h21*x[ix];
+                x[ix] = stmp;
+                ix += incx;
+                iy += incy;
+            }
+        }
+        else {
+            throw Error("Invalid param[1] in blas::rotm");
+        }
+    }
 }
 
 }  // namespace blas

@@ -69,7 +69,6 @@ namespace blas {
 ///     \]
 ///
 /// Generic implementation for arbitrary data types.
-/// TODO: generic version not yet implemented.
 ///
 /// @param[in, out] d1
 ///     sqrt(d1) is scaling factor for vector x.
@@ -104,7 +103,133 @@ void rotmg(
     T  b,
     T  param[5] )
 {
-    throw std::exception();  // not yet implemented
+    // Constants
+    const T zero = 0;
+    const T one = 1;
+    const T gam = 4096;
+    const T gamsq = gam*gam;
+    const T rgamsq = one/gamsq;
+
+    T& x1 = *a;
+    T& y1 = b;
+
+    T h11 = zero;
+    T h12 = zero;
+    T h21 = zero;
+    T h22 = zero;
+
+    if(*d1 < zero) {
+        param[0] = -1;
+        *d1 = zero;
+        *d2 = zero;
+        x1 = zero;
+    }
+    else {
+        T p2 = (*d2)*y1;
+        if(p2 == zero) {
+            param[0] = -2;
+            return;
+        }
+
+        T p1 = (*d1)*x1;
+        T q2 = p2*y1;
+        T q1 = p1*x1;
+
+        if( abs(q1) > abs(q2) ) {
+            param[0] = zero;
+            h21 = -y1/x1;
+            h12 = p2/p1;
+            T u = one - h12*h21;
+            if( u > zero ) {
+                *d1 /= u;
+                *d2 /= u;
+                x1 *= u;
+            }
+        }
+        else if(q2 < zero) {
+            param[0] = -1;
+            *d1 = zero;
+            *d2 = zero;
+            x1 = zero;
+        }
+        else {
+            param[0] = 1;
+            h11 = p1/p2;
+            h22 = x1/y1;
+            T u = one + h11*h22;
+            T stemp = *d2/u;
+            *d2 = *d1/u;
+            *d1 = stemp;
+            x1 = y1*u;
+        }
+
+        if(*d1 != zero) {
+            while( (*d1 <= rgamsq) || (*d1 >= gamsq) ) {
+                if(param[0] == 0) {
+                    h11 = one;
+                    h22 = one;
+                    param[0] = -1;
+                }
+                else {
+                    h21 = -one;
+                    h12 = one;
+                    param[0] = -1;
+                }
+                if(*d1 <= rgamsq) {
+                    *d1 *= gam*gam;
+                    x1 /= gam;
+                    h11 /= gam;
+                    h12 /= gam;
+                }
+                else {
+                    *d1 /= gam*gam;
+                    x1 *= gam;
+                    h11 *= gam;
+                    h12 *= gam;
+                }
+            }
+        }
+
+        if(*d2 != zero) {
+            while( (abs(*d2) <= rgamsq) || (abs(*d2) >= gamsq) ) {
+                if(param[0] == 0) {
+                    h11=one;
+                    h22=one;
+                    param[0]=-1;
+                }
+                else {
+                    h21=-one;
+                    h12=one;
+                    param[0]=-1;
+                }
+                if(abs(*d2) <= rgamsq) {
+                    *d2 *= gam*gam;
+                    h21 /= gam;
+                    h22 /= gam;
+                }
+                else {
+                    *d2 /= gam*gam;
+                    h21 *= gam;
+                    h22 *= gam;
+                }
+            }
+        }
+    }
+
+    if(param[0] < 0) {
+        param[1] = h11;
+        param[2] = h21;
+        param[3] = h12;
+        param[4] = h22;
+    }
+    else if(param[0] == 0) {
+        param[2] = h21;
+        param[3] = h12;
+    }
+    else {
+        param[1] = h11;
+        param[4] = h22;
+    }
 }
 
 }  // namespace blas
