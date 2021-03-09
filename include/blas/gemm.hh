@@ -98,7 +98,8 @@ void gemm(
     scalar_type<TA, TB, TC> beta,
     TC       *C, int64_t ldc )
 {
-    if (layout == Layout::RowMajor)
+    // redirect if row major
+    if (layout == Layout::RowMajor) {
         return gemm(
              Layout::ColMajor,
              transB,
@@ -109,6 +110,11 @@ void gemm(
              A, lda,
              beta,
              C, ldc);
+    } else {
+        // check layout
+        blas_error_if_msg( layout != Layout::ColMajor,
+            "layout != Layout::ColMajor && layout != Layout::RowMajor" );
+    }
 
     typedef blas::scalar_type<TA, TB, TC> scalar_t;
 
@@ -121,7 +127,6 @@ void gemm(
     const scalar_t one  = 1;
 
     // check arguments
-    blas_error_if( layout != Layout::ColMajor );
     blas_error_if( transA != Op::NoTrans &&
                    transA != Op::Trans &&
                    transA != Op::ConjTrans );

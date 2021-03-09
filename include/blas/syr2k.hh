@@ -97,39 +97,7 @@ void syr2k(
     TB const *B, int64_t ldb,
     scalar_type<TA, TB, TC> beta,
     TC       *C, int64_t ldc )
-{
-    blas_error_if( trans == Op::ConjTrans && (
-            typeid(TA) != typeid(blas::real_type<TA>) ||
-            typeid(TB) != typeid(blas::real_type<TB>)
-        )
-    );
-    if (trans == Op::ConjTrans)
-        trans = Op::Trans;
-
-    if (layout == Layout::RowMajor) {
-            
-        if (uplo == Uplo::Lower)
-            uplo = Uplo::Upper;
-        else if (uplo == Uplo::Upper)
-            uplo = Uplo::Lower;
-        
-        if (trans == Op::NoTrans)
-            trans = Op::Trans;
-        else if (trans == Op::Trans)
-            trans = Op::NoTrans;
-
-        return syr2k(
-            Layout::ColMajor,
-            uplo,
-            trans,
-            n, k,
-            conj(alpha),
-            A, lda,
-            B, ldb,
-            beta,
-            C, ldc);
-    }
-    
+{    
     typedef blas::scalar_type<TA, TB, TC> scalar_t;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]
@@ -141,16 +109,41 @@ void syr2k(
     const scalar_t one  = 1;
 
     // check arguments
-    blas_error_if( layout != Layout::ColMajor );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
     blas_error_if( uplo != Uplo::Lower &&
                    uplo != Uplo::Upper &&
                    uplo != Uplo::General );
-    blas_error_if( trans != Op::NoTrans &&
-                   trans != Op::Trans );
-
     blas_error_if( n < 0 );
     blas_error_if( k < 0 );
 
+    // check and interpret argument trans
+    if (trans == Op::ConjTrans) {
+        blas_error_if_msg(
+                (typeid(TA) != typeid(blas::real_type<TA>) ||
+                 typeid(TB) != typeid(blas::real_type<TB>)),
+                "trans == Op::ConjTrans && "
+                "(typeid(TA) != typeid(blas::real_type<TA>) || "
+                "typeid(TB) != typeid(blas::real_type<TB>))" );
+        trans = Op::Trans;
+    }
+    else {
+        blas_error_if( trans != Op::NoTrans &&
+                       trans != Op::Trans );
+    }
+
+    // adapt if row major
+    if (layout == Layout::RowMajor) {
+        if (uplo == Uplo::Lower)
+            uplo = Uplo::Upper;
+        else if (uplo == Uplo::Upper)
+            uplo = Uplo::Lower;
+        trans = (trans == Op::NoTrans)
+            ? Op::Trans
+            : Op::NoTrans;
+    }
+
+    // check remaining arguments
     blas_error_if( lda < ((trans == Op::NoTrans) ? n : k) );
     blas_error_if( ldb < ((trans == Op::NoTrans) ? n : k) );
     blas_error_if( ldc < n );

@@ -86,30 +86,6 @@ void symm(
     scalar_type<TA, TB, TC> beta,
     TC       *C, int64_t ldc )
 {
-    if (layout == Layout::RowMajor) {
-            
-        if (uplo == Uplo::Lower)
-            uplo = Uplo::Upper;
-        else if (uplo == Uplo::Upper)
-            uplo = Uplo::Lower;
-        
-        if (side == Side::Left)
-            side = Side::Right;
-        else if (side == Side::Right)
-            side = Side::Left;
-
-        return symm(
-            Layout::ColMajor,
-            side,
-            uplo,
-            n, m,
-            alpha,
-            A, lda,
-            B, ldb,
-            beta,
-            C, ldc);
-    }
-    
     typedef blas::scalar_type<TA, TB, TC> scalar_t;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]
@@ -121,7 +97,8 @@ void symm(
     const scalar_t one  = 1;
 
     // check arguments
-    blas_error_if( layout != Layout::ColMajor );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
     blas_error_if( side != Side::Left &&
                    side != Side::Right );
     blas_error_if( uplo != Uplo::Lower &&
@@ -130,6 +107,21 @@ void symm(
     blas_error_if( m < 0 );
     blas_error_if( n < 0 );
 
+    // adapt if row major
+    if (layout == Layout::RowMajor) {
+        side = (side == Side::Left)
+            ? Side::Right
+            : Side::Left;
+        if (uplo == Uplo::Lower)
+            uplo = Uplo::Upper;
+        else if (uplo == Uplo::Upper)
+            uplo = Uplo::Lower;
+        int64_t k = m;
+                m = n;
+                n = k;
+    }
+    
+    // check remaining arguments
     blas_error_if( lda < ((side == Side::Left) ? m : n) );
     blas_error_if( ldb < m );
     blas_error_if( ldc < m );

@@ -87,34 +87,6 @@ void herk(
     real_type<TA, TC> beta,  // note: real
     TC       *C, int64_t ldc )
 {
-    blas_error_if( trans == Op::Trans &&
-                   typeid(TA) != typeid(blas::real_type<TA>));
-    if (trans == Op::Trans)
-        trans = Op::ConjTrans;
-
-    if (layout == Layout::RowMajor) {
-            
-        if (uplo == Uplo::Lower)
-            uplo = Uplo::Upper;
-        else if (uplo == Uplo::Upper)
-            uplo = Uplo::Lower;
-        
-        if (trans == Op::NoTrans)
-            trans = Op::ConjTrans;
-        else if (trans == Op::ConjTrans)
-            trans = Op::NoTrans;
-
-        return herk(
-            Layout::ColMajor,
-            uplo,
-            trans,
-            n, k,
-            conj(alpha),
-            A, lda,
-            beta,
-            C, ldc);
-    }
-    
     typedef blas::scalar_type<TA, TC> scalar_t;
     typedef blas::real_type<TA, TC> real_t;
 
@@ -127,16 +99,40 @@ void herk(
     const real_t one  = 1;
 
     // check arguments
-    blas_error_if( layout != Layout::ColMajor );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
     blas_error_if( uplo != Uplo::Lower &&
                    uplo != Uplo::Upper &&
                    uplo != Uplo::General );
-    blas_error_if( trans != Op::NoTrans &&
-                   trans != Op::ConjTrans );
-
     blas_error_if( n < 0 );
     blas_error_if( k < 0 );
 
+    // check and interpret argument trans
+    if (trans == Op::Trans) {
+        blas_error_if_msg(
+                typeid(TA) != typeid(blas::real_type<TA>),
+                "trans == Op::Trans && "
+                "typeid(TA) != typeid(blas::real_type<TA>)" );
+        trans = Op::ConjTrans;
+    }
+    else {
+        blas_error_if( trans != Op::NoTrans &&
+                       trans != Op::ConjTrans );
+    }
+
+    // adapt if row major
+    if (layout == Layout::RowMajor) {
+        if (uplo == Uplo::Lower)
+            uplo = Uplo::Upper;
+        else if (uplo == Uplo::Upper)
+            uplo = Uplo::Lower;
+        trans = (trans == Op::NoTrans)
+            ? Op::ConjTrans
+            : Op::NoTrans;
+        alpha = conj(alpha);
+    }
+
+    // check remaining arguments
     blas_error_if( lda < ((trans == Op::NoTrans) ? n : k) );
     blas_error_if( ldc < n );
 

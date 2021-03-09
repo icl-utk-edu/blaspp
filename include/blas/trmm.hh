@@ -96,31 +96,7 @@ void trmm(
     blas::scalar_type<TA, TB> alpha,
     TA const *A, int64_t lda,
     TB       *B, int64_t ldb )
-{
-    if (layout == Layout::RowMajor) {
-            
-        if (uplo == Uplo::Lower)
-            uplo = Uplo::Upper;
-        else if (uplo == Uplo::Upper)
-            uplo = Uplo::Lower;
-        
-        if (side == Side::Left)
-            side = Side::Right;
-        else if (side == Side::Right)
-            side = Side::Left;
-
-        return trmm(
-            Layout::ColMajor,
-            side,
-            uplo,
-            trans,
-            diag,
-            n, m,
-            alpha,
-            A, lda,
-            B, ldb);
-    }
-    
+{    
     typedef blas::scalar_type<TA, TB> scalar_t;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]
@@ -130,7 +106,8 @@ void trmm(
     const scalar_t zero = 0;
 
     // check arguments
-    blas_error_if( layout != Layout::ColMajor );
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
     blas_error_if( side != Side::Left &&
                    side != Side::Right );
     blas_error_if( uplo != Uplo::Lower &&
@@ -143,6 +120,21 @@ void trmm(
     blas_error_if( m < 0 );
     blas_error_if( n < 0 );
 
+    // adapt if row major
+    if (layout == Layout::RowMajor) {
+        side = (side == Side::Left)
+            ? Side::Right
+            : Side::Left;
+        if (uplo == Uplo::Lower)
+            uplo = Uplo::Upper;
+        else if (uplo == Uplo::Upper)
+            uplo = Uplo::Lower;
+        int64_t k = m;
+                m = n;
+                n = k;
+    }
+    
+    // check remaining arguments
     blas_error_if( lda < ((side == Side::Left) ? m : n) );
     blas_error_if( ldb < m );
 
