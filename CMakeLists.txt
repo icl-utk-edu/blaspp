@@ -120,7 +120,7 @@ blas_threaded          = ${blas_threaded}
 build_tests            = ${build_tests}
 color                  = ${color}
 use_cmake_find_blas    = ${use_cmake_find_blas}
-use_hip               = ${use_hip}
+use_hip                = ${use_hip}
 use_cuda               = ${use_cuda}
 use_openmp             = ${use_openmp}
 blaspp_is_project      = ${blaspp_is_project}
@@ -218,6 +218,7 @@ set( shared_cuda_hip_src_
 )
 
 # CUDA is not required, use if it is available
+set( cuda_found FALSE )
 if (NOT use_cuda)
     message( STATUS "User has requested to NOT use CUDA" )
 else()
@@ -241,6 +242,7 @@ else()
         find_library( cublas_lib cublas ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES} )
 
         set( blaspp_defs_cuda_ "-DBLAS_HAVE_CUBLAS" )
+        set( cuda_found TRUE )
 
         # Some platforms need these to be public libraries.
         target_link_libraries( blaspp PUBLIC "${cudart_lib}" "${cublas_lib}" )
@@ -252,6 +254,7 @@ else()
 endif()
 
 # HIP is not required, use if it is available
+set( hip_found FALSE )
 if (NOT use_hip)
     message( STATUS "User has requested to NOT use HIP" )
 elseif (CMAKE_CUDA_COMPILER)
@@ -270,6 +273,7 @@ else()
         find_library( rocblas_lib rocblas ${ROCMDIR}/lib )
 
         set( blaspp_defs_hip_ "-DBLAS_HAVE_ROCBLAS" "-D__HIP_PLATFORM_HCC__" )
+        set( hip_found FALSE )
 
         # Some platforms need these to be public libraries.
         target_link_libraries( blaspp PUBLIC "${amdhip64_lib}" "${rocblas_lib}" )
@@ -296,12 +300,14 @@ target_include_directories(
 
 # OpenMP support.
 set( openmp_lib "" )
+set( openmp_found FALSE )
 if (NOT use_openmp)
     message( STATUS "User has requested to NOT use OpenMP" )
 else()
     find_package( OpenMP )
     if (OpenMP_CXX_FOUND)
         set( openmp_lib "OpenMP::OpenMP_CXX" )
+        set( openmp_found TRUE )
         target_link_libraries( blaspp PUBLIC "${openmp_lib}" )
     endif()
 endif()
