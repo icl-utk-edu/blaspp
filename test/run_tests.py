@@ -269,7 +269,9 @@ if (opts.blas1):
     [ 'iamax', dtype      + n + incx_pos ],
     [ 'nrm2',  dtype      + n + incx_pos ],
     [ 'rot',   dtype_real + n + incx + incy ],
+    [ 'rotg',  dtype ],
     [ 'rotm',  dtype_real + n + incx + incy ],
+    [ 'rotmg', dtype_real ],
     [ 'scal',  dtype      + n + incx_pos ],
     [ 'swap',  dtype      + n + incx + incy ],
     ]
