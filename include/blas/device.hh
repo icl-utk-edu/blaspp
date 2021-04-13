@@ -13,12 +13,19 @@
     #include <cuda_runtime.h>
     #include <cublas_v2.h>
 #elif defined(BLAS_HAVE_ROCBLAS)
-    /* Default to HCC platform on ROCm */
-    #if !defined(__HIP_PLATFORM_NVCC__) && !defined(__HIP_PLATFORM_HCC__)
-      #define __HIP_PLATFORM_HCC__
+    // Default to HCC platform on ROCm
+    #if ! defined(__HIP_PLATFORM_NVCC__) && ! defined(__HIP_PLATFORM_HCC__)
+        #define __HIP_PLATFORM_HCC__
+        #define BLAS_HIP_PLATFORM_HCC
     #endif
+
     #include <hip/hip_runtime.h>
     #include <rocblas.h>
+
+    #ifdef BLAS_HIP_PLATFORM_HCC
+        #undef __HIP_PLATFORM_HCC__
+        #undef BLAS_HIP_PLATFORM_HCC
+    #endif
 #endif
 
 namespace blas {

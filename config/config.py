@@ -640,7 +640,7 @@ def rocblas_library():
     print_header( 'ROCm and rocBLAS libraries' )
     print_test( libs )
     env = {'LIBS': libs,
-           'CXXFLAGS': '-D__HIP_PLATFORM_HCC__ ' + define('HAVE_ROCBLAS')}
+           'CXXFLAGS': define('HAVE_ROCBLAS')}
     (rc, out, err) = compile_exe( 'config/rocblas.cc', env )
     print_result( libs, rc )
     if (rc == 0):
