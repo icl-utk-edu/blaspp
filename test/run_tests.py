@@ -350,19 +350,19 @@ if (opts.blas3_device):
 
 if (opts.batch_blas3_device):
     cmds += [
-    [ 'dev-batch-gemm',  dtype         + layout + align + transA + transB + mnk ],
-    [ 'dev-batch-hemm',  dtype         + layout + align + side + uplo + mn ],
-    [ 'dev-batch-symm',  dtype         + layout + align + side + uplo + mn ],
-    [ 'dev-batch-trmm',  dtype         + layout + align + side + uplo + trans + diag + mn ],
-    [ 'dev-batch-trsm',  dtype         + layout + align + side + uplo + trans + diag + mn ],
-    [ 'dev-batch-herk',  dtype_real    + layout + align + uplo + trans    + mn ],
-    [ 'dev-batch-herk',  dtype_complex + layout + align + uplo + trans_nc + mn ],
-    [ 'dev-batch-syrk',  dtype_real    + layout + align + uplo + trans    + mn ],
-    [ 'dev-batch-syrk',  dtype_complex + layout + align + uplo + trans_nt + mn ],
-    [ 'dev-batch-her2k', dtype_real    + layout + align + uplo + trans    + mn ],
-    [ 'dev-batch-her2k', dtype_complex + layout + align + uplo + trans_nc + mn ],
-    [ 'dev-batch-syr2k', dtype_real    + layout + align + uplo + trans    + mn ],
-    [ 'dev-batch-syr2k', dtype_complex + layout + align + uplo + trans_nt + mn ],
+    [ 'dev-batch-gemm',  dtype         + batch + layout + align + transA + transB + mnk ],
+    [ 'dev-batch-hemm',  dtype         + batch + layout + align + side + uplo + mn ],
+    [ 'dev-batch-symm',  dtype         + batch + layout + align + side + uplo + mn ],
+    [ 'dev-batch-trmm',  dtype         + batch + layout + align + side + uplo + trans + diag + mn ],
+    [ 'dev-batch-trsm',  dtype         + batch + layout + align + side + uplo + trans + diag + mn ],
+    [ 'dev-batch-herk',  dtype_real    + batch + layout + align + uplo + trans    + mn ],
+    [ 'dev-batch-herk',  dtype_complex + batch + layout + align + uplo + trans_nc + mn ],
+    [ 'dev-batch-syrk',  dtype_real    + batch + layout + align + uplo + trans    + mn ],
+    [ 'dev-batch-syrk',  dtype_complex + batch + layout + align + uplo + trans_nt + mn ],
+    [ 'dev-batch-her2k', dtype_real    + batch + layout + align + uplo + trans    + mn ],
+    [ 'dev-batch-her2k', dtype_complex + batch + layout + align + uplo + trans_nc + mn ],
+    [ 'dev-batch-syr2k', dtype_real    + batch + layout + align + uplo + trans    + mn ],
+    [ 'dev-batch-syr2k', dtype_complex + batch + layout + align + uplo + trans_nt + mn ],
     ]
 
 
