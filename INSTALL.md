@@ -85,6 +85,12 @@ BLAS++ specific options include (all values are case insensitive):
         Specify the exact BLAS libraries, overriding the built-in search. E.g.,
         cmake -DBLAS_LIBRARIES='-lopenblas' ..
 
+    gpu_backend
+        auto            auto-detect CUDA or HIP/ROCm (default)
+        cuda            build with CUDA support
+        hip             build with HIP/ROCm support
+        none            do not build with GPU backend
+
     color
         Whether to use ANSI colors in output. One of:
         auto            uses color if output is a TTY
@@ -223,10 +229,8 @@ not installed, you can point to its directory.
 Besides the Environment variables and Options listed above, additional
 options include:
 
-    use_cuda
-        Whether to use CUDA, if available. One of:
-        yes (default)
-        no
+    use_cuda [deprecated; use gpu_backend]
+    use_hip  [deprecated; use gpu_backend]
 
     use_openmp
         Whether to use OpenMP, if available. One of:
