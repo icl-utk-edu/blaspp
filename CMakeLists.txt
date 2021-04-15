@@ -42,11 +42,33 @@ option( BUILD_SHARED_LIBS "Build shared libraries" true )
 option( build_tests "Build test suite" "${blaspp_is_project}" )
 option( color "Use ANSI color output" true )
 option( use_cmake_find_blas "Use CMake's find_package( BLAS ) rather than the search in BLAS++" false )
-option( use_hip "Use HIP, if available" true )
-option( use_cuda "Use CUDA, if available" true )
 option( use_openmp "Use OpenMP, if available" true )
 
-set( ROCMDIR "/opt/rocm" CACHE STRING "Directory for HIP/ROCm installation")
+set( gpu_backend "auto" CACHE STRING "GPU backend to use" )
+set_property( CACHE gpu_backend PROPERTY STRINGS
+              auto cuda hip none )
+
+# Deprecated since 2021-04
+set( use_cuda "" CACHE STRING "Use CUDA, if available [deprecated: use gpu_backend]" )
+set( use_hip  "" CACHE STRING "Use HIP, if available [deprecated: use gpu_backend]" )
+
+if (use_cuda)
+    message( DEPRECATION "WARNING: `use_cuda=${use_cuda}` is deprecated; "
+                         "setting `gpu_backend = cuda`" )
+    set( gpu_backend "cuda" CACHE STRING "" FORCE )
+
+elseif (use_hip)
+    message( DEPRECATION "WARNING: `use_hip=${use_hip}` is deprecated; "
+                         "setting `gpu_backend = hip`" )
+    set( gpu_backend "hip" CACHE STRING "" FORCE )
+
+elseif (NOT use_cuda STREQUAL "" OR NOT use_hip STREQUAL "")
+    # use_cuda or use_hip is explicitly false; the other may be unset or false.
+    # If both are unset, they are ignored.
+    message( DEPRECATION "WARNING: `use_cuda=${use_cuda}` and `use_hip=${use_hip}` are deprecated; "
+                         "setting `gpu_backend = none`" )
+    set( gpu_backend "none" CACHE STRING "" FORCE )
+endif()
 
 # Default prefix=/opt/slate
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT
@@ -120,6 +142,7 @@ blas_threaded          = ${blas_threaded}
 build_tests            = ${build_tests}
 color                  = ${color}
 use_cmake_find_blas    = ${use_cmake_find_blas}
+gpu_backend            = ${gpu_backend}
 use_hip                = ${use_hip}
 use_cuda               = ${use_cuda}
 use_openmp             = ${use_openmp}
@@ -187,10 +210,6 @@ add_library(
     src/trsm.cc
     src/trsv.cc
     src/version.cc
-)
-
-# Used if building with HIP or CUDA
-set( shared_cuda_hip_src_
     src/device_batch_gemm.cc
     src/device_batch_hemm.cc
     src/device_batch_her2k.cc
@@ -209,82 +228,78 @@ set( shared_cuda_hip_src_
     src/device_symm.cc
     src/device_syr2k.cc
     src/device_syrk.cc
+    src/device_swap.cc
     src/device_trmm.cc
     src/device_trsm.cc
     src/device_utils.cc
-    src/device_swap.cc
     src/cublas_wrappers.cc
     src/rocblas_wrappers.cc
+    src/stub_wrappers.cc
 )
 
-# CUDA is not required, use if it is available
-set( cuda_found FALSE )
-if (NOT use_cuda)
-    message( STATUS "User has requested to NOT use CUDA" )
-else()
+#-------------------------------------------------------------------------------
+# CUDA support.
+set( cuda_found false )
+if (gpu_backend MATCHES "^(auto|cuda)$")
     include( CheckLanguage )
     check_language( CUDA )
-    if (CMAKE_CUDA_COMPILER)
-        enable_language( CUDA )
-
-        # todo: check for cuda 10.0+ and force newer CMake version - if possible
-        message( STATUS "Building accelerated CUDA wrappers." )
-        target_sources(
-            blaspp
-            PRIVATE
-            ${shared_cuda_hip_src_}
-        )
-
-        # CMake 3.17 adds find_package( CUDAToolkit )
-        # with CUDA::cudart and CUDA::cublas targets.
-        # For compatibility with older CMake, for now do search ourselves.
-        find_library( cudart_lib cudart ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES} )
-        find_library( cublas_lib cublas ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES} )
-
-        set( blaspp_defs_cuda_ "-DBLAS_HAVE_CUBLAS" )
-        set( cuda_found TRUE )
-
-        # Some platforms need these to be public libraries.
-        target_link_libraries( blaspp PUBLIC "${cudart_lib}" "${cublas_lib}" )
-        target_include_directories(
-            blaspp PUBLIC "${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}" )
-    else()
-        message( STATUS "No CUDA support in BLAS++" )
+    if (gpu_backend STREQUAL "cuda" AND NOT CMAKE_CUDA_COMPILER)
+        message( FATAL_ERROR "gpu_backend = ${gpu_backend}, but CUDA was not found")
     endif()
-endif()
-
-# HIP is not required, use if it is available
-set( hip_found FALSE )
-if (NOT use_hip)
-    message( STATUS "User has requested to NOT use HIP" )
-elseif (CMAKE_CUDA_COMPILER)
-    message( STATUS "Both HIP and CUDA detected, so we are defaulting to CUDA. Use -Duse_cuda=off to build for HIP" )
 else()
-    # TODO: other detection?
-    if (EXISTS "${ROCMDIR}")
-        message( STATUS "Building accelerated HIP/ROCm wrappers." )
-        target_sources(
-            blaspp
-            PRIVATE
-            ${shared_cuda_hip_src_}
-        )
+    message( STATUS "Skipping CUDA search. gpu_backend = ${gpu_backend}" )
+endif()
+if (CMAKE_CUDA_COMPILER)
+    enable_language( CUDA )
 
-        find_library( amdhip64_lib amdhip64 ${ROCMDIR}/lib )
-        find_library( rocblas_lib rocblas ${ROCMDIR}/lib )
+    # todo: check for cuda 10.0+ and force newer CMake version - if possible
 
-        set( blaspp_defs_hip_ "-DBLAS_HAVE_ROCBLAS" "-D__HIP_PLATFORM_HCC__" )
-        set( hip_found FALSE )
+    # CMake 3.17 adds find_package( CUDAToolkit )
+    # with CUDA::cudart and CUDA::cublas targets.
+    # For compatibility with older CMake, for now do search ourselves.
+    find_library( cudart_lib cudart ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES} )
+    find_library( cublas_lib cublas ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES} )
 
-        # Some platforms need these to be public libraries.
-        target_link_libraries( blaspp PUBLIC "${amdhip64_lib}" "${rocblas_lib}" )
-        target_include_directories(
-            blaspp PUBLIC "${ROCMDIR}/include" )
-    else()
-        message( STATUS "No HIP support in BLAS++" )
-    endif()
+    set( blaspp_defs_cuda_ "-DBLAS_HAVE_CUBLAS" )
+    set( cuda_found true )
+
+    # Some platforms need these to be public libraries.
+    target_link_libraries(
+        blaspp PUBLIC "${cudart_lib}" "${cublas_lib}" )
+    target_include_directories(
+        blaspp PUBLIC "${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}" )
+    message( STATUS "Building CUDA support in BLAS++" )
+else()
+    message( STATUS "Not building CUDA support in BLAS++" )
 endif()
 
+#-------------------------------------------------------------------------------
+# HIP/ROCm support.
+set( hip_found false )
+if (NOT CMAKE_CUDA_COMPILER
+    AND gpu_backend MATCHES "^(auto|hip)$")
 
+    message( STATUS "Looking for HIP/ROCm" )
+    if (gpu_backend STREQUAL "hip")
+        find_package( rocblas REQUIRED )
+    else()
+        find_package( rocblas QUIET )
+    endif()
+else()
+    message( STATUS "Skipping HIP/ROCm search. gpu_backend = ${gpu_backend}" )
+endif()
+if (rocblas_FOUND)
+    set( blaspp_defs_hip_ "-DBLAS_HAVE_ROCBLAS" )
+    set( hip_found true )
+
+    # Some platforms need these to be public libraries.
+    target_link_libraries( blaspp PUBLIC roc::rocblas )
+    message( STATUS "Building HIP/ROCm support in BLAS++" )
+else()
+    message( STATUS "Not building HIP/ROCm support in BLAS++" )
+endif()
+
+#-------------------------------------------------------------------------------
 # Clean stale defines.h from Makefile-based build.
 file( REMOVE "${CMAKE_CURRENT_SOURCE_DIR}/include/blas/defines.h" )
 
@@ -300,14 +315,14 @@ target_include_directories(
 
 # OpenMP support.
 set( openmp_lib "" )
-set( openmp_found FALSE )
+set( openmp_found false )
 if (NOT use_openmp)
     message( STATUS "User has requested to NOT use OpenMP" )
 else()
     find_package( OpenMP )
     if (OpenMP_CXX_FOUND)
         set( openmp_lib "OpenMP::OpenMP_CXX" )
-        set( openmp_found TRUE )
+        set( openmp_found true )
         target_link_libraries( blaspp PUBLIC "${openmp_lib}" )
     endif()
 endif()
@@ -364,7 +379,8 @@ set( blaspp_defs_ "${blaspp_defs_}"
      CACHE INTERNAL "Constants defined for BLAS" )
 
 # Concat defines.
-set( blaspp_defines ${blaspp_defs_} ${blaspp_defs_cuda_} ${blaspp_defs_hip_}  CACHE INTERNAL "")
+set( blaspp_defines ${blaspp_defs_} ${blaspp_defs_cuda_} ${blaspp_defs_hip_}
+     CACHE INTERNAL "")
 
 if (true)
     # Extract definitions as #define VAR or #define VAR VALUE.
