@@ -33,7 +33,7 @@ Makefile, run:
 CMake must know the compiler used to compile BLAS++. Set CXX to the
 compiler, in your environment.
 
-It's best (but not required) to compile out-of-source in a build directory:
+Create a build directory:
 
     mkdir build && cd build
 
