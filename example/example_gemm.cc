@@ -3,10 +3,14 @@
 #include <vector>
 #include <stdio.h>
 
+#include "util.hh"
+
 //------------------------------------------------------------------------------
 template <typename T>
-void run( int m, int n, int k )
+void test_gemm( int m, int n, int k )
 {
+    print_func();
+
     int lda = m;
     int ldb = n;
     int ldc = m;
@@ -28,17 +32,10 @@ void run( int m, int n, int k )
 int main( int argc, char** argv )
 {
     int m = 100, n = 200, k = 50;
-    printf( "run< float >( %d, %d, %d )\n", m, n, k );
-    run< float  >( m, n, k );
-
-    printf( "run< double >( %d, %d, %d )\n", m, n, k );
-    run< double >( m, n, k );
-
-    printf( "run< complex<float> >( %d, %d, %d )\n", m, n, k );
-    run< std::complex<float>  >( m, n, k );
-
-    printf( "run< complex<double> >( %d, %d, %d )\n", m, n, k );
-    run< std::complex<double> >( m, n, k );
+    test_gemm< float  >( m, n, k );
+    test_gemm< double >( m, n, k );
+    test_gemm< std::complex<float>  >( m, n, k );
+    test_gemm< std::complex<double> >( m, n, k );
 
     return 0;
 }

@@ -8,14 +8,30 @@ project(
     LANGUAGES CXX
 )
 
+find_package( blaspp REQUIRED )
+
+#--------------------
 add_executable(
     example_gemm
     example_gemm.cc
 )
-
-find_package( blaspp REQUIRED )
-
 target_link_libraries(
     example_gemm
     blaspp
 )
+
+#--------------------
+add_executable(
+    example_util
+    example_util.cc
+)
+target_link_libraries(
+    example_util
+    blaspp
+)
+
+#-------------------------------------------------------------------------------
+# CTest
+enable_testing()
+add_test( NAME example_gemm COMMAND ./example_gemm )
+add_test( NAME example_util COMMAND ./example_util )
