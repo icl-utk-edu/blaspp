@@ -29,6 +29,74 @@ void test_gemm( int m, int n, int k )
 }
 
 //------------------------------------------------------------------------------
+template <typename T>
+void test_device_gemm( int m, int n, int k )
+{
+    print_func();
+    if (blas::get_device_count() == 0) {
+        printf( "no GPU devices\n" );
+    }
+    else {
+        int lda = m;
+        int ldb = n;
+        int ldc = m;
+        std::vector<T> A( lda*k, 1.0 );  // m-by-k
+        std::vector<T> B( ldb*n, 2.0 );  // k-by-n
+        std::vector<T> C( ldc*n, 3.0 );  // m-by-n
+
+        // ... fill in application data into A, B, C ...
+
+        int device = 0;
+        int batch_size = 1000;  // todo: use default batch_size
+        blas::Queue queue( device, batch_size );
+
+        // todo: future update to pass queue into malloc
+        blas::set_device( device );
+        T *dA = blas::device_malloc<T>( lda*k );  // m-by-k
+        T *dB = blas::device_malloc<T>( ldb*n );  // k-by-n
+        T *dC = blas::device_malloc<T>( ldc*n );  // m-by-n
+
+        blas::device_setmatrix( m, k,
+                                A.data(), lda,      // src
+                                dA, lda, queue );   // dst
+
+        blas::device_setmatrix( k, n,
+                                B.data(), ldb,      // src
+                                dB, ldb, queue );   // dst
+
+        blas::device_setmatrix( m, n,
+                                C.data(), ldc,      // src
+                                dC, ldc, queue );   // dst
+
+        // C = -1.0*A*B + 1.0*C
+        blas::gemm( blas::Layout::ColMajor, blas::Op::NoTrans, blas::Op::NoTrans,
+                    m, n, k,
+                    -1.0, dA, lda,
+                          dB, ldb,
+                     1.0, dC, ldc,
+                    queue );
+
+        blas::device_getmatrix( m, k,
+                                dA, lda,                 // src
+                                A.data(), lda, queue );  // dst
+
+        blas::device_getmatrix( k, n,
+                                dB, ldb,                 // src
+                                B.data(), ldb, queue );  // dst
+
+        blas::device_getmatrix( m, n,
+                                dC, ldc,                 // src
+                                C.data(), ldc, queue );  // dst
+
+        queue.sync();
+
+        blas::device_free( dA );  dA = nullptr;
+        blas::device_free( dB );  dB = nullptr;
+        blas::device_free( dC );  dC = nullptr;
+    }
+}
+
+//------------------------------------------------------------------------------
 int main( int argc, char** argv )
 {
     int m = 100, n = 200, k = 50;
@@ -36,6 +104,11 @@ int main( int argc, char** argv )
     test_gemm< double >( m, n, k );
     test_gemm< std::complex<float>  >( m, n, k );
     test_gemm< std::complex<double> >( m, n, k );
+
+    test_device_gemm< float  >( m, n, k );
+    test_device_gemm< double >( m, n, k );
+    test_device_gemm< std::complex<float>  >( m, n, k );
+    test_device_gemm< std::complex<double> >( m, n, k );
 
     return 0;
 }
