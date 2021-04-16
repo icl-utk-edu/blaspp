@@ -7,7 +7,8 @@ Name: BLAS++
 Description: C++ API to BLAS (basic linear algebra subroutines)
 Version: #VERSION
 Cflags: #CXXFLAGS -I${includedir}
-Libs: -L${libdir} -Wl,-rpath,${libdir} -lblaspp
-Libs.private: #LDFLAGS #LIBS
+# Some platforms require CUDA LIBS to be public.
+Libs: -L${libdir} -Wl,-rpath,${libdir} -lblaspp #LDFLAGS #LIBS
+Libs.private:
 Requires:
 Requires.private:
