@@ -76,14 +76,6 @@ void test_device_gemm( int m, int n, int k )
                      1.0, dC, ldc,
                     queue );
 
-        blas::device_getmatrix( m, k,
-                                dA, lda,                 // src
-                                A.data(), lda, queue );  // dst
-
-        blas::device_getmatrix( k, n,
-                                dB, ldb,                 // src
-                                B.data(), ldb, queue );  // dst
-
         blas::device_getmatrix( m, n,
                                 dC, ldc,                 // src
                                 C.data(), ldc, queue );  // dst
