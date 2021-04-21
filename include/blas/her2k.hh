@@ -121,11 +121,11 @@ void her2k(
     // check and interpret argument trans
     if (trans == Op::Trans) {
         blas_error_if_msg(
-                (typeid(TA) != typeid(blas::real_type<TA>) ||
-                 typeid(TB) != typeid(blas::real_type<TB>)),
+                ( blas::is_complex<TA>::value ||
+                  blas::is_complex<TB>::value ),
                 "trans == Op::Trans && "
-                "(typeid(TA) != typeid(blas::real_type<TA>) || "
-                "typeid(TB) != typeid(blas::real_type<TB>))" );
+                "( blas::is_complex<TA>::value ||"
+                "  blas::is_complex<TB>::value )" );
         trans = Op::ConjTrans;
     }
     else {

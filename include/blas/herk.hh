@@ -110,9 +110,9 @@ void herk(
     // check and interpret argument trans
     if (trans == Op::Trans) {
         blas_error_if_msg(
-                typeid(TA) != typeid(blas::real_type<TA>),
+                blas::is_complex<TA>::value,
                 "trans == Op::Trans && "
-                "typeid(TA) != typeid(blas::real_type<TA>)" );
+                "blas::is_complex<TA>::value" );
         trans = Op::ConjTrans;
     }
     else {
