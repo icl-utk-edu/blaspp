@@ -40,6 +40,11 @@ void test_her2k_device_work( Params& params, bool run )
     if (! run)
         return;
 
+    if (blas::get_device_count() == 0) {
+        printf("skipping: no GPU devices or no GPU support\n" );
+        return;
+    }
+
     // setup
     int64_t Am = (trans == Op::NoTrans ? n : k);
     int64_t An = (trans == Op::NoTrans ? k : n);

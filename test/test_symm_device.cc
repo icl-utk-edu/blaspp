@@ -40,6 +40,11 @@ void test_symm_device_work( Params& params, bool run )
     if (! run)
         return;
 
+    if (blas::get_device_count() == 0) {
+        printf("skipping: no GPU devices or no GPU support\n" );
+        return;
+    }
+
     // setup
     int64_t An = (side == Side::Left ? m : n);
     int64_t Cm = m;

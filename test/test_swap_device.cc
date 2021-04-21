@@ -40,6 +40,11 @@ void test_swap_device_work( Params& params, bool run )
     if (! run)
         return;
 
+    if (blas::get_device_count() == 0) {
+        printf("skipping: no GPU devices or no GPU support\n" );
+        return;
+    }
+
     // setup
     size_t size_x = (n - 1) * std::abs(incx) + 1;
     size_t size_y = (n - 1) * std::abs(incy) + 1;
