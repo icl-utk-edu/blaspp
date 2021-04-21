@@ -79,8 +79,6 @@ void trsv(
     TA const *A, int64_t lda,
     TX       *x, int64_t incx )
 {
-    typedef blas::scalar_type<TA, TX> scalar_t;
-
     #define A(i_, j_) A[ (i_) + (j_)*lda ]
 
     // check arguments
