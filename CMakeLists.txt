@@ -239,7 +239,7 @@ add_library(
 
 #-------------------------------------------------------------------------------
 # CUDA support.
-set( cuda_found false )
+set( blaspp_use_cuda false )  # output in blasppConfig.cmake.in
 if (gpu_backend MATCHES "^(auto|cuda)$")
     include( CheckLanguage )
     check_language( CUDA )
@@ -261,7 +261,7 @@ if (CMAKE_CUDA_COMPILER)
     find_library( cublas_lib cublas ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES} )
 
     set( blaspp_defs_cuda_ "-DBLAS_HAVE_CUBLAS" )
-    set( cuda_found true )
+    set( blaspp_use_cuda true )
 
     # Some platforms need these to be public libraries.
     target_link_libraries(
@@ -275,7 +275,7 @@ endif()
 
 #-------------------------------------------------------------------------------
 # HIP/ROCm support.
-set( hip_found false )
+set( blaspp_use_hip false )  # output in blasppConfig.cmake.in
 if (NOT CMAKE_CUDA_COMPILER
     AND gpu_backend MATCHES "^(auto|hip)$")
 
@@ -290,7 +290,7 @@ else()
 endif()
 if (rocblas_FOUND)
     set( blaspp_defs_hip_ "-DBLAS_HAVE_ROCBLAS" )
-    set( hip_found true )
+    set( blaspp_use_hip true )
 
     # Some platforms need these to be public libraries.
     target_link_libraries( blaspp PUBLIC roc::rocblas )
@@ -315,14 +315,14 @@ target_include_directories(
 
 # OpenMP support.
 set( openmp_lib "" )
-set( openmp_found false )
+set( blaspp_use_openmp false )  # output in blasppConfig.cmake.in
 if (NOT use_openmp)
     message( STATUS "User has requested to NOT use OpenMP" )
 else()
     find_package( OpenMP )
     if (OpenMP_CXX_FOUND)
         set( openmp_lib "OpenMP::OpenMP_CXX" )
-        set( openmp_found true )
+        set( blaspp_use_openmp true )
         target_link_libraries( blaspp PUBLIC "${openmp_lib}" )
     endif()
 endif()
