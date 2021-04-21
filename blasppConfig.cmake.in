@@ -9,6 +9,10 @@ if (blaspp_use_openmp)
     find_dependency( OpenMP )
 endif()
 
+if (blaspp_use_hip)
+    find_dependency( rocblas )
+endif()
+
 # Export private variables used in LAPACK++.
 set( blaspp_defines         "@blaspp_defines@" )
 set( blaspp_libraries       "@blaspp_libraries@" )
