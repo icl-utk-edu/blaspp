@@ -97,15 +97,24 @@ void test_trsm_device_work( Params& params, bool run )
     lapack_potrf( uplo2str(uplo), Am, A, lda, &info );
     require( info == 0 );
 
-    blas::device_setmatrix(Am, Am, A, lda, dA, lda, queue);
-    blas::device_setmatrix(Bm, Bn, B, ldb, dB, ldb, queue);
-    queue.sync();
-
     // norms for error check
     real_t work[1];
     real_t Anorm = lapack_lantr( "f", uplo2str(uplo), diag2str(diag),
                                  Am, Am, A, lda, work );
     real_t Bnorm = lapack_lange( "f", Bm, Bn, B, ldb, work );
+
+    // if row-major, transpose A
+    if (layout == Layout::RowMajor) {
+        for (int64_t j = 0; j < Am; ++j) {
+            for (int64_t i = 0; i < j; ++i) {
+                std::swap( A[ i + j*lda ], A[ j + i*lda ] );
+            }
+        }
+    }
+
+    blas::device_setmatrix(Am, Am, A, lda, dA, lda, queue);
+    blas::device_setmatrix(Bm, Bn, B, ldb, dB, ldb, queue);
+    queue.sync();
 
     // test error exits
     assert_throw( blas::trsm( Layout(0), side,    uplo,    trans, diag,     m,  n, alpha, dA, lda, dB, ldb, queue), blas::Error );
