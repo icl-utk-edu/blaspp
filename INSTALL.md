@@ -26,6 +26,7 @@ Environment variables (Makefile and CMake)
 Standard environment variables affect both Makefile (configure.py) and CMake.
 These include:
 
+    LD                  Linker; defaults to CXX
     CXX                 C++ compiler
     CXXFLAGS            C++ compiler flags
     LDFLAGS             linker flags
