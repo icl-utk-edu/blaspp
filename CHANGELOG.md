@@ -1,3 +1,6 @@
+2021.04.01
+  - Fix bug in test_trsm_device for row-major
+
 2021.04.00
   - Add HIP/ROCm support
   - Added include/blas/defines.h based on configuration
