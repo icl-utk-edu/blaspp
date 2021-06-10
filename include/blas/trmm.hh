@@ -84,7 +84,7 @@ namespace blas {
 ///
 /// @ingroup trmm
 
-template< typename TA, typename TX >
+template< typename TA, typename TB >
 void trmm(
     blas::Layout layout,
     blas::Side side,
@@ -93,9 +93,9 @@ void trmm(
     blas::Diag diag,
     int64_t m,
     int64_t n,
-    blas::scalar_type<TA, TX> alpha,
+    blas::scalar_type<TA, TB> alpha,
     TA const *A, int64_t lda,
-    TX       *B, int64_t ldb )
+    TB       *B, int64_t ldb )
 {
     throw std::exception();  // not yet implemented
 }

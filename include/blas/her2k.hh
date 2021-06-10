@@ -16,11 +16,11 @@ namespace blas {
 // =============================================================================
 /// Hermitian rank-k update:
 /// \[
-///     C = \alpha A B^H + conj(\alpha) A^H B + \beta C,
+///     C = \alpha A B^H + conj(\alpha) B A^H + \beta C,
 /// \]
 /// or
 /// \[
-///     C = \alpha A^H B + conj(\alpha) B A^H + \beta C,
+///     C = \alpha A^H B + conj(\alpha) B^H A + \beta C,
 /// \]
 /// where alpha and beta are scalars, C is an n-by-n Hermitian matrix,
 /// and A and B are n-by-k or k-by-n matrices.

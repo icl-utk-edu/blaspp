@@ -22,7 +22,7 @@ namespace blas {
 /// \[
 ///     C = \alpha A^H A + \beta C,
 /// \]
-/// where alpha and beta are scalars, C is an n-by-n Hermitian matrix,
+/// where alpha and beta are real scalars, C is an n-by-n Hermitian matrix,
 /// and A is an n-by-k or k-by-n matrix.
 ///
 /// Generic implementation for arbitrary data types.

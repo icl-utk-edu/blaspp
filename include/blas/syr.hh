@@ -61,8 +61,6 @@ void syr(
     TX const *x, int64_t incx,
     TA       *A, int64_t lda )
 {
-    printf( "template syr implementation\n" );
-
     typedef blas::scalar_type<TA, TX> scalar_t;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]

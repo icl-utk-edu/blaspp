@@ -75,13 +75,7 @@ void trmv(
     TA const *A, int64_t lda,
     TX       *x, int64_t incx )
 {
-    typedef blas::scalar_type<TA, TX> scalar_t;
-
     #define A(i_, j_) A[ (i_) + (j_)*lda ]
-
-    // constants
-    const scalar_t zero = 0;
-    const scalar_t one  = 1;
 
     // check arguments
     blas_error_if( layout != Layout::ColMajor &&
