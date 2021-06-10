@@ -77,15 +77,15 @@ namespace blas {
 ///
 /// @ingroup herk
 
-template< typename TA, typename TB, typename TC >
+template< typename TA, typename TC >
 void herk(
     blas::Layout layout,
     blas::Uplo uplo,
     blas::Op trans,
     int64_t n, int64_t k,
-    real_type<TA, TB, TC> alpha,  // note: real
+    real_type<TA, TC> alpha,  // note: real
     TA const *A, int64_t lda,
-    real_type<TA, TB, TC> beta,  // note: real
+    real_type<TA, TC> beta,  // note: real
     TC       *C, int64_t ldc )
 {
     throw std::exception();  // not yet implemented

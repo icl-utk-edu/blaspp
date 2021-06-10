@@ -76,15 +76,15 @@ namespace blas {
 ///
 /// @ingroup syrk
 
-template< typename TA, typename TB, typename TC >
+template< typename TA, typename TC >
 void syrk(
     blas::Layout layout,
     blas::Uplo uplo,
     blas::Op trans,
     int64_t n, int64_t k,
-    scalar_type<TA, TB, TC> alpha,
+    scalar_type<TA, TC> alpha,
     TA const *A, int64_t lda,
-    scalar_type<TA, TB, TC> beta,
+    scalar_type<TA, TC> beta,
     TC       *C, int64_t ldc )
 {
     throw std::exception();  // not yet implemented

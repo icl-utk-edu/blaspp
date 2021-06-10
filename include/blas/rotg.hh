@@ -41,10 +41,10 @@ namespace blas {
 
 template< typename TX, typename TY >
 void rotg(
-    TX a,
-    TY b,
-    blas::real_type<TX, TY>   c,
-    blas::scalar_type<TX, TY> s )
+    TX *a,
+    TY *b,
+    blas::real_type<TX, TY>   *c,
+    blas::scalar_type<TX, TY> *s )
 {
     throw std::exception();  // not yet implemented
 }
