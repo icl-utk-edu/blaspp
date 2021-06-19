@@ -181,7 +181,7 @@ double nrm2(
     int64_t n,
     std::complex<double> const *x, int64_t incx );
 
-#endif
+#endif  // BLAS_USE_TEMPLATE
 
 // -----------------------------------------------------------------------------
 /// @ingroup rot
@@ -332,6 +332,7 @@ void swap(
     int64_t n,
     std::complex<double> *x, int64_t incx,
     std::complex<double> *y, int64_t incy );
+
 // =============================================================================
 // Level 2 BLAS
 
@@ -764,6 +765,7 @@ void trsv(
     int64_t n,
     std::complex<double> const *A, int64_t lda,
     std::complex<double>       *x, int64_t incx );
+
 // =============================================================================
 // Level 3 BLAS
 
@@ -816,7 +818,7 @@ void gemm(
     std::complex<double> beta,
     std::complex<double>       *C, int64_t ldc );
 
-#endif
+#endif  // BLAS_USE_TEMPLATE
 
 // -----------------------------------------------------------------------------
 /// @ingroup hemm
