@@ -96,7 +96,7 @@ void trmm(
     blas::scalar_type<TA, TB> alpha,
     TA const *A, int64_t lda,
     TB       *B, int64_t ldb )
-{    
+{
     typedef blas::scalar_type<TA, TB> scalar_t;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]
@@ -133,7 +133,7 @@ void trmm(
                 m = n;
                 n = k;
     }
-    
+
     // check remaining arguments
     blas_error_if( lda < ((side == Side::Left) ? m : n) );
     blas_error_if( ldb < m );
@@ -157,24 +157,24 @@ void trmm(
             if (uplo == Uplo::Upper) {
                 for(int64_t j = 0; j < n; ++j) {
                     for(int64_t k = 0; k < m; ++k) {
-                        const scalar_t alphaBkj = alpha*B(k,j);
+                        scalar_t alpha_Bkj = alpha*B(k,j);
                         for(int64_t i = 0; i < k; ++i)
-                            B(i,j) += A(i,k)*alphaBkj;
+                            B(i,j) += A(i,k)*alpha_Bkj;
                         B(k,j) = (diag == Diag::NonUnit)
-                                ? A(k,k)*alphaBkj
-                                : alphaBkj;
+                                ? A(k,k)*alpha_Bkj
+                                : alpha_Bkj;
                     }
                 }
             }
             else { // uplo == Uplo::Lower
                 for(int64_t j = 0; j < n; ++j) {
                     for(int64_t k = m-1; k >= 0; --k) {
-                        const scalar_t alphaBkj = alpha*B(k,j);
+                        scalar_t alpha_Bkj = alpha*B(k,j);
                         B(k,j) = (diag == Diag::NonUnit)
-                                ? A(k,k)*alphaBkj
-                                : alphaBkj;
+                                ? A(k,k)*alpha_Bkj
+                                : alpha_Bkj;
                         for(int64_t i = k+1; i < m; ++i)
-                            B(i,j) += A(i,k)*alphaBkj;
+                            B(i,j) += A(i,k)*alpha_Bkj;
                     }
                 }
             }
@@ -237,32 +237,32 @@ void trmm(
             if (uplo == Uplo::Upper) {
                 for(int64_t j = n-1; j >= 0; --j) {
 
-                    scalar_t alphaAkj = (diag == Diag::NonUnit)
+                    scalar_t alpha_Akj = (diag == Diag::NonUnit)
                                     ? alpha*A(j,j)
                                     : alpha;
                     for(int64_t i = 0; i < m; ++i)
-                        B(i,j) *= alphaAkj;
+                        B(i,j) *= alpha_Akj;
 
                     for(int64_t k = 0; k < j; ++k) {
-                        alphaAkj = alpha*A(k,j);
+                        alpha_Akj = alpha*A(k,j);
                         for(int64_t i = 0; i < m; ++i)
-                            B(i,j) += B(i,k)*alphaAkj;
+                            B(i,j) += B(i,k)*alpha_Akj;
                     }
                 }
             }
             else { // uplo == Uplo::Lower
                 for(int64_t j = 0; j < n; ++j) {
 
-                    scalar_t alphaAkj = (diag == Diag::NonUnit)
+                    scalar_t alpha_Akj = (diag == Diag::NonUnit)
                                     ? alpha*A(j,j)
                                     : alpha;
                     for(int64_t i = 0; i < m; ++i)
-                        B(i,j) *= alphaAkj;
+                        B(i,j) *= alpha_Akj;
 
                     for(int64_t k = j+1; k < n; ++k) {
-                        alphaAkj = alpha*A(k,j);
+                        alpha_Akj = alpha*A(k,j);
                         for(int64_t i = 0; i < m; ++i)
-                            B(i,j) += B(i,k)*alphaAkj;
+                            B(i,j) += B(i,k)*alpha_Akj;
                     }
                 }
             }
@@ -271,31 +271,31 @@ void trmm(
             if (uplo == Uplo::Upper) {
                 for(int64_t k = 0; k < n; ++k) {
                     for(int64_t j = 0; j < k; ++j) {
-                        const scalar_t alphaAjk = alpha*A(j,k);
+                        scalar_t alpha_Ajk = alpha*A(j,k);
                         for(int64_t i = 0; i < m; ++i)
-                            B(i,j) += B(i,k)*alphaAjk;
+                            B(i,j) += B(i,k)*alpha_Ajk;
                     }
 
-                    const scalar_t alphaAkk = (diag == Diag::NonUnit)
+                    scalar_t alpha_Akk = (diag == Diag::NonUnit)
                                             ? alpha*A(k,k)
                                             : alpha;
                     for(int64_t i = 0; i < m; ++i)
-                        B(i,k) *= alphaAkk;
+                        B(i,k) *= alpha_Akk;
                 }
             }
             else { // uplo == Uplo::Lower
                 for(int64_t k = n-1; k >= 0; --k) {
                     for(int64_t j = k+1; j < n; ++j) {
-                        const scalar_t alphaAjk = alpha*A(j,k);
+                        scalar_t alpha_Ajk = alpha*A(j,k);
                         for(int64_t i = 0; i < m; ++i)
-                            B(i,j) += B(i,k)*alphaAjk;
+                            B(i,j) += B(i,k)*alpha_Ajk;
                     }
 
-                    const scalar_t alphaAkk = (diag == Diag::NonUnit)
+                    scalar_t alpha_Akk = (diag == Diag::NonUnit)
                                             ? alpha*A(k,k)
                                             : alpha;
                     for(int64_t i = 0; i < m; ++i)
-                        B(i,k) *= alphaAkk;
+                        B(i,k) *= alpha_Akk;
                 }
             }
         }
@@ -303,31 +303,31 @@ void trmm(
             if (uplo == Uplo::Upper) {
                 for(int64_t k = 0; k < n; ++k) {
                     for(int64_t j = 0; j < k; ++j) {
-                        const scalar_t alphaAjk = alpha*conj(A(j,k));
+                        scalar_t alpha_Ajk = alpha*conj(A(j,k));
                         for(int64_t i = 0; i < m; ++i)
-                            B(i,j) += B(i,k)*alphaAjk;
+                            B(i,j) += B(i,k)*alpha_Ajk;
                     }
 
-                    const scalar_t alphaAkk = (diag == Diag::NonUnit)
+                    scalar_t alpha_Akk = (diag == Diag::NonUnit)
                                             ? alpha*conj(A(k,k))
                                             : alpha;
                     for(int64_t i = 0; i < m; ++i)
-                        B(i,k) *= alphaAkk;
+                        B(i,k) *= alpha_Akk;
                 }
             }
             else { // uplo == Uplo::Lower
                 for(int64_t k = n-1; k >= 0; --k) {
                     for(int64_t j = k+1; j < n; ++j) {
-                        const scalar_t alphaAjk = alpha*conj(A(j,k));
+                        scalar_t alpha_Ajk = alpha*conj(A(j,k));
                         for(int64_t i = 0; i < m; ++i)
-                            B(i,j) += B(i,k)*alphaAjk;
+                            B(i,j) += B(i,k)*alpha_Ajk;
                     }
 
-                    const scalar_t alphaAkk = (diag == Diag::NonUnit)
+                    scalar_t alpha_Akk = (diag == Diag::NonUnit)
                                             ? alpha*conj(A(k,k))
                                             : alpha;
                     for(int64_t i = 0; i < m; ++i)
-                        B(i,k) *= alphaAkk;
+                        B(i,k) *= alpha_Akk;
                 }
             }
         }

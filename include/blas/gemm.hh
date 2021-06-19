@@ -169,9 +169,9 @@ void gemm(
                 for(int64_t i = 0; i < m; ++i)
                     C(i,j) *= beta;
                 for(int64_t l = 0; l < k; ++l) {
-                    scalar_t alphaTimesblj = alpha*B(l,j);
+                    scalar_t alpha_Blj = alpha*B(l,j);
                     for(int64_t i = 0; i < m; ++i)
-                        C(i,j) += A(i,l)*alphaTimesblj;
+                        C(i,j) += A(i,l)*alpha_Blj;
                 }
             }
         }
@@ -180,9 +180,9 @@ void gemm(
                 for(int64_t i = 0; i < m; ++i)
                     C(i,j) *= beta;
                 for(int64_t l = 0; l < k; ++l) {
-                    scalar_t alphaTimesbjl = alpha*B(j,l);
+                    scalar_t alpha_Bjl = alpha*B(j,l);
                     for(int64_t i = 0; i < m; ++i)
-                        C(i,j) += A(i,l)*alphaTimesbjl;
+                        C(i,j) += A(i,l)*alpha_Bjl;
                 }
             }
         }
@@ -191,9 +191,9 @@ void gemm(
                 for(int64_t i = 0; i < m; ++i)
                     C(i,j) *= beta;
                 for(int64_t l = 0; l < k; ++l) {
-                    scalar_t alphaTimesbjl = alpha*conj(B(j,l));
+                    scalar_t alpha_Bjl = alpha*conj(B(j,l));
                     for(int64_t i = 0; i < m; ++i)
-                        C(i,j) += A(i,l)*alphaTimesbjl;
+                        C(i,j) += A(i,l)*alpha_Bjl;
                 }
             }
         }

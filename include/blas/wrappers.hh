@@ -1222,7 +1222,7 @@ void trsm(
     std::complex<double> const *A, int64_t lda,
     std::complex<double>       *B, int64_t ldb );
 
-#endif
+#endif  // BLAS_USE_TEMPLATE
 
 // =============================================================================
 //                     Batch BLAS APIs ( host )

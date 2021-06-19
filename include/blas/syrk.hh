@@ -191,9 +191,9 @@ void syrk(
                     C(i,j) *= beta;
 
                 for(int64_t l = 0; l < k; ++l) {
-                    scalar_t alphaAjl = alpha*A(j,l);
+                    scalar_t alpha_Ajl = alpha*A(j,l);
                     for(int64_t i = 0; i <= j; ++i)
-                        C(i,j) += A(i,l)*alphaAjl;
+                        C(i,j) += A(i,l)*alpha_Ajl;
                 }
             }
         }
@@ -204,9 +204,9 @@ void syrk(
                     C(i,j) *= beta;
 
                 for(int64_t l = 0; l < k; ++l) {
-                    scalar_t alphaAjl = alpha*A(j,l);
+                    scalar_t alpha_Ajl = alpha*A(j,l);
                     for(int64_t i = j; i < n; ++i)
-                        C(i,j) += A(i,l)*alphaAjl;
+                        C(i,j) += A(i,l)*alpha_Ajl;
                 }
             }
         }

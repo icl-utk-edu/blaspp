@@ -215,14 +215,14 @@ void her2k(
 
                 for(int64_t l = 0; l < k; ++l) {
 
-                    scalar_t alphaConjBjl = alpha*conj( B(j,l) );
-                    scalar_t conjAlphaAjl = conj( alpha*A(j,l) );
+                    scalar_t alpha_conj_Bjl = alpha*conj( B(j,l) );
+                    scalar_t conj_alpha_Ajl = conj( alpha*A(j,l) );
 
                     for(int64_t i = 0; i < j; ++i) {
-                        C(i,j) += A(i,l)*alphaConjBjl
-                                + B(i,l)*conjAlphaAjl;
+                        C(i,j) += A(i,l)*alpha_conj_Bjl
+                                + B(i,l)*conj_alpha_Ajl;
                     }
-                    C(j,j) += 2 * real( A(j,l) * alphaConjBjl );
+                    C(j,j) += 2 * real( A(j,l) * alpha_conj_Bjl );
                 }
             }
         }
@@ -235,13 +235,13 @@ void her2k(
 
                 for(int64_t l = 0; l < k; ++l) {
 
-                    scalar_t alphaConjBjl = alpha*conj( B(j,l) );
-                    scalar_t conjAlphaAjl = conj( alpha*A(j,l) );
+                    scalar_t alpha_conj_Bjl = alpha*conj( B(j,l) );
+                    scalar_t conj_alpha_Ajl = conj( alpha*A(j,l) );
 
-                    C(j,j) += 2 * real( A(j,l) * alphaConjBjl );
+                    C(j,j) += 2 * real( A(j,l) * alpha_conj_Bjl );
                     for(int64_t i = j+1; i < n; ++i) {
-                        C(i,j) += A(i,l) * alphaConjBjl
-                                + B(i,l) * conjAlphaAjl;
+                        C(i,j) += A(i,l) * alpha_conj_Bjl
+                                + B(i,l) * conj_alpha_Ajl;
                     }
                 }
             }

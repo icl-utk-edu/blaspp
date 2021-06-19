@@ -101,7 +101,7 @@ void trsm(
     blas::scalar_type<TA, TB> alpha,
     TA const *A, int64_t lda,
     TB       *B, int64_t ldb )
-{    
+{
     typedef blas::scalar_type<TA, TB> scalar_t;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]

@@ -201,11 +201,11 @@ void herk(
 
                 for(int64_t l = 0; l < k; ++l) {
 
-                    scalar_t alphaConjAjl = alpha*conj( A(j,l) );
+                    scalar_t alpha_conj_Ajl = alpha*conj( A(j,l) );
 
                     for(int64_t i = 0; i < j; ++i)
-                        C(i,j) += A(i,l)*alphaConjAjl;
-                    C(j,j) += real( A(j,l) * alphaConjAjl );
+                        C(i,j) += A(i,l)*alpha_conj_Ajl;
+                    C(j,j) += real( A(j,l) * alpha_conj_Ajl );
                 }
             }
         }
@@ -218,11 +218,11 @@ void herk(
 
                 for(int64_t l = 0; l < k; ++l) {
 
-                    scalar_t alphaConjAjl = alpha*conj( A(j,l) );
+                    scalar_t alpha_conj_Ajl = alpha*conj( A(j,l) );
 
-                    C(j,j) += real( A(j,l) * alphaConjAjl );
+                    C(j,j) += real( A(j,l) * alpha_conj_Ajl );
                     for(int64_t i = j+1; i < n; ++i) {
-                        C(i,j) += A(i,l) * alphaConjAjl;
+                        C(i,j) += A(i,l) * alpha_conj_Ajl;
                     }
                 }
             }

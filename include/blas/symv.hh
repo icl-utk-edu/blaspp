@@ -73,6 +73,7 @@ void symv(
     blas::scalar_type<TA, TX, TY> beta,
     TY *y, int64_t incy )
 {
+printf( "%s: %s\n", __func__, __PRETTY_FUNCTION__ );
     typedef blas::scalar_type<TA, TX, TY> scalar_t;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]

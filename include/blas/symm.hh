@@ -120,7 +120,7 @@ void symm(
                 m = n;
                 n = k;
     }
-    
+
     // check remaining arguments
     blas_error_if( lda < ((side == Side::Left) ? m : n) );
     blas_error_if( ldb < m );
@@ -154,16 +154,16 @@ void symm(
             for(int64_t j = 0; j < n; ++j) {
                 for(int64_t i = 0; i < m; ++i) {
 
-                    scalar_t alphaTimesBij = alpha*B(i,j);
+                    scalar_t alpha_Bij = alpha*B(i,j);
                     scalar_t sum = zero;
 
                     for(int64_t k = 0; k < i; ++k) {
-                        C(k,j) += A(k,i) * alphaTimesBij;
+                        C(k,j) += A(k,i) * alpha_Bij;
                         sum += A(k,i) * B(k,j);
                     }
                     C(i,j) =
                         beta * C(i,j)
-                        + A(i,i) * alphaTimesBij
+                        + A(i,i) * alpha_Bij
                         + alpha * sum;
                 }
             }
@@ -173,16 +173,16 @@ void symm(
             for(int64_t j = 0; j < n; ++j) {
                 for(int64_t i = m-1; i >= 0; --i) {
 
-                    scalar_t alphaTimesBij = alpha*B(i,j);
+                    scalar_t alpha_Bij = alpha*B(i,j);
                     scalar_t sum = zero;
 
                     for(int64_t k = i+1; k < m; ++k) {
-                        C(k,j) += A(k,i) * alphaTimesBij;
+                        C(k,j) += A(k,i) * alpha_Bij;
                         sum += A(k,i) * B(k,j);
                     }
                     C(i,j) =
                         beta * C(i,j)
-                        + A(i,i) * alphaTimesBij
+                        + A(i,i) * alpha_Bij
                         + alpha * sum;
                 }
             }
@@ -193,21 +193,21 @@ void symm(
             // uplo == Uplo::Upper or uplo == Uplo::General
             for(int64_t j = 0; j < n; ++j) {
 
-                scalar_t alphaTimesAkj = alpha * A(j,j);
+                scalar_t alpha_Akj = alpha * A(j,j);
 
                 for(int64_t i = 0; i < m; ++i)
-                    C(i,j) = beta * C(i,j) + B(i,j) * alphaTimesAkj;
+                    C(i,j) = beta * C(i,j) + B(i,j) * alpha_Akj;
 
                 for(int64_t k = 0; k < j; ++k) {
-                    alphaTimesAkj = alpha*A(k,j);
+                    alpha_Akj = alpha*A(k,j);
                     for(int64_t i = 0; i < m; ++i)
-                        C(i,j) += B(i,k) * alphaTimesAkj;
+                        C(i,j) += B(i,k) * alpha_Akj;
                 }
 
                 for(int64_t k = j+1; k < n; ++k) {
-                    alphaTimesAkj = alpha * A(j,k);
+                    alpha_Akj = alpha * A(j,k);
                     for(int64_t i = 0; i < m; ++i)
-                        C(i,j) += B(i,k) * alphaTimesAkj;
+                        C(i,j) += B(i,k) * alpha_Akj;
                 }
             }
         }
@@ -215,21 +215,21 @@ void symm(
             // uplo == Uplo::Lower
             for(int64_t j = 0; j < n; ++j) {
 
-                scalar_t alphaTimesAkj = alpha * A(j,j);
+                scalar_t alpha_Akj = alpha * A(j,j);
 
                 for(int64_t i = 0; i < m; ++i)
-                    C(i,j) = beta * C(i,j) + B(i,j) * alphaTimesAkj;
+                    C(i,j) = beta * C(i,j) + B(i,j) * alpha_Akj;
 
                 for(int64_t k = 0; k < j; ++k) {
-                    alphaTimesAkj = alpha * A(j,k);
+                    alpha_Akj = alpha * A(j,k);
                     for(int64_t i = 0; i < m; ++i)
-                        C(i,j) += B(i,k) * alphaTimesAkj;
+                        C(i,j) += B(i,k) * alpha_Akj;
                 }
 
                 for(int64_t k = j+1; k < n; ++k) {
-                    alphaTimesAkj = alpha*A(k,j);
+                    alpha_Akj = alpha*A(k,j);
                     for(int64_t i = 0; i < m; ++i)
-                        C(i,j) += B(i,k) * alphaTimesAkj;
+                        C(i,j) += B(i,k) * alpha_Akj;
                 }
             }
         }

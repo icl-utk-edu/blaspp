@@ -97,7 +97,7 @@ void syr2k(
     TB const *B, int64_t ldb,
     scalar_type<TA, TB, TC> beta,
     TC       *C, int64_t ldc )
-{    
+{
     typedef blas::scalar_type<TA, TB, TC> scalar_t;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]
@@ -207,10 +207,10 @@ void syr2k(
                     C(i,j) *= beta;
 
                 for(int64_t l = 0; l < k; ++l) {
-                    scalar_t alphaBjl = alpha*B(j,l);
-                    scalar_t alphaAjl = alpha*A(j,l);
+                    scalar_t alpha_Bjl = alpha*B(j,l);
+                    scalar_t alpha_Ajl = alpha*A(j,l);
                     for(int64_t i = 0; i <= j; ++i)
-                        C(i,j) += A(i,l)*alphaBjl + B(i,l)*alphaAjl;
+                        C(i,j) += A(i,l)*alpha_Bjl + B(i,l)*alpha_Ajl;
                 }
             }
         }
@@ -221,10 +221,10 @@ void syr2k(
                     C(i,j) *= beta;
 
                 for(int64_t l = 0; l < k; ++l) {
-                    scalar_t alphaBjl = alpha*B(j,l);
-                    scalar_t alphaAjl = alpha*A(j,l);
+                    scalar_t alpha_Bjl = alpha*B(j,l);
+                    scalar_t alpha_Ajl = alpha*A(j,l);
                     for(int64_t i = j; i < n; ++i)
-                        C(i,j) += A(i,l)*alphaBjl + B(i,l)*alphaAjl;
+                        C(i,j) += A(i,l)*alpha_Bjl + B(i,l)*alpha_Ajl;
                 }
             }
         }

@@ -92,7 +92,7 @@ void hemm(
     TB const *B, int64_t ldb,
     scalar_type<TA, TB, TC> beta,
     TC       *C, int64_t ldc )
-{    
+{
     typedef blas::scalar_type<TA, TB, TC> scalar_t;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]
@@ -161,16 +161,16 @@ void hemm(
             for(int64_t j = 0; j < n; ++j) {
                 for(int64_t i = 0; i < m; ++i) {
 
-                    scalar_t alphaTimesBij = alpha*B(i,j);
+                    scalar_t alpha_Bij = alpha*B(i,j);
                     scalar_t sum = zero;
 
                     for(int64_t k = 0; k < i; ++k) {
-                        C(k,j) += A(k,i) * alphaTimesBij;
+                        C(k,j) += A(k,i) * alpha_Bij;
                         sum += conj( A(k,i) ) * B(k,j);
                     }
                     C(i,j) =
                         beta * C(i,j)
-                        + real( A(i,i) ) * alphaTimesBij
+                        + real( A(i,i) ) * alpha_Bij
                         + alpha * sum;
                 }
             }
@@ -180,16 +180,16 @@ void hemm(
             for(int64_t j = 0; j < n; ++j) {
                 for(int64_t i = m-1; i >= 0; --i) {
 
-                    scalar_t alphaTimesBij = alpha*B(i,j);
+                    scalar_t alpha_Bij = alpha*B(i,j);
                     scalar_t sum = zero;
 
                     for(int64_t k = i+1; k < m; ++k) {
-                        C(k,j) += A(k,i) * alphaTimesBij;
+                        C(k,j) += A(k,i) * alpha_Bij;
                         sum += conj( A(k,i) ) * B(k,j);
                     }
                     C(i,j) =
                         beta * C(i,j)
-                        + real( A(i,i) ) * alphaTimesBij
+                        + real( A(i,i) ) * alpha_Bij
                         + alpha * sum;
                 }
             }
@@ -200,21 +200,21 @@ void hemm(
             // uplo == Uplo::Upper or uplo == Uplo::General
             for(int64_t j = 0; j < n; ++j) {
 
-                scalar_t alphaTimesAkj = alpha * real( A(j,j) );
+                scalar_t alpha_Akj = alpha * real( A(j,j) );
 
                 for(int64_t i = 0; i < m; ++i)
-                    C(i,j) = beta * C(i,j) + B(i,j) * alphaTimesAkj;
+                    C(i,j) = beta * C(i,j) + B(i,j) * alpha_Akj;
 
                 for(int64_t k = 0; k < j; ++k) {
-                    alphaTimesAkj = alpha*A(k,j);
+                    alpha_Akj = alpha*A(k,j);
                     for(int64_t i = 0; i < m; ++i)
-                        C(i,j) += B(i,k) * alphaTimesAkj;
+                        C(i,j) += B(i,k) * alpha_Akj;
                 }
 
                 for(int64_t k = j+1; k < n; ++k) {
-                    alphaTimesAkj = alpha * conj( A(j,k) );
+                    alpha_Akj = alpha * conj( A(j,k) );
                     for(int64_t i = 0; i < m; ++i)
-                        C(i,j) += B(i,k) * alphaTimesAkj;
+                        C(i,j) += B(i,k) * alpha_Akj;
                 }
             }
         }
@@ -222,21 +222,21 @@ void hemm(
             // uplo == Uplo::Lower
             for(int64_t j = 0; j < n; ++j) {
 
-                scalar_t alphaTimesAkj = alpha * real( A(j,j) );
+                scalar_t alpha_Akj = alpha * real( A(j,j) );
 
                 for(int64_t i = 0; i < m; ++i)
-                    C(i,j) = beta * C(i,j) + B(i,j) * alphaTimesAkj;
+                    C(i,j) = beta * C(i,j) + B(i,j) * alpha_Akj;
 
                 for(int64_t k = 0; k < j; ++k) {
-                    alphaTimesAkj = alpha * conj( A(j,k) );
+                    alpha_Akj = alpha * conj( A(j,k) );
                     for(int64_t i = 0; i < m; ++i)
-                        C(i,j) += B(i,k) * alphaTimesAkj;
+                        C(i,j) += B(i,k) * alpha_Akj;
                 }
 
                 for(int64_t k = j+1; k < n; ++k) {
-                    alphaTimesAkj = alpha*A(k,j);
+                    alpha_Akj = alpha*A(k,j);
                     for(int64_t i = 0; i < m; ++i)
-                        C(i,j) += B(i,k) * alphaTimesAkj;
+                        C(i,j) += B(i,k) * alpha_Akj;
                 }
             }
         }
