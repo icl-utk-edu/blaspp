@@ -140,8 +140,8 @@ void her2k(
         else if (uplo == Uplo::Upper)
             uplo = Uplo::Lower;
         trans = (trans == Op::NoTrans)
-            ? Op::ConjTrans
-            : Op::NoTrans;
+                ? Op::ConjTrans
+                : Op::NoTrans;
         alpha = conj(alpha);
     }
 
@@ -158,45 +158,46 @@ void her2k(
     if (alpha == zero) {
         if (beta == zero) {
             if (uplo != Uplo::Upper) {
-                for(int64_t j = 0; j < n; ++j) {
-                    for(int64_t i = 0; i <= j; ++i)
-                        C(i,j) = zero;
+                for (int64_t j = 0; j < n; ++j) {
+                    for (int64_t i = 0; i <= j; ++i)
+                        C(i, j) = zero;
                 }
             }
             else if (uplo != Uplo::Lower) {
-                for(int64_t j = 0; j < n; ++j) {
-                    for(int64_t i = j; i < n; ++i)
-                        C(i,j) = zero;
+                for (int64_t j = 0; j < n; ++j) {
+                    for (int64_t i = j; i < n; ++i)
+                        C(i, j) = zero;
                 }
             }
             else {
-                for(int64_t j = 0; j < n; ++j) {
-                    for(int64_t i = 0; i < n; ++i)
-                        C(i,j) = zero;
+                for (int64_t j = 0; j < n; ++j) {
+                    for (int64_t i = 0; i < n; ++i)
+                        C(i, j) = zero;
                 }
             }
-        } else if (beta != one) {
+        }
+        else if (beta != one) {
             if (uplo != Uplo::Upper) {
-                for(int64_t j = 0; j < n; ++j) {
-                    for(int64_t i = 0; i < j; ++i)
-                        C(i,j) *= beta;
-                    C(j,j) = beta * real( C(j,j) );
+                for (int64_t j = 0; j < n; ++j) {
+                    for (int64_t i = 0; i < j; ++i)
+                        C(i, j) *= beta;
+                    C(j, j) = beta * real( C(j, j) );
                 }
             }
             else if (uplo != Uplo::Lower) {
-                for(int64_t j = 0; j < n; ++j) {
-                    C(j,j) = beta * real( C(j,j) );
-                    for(int64_t i = j+1; i < n; ++i)
-                        C(i,j) *= beta;
+                for (int64_t j = 0; j < n; ++j) {
+                    C(j, j) = beta * real( C(j, j) );
+                    for (int64_t i = j+1; i < n; ++i)
+                        C(i, j) *= beta;
                 }
             }
             else {
-                for(int64_t j = 0; j < n; ++j) {
-                    for(int64_t i = 0; i < j; ++i)
-                        C(i,j) *= beta;
-                    C(j,j) = beta * real( C(j,j) );
-                    for(int64_t i = j+1; i < n; ++i)
-                        C(i,j) *= beta;
+                for (int64_t j = 0; j < n; ++j) {
+                    for (int64_t i = 0; i < j; ++i)
+                        C(i, j) *= beta;
+                    C(j, j) = beta * real( C(j, j) );
+                    for (int64_t i = j+1; i < n; ++i)
+                        C(i, j) *= beta;
                 }
             }
         }
@@ -206,42 +207,42 @@ void her2k(
     // alpha != zero
     if (trans == Op::NoTrans) {
         if (uplo != Uplo::Lower) {
-        // uplo == Uplo::Upper or uplo == Uplo::General
-            for(int64_t j = 0; j < n; ++j) {
+            // uplo == Uplo::Upper or uplo == Uplo::General
+            for (int64_t j = 0; j < n; ++j) {
 
-                for(int64_t i = 0; i < j; ++i)
-                    C(i,j) *= beta;
-                C(j,j) = beta * real( C(j,j) );
+                for (int64_t i = 0; i < j; ++i)
+                    C(i, j) *= beta;
+                C(j, j) = beta * real( C(j, j) );
 
-                for(int64_t l = 0; l < k; ++l) {
+                for (int64_t l = 0; l < k; ++l) {
 
-                    scalar_t alpha_conj_Bjl = alpha*conj( B(j,l) );
-                    scalar_t conj_alpha_Ajl = conj( alpha*A(j,l) );
+                    scalar_t alpha_conj_Bjl = alpha*conj( B(j, l) );
+                    scalar_t conj_alpha_Ajl = conj( alpha*A(j, l) );
 
-                    for(int64_t i = 0; i < j; ++i) {
-                        C(i,j) += A(i,l)*alpha_conj_Bjl
-                                + B(i,l)*conj_alpha_Ajl;
+                    for (int64_t i = 0; i < j; ++i) {
+                        C(i, j) += A(i, l)*alpha_conj_Bjl
+                                   + B(i, l)*conj_alpha_Ajl;
                     }
-                    C(j,j) += 2 * real( A(j,l) * alpha_conj_Bjl );
+                    C(j, j) += 2 * real( A(j, l) * alpha_conj_Bjl );
                 }
             }
         }
         else { // uplo == Uplo::Lower
-            for(int64_t j = 0; j < n; ++j) {
+            for (int64_t j = 0; j < n; ++j) {
 
-                C(j,j) = beta * real( C(j,j) );
-                for(int64_t i = j+1; i < n; ++i)
-                    C(i,j) *= beta;
+                C(j, j) = beta * real( C(j, j) );
+                for (int64_t i = j+1; i < n; ++i)
+                    C(i, j) *= beta;
 
-                for(int64_t l = 0; l < k; ++l) {
+                for (int64_t l = 0; l < k; ++l) {
 
-                    scalar_t alpha_conj_Bjl = alpha*conj( B(j,l) );
-                    scalar_t conj_alpha_Ajl = conj( alpha*A(j,l) );
+                    scalar_t alpha_conj_Bjl = alpha*conj( B(j, l) );
+                    scalar_t conj_alpha_Ajl = conj( alpha*A(j, l) );
 
-                    C(j,j) += 2 * real( A(j,l) * alpha_conj_Bjl );
-                    for(int64_t i = j+1; i < n; ++i) {
-                        C(i,j) += A(i,l) * alpha_conj_Bjl
-                                + B(i,l) * conj_alpha_Ajl;
+                    C(j, j) += 2 * real( A(j, l) * alpha_conj_Bjl );
+                    for (int64_t i = j+1; i < n; ++i) {
+                        C(i, j) += A(i, l) * alpha_conj_Bjl
+                                   + B(i, l) * conj_alpha_Ajl;
                     }
                 }
             }
@@ -249,41 +250,41 @@ void her2k(
     }
     else { // trans == Op::ConjTrans
         if (uplo != Uplo::Lower) {
-        // uplo == Uplo::Upper or uplo == Uplo::General
-            for(int64_t j = 0; j < n; ++j) {
-                for(int64_t i = 0; i <= j; ++i) {
+            // uplo == Uplo::Upper or uplo == Uplo::General
+            for (int64_t j = 0; j < n; ++j) {
+                for (int64_t i = 0; i <= j; ++i) {
 
                     scalar_t sum1 = zero;
                     scalar_t sum2 = zero;
-                    for(int64_t l = 0; l < k; ++l) {
-                        sum1 += conj( A(l,i) ) * B(l,j);
-                        sum2 += conj( B(l,i) ) * A(l,j);
+                    for (int64_t l = 0; l < k; ++l) {
+                        sum1 += conj( A(l, i) ) * B(l, j);
+                        sum2 += conj( B(l, i) ) * A(l, j);
                     }
 
-                    C(i,j) = (i < j)
-                        ? alpha*sum1 + conj(alpha)*sum2 + beta*C(i,j)
-                        : real( alpha*sum1 + conj(alpha)*sum2 )
-                            + beta*real( C(i,j) );
+                    C(i, j) = (i < j)
+                              ? alpha*sum1 + conj(alpha)*sum2 + beta*C(i, j)
+                              : real( alpha*sum1 + conj(alpha)*sum2 )
+                              + beta*real( C(i, j) );
                 }
 
             }
         }
         else {
             // uplo == Uplo::Lower
-            for(int64_t j = 0; j < n; ++j) {
-                for(int64_t i = j; i < n; ++i) {
+            for (int64_t j = 0; j < n; ++j) {
+                for (int64_t i = j; i < n; ++i) {
 
                     scalar_t sum1 = zero;
                     scalar_t sum2 = zero;
-                    for(int64_t l = 0; l < k; ++l) {
-                        sum1 += conj( A(l,i) ) * B(l,j);
-                        sum2 += conj( B(l,i) ) * A(l,j);
+                    for (int64_t l = 0; l < k; ++l) {
+                        sum1 += conj( A(l, i) ) * B(l, j);
+                        sum2 += conj( B(l, i) ) * A(l, j);
                     }
 
-                    C(i,j) = (i > j)
-                        ? alpha*sum1 + conj(alpha)*sum2 + beta*C(i,j)
-                        : real( alpha*sum1 + conj(alpha)*sum2 )
-                            + beta*real( C(i,j) );
+                    C(i, j) = (i > j)
+                              ? alpha*sum1 + conj(alpha)*sum2 + beta*C(i, j)
+                              : real( alpha*sum1 + conj(alpha)*sum2 )
+                              + beta*real( C(i, j) );
                 }
 
             }
@@ -291,9 +292,9 @@ void her2k(
     }
 
     if (uplo == Uplo::General) {
-        for(int64_t j = 0; j < n; ++j) {
-            for(int64_t i = j+1; i < n; ++i)
-                C(i,j) = conj( C(j,i) );
+        for (int64_t j = 0; j < n; ++j) {
+            for (int64_t i = j+1; i < n; ++i)
+                C(i, j) = conj( C(j, i) );
         }
     }
 

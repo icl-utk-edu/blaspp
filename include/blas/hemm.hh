@@ -117,8 +117,8 @@ void hemm(
     // adapt if row major
     if (layout == Layout::RowMajor) {
         side = (side == Side::Left)
-            ? Side::Right
-            : Side::Left;
+               ? Side::Right
+               : Side::Left;
         if (uplo == Uplo::Lower)
             uplo = Uplo::Upper;
         else if (uplo == Uplo::Upper)
@@ -138,15 +138,15 @@ void hemm(
     // alpha == zero
     if (alpha == zero) {
         if (beta == zero) {
-            for(int64_t j = 0; j < n; ++j) {
-                for(int64_t i = 0; i < m; ++i)
-                    C(i,j) = zero;
+            for (int64_t j = 0; j < n; ++j) {
+                for (int64_t i = 0; i < m; ++i)
+                    C(i, j) = zero;
             }
         }
         else if (beta != one) {
-            for(int64_t j = 0; j < n; ++j) {
-                for(int64_t i = 0; i < m; ++i)
-                    C(i,j) *= beta;
+            for (int64_t j = 0; j < n; ++j) {
+                for (int64_t i = 0; i < m; ++i)
+                    C(i, j) *= beta;
             }
         }
         return;
@@ -156,38 +156,38 @@ void hemm(
     if (side == Side::Left) {
         if (uplo != Uplo::Lower) {
             // uplo == Uplo::Upper or uplo == Uplo::General
-            for(int64_t j = 0; j < n; ++j) {
-                for(int64_t i = 0; i < m; ++i) {
+            for (int64_t j = 0; j < n; ++j) {
+                for (int64_t i = 0; i < m; ++i) {
 
-                    scalar_t alpha_Bij = alpha*B(i,j);
+                    scalar_t alpha_Bij = alpha*B(i, j);
                     scalar_t sum = zero;
 
-                    for(int64_t k = 0; k < i; ++k) {
-                        C(k,j) += A(k,i) * alpha_Bij;
-                        sum += conj( A(k,i) ) * B(k,j);
+                    for (int64_t k = 0; k < i; ++k) {
+                        C(k, j) += A(k, i) * alpha_Bij;
+                        sum += conj( A(k, i) ) * B(k, j);
                     }
-                    C(i,j) =
-                        beta * C(i,j)
-                        + real( A(i,i) ) * alpha_Bij
+                    C(i, j) =
+                        beta * C(i, j)
+                        + real( A(i, i) ) * alpha_Bij
                         + alpha * sum;
                 }
             }
         }
         else {
             // uplo == Uplo::Lower
-            for(int64_t j = 0; j < n; ++j) {
-                for(int64_t i = m-1; i >= 0; --i) {
+            for (int64_t j = 0; j < n; ++j) {
+                for (int64_t i = m-1; i >= 0; --i) {
 
-                    scalar_t alpha_Bij = alpha*B(i,j);
+                    scalar_t alpha_Bij = alpha*B(i, j);
                     scalar_t sum = zero;
 
-                    for(int64_t k = i+1; k < m; ++k) {
-                        C(k,j) += A(k,i) * alpha_Bij;
-                        sum += conj( A(k,i) ) * B(k,j);
+                    for (int64_t k = i+1; k < m; ++k) {
+                        C(k, j) += A(k, i) * alpha_Bij;
+                        sum += conj( A(k, i) ) * B(k, j);
                     }
-                    C(i,j) =
-                        beta * C(i,j)
-                        + real( A(i,i) ) * alpha_Bij
+                    C(i, j) =
+                        beta * C(i, j)
+                        + real( A(i, i) ) * alpha_Bij
                         + alpha * sum;
                 }
             }
@@ -196,45 +196,45 @@ void hemm(
     else { // side == Side::Right
         if (uplo != Uplo::Lower) {
             // uplo == Uplo::Upper or uplo == Uplo::General
-            for(int64_t j = 0; j < n; ++j) {
+            for (int64_t j = 0; j < n; ++j) {
 
-                scalar_t alpha_Akj = alpha * real( A(j,j) );
+                scalar_t alpha_Akj = alpha * real( A(j, j) );
 
-                for(int64_t i = 0; i < m; ++i)
-                    C(i,j) = beta * C(i,j) + B(i,j) * alpha_Akj;
+                for (int64_t i = 0; i < m; ++i)
+                    C(i, j) = beta * C(i, j) + B(i, j) * alpha_Akj;
 
-                for(int64_t k = 0; k < j; ++k) {
-                    alpha_Akj = alpha*A(k,j);
-                    for(int64_t i = 0; i < m; ++i)
-                        C(i,j) += B(i,k) * alpha_Akj;
+                for (int64_t k = 0; k < j; ++k) {
+                    alpha_Akj = alpha*A(k, j);
+                    for (int64_t i = 0; i < m; ++i)
+                        C(i, j) += B(i, k) * alpha_Akj;
                 }
 
-                for(int64_t k = j+1; k < n; ++k) {
-                    alpha_Akj = alpha * conj( A(j,k) );
-                    for(int64_t i = 0; i < m; ++i)
-                        C(i,j) += B(i,k) * alpha_Akj;
+                for (int64_t k = j+1; k < n; ++k) {
+                    alpha_Akj = alpha * conj( A(j, k) );
+                    for (int64_t i = 0; i < m; ++i)
+                        C(i, j) += B(i, k) * alpha_Akj;
                 }
             }
         }
         else {
             // uplo == Uplo::Lower
-            for(int64_t j = 0; j < n; ++j) {
+            for (int64_t j = 0; j < n; ++j) {
 
-                scalar_t alpha_Akj = alpha * real( A(j,j) );
+                scalar_t alpha_Akj = alpha * real( A(j, j) );
 
-                for(int64_t i = 0; i < m; ++i)
-                    C(i,j) = beta * C(i,j) + B(i,j) * alpha_Akj;
+                for (int64_t i = 0; i < m; ++i)
+                    C(i, j) = beta * C(i, j) + B(i, j) * alpha_Akj;
 
-                for(int64_t k = 0; k < j; ++k) {
-                    alpha_Akj = alpha * conj( A(j,k) );
-                    for(int64_t i = 0; i < m; ++i)
-                        C(i,j) += B(i,k) * alpha_Akj;
+                for (int64_t k = 0; k < j; ++k) {
+                    alpha_Akj = alpha * conj( A(j, k) );
+                    for (int64_t i = 0; i < m; ++i)
+                        C(i, j) += B(i, k) * alpha_Akj;
                 }
 
-                for(int64_t k = j+1; k < n; ++k) {
-                    alpha_Akj = alpha*A(k,j);
-                    for(int64_t i = 0; i < m; ++i)
-                        C(i,j) += B(i,k) * alpha_Akj;
+                for (int64_t k = j+1; k < n; ++k) {
+                    alpha_Akj = alpha*A(k, j);
+                    for (int64_t i = 0; i < m; ++i)
+                        C(i, j) += B(i, k) * alpha_Akj;
                 }
             }
         }

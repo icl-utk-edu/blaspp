@@ -128,8 +128,8 @@ void trsm(
     // adapt if row major
     if (layout == Layout::RowMajor) {
         side = (side == Side::Left)
-            ? Side::Right
-            : Side::Left;
+               ? Side::Right
+               : Side::Left;
         if (uplo == Uplo::Lower)
             uplo = Uplo::Upper;
         else if (uplo == Uplo::Upper)
@@ -147,9 +147,9 @@ void trsm(
 
     // alpha == zero
     if (alpha == zero) {
-        for(int64_t j = 0; j < n; ++j) {
-            for(int64_t i = 0; i < m; ++i)
-                B(i,j) = zero;
+        for (int64_t j = 0; j < n; ++j) {
+            for (int64_t i = 0; i < m; ++i)
+                B(i, j) = zero;
         }
         return;
     }
@@ -158,78 +158,78 @@ void trsm(
     if (side == Side::Left) {
         if (trans == Op::NoTrans) {
             if (uplo == Uplo::Upper) {
-                for(int64_t j = 0; j < n; ++j) {
-                    for(int64_t i = 0; i < m; ++i)
-                        B(i,j) *= alpha;
-                    for(int64_t k = m-1; k >= 0; --k) {
+                for (int64_t j = 0; j < n; ++j) {
+                    for (int64_t i = 0; i < m; ++i)
+                        B(i, j) *= alpha;
+                    for (int64_t k = m-1; k >= 0; --k) {
                         if (diag == Diag::NonUnit)
-                            B(k,j) /= A(k,k);
-                        for(int64_t i = 0; i < k; ++i)
-                            B(i,j) -= A(i,k)*B(k,j);
+                            B(k, j) /= A(k, k);
+                        for (int64_t i = 0; i < k; ++i)
+                            B(i, j) -= A(i, k)*B(k, j);
                     }
                 }
             }
             else { // uplo == Uplo::Lower
-                for(int64_t j = 0; j < n; ++j) {
-                    for(int64_t i = 0; i < m; ++i)
-                        B(i,j) *= alpha;
-                    for(int64_t k = 0; k < m; ++k) {
+                for (int64_t j = 0; j < n; ++j) {
+                    for (int64_t i = 0; i < m; ++i)
+                        B(i, j) *= alpha;
+                    for (int64_t k = 0; k < m; ++k) {
                         if (diag == Diag::NonUnit)
-                            B(k,j) /= A(k,k);
-                        for(int64_t i = k+1; i < m; ++i)
-                            B(i,j) -= A(i,k)*B(k,j);
+                            B(k, j) /= A(k, k);
+                        for (int64_t i = k+1; i < m; ++i)
+                            B(i, j) -= A(i, k)*B(k, j);
                     }
                 }
             }
         }
         else if (trans == Op::Trans) {
             if (uplo == Uplo::Upper) {
-                for(int64_t j = 0; j < n; ++j) {
-                    for(int64_t i = 0; i < m; ++i) {
-                        scalar_t sum = alpha*B(i,j);
-                        for(int64_t k = 0; k < i; ++k)
-                            sum -= A(k,i)*B(k,j);
-                        B(i,j) = (diag == Diag::NonUnit)
-                            ? sum / A(i,i)
-                            : sum;
+                for (int64_t j = 0; j < n; ++j) {
+                    for (int64_t i = 0; i < m; ++i) {
+                        scalar_t sum = alpha*B(i, j);
+                        for (int64_t k = 0; k < i; ++k)
+                            sum -= A(k, i)*B(k, j);
+                        B(i, j) = (diag == Diag::NonUnit)
+                                  ? sum / A(i, i)
+                                  : sum;
                     }
                 }
             }
             else { // uplo == Uplo::Lower
-                for(int64_t j = 0; j < n; ++j) {
-                    for(int64_t i = m-1; i >= 0; --i) {
-                        scalar_t sum = alpha*B(i,j);
-                        for(int64_t k = i+1; k < m; ++k)
-                            sum -= A(k,i)*B(k,j);
-                        B(i,j) = (diag == Diag::NonUnit)
-                            ? sum / A(i,i)
-                            : sum;
+                for (int64_t j = 0; j < n; ++j) {
+                    for (int64_t i = m-1; i >= 0; --i) {
+                        scalar_t sum = alpha*B(i, j);
+                        for (int64_t k = i+1; k < m; ++k)
+                            sum -= A(k, i)*B(k, j);
+                        B(i, j) = (diag == Diag::NonUnit)
+                                  ? sum / A(i, i)
+                                  : sum;
                     }
                 }
             }
         }
         else { // trans == Op::ConjTrans
             if (uplo == Uplo::Upper) {
-                for(int64_t j = 0; j < n; ++j) {
-                    for(int64_t i = 0; i < m; ++i) {
-                        scalar_t sum = alpha*B(i,j);
-                        for(int64_t k = 0; k < i; ++k)
-                            sum -= conj(A(k,i))*B(k,j);
-                        B(i,j) = (diag == Diag::NonUnit)
-                            ? sum / conj(A(i,i))
-                            : sum;
+                for (int64_t j = 0; j < n; ++j) {
+                    for (int64_t i = 0; i < m; ++i) {
+                        scalar_t sum = alpha*B(i, j);
+                        for (int64_t k = 0; k < i; ++k)
+                            sum -= conj(A(k, i))*B(k, j);
+                        B(i, j) = (diag == Diag::NonUnit)
+                                  ? sum / conj(A(i, i))
+                                  : sum;
                     }
                 }
             }
             else { // uplo == Uplo::Lower
-                for(int64_t j = 0; j < n; ++j) {
-                    for(int64_t i = m-1; i >= 0; --i) {
-                        scalar_t sum = alpha*B(i,j);
-                        for(int64_t k = i+1; k < m; ++k)
-                            sum -= conj(A(k,i))*B(k,j);
-                        B(i,j) = (diag == Diag::NonUnit)
-                            ? sum / conj(A(i,i))
-                            : sum;
+                for (int64_t j = 0; j < n; ++j) {
+                    for (int64_t i = m-1; i >= 0; --i) {
+                        scalar_t sum = alpha*B(i, j);
+                        for (int64_t k = i+1; k < m; ++k)
+                            sum -= conj(A(k, i))*B(k, j);
+                        B(i, j) = (diag == Diag::NonUnit)
+                                  ? sum / conj(A(i, i))
+                                  : sum;
                     }
                 }
             }
@@ -238,91 +238,91 @@ void trsm(
     else { // side == Side::Right
         if (trans == Op::NoTrans) {
             if (uplo == Uplo::Upper) {
-                for(int64_t j = 0; j < n; ++j) {
-                    for(int64_t i = 0; i < m; ++i)
-                        B(i,j) *= alpha;
-                    for(int64_t k = 0; k < j; ++k) {
-                        for(int64_t i = 0; i < m; ++i)
-                            B(i,j) -= B(i,k)*A(k,j);
+                for (int64_t j = 0; j < n; ++j) {
+                    for (int64_t i = 0; i < m; ++i)
+                        B(i, j) *= alpha;
+                    for (int64_t k = 0; k < j; ++k) {
+                        for (int64_t i = 0; i < m; ++i)
+                            B(i, j) -= B(i, k)*A(k, j);
                     }
                     if (diag == Diag::NonUnit) {
-                        for(int64_t i = 0; i < m; ++i)
-                            B(i,j) /= A(j,j);
+                        for (int64_t i = 0; i < m; ++i)
+                            B(i, j) /= A(j, j);
                     }
                 }
             }
             else { // uplo == Uplo::Lower
-                for(int64_t j = n-1; j >= 0; --j) {
-                    for(int64_t i = 0; i < m; ++i)
-                        B(i,j) *= alpha;
-                    for(int64_t k = j+1; k < n; ++k) {
-                        for(int64_t i = 0; i < m; ++i)
-                            B(i,j) -= B(i,k)*A(k,j);
+                for (int64_t j = n-1; j >= 0; --j) {
+                    for (int64_t i = 0; i < m; ++i)
+                        B(i, j) *= alpha;
+                    for (int64_t k = j+1; k < n; ++k) {
+                        for (int64_t i = 0; i < m; ++i)
+                            B(i, j) -= B(i, k)*A(k, j);
                     }
                     if (diag == Diag::NonUnit) {
-                        for(int64_t i = 0; i < m; ++i)
-                            B(i,j) /= A(j,j);
+                        for (int64_t i = 0; i < m; ++i)
+                            B(i, j) /= A(j, j);
                     }
                 }
             }
         }
         else if (trans == Op::Trans) {
             if (uplo == Uplo::Upper) {
-                for(int64_t k = n-1; k >= 0; --k) {
+                for (int64_t k = n-1; k >= 0; --k) {
                     if (diag == Diag::NonUnit) {
-                        for(int64_t i = 0; i < m; ++i)
-                            B(i,k) /= A(k,k);
+                        for (int64_t i = 0; i < m; ++i)
+                            B(i, k) /= A(k, k);
                     }
-                    for(int64_t j = 0; j < k; ++j) {
-                        for(int64_t i = 0; i < m; ++i)
-                            B(i,j) -= B(i,k)*A(j,k);
+                    for (int64_t j = 0; j < k; ++j) {
+                        for (int64_t i = 0; i < m; ++i)
+                            B(i, j) -= B(i, k)*A(j, k);
                     }
-                    for(int64_t i = 0; i < m; ++i)
-                        B(i,k) *= alpha;
+                    for (int64_t i = 0; i < m; ++i)
+                        B(i, k) *= alpha;
                 }
             }
             else { // uplo == Uplo::Lower
-                for(int64_t k = 0; k < n; ++k) {
+                for (int64_t k = 0; k < n; ++k) {
                     if (diag == Diag::NonUnit) {
-                        for(int64_t i = 0; i < m; ++i)
-                            B(i,k) /= A(k,k);
+                        for (int64_t i = 0; i < m; ++i)
+                            B(i, k) /= A(k, k);
                     }
-                    for(int64_t j = k+1; j < n; ++j) {
-                        for(int64_t i = 0; i < m; ++i)
-                            B(i,j) -= B(i,k)*A(j,k);
+                    for (int64_t j = k+1; j < n; ++j) {
+                        for (int64_t i = 0; i < m; ++i)
+                            B(i, j) -= B(i, k)*A(j, k);
                     }
-                    for(int64_t i = 0; i < m; ++i)
-                        B(i,k) *= alpha;
+                    for (int64_t i = 0; i < m; ++i)
+                        B(i, k) *= alpha;
                 }
             }
         }
         else { // trans == Op::ConjTrans
             if (uplo == Uplo::Upper) {
-                for(int64_t k = n-1; k >= 0; --k) {
+                for (int64_t k = n-1; k >= 0; --k) {
                     if (diag == Diag::NonUnit) {
-                        for(int64_t i = 0; i < m; ++i)
-                            B(i,k) /= conj(A(k,k));
+                        for (int64_t i = 0; i < m; ++i)
+                            B(i, k) /= conj(A(k, k));
                     }
-                    for(int64_t j = 0; j < k; ++j) {
-                        for(int64_t i = 0; i < m; ++i)
-                            B(i,j) -= B(i,k)*conj(A(j,k));
+                    for (int64_t j = 0; j < k; ++j) {
+                        for (int64_t i = 0; i < m; ++i)
+                            B(i, j) -= B(i, k)*conj(A(j, k));
                     }
-                    for(int64_t i = 0; i < m; ++i)
-                        B(i,k) *= alpha;
+                    for (int64_t i = 0; i < m; ++i)
+                        B(i, k) *= alpha;
                 }
             }
             else { // uplo == Uplo::Lower
-                for(int64_t k = 0; k < n; ++k) {
+                for (int64_t k = 0; k < n; ++k) {
                     if (diag == Diag::NonUnit) {
-                        for(int64_t i = 0; i < m; ++i)
-                            B(i,k) /= conj(A(k,k));
+                        for (int64_t i = 0; i < m; ++i)
+                            B(i, k) /= conj(A(k, k));
                     }
-                    for(int64_t j = k+1; j < n; ++j) {
-                        for(int64_t i = 0; i < m; ++i)
-                            B(i,j) -= B(i,k)*conj(A(j,k));
+                    for (int64_t j = k+1; j < n; ++j) {
+                        for (int64_t i = 0; i < m; ++i)
+                            B(i, j) -= B(i, k)*conj(A(j, k));
                     }
-                    for(int64_t i = 0; i < m; ++i)
-                        B(i,k) *= alpha;
+                    for (int64_t i = 0; i < m; ++i)
+                        B(i, k) *= alpha;
                 }
             }
         }

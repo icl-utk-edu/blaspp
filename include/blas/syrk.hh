@@ -124,8 +124,8 @@ void syrk(
         else if (uplo == Uplo::Upper)
             uplo = Uplo::Lower;
         trans = (trans == Op::NoTrans)
-            ? Op::Trans
-            : Op::NoTrans;
+                ? Op::Trans
+                : Op::NoTrans;
     }
 
     // check remaining arguments
@@ -140,41 +140,41 @@ void syrk(
     if (alpha == zero) {
         if (beta == zero) {
             if (uplo != Uplo::Upper) {
-                for(int64_t j = 0; j < n; ++j) {
-                    for(int64_t i = 0; i <= j; ++i)
-                        C(i,j) = zero;
+                for (int64_t j = 0; j < n; ++j) {
+                    for (int64_t i = 0; i <= j; ++i)
+                        C(i, j) = zero;
                 }
             }
             else if (uplo != Uplo::Lower) {
-                for(int64_t j = 0; j < n; ++j) {
-                    for(int64_t i = j; i < n; ++i)
-                        C(i,j) = zero;
+                for (int64_t j = 0; j < n; ++j) {
+                    for (int64_t i = j; i < n; ++i)
+                        C(i, j) = zero;
                 }
             }
             else {
-                for(int64_t j = 0; j < n; ++j) {
-                    for(int64_t i = 0; i < n; ++i)
-                        C(i,j) = zero;
+                for (int64_t j = 0; j < n; ++j) {
+                    for (int64_t i = 0; i < n; ++i)
+                        C(i, j) = zero;
                 }
             }
         }
         else if (beta != one) {
             if (uplo != Uplo::Upper) {
-                for(int64_t j = 0; j < n; ++j) {
-                    for(int64_t i = 0; i <= j; ++i)
-                        C(i,j) *= beta;
+                for (int64_t j = 0; j < n; ++j) {
+                    for (int64_t i = 0; i <= j; ++i)
+                        C(i, j) *= beta;
                 }
             }
             else if (uplo != Uplo::Lower) {
-                for(int64_t j = 0; j < n; ++j) {
-                    for(int64_t i = j; i < n; ++i)
-                        C(i,j) *= beta;
+                for (int64_t j = 0; j < n; ++j) {
+                    for (int64_t i = j; i < n; ++i)
+                        C(i, j) *= beta;
                 }
             }
             else {
-                for(int64_t j = 0; j < n; ++j) {
-                    for(int64_t i = 0; i < n; ++i)
-                        C(i,j) *= beta;
+                for (int64_t j = 0; j < n; ++j) {
+                    for (int64_t i = 0; i < n; ++i)
+                        C(i, j) *= beta;
                 }
             }
         }
@@ -184,62 +184,62 @@ void syrk(
     // alpha != zero
     if (trans == Op::NoTrans) {
         if (uplo != Uplo::Lower) {
-        // uplo == Uplo::Upper or uplo == Uplo::General
-            for(int64_t j = 0; j < n; ++j) {
+            // uplo == Uplo::Upper or uplo == Uplo::General
+            for (int64_t j = 0; j < n; ++j) {
 
-                for(int64_t i = 0; i <= j; ++i)
-                    C(i,j) *= beta;
+                for (int64_t i = 0; i <= j; ++i)
+                    C(i, j) *= beta;
 
-                for(int64_t l = 0; l < k; ++l) {
-                    scalar_t alpha_Ajl = alpha*A(j,l);
-                    for(int64_t i = 0; i <= j; ++i)
-                        C(i,j) += A(i,l)*alpha_Ajl;
+                for (int64_t l = 0; l < k; ++l) {
+                    scalar_t alpha_Ajl = alpha*A(j, l);
+                    for (int64_t i = 0; i <= j; ++i)
+                        C(i, j) += A(i, l)*alpha_Ajl;
                 }
             }
         }
         else { // uplo == Uplo::Lower
-            for(int64_t j = 0; j < n; ++j) {
+            for (int64_t j = 0; j < n; ++j) {
 
-                for(int64_t i = j; i < n; ++i)
-                    C(i,j) *= beta;
+                for (int64_t i = j; i < n; ++i)
+                    C(i, j) *= beta;
 
-                for(int64_t l = 0; l < k; ++l) {
-                    scalar_t alpha_Ajl = alpha*A(j,l);
-                    for(int64_t i = j; i < n; ++i)
-                        C(i,j) += A(i,l)*alpha_Ajl;
+                for (int64_t l = 0; l < k; ++l) {
+                    scalar_t alpha_Ajl = alpha*A(j, l);
+                    for (int64_t i = j; i < n; ++i)
+                        C(i, j) += A(i, l)*alpha_Ajl;
                 }
             }
         }
     }
     else { // trans == Op::Trans
         if (uplo != Uplo::Lower) {
-        // uplo == Uplo::Upper or uplo == Uplo::General
-            for(int64_t j = 0; j < n; ++j) {
-                for(int64_t i = 0; i <= j; ++i) {
+            // uplo == Uplo::Upper or uplo == Uplo::General
+            for (int64_t j = 0; j < n; ++j) {
+                for (int64_t i = 0; i <= j; ++i) {
                     scalar_t sum = zero;
-                    for(int64_t l = 0; l < k; ++l)
-                        sum += A(l,i) * A(l,j);
-                    C(i,j) = alpha*sum + beta*C(i,j);
+                    for (int64_t l = 0; l < k; ++l)
+                        sum += A(l, i) * A(l, j);
+                    C(i, j) = alpha*sum + beta*C(i, j);
                 }
             }
         }
         else { // uplo == Uplo::Lower
-            for(int64_t j = 0; j < n; ++j) {
-                for(int64_t i = j; i < n; ++i) {
+            for (int64_t j = 0; j < n; ++j) {
+                for (int64_t i = j; i < n; ++i) {
                     scalar_t sum = zero;
-                    for(int64_t l = 0; l < k; ++l) {
-                        sum +=  A(l,i) * A(l,j);
+                    for (int64_t l = 0; l < k; ++l) {
+                        sum +=  A(l, i) * A(l, j);
                     }
-                    C(i,j) = alpha*sum + beta*C(i,j);
+                    C(i, j) = alpha*sum + beta*C(i, j);
                 }
             }
         }
     }
 
     if (uplo == Uplo::General) {
-        for(int64_t j = 0; j < n; ++j) {
-            for(int64_t i = j+1; i < n; ++i)
-                C(i,j) = C(j,i);
+        for (int64_t j = 0; j < n; ++j) {
+            for (int64_t i = j+1; i < n; ++i)
+                C(i, j) = C(j, i);
         }
     }
 

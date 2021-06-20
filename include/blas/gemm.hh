@@ -110,7 +110,8 @@ void gemm(
              A, lda,
              beta,
              C, ldc);
-    } else {
+    }
+    else {
         // check layout
         blas_error_if_msg( layout != Layout::ColMajor,
             "layout != Layout::ColMajor && layout != Layout::RowMajor" );
@@ -148,15 +149,15 @@ void gemm(
     // alpha == zero
     if (alpha == zero) {
         if (beta == zero) {
-            for(int64_t j = 0; j < n; ++j) {
-                for(int64_t i = 0; i < m; ++i)
-                    C(i,j) = zero;
+            for (int64_t j = 0; j < n; ++j) {
+                for (int64_t i = 0; i < m; ++i)
+                    C(i, j) = zero;
             }
         }
         else if (beta != one) {
-            for(int64_t j = 0; j < n; ++j) {
-                for(int64_t i = 0; i < m; ++i)
-                    C(i,j) *= beta;
+            for (int64_t j = 0; j < n; ++j) {
+                for (int64_t i = 0; i < m; ++i)
+                    C(i, j) *= beta;
             }
         }
         return;
@@ -165,99 +166,99 @@ void gemm(
     // alpha != zero
     if (transA == Op::NoTrans) {
         if (transB == Op::NoTrans) {
-            for(int64_t j = 0; j < n; ++j) {
-                for(int64_t i = 0; i < m; ++i)
-                    C(i,j) *= beta;
-                for(int64_t l = 0; l < k; ++l) {
-                    scalar_t alpha_Blj = alpha*B(l,j);
-                    for(int64_t i = 0; i < m; ++i)
-                        C(i,j) += A(i,l)*alpha_Blj;
+            for (int64_t j = 0; j < n; ++j) {
+                for (int64_t i = 0; i < m; ++i)
+                    C(i, j) *= beta;
+                for (int64_t l = 0; l < k; ++l) {
+                    scalar_t alpha_Blj = alpha*B(l, j);
+                    for (int64_t i = 0; i < m; ++i)
+                        C(i, j) += A(i, l)*alpha_Blj;
                 }
             }
         }
         else if (transB == Op::Trans) {
-            for(int64_t j = 0; j < n; ++j) {
-                for(int64_t i = 0; i < m; ++i)
-                    C(i,j) *= beta;
-                for(int64_t l = 0; l < k; ++l) {
-                    scalar_t alpha_Bjl = alpha*B(j,l);
-                    for(int64_t i = 0; i < m; ++i)
-                        C(i,j) += A(i,l)*alpha_Bjl;
+            for (int64_t j = 0; j < n; ++j) {
+                for (int64_t i = 0; i < m; ++i)
+                    C(i, j) *= beta;
+                for (int64_t l = 0; l < k; ++l) {
+                    scalar_t alpha_Bjl = alpha*B(j, l);
+                    for (int64_t i = 0; i < m; ++i)
+                        C(i, j) += A(i, l)*alpha_Bjl;
                 }
             }
         }
         else { // transB == Op::ConjTrans
-            for(int64_t j = 0; j < n; ++j) {
-                for(int64_t i = 0; i < m; ++i)
-                    C(i,j) *= beta;
-                for(int64_t l = 0; l < k; ++l) {
-                    scalar_t alpha_Bjl = alpha*conj(B(j,l));
-                    for(int64_t i = 0; i < m; ++i)
-                        C(i,j) += A(i,l)*alpha_Bjl;
+            for (int64_t j = 0; j < n; ++j) {
+                for (int64_t i = 0; i < m; ++i)
+                    C(i, j) *= beta;
+                for (int64_t l = 0; l < k; ++l) {
+                    scalar_t alpha_Bjl = alpha*conj(B(j, l));
+                    for (int64_t i = 0; i < m; ++i)
+                        C(i, j) += A(i, l)*alpha_Bjl;
                 }
             }
         }
     }
     else if (transA == Op::Trans) {
         if (transB == Op::NoTrans) {
-            for(int64_t j = 0; j < n; ++j) {
-                for(int64_t i = 0; i < m; ++i) {
+            for (int64_t j = 0; j < n; ++j) {
+                for (int64_t i = 0; i < m; ++i) {
                     scalar_t sum = zero;
-                    for(int64_t l = 0; l < k; ++l)
-                        sum += A(l,i)*B(l,j);
-                    C(i,j) = alpha*sum + beta*C(i,j);
+                    for (int64_t l = 0; l < k; ++l)
+                        sum += A(l, i)*B(l, j);
+                    C(i, j) = alpha*sum + beta*C(i, j);
                 }
             }
         }
         else if (transB == Op::Trans) {
-            for(int64_t j = 0; j < n; ++j) {
-                for(int64_t i = 0; i < m; ++i) {
+            for (int64_t j = 0; j < n; ++j) {
+                for (int64_t i = 0; i < m; ++i) {
                     scalar_t sum = zero;
-                    for(int64_t l = 0; l < k; ++l)
-                        sum += A(l,i)*B(j,l);
-                    C(i,j) = alpha*sum + beta*C(i,j);
+                    for (int64_t l = 0; l < k; ++l)
+                        sum += A(l, i)*B(j, l);
+                    C(i, j) = alpha*sum + beta*C(i, j);
                 }
             }
         }
         else { // transB == Op::ConjTrans
-            for(int64_t j = 0; j < n; ++j) {
-                for(int64_t i = 0; i < m; ++i) {
+            for (int64_t j = 0; j < n; ++j) {
+                for (int64_t i = 0; i < m; ++i) {
                     scalar_t sum = zero;
-                    for(int64_t l = 0; l < k; ++l)
-                        sum += A(l,i)*conj(B(j,l));
-                    C(i,j) = alpha*sum + beta*C(i,j);
+                    for (int64_t l = 0; l < k; ++l)
+                        sum += A(l, i)*conj(B(j, l));
+                    C(i, j) = alpha*sum + beta*C(i, j);
                 }
             }
         }
     }
     else { // transA == Op::ConjTrans
         if (transB == Op::NoTrans) {
-            for(int64_t j = 0; j < n; ++j) {
-                for(int64_t i = 0; i < m; ++i) {
+            for (int64_t j = 0; j < n; ++j) {
+                for (int64_t i = 0; i < m; ++i) {
                     scalar_t sum = zero;
-                    for(int64_t l = 0; l < k; ++l)
-                        sum += conj(A(l,i))*B(l,j);
-                    C(i,j) = alpha*sum + beta*C(i,j);
+                    for (int64_t l = 0; l < k; ++l)
+                        sum += conj(A(l, i))*B(l, j);
+                    C(i, j) = alpha*sum + beta*C(i, j);
                 }
             }
         }
         else if (transB == Op::Trans) {
-            for(int64_t j = 0; j < n; ++j) {
-                for(int64_t i = 0; i < m; ++i) {
+            for (int64_t j = 0; j < n; ++j) {
+                for (int64_t i = 0; i < m; ++i) {
                     scalar_t sum = zero;
-                    for(int64_t l = 0; l < k; ++l)
-                        sum += conj(A(l,i))*B(j,l);
-                    C(i,j) = alpha*sum + beta*C(i,j);
+                    for (int64_t l = 0; l < k; ++l)
+                        sum += conj(A(l, i))*B(j, l);
+                    C(i, j) = alpha*sum + beta*C(i, j);
                 }
             }
         }
         else { // transB == Op::ConjTrans
-            for(int64_t j = 0; j < n; ++j) {
-                for(int64_t i = 0; i < m; ++i) {
+            for (int64_t j = 0; j < n; ++j) {
+                for (int64_t i = 0; i < m; ++i) {
                     scalar_t sum = zero;
-                    for(int64_t l = 0; l < k; ++l)
-                        sum += A(l,i)*B(j,l); // little improvement here
-                    C(i,j) = alpha*conj(sum) + beta*C(i,j);
+                    for (int64_t l = 0; l < k; ++l)
+                        sum += A(l, i)*B(j, l); // little improvement here
+                    C(i, j) = alpha*conj(sum) + beta*C(i, j);
                 }
             }
         }
