@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+# Copyright (c) 2017-2021, University of Tennessee. All rights reserved.
 # SPDX-License-Identifier: BSD-3-Clause
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -12,7 +12,7 @@ from __future__ import print_function
 import sys
 import re
 import config
-from   config import Error, font, print_warn
+from   config import Error, font, print_msg, print_warn
 import config.lapack
 
 #-------------------------------------------------------------------------------
@@ -70,17 +70,32 @@ def main():
     except Error:
         print_warn( 'BLAS++ needs LAPACK only in testers.' )
 
-    try:
-        config.cublas_library()
-        config.environ.merge({'devtarget': 'cuda'})
-    except Error:
-        print_warn( 'BLAS++ CUDA wrappers will not be compiled.' )
+    gpu_backend = config.environ['gpu_backend'] or 'auto'
+    cuda_found = False
+    if (re.search( r'^(auto|cuda)$', gpu_backend )):
+        try:
+            config.cublas_library()
+            cuda_found = True
+            print_msg( "Building CUDA support in BLAS++" )
+        except Error as ex:
+            print_msg( "Not building CUDA support in BLAS++" )
+            if (gpu_backend == 'cuda'):
+                raise ex  # fatal
+    else:
+        print_warn( 'Skipping CUDA search. gpu_backend = ' + gpu_backend )
 
-    try:
-        config.rocblas_library()
-        config.environ.merge({'devtarget': 'rocm'})
-    except Error:
-        print_warn( 'BLAS++ ROCm wrappers will not be compiled.' )
+    hip_found = False
+    if (not cuda_found and re.search( r'^(auto|hip)$', gpu_backend )):
+        try:
+            config.rocblas_library()
+            hip_found = True
+            print_msg( "Building HIP/ROCm support in BLAS++" )
+        except Error as ex:
+            print_msg( "Not building HIP/ROCm support in BLAS++" )
+            if (gpu_backend == 'hip'):
+                raise ex  # fatal
+    else:
+        print_warn( 'Skipping HIP/ROCm search. gpu_backend = ' + gpu_backend )
 
     testsweeper = config.get_package(
         'testsweeper',

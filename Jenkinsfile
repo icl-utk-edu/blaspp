@@ -1,7 +1,7 @@
 pipeline {
 
 agent none
-triggers { cron ('H H(4-5) * * *') }
+triggers { pollSCM 'H/10 * * * *' }
 stages {
     //======================================================================
     stage('Parallel Build') {
@@ -70,12 +70,12 @@ stages {
 
                         echo "========================================"
                         cd test
-                        ./run_tests.py --blas1 --blas2 --blas3 --small --xml ${top}/report-${maker}.xml
-                        ./run_tests.py --batch-blas3          --xsmall --xml ${top}/report-${maker}-batch.xml
+                        ./run_tests.py --blas1 --blas2 --blas3 --quick --xml ${top}/report-${maker}.xml
+                        ./run_tests.py --batch-blas3           --quick --xml ${top}/report-${maker}-batch.xml
 
                         # CUDA or HIP
-                        ./run_tests.py --blas3-device          --small --xml ${top}/report-${maker}-device.xml
-                        ./run_tests.py --batch-blas3-device   --xsmall --xml ${top}/report-${maker}-batch-device.xml
+                        ./run_tests.py --blas3-device          --quick --xml ${top}/report-${maker}-device.xml
+                        ./run_tests.py --batch-blas3-device    --quick --xml ${top}/report-${maker}-batch-device.xml
                         '''
                     } // steps
 

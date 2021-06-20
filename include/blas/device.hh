@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2021, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -13,12 +13,19 @@
     #include <cuda_runtime.h>
     #include <cublas_v2.h>
 #elif defined(BLAS_HAVE_ROCBLAS)
-    /* Default to HCC platform on ROCm */
-    #if !defined(__HIP_PLATFORM_NVCC__) && !defined(__HIP_PLATFORM_HCC__)
-      #define __HIP_PLATFORM_HCC__
+    // Default to HCC platform on ROCm
+    #if ! defined(__HIP_PLATFORM_NVCC__) && ! defined(__HIP_PLATFORM_HCC__)
+        #define __HIP_PLATFORM_HCC__
+        #define BLAS_HIP_PLATFORM_HCC
     #endif
+
     #include <hip/hip_runtime.h>
     #include <rocblas.h>
+
+    #ifdef BLAS_HIP_PLATFORM_HCC
+        #undef __HIP_PLATFORM_HCC__
+        #undef BLAS_HIP_PLATFORM_HCC
+    #endif
 #endif
 
 namespace blas {

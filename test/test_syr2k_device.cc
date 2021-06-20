@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2021, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -39,6 +39,11 @@ void test_syr2k_device_work( Params& params, bool run )
 
     if (! run)
         return;
+
+    if (blas::get_device_count() == 0) {
+        printf("skipping: no GPU devices or no GPU support\n" );
+        return;
+    }
 
     // setup
     int64_t Am = (trans == Op::NoTrans ? n : k);

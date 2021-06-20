@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2021, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -40,6 +40,11 @@ void test_trsm_device_work( Params& params, bool run )
 
     if (! run)
         return;
+
+    if (blas::get_device_count() == 0) {
+        printf("skipping: no GPU devices or no GPU support\n" );
+        return;
+    }
 
     // ----------
     // setup
@@ -92,15 +97,24 @@ void test_trsm_device_work( Params& params, bool run )
     lapack_potrf( uplo2str(uplo), Am, A, lda, &info );
     require( info == 0 );
 
-    blas::device_setmatrix(Am, Am, A, lda, dA, lda, queue);
-    blas::device_setmatrix(Bm, Bn, B, ldb, dB, ldb, queue);
-    queue.sync();
-
     // norms for error check
     real_t work[1];
     real_t Anorm = lapack_lantr( "f", uplo2str(uplo), diag2str(diag),
                                  Am, Am, A, lda, work );
     real_t Bnorm = lapack_lange( "f", Bm, Bn, B, ldb, work );
+
+    // if row-major, transpose A
+    if (layout == Layout::RowMajor) {
+        for (int64_t j = 0; j < Am; ++j) {
+            for (int64_t i = 0; i < j; ++i) {
+                std::swap( A[ i + j*lda ], A[ j + i*lda ] );
+            }
+        }
+    }
+
+    blas::device_setmatrix(Am, Am, A, lda, dA, lda, queue);
+    blas::device_setmatrix(Bm, Bn, B, ldb, dB, ldb, queue);
+    queue.sync();
 
     // test error exits
     assert_throw( blas::trsm( Layout(0), side,    uplo,    trans, diag,     m,  n, alpha, dA, lda, dB, ldb, queue), blas::Error );

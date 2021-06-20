@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2021, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -415,13 +415,19 @@ inline void throw_if( bool cond, const char* condstr, const char* func )
     }
 }
 
+#if defined(_MSC_VER)
+    #define BLASPP_ATTR_FORMAT(I, F)
+#else
+    #define BLASPP_ATTR_FORMAT(I, F) __attribute__((format( printf, I, F )))
+#endif
+
 // -----------------------------------------------------------------------------
 // internal helper function; throws Error if cond is true
 // uses printf-style format for error message
 // called by blas_error_if_msg macro
 // condstr is ignored, but differentiates this from other version.
 inline void throw_if( bool cond, const char* condstr, const char* func, const char* format, ... )
-    __attribute__((format( printf, 4, 5 )));
+    BLASPP_ATTR_FORMAT(4, 5);
 
 inline void throw_if( bool cond, const char* condstr, const char* func, const char* format, ... )
 {
@@ -439,7 +445,7 @@ inline void throw_if( bool cond, const char* condstr, const char* func, const ch
 // uses printf-style format for error message
 // called by blas_error_if_msg macro
 inline void abort_if( bool cond, const char* func,  const char* format, ... )
-    __attribute__((format( printf, 3, 4 )));
+    BLASPP_ATTR_FORMAT(3, 4);
 
 inline void abort_if( bool cond, const char* func,  const char* format, ... )
 {
@@ -453,6 +459,8 @@ inline void abort_if( bool cond, const char* func,  const char* format, ... )
         abort();
     }
 }
+
+#undef BLASPP_ATTR_FORMAT
 
 }  // namespace internal
 

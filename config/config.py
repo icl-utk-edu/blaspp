@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+# Copyright (c) 2017-2021, University of Tennessee. All rights reserved.
 # SPDX-License-Identifier: BSD-3-Clause
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -640,7 +640,7 @@ def rocblas_library():
     print_header( 'ROCm and rocBLAS libraries' )
     print_test( libs )
     env = {'LIBS': libs,
-           'CXXFLAGS': '-D__HIP_PLATFORM_HCC__ ' + define('HAVE_ROCBLAS')}
+           'CXXFLAGS': define('HAVE_ROCBLAS')}
     (rc, out, err) = compile_exe( 'config/rocblas.cc', env )
     print_result( libs, rc )
     if (rc == 0):

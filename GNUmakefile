@@ -4,7 +4,7 @@
 # Configuration
 # Variables defined in make.inc, or use make's defaults:
 #   CXX, CXXFLAGS   -- C compiler and flags
-#   LDFLAGS, LIBS   -- Linker options, library paths, and libraries
+#   LD, LDFLAGS, LIBS -- Linker, options, library paths, and libraries
 #   AR, RANLIB      -- Archiver, ranlib updates library TOC
 #   prefix          -- where to install BLAS++
 
@@ -29,6 +29,11 @@ make.inc:
 # Defaults if not given in make.inc. GNU make doesn't have defaults for these.
 RANLIB   ?= ranlib
 prefix   ?= /opt/slate
+
+# Default LD=ld won't work; use CXX. Can override in make.inc or environment.
+ifeq ($(origin LD),default)
+    LD = $(CXX)
+endif
 
 # auto-detect OS
 # $OSTYPE may not be exported from the shell, so echo it
@@ -156,7 +161,7 @@ lib    = lib/libblaspp.$(lib_ext)
 
 $(lib_so): $(lib_obj)
 	mkdir -p lib
-	$(CXX) $(LDFLAGS) -shared $(install_name) $(lib_obj) $(LIBS) -o $@
+	$(LD) $(LDFLAGS) -shared $(install_name) $(lib_obj) $(LIBS) -o $@
 
 $(lib_a): $(lib_obj)
 	mkdir -p lib
@@ -180,7 +185,7 @@ endif
 #-------------------------------------------------------------------------------
 # tester
 $(tester): $(tester_obj) $(lib) $(testsweeper)
-	$(CXX) $(TEST_LDFLAGS) $(LDFLAGS) $(tester_obj) \
+	$(LD) $(TEST_LDFLAGS) $(LDFLAGS) $(tester_obj) \
 		$(TEST_LIBS) $(LIBS) -o $@
 
 # sub-directory rules
@@ -221,7 +226,7 @@ LDFLAGS_clean  = $(filter-out -fPIC, $(LDFLAGS))
 
 .PHONY: $(pkg)
 $(pkg):
-	perl -pe 's:#VERSION:2020.10.02:; \
+	perl -pe 's:#VERSION:2021.04.01:; \
 	          s:#PREFIX:${prefix}:; \
 	          s:#CXXFLAGS:${CXXFLAGS_clean}:; \
 	          s:#CPPFLAGS:${CPPFLAGS_clean}:; \
@@ -314,6 +319,7 @@ echo:
 	@echo "CXX           = $(CXX)"
 	@echo "CXXFLAGS      = $(CXXFLAGS)"
 	@echo
+	@echo "LD            = $(LD)"
 	@echo "LDFLAGS       = $(LDFLAGS)"
 	@echo "LIBS          = $(LIBS)"
 	@echo

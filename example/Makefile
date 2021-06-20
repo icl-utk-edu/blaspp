@@ -1,3 +1,8 @@
+# Copyright (c) 2017-2021, University of Tennessee. All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause
+# This program is free software: you can redistribute it and/or modify it under
+# the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
+
 # CXX compiler must match the one used to compiler BLAS++.
 # Set it in your environment or here.
 # Sadly, pkg-config doesn't provide a way to query CXX,
@@ -26,14 +31,31 @@ endif
 
 #-------------------------------------------------------------------------------
 # Rules
-example_gemm: example_gemm.o
+
+exe = example_gemm example_util
+txt = ${addsuffix .txt, ${exe}}
+
+.DELETE_ON_ERROR:
+.SECONDARY:
+.SUFFIXES:
+.DEFAULT_GOAL := all
+
+all: ${exe}
+
+%: %.o
 	$(CXX) -o $@ $^ $(LIBS)
 
 %.o: %.cc
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 clean:
-	-rm -f example_gemm *.o
+	-rm -f ${exe} ${txt} *.o *.d
+
+run: ${txt}
+
+# run examples
+%.txt: %
+	./$< > $@
 
 #-------------------------------------------------------------------------------
 # Debugging
@@ -43,3 +65,6 @@ echo:
 	@echo "CXX        $(CXX)"
 	@echo "CXXFLAGS   $(CXXFLAGS)"
 	@echo "LIBS       $(LIBS)"
+	@echo
+	@echo "exe       $(exe)"
+	@echo "txt       $(txt)"

@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2021, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -30,6 +30,10 @@
     #include <complex>
     typedef std::complex<float>  blas_complex_float;
     typedef std::complex<double> blas_complex_double;
+#elif defined(_MSC_VER)
+    /* MSVC has no C99 _Complex */
+    typedef struct { float real, imag; }  blas_complex_float;
+    typedef struct { double real, imag; } blas_complex_double;
 #else
     /* otherwise, by default use C99 _Complex */
     #include <complex.h>
