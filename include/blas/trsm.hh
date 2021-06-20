@@ -134,9 +134,7 @@ void trsm(
             uplo = Uplo::Upper;
         else if (uplo == Uplo::Upper)
             uplo = Uplo::Lower;
-        int64_t k = m;
-                m = n;
-                n = k;
+        std::swap( m, n );
     }
 
     // check remaining arguments
