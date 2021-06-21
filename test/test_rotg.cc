@@ -6,6 +6,7 @@
 #include "test.hh"
 #include "cblas_wrappers.hh"
 #include "lapack_wrappers.hh"
+#include "print_matrix.hh"
 
 // -----------------------------------------------------------------------------
 template< typename T >
@@ -18,6 +19,7 @@ void test_rotg_work( Params& params, bool run )
 
     // get & mark input values
     int64_t n = params.dim.n();
+    int verbose = params.verbose();
 
     // mark non-standard output values
     params.ref_time();
@@ -42,6 +44,11 @@ void test_rotg_work( Params& params, bool run )
     aref = a;
     bref = b;
 
+    if (verbose >= 2) {
+        printf( "a_in  = " );  print_vector( n, &a[0], 1 );
+        printf( "b_in  = " );  print_vector( n, &b[0], 1 );
+    }
+
     // run test
     testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
@@ -50,6 +57,13 @@ void test_rotg_work( Params& params, bool run )
     }
     time = get_wtime() - time;
     params.time() = time * 1000;  // msec
+
+    if (verbose >= 2) {
+        printf( "a_out = " );  print_vector( n, &a[0], 1 );
+        printf( "b_out = " );  print_vector( n, &b[0], 1 );
+        printf( "c     = " );  print_vector( n, &c[0], 1 );
+        printf( "s     = " );  print_vector( n, &s[0], 1 );
+    }
 
     if (params.check() == 'y') {
         // run reference
@@ -60,6 +74,13 @@ void test_rotg_work( Params& params, bool run )
         }
         time = get_wtime() - time;
         params.ref_time() = time * 1000;  // msec
+
+        if (verbose >= 2) {
+            printf( "a_ref = " );  print_vector( n, &aref[0], 1 );
+            printf( "b_ref = " );  print_vector( n, &bref[0], 1 );
+            printf( "c_ref = " );  print_vector( n, &cref[0], 1 );
+            printf( "s_ref = " );  print_vector( n, &sref[0], 1 );
+        }
 
         // get max error of all outputs
         cblas_axpy( n, -1.0, &a[0], 1, &aref[0], 1 );
