@@ -118,7 +118,7 @@ void rotmg(
     T h21 = zero;
     T h22 = zero;
 
-    if(*d1 < zero) {
+    if (*d1 < zero) {
         param[0] = -1;
         *d1 = zero;
         *d2 = zero;
@@ -126,7 +126,7 @@ void rotmg(
     }
     else {
         T p2 = (*d2)*y1;
-        if(p2 == zero) {
+        if (p2 == zero) {
             param[0] = -2;
             return;
         }
@@ -135,18 +135,18 @@ void rotmg(
         T q2 = p2*y1;
         T q1 = p1*x1;
 
-        if( abs(q1) > abs(q2) ) {
+        if (abs(q1) > abs(q2)) {
             param[0] = zero;
             h21 = -y1/x1;
             h12 = p2/p1;
             T u = one - h12*h21;
-            if( u > zero ) {
+            if (u > zero) {
                 *d1 /= u;
                 *d2 /= u;
                 x1 *= u;
             }
         }
-        else if(q2 < zero) {
+        else if (q2 < zero) {
             param[0] = -1;
             *d1 = zero;
             *d2 = zero;
@@ -163,9 +163,9 @@ void rotmg(
             x1 = y1*u;
         }
 
-        if(*d1 != zero) {
-            while( (*d1 <= rgamsq) || (*d1 >= gamsq) ) {
-                if(param[0] == 0) {
+        if (*d1 != zero) {
+            while ((*d1 <= rgamsq) || (*d1 >= gamsq)) {
+                if (param[0] == 0) {
                     h11 = one;
                     h22 = one;
                     param[0] = -1;
@@ -175,7 +175,7 @@ void rotmg(
                     h12 = one;
                     param[0] = -1;
                 }
-                if(*d1 <= rgamsq) {
+                if (*d1 <= rgamsq) {
                     *d1 *= gam*gam;
                     x1 /= gam;
                     h11 /= gam;
@@ -190,9 +190,9 @@ void rotmg(
             }
         }
 
-        if(*d2 != zero) {
-            while( (abs(*d2) <= rgamsq) || (abs(*d2) >= gamsq) ) {
-                if(param[0] == 0) {
+        if (*d2 != zero) {
+            while ((abs(*d2) <= rgamsq) || (abs(*d2) >= gamsq)) {
+                if (param[0] == 0) {
                     h11=one;
                     h22=one;
                     param[0]=-1;
@@ -202,7 +202,7 @@ void rotmg(
                     h12=one;
                     param[0]=-1;
                 }
-                if(abs(*d2) <= rgamsq) {
+                if (abs(*d2) <= rgamsq) {
                     *d2 *= gam*gam;
                     h21 /= gam;
                     h22 /= gam;
@@ -216,13 +216,13 @@ void rotmg(
         }
     }
 
-    if(param[0] < 0) {
+    if (param[0] < 0) {
         param[1] = h11;
         param[2] = h21;
         param[3] = h12;
         param[4] = h22;
     }
-    else if(param[0] == 0) {
+    else if (param[0] == 0) {
         param[2] = h21;
         param[3] = h12;
     }

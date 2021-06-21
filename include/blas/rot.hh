@@ -65,7 +65,7 @@ void rot(
     blas_error_if( incy == 0 );
 
     // quick return
-    if ( n == 0 || (c == 1 && s == 0) )
+    if (n == 0 || (c == 1 && s == 0))
         return;
 
     if (incx == 1 && incy == 1) {

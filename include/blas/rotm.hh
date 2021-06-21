@@ -61,12 +61,12 @@ void rotm(
     blas_error_if( incy == 0 );
 
     // quick return
-    if ( n == 0 || param[0] == -2 )
+    if (n == 0 || param[0] == -2)
         return;
 
     if (incx == 1 && incy == 1) {
         // unit stride
-        if ( param[0] == -1 ) {
+        if (param[0] == -1) {
             const scalar_t& h11 = param[1];
             const scalar_t& h21 = param[2];
             const scalar_t& h12 = param[3];
@@ -77,7 +77,7 @@ void rotm(
                 x[i] = stmp;
             }
         }
-        else if ( param[0] == 1 ) {
+        else if (param[0] == 1) {
             const scalar_t& h11 = param[1];
             const scalar_t& h22 = param[4];
             for (int64_t i = 0; i < n; ++i) {
@@ -86,7 +86,7 @@ void rotm(
                 x[i] = stmp;
             }
         }
-        else if ( param[0] == 0 ) {
+        else if (param[0] == 0) {
             const scalar_t& h21 = param[2];
             const scalar_t& h12 = param[3];
             for (int64_t i = 0; i < n; ++i) {
@@ -103,7 +103,7 @@ void rotm(
         // non-unit stride
         int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
         int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
-        if ( param[0] == -1 ) {
+        if (param[0] == -1) {
             const scalar_t& h11 = param[1];
             const scalar_t& h21 = param[2];
             const scalar_t& h12 = param[3];
@@ -116,7 +116,7 @@ void rotm(
                 iy += incy;
             }
         }
-        else if ( param[0] == 1 ) {
+        else if (param[0] == 1) {
             const scalar_t& h11 = param[1];
             const scalar_t& h22 = param[4];
             for (int64_t i = 0; i < n; ++i) {
@@ -127,7 +127,7 @@ void rotm(
                 iy += incy;
             }
         }
-        else if ( param[0] == 0 ) {
+        else if (param[0] == 0) {
             const scalar_t& h21 = param[2];
             const scalar_t& h12 = param[3];
             for (int64_t i = 0; i < n; ++i) {

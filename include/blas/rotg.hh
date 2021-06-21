@@ -43,24 +43,24 @@ namespace blas {
 ///
 /// @ingroup rotg
 
-template< typename TX, typename TY >
+template <typename TA, typename TB>
 void rotg(
-    TX *a,
-    TY *b,
-    blas::real_type<TX, TY>   *c,
-    blas::scalar_type<TX, TY> *s )
+    TA *a,
+    TB *b,
+    blas::real_type<TA, TB>   *c,
+    blas::scalar_type<TA, TB> *s )
 {
-    typedef real_type<TX, TY> real_t;
-    typedef scalar_type<TX, TY> scalar_t;
+    typedef real_type<TA, TB> real_t;
+    typedef scalar_type<TA, TB> scalar_t;
 
     #define ABSSQ(t_) real(t_)*real(t_) + imag(t_)*imag(t_)
 
     // Constants
-    const real_t oneReal = 1;
-    const real_t zeroReal = 0;
+    const real_t r_one = 1;
+    const real_t r_zero = 0;
     const scalar_t zero = 0;
-    const TX zeroTX = 0;
-    const TY zeroTY = 0;
+    const TA zero_ta = 0;
+    const TB zero_tb = 0;
 
     // Scaling constants
     const real_t safmin = safe_min<real_t>();
@@ -69,21 +69,21 @@ void rotg(
     const real_t rtmax = root_max<real_t>();
 
     // Conventions
-    const TX& f = *a;
-    const TY& g = *b;
-    TX& r = *a;
+    const TA& f = *a;
+    const TB& g = *b;
+    TA& r = *a;
 
     // quick return
-    if ( g == zeroTY ) {
-        *c = oneReal;
+    if (g == zero_tb) {
+        *c = r_one;
         *s = zero;
         return;
     }
 
-    if ( f == zeroTX ) {
-        *c = zeroReal;
+    if (f == zero_ta) {
+        *c = r_zero;
         real_t g1 = max( abs(real(g)), abs(imag(g)) );
-        if( g1 > rtmin && g1 < rtmax ) {
+        if (g1 > rtmin && g1 < rtmax) {
             // Use unscaled algorithm
             real_t g2 = ABSSQ( g );
             real_t d = sqrt( g2 );
@@ -93,7 +93,7 @@ void rotg(
         else {
             // Use scaled algorithm
             real_t u = min( safmax, max( safmin, g1 ) );
-            real_t uu = oneReal / u;
+            real_t uu = r_one / u;
             scalar_t gs = g*uu;
             real_t g2 = ABSSQ( gs );
             real_t d = sqrt( g2 );
@@ -104,16 +104,16 @@ void rotg(
     else {
         real_t f1 = max( abs(real(f)), abs(imag(f)) );
         real_t g1 = max( abs(real(g)), abs(imag(g)) );
-        if( f1 > rtmin && f1 < rtmax &&
-            g1 > rtmin && g1 < rtmax ) {
+        if ( f1 > rtmin && f1 < rtmax &&
+             g1 > rtmin && g1 < rtmax ) {
             // Use unscaled algorithm
             real_t f2 = ABSSQ( f );
             real_t g2 = ABSSQ( g );
             real_t h2 = f2 + g2;
             real_t d = ( f2 > rtmin && h2 < rtmax )
-                     ? sqrt( f2*h2 )
-                     : sqrt( f2 )*sqrt( h2 );
-            real_t p = oneReal / d;
+                       ? sqrt( f2*h2 )
+                       : sqrt( f2 )*sqrt( h2 );
+            real_t p = r_one / d;
             *c = f2*p;
             *s = conj( g )*( f*p );
             r = f*( h2*p );
@@ -121,15 +121,15 @@ void rotg(
         else {
             // Use scaled algorithm
             real_t u = min( safmax, max( safmin, f1, g1 ) );
-            real_t uu = oneReal / u;
+            real_t uu = r_one / u;
             scalar_t gs = g*uu;
             real_t g2 = ABSSQ( gs );
             real_t f2, h2, w;
             scalar_t fs;
-            if( f1*uu < rtmin ) {
+            if (f1*uu < rtmin) {
                 // f is not well-scaled when scaled by g1.
                 real_t v = min( safmax, max( safmin, f1 ) );
-                real_t vv = oneReal / v;
+                real_t vv = r_one / v;
                 w = v * uu;
                 fs = f*vv;
                 f2 = ABSSQ( fs );
@@ -137,15 +137,15 @@ void rotg(
             }
             else {
                 // Otherwise use the same scaling for f and g.
-                w = oneReal;
+                w = r_one;
                 fs = f*uu;
                 f2 = ABSSQ( fs );
                 h2 = f2 + g2;
             }
             real_t d = ( f2 > rtmin && h2 < rtmax )
-                     ? sqrt( f2*h2 )
-                     : sqrt( f2 )*sqrt( h2 );
-            real_t p = oneReal / d;
+                       ? sqrt( f2*h2 )
+                       : sqrt( f2 )*sqrt( h2 );
+            real_t p = r_one / d;
             *c = ( f2*p )*w;
             *s = conj( gs )*( fs*p );
             r = ( fs*( h2*p ) )*u;
