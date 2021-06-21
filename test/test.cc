@@ -207,6 +207,8 @@ Params::Params():
     // min, max are ignored
     //          name,                w, p, type,              default,               min, max, help
     error     ( "BLAS++\nerror",    11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "numerical error" ),
+    error2    ( "BLAS++\nerror2",   11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "numerical error 2" ),
+    error3    ( "BLAS++\nerror3",   11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "numerical error 3" ),
     time      ( "BLAS++\ntime (s)", 11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "time to solution" ),
     gflops    ( "BLAS++\nGflop/s",  11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "Gflop/s rate" ),
     gbytes    ( "BLAS++\nGbyte/s",  11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "Gbyte/s rate" ),
@@ -221,6 +223,8 @@ Params::Params():
     // mark standard set of output fields as used
     okay();
     error();
+    error2();
+    error3();
     time();
 
     // mark framework parameters as used, so they will be accepted on the command line

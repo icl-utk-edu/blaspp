@@ -51,6 +51,8 @@ public:
 
     // ----- output parameters
     testsweeper::ParamScientific error;
+    testsweeper::ParamScientific error2;
+    testsweeper::ParamScientific error3;
     testsweeper::ParamDouble     time;
     testsweeper::ParamDouble     gflops;
     testsweeper::ParamDouble     gbytes;

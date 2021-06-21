@@ -32,8 +32,8 @@ void test_rotg_work( Params& params, bool run )
         return;
 
     // setup
-    std::vector<T> a( n ), aref( n );
-    std::vector<T> b( n ), bref( n );
+    std::vector<T> a( n ), aref( n ), a_in( n );
+    std::vector<T> b( n ), bref( n ), b_in( n );
     std::vector<T> s( n ), sref( n );
     std::vector< blas::real_type<T> > c( n ), cref( n );
 
@@ -47,6 +47,12 @@ void test_rotg_work( Params& params, bool run )
     if (verbose >= 2) {
         printf( "a_in  = " );  print_vector( n, &a[0], 1 );
         printf( "b_in  = " );  print_vector( n, &b[0], 1 );
+    }
+
+    // Save some data to check later
+    if (params.check() == 'y') {
+        cblas_copy( n, &a[0], 1, &a_in[0], 1 );
+        cblas_copy( n, &b[0], 1, &b_in[0], 1 );
     }
 
     // run test
@@ -104,6 +110,31 @@ void test_rotg_work( Params& params, bool run )
         real_t u = 0.5 * std::numeric_limits< real_t >::epsilon();
         params.error() = error;
         params.okay() = (error < 10*u);
+
+        // Applying the rotations $\begin{bmatrix} c & s \\ -s & c \end{bmatrix}$
+        // to the vectors $[ a_i, b_i ]^T$
+        // Expected output: $[ \sqrt{ a_i^2 + b_i^2 } & 0 ]$
+
+        #define ABSSQ(t_) real(t_)*real(t_) + imag(t_)*imag(t_)
+
+        std::vector<real_t> diffNorm2( n );
+        for (int64_t i = 0; i < n; ++i) {
+            diffNorm2[i] = ABSSQ( a_in[i] ) + ABSSQ( b_in[i] );
+            blas::rot( 1, &a_in[i], 1, &b_in[i], 1, c[i], s[i] );
+            diffNorm2[i] -= ABSSQ( a_in[i] );
+        }
+
+        #undef ABSSQ
+
+        params.error2() = cblas_nrm2( n, &b_in[0], 1 );
+        if (verbose >= 2) {
+            printf( "null vector = " );  print_vector( n, &b_in[0], 1 );
+        }
+
+        params.error3() = cblas_nrm2( n, &diffNorm2[0], 1 );
+        if (verbose >= 2) {
+            printf( "null vector = " );  print_vector( n, &diffNorm2[0], 1 );
+        }
     }
 }
 

@@ -64,8 +64,10 @@ void rot(
     blas_error_if( incx == 0 );
     blas_error_if( incy == 0 );
 
+    scalar_t zero( 0 );
+
     // quick return
-    if (n == 0 || (c == 1 && s == 0))
+    if (n == 0 || (c == 1 && s == zero))
         return;
 
     if (incx == 1 && incy == 1) {
