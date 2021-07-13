@@ -73,7 +73,9 @@ void test_schur_gemm_work( Params& params, bool run )
     TA* A    = new TA[ size_A ];
     TB* B    = new TB[ size_B ];
     TC* C    = new TC[ size_C ];
-    TC* Cref = new TC[ size_C ];
+    TC* Cref = nullptr;
+    if (params.ref() == 'y' || params.check() == 'y')
+        Cref = new TC[ size_C ];
 
     // device specifics
     blas::Queue queue( device, batch );
@@ -102,15 +104,14 @@ void test_schur_gemm_work( Params& params, bool run )
     std::vector<scalar_t> alpha(1, alpha_);
     std::vector<scalar_t> beta(1, beta_);
 
-    printf("lapack_larnv\n");
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
     lapack_larnv( idist, iseed, size_A, A );
     lapack_larnv( idist, iseed, size_B, B );
     lapack_larnv( idist, iseed, size_C, C );
-    lapack_lacpy( "g", Cm, Cn, C, ldc_, Cref, ldc_ );
+    if (Cref != nullptr)
+        lapack_lacpy( "g", Cm, Cn, C, ldc_, Cref, ldc_ );
 
-    printf("device_setmatrix\n");
     blas::device_setmatrix(Am, An, A, lda_, dA, lda_, queue);
     blas::device_setmatrix(Bm, Bn, B, ldb_, dB, ldb_, queue);
     blas::device_setmatrix(Cm, Cn, C, ldc_, dC, ldc_, queue);
@@ -157,7 +158,6 @@ void test_schur_gemm_work( Params& params, bool run )
     params.time()   = time;
     params.gflops() = gflop / time;
     blas::device_getmatrix(Cm, Cn, dC, ldc_, C, ldc_, queue);
-//    blas::device_getmatrix(Cm, batch * Cn, dC, ldc_, C, ldc_, queue);
     queue.sync();
 
     if (params.ref() == 'y' || params.check() == 'y') {
@@ -182,72 +182,13 @@ void test_schur_gemm_work( Params& params, bool run )
 
         params.error() = error;
         params.okay() = okay;
+
+        delete[] Cref;
     }
-
-
-#if 0
-    real_t work[1];
-    real_t* Anorm = new real_t[ batch ];
-    real_t* Bnorm = new real_t[ batch ];
-    real_t* Cnorm = new real_t[ batch ];
-
-    for (size_t s = 0; s < batch; ++s) {
-        Anorm[s] = lapack_lange( "f", Am, An, Aarray[s], lda_, work );
-        Bnorm[s] = lapack_lange( "f", Bm, Bn, Barray[s], ldb_, work );
-        Cnorm[s] = lapack_lange( "f", Cm, Cn, Carray[s], ldc_, work );
-    }
-
-
-    // decide error checking mode
-    info.resize( 0 );
-    // run test
-    testsweeper::flush_cache( params.cache() );
-    double time = get_wtime();
-    blas::batch::gemm( layout, transA, transB, m, n, k,
-                       alpha, dAarray, ldda, dBarray, lddb, beta, dCarray, lddc,
-                       batch, info, queue );
-    queue.sync();
-    time = get_wtime() - time;
-
-    double gflop = batch * Gflop < scalar_t >::gemm( m_, n_, k_ );
-    params.time()   = time;
-    params.gflops() = gflop / time;
-    blas::device_getmatrix(Cm, batch * Cn, dC, ldc_, C, ldc_, queue);
-    queue.sync();
-
-    if (params.ref() == 'y' || params.check() == 'y') {
-        // run reference
-        testsweeper::flush_cache( params.cache() );
-        time = get_wtime();
-        for (size_t s = 0; s < batch; ++s) {
-            cblas_gemm( cblas_layout_const(layout),
-                        cblas_trans_const(transA_),
-                        cblas_trans_const(transB_),
-                        m_, n_, k_, alpha_, Aarray[s], lda_, Barray[s], ldb_, beta_, Crefarray[s], ldc_ );
-        }
-        time = get_wtime() - time;
-
-        params.ref_time()   = time;
-        params.ref_gflops() = gflop / time;
-
-        // check error compared to reference
-        real_t err, error = 0;
-        bool ok, okay = true;
-        for (size_t s = 0; s < batch; ++s) {
-            check_gemm( Cm, Cn, k_, alpha_, beta_, Anorm[s], Bnorm[s], Cnorm[s],
-                        Crefarray[s], ldc_, Carray[s], ldc_, verbose, &err, &ok );
-            error = max(error, err);
-            okay &= ok;
-        }
-        params.error() = error;
-        params.okay() = okay;
-    }
-#endif
 
     delete[] A;
     delete[] B;
     delete[] C;
-    delete[] Cref;
 
     blas::device_free( dA );
     blas::device_free( dB );
