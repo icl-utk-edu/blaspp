@@ -60,8 +60,8 @@ void test_schur_gemm_work( Params& params, bool run )
         std::swap( Cm, Cn );
     }
 
-    int mt = int( m_ / k_ );
-    int nt = int( n_ / k_ );
+    int64_t mt = int64_t( m_ / k_ );
+    int64_t nt = int64_t( n_ / k_ );
     size_t batch = mt*nt;
 
     int64_t lda_ = roundup( Am, align );
@@ -127,10 +127,8 @@ void test_schur_gemm_work( Params& params, bool run )
     double time_with_setup = get_wtime();
     // construct Aarray, Barray, Carray (on host) with pointers to tiles in A, B, C
 
-    for(int j = 0; j < nt; j++)
-    {
-        for(int i = 0; i < mt; i++)
-        {
+    for(int64_t j = 0; j < nt; ++j) {
+        for(int64_t i = 0; i < mt; ++i) {
             Aarray.push_back( &A[ i * k_ ] );  // i-th block row
             Barray.push_back( &B[ j * k_ * ldb_ ] );  // j-th block col
             Carray.push_back( &C[ i * k_ + j * k_ * ldb_ ] );  // (i, j)-th block
@@ -142,19 +140,16 @@ void test_schur_gemm_work( Params& params, bool run )
 
     // Run test.
     testsweeper::flush_cache( params.cache() );
-    printf("mt = %d, nt = %d, Carray.size() = %ld\n", mt, nt, Carray.size());
     std::vector<int64_t> info;  // empty info vector (no checks)
-    printf("before blas::batch::gemm\n");
     double time = get_wtime();
     blas::batch::gemm( layout, transA, transB, k, k, k, alpha, dAarray, ldda,
                 dBarray, lddb, beta, dCarray, lddc, batch, info, queue );
     queue.sync();
     double t = get_wtime();
-    printf("after blas::batch::gemm\n");
     time_with_setup = t - time_with_setup;
     time = t - time;
 
-    double gflop = batch * Gflop < scalar_t >::gemm( m_, n_, k_ );
+    double gflop = Gflop < scalar_t >::gemm( m_, n_, k_ );
     params.time()   = time;
     params.gflops() = gflop / time;
     blas::device_getmatrix(Cm, Cn, dC, ldc_, C, ldc_, queue);
@@ -163,16 +158,19 @@ void test_schur_gemm_work( Params& params, bool run )
     if (params.ref() == 'y' || params.check() == 'y') {
         // Run reference (dark blue line)
         testsweeper::flush_cache( params.cache() );
-        printf("before reference check blas::gemm\n");
+        blas::device_setmatrix(Cm, Cn, Cref, ldc_, dC, ldc_, queue);
+        queue.sync();
+
         double time_ref = get_wtime();
-        blas::gemm( layout, transA_, transB_, m_, n_, k_, alpha_, A, lda_, B, ldb_,
-                    beta_, Cref, ldc_, queue );
+        blas::gemm( layout, transA_, transB_, m_, n_, k_, alpha_, dA, lda_, dB, ldb_,
+                    beta_, dC, ldc_, queue );
         queue.sync();
         time_ref = get_wtime() - time_ref;
-        printf("after reference check blas::gemm\n");
-
         params.ref_time()   = time;
         params.ref_gflops() = gflop / time;
+
+        blas::device_getmatrix(Cm, Cn, dC, ldc_, Cref, ldc_, queue);
+        queue.sync();
 
         // Error
         real_t error;
