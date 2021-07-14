@@ -84,10 +84,9 @@ void test_schur_gemm_work( Params& params, bool run )
     TC* dC = blas::device_malloc<TC>( size_C );
 
     // pointer arrays
-    std::vector<TA*>    Aarray;
-    std::vector<TB*>    Barray;
-    std::vector<TC*>    Carray;
-    //std::vector<TC*> Crefarray;
+//    std::vector<TA*>    Aarray;
+//    std::vector<TB*>    Barray;
+//    std::vector<TC*>    Carray;
     std::vector<TA*>   dAarray;
     std::vector<TB*>   dBarray;
     std::vector<TC*>   dCarray;
@@ -95,8 +94,6 @@ void test_schur_gemm_work( Params& params, bool run )
     // wrap scalar arguments in std::vector
     std::vector<blas::Op> transA(1, transA_);
     std::vector<blas::Op> transB(1, transB_);
-    std::vector<int64_t>  m(1, m_);
-    std::vector<int64_t>  n(1, n_);
     std::vector<int64_t>  k(1, k_);
     std::vector<int64_t>  ldda(1, lda_);
     std::vector<int64_t>  lddb(1, ldb_);
@@ -125,13 +122,12 @@ void test_schur_gemm_work( Params& params, bool run )
 
     // Batch version (light blue line)
     double time_with_setup = get_wtime();
-    // construct Aarray, Barray, Carray (on host) with pointers to tiles in A, B, C
-
+    // construct dAarray, dBarray, dCarray (on host) with pointers to tiles in dA, dB, dC
     for(int64_t j = 0; j < nt; ++j) {
         for(int64_t i = 0; i < mt; ++i) {
-            Aarray.push_back( &A[ i * k_ ] );  // i-th block row
-            Barray.push_back( &B[ j * k_ * ldb_ ] );  // j-th block col
-            Carray.push_back( &C[ i * k_ + j * k_ * ldb_ ] );  // (i, j)-th block
+//            Aarray.push_back( &A[ i * k_ ] );  // i-th block row
+//            Barray.push_back( &B[ j * k_ * ldb_ ] );  // j-th block col
+//            Carray.push_back( &C[ i * k_ + j * k_ * ldb_ ] );  // (i, j)-th block
             dAarray.push_back( &dA[ i * k_ ] );  // i-th block row
             dBarray.push_back( &dB[ j * k_ * ldb_ ] );  // j-th block col
             dCarray.push_back( &dC[ i * k_ + j * k_ * ldb_ ] );  // (i, j)-th block
