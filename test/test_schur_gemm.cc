@@ -27,7 +27,7 @@ void test_schur_gemm_work( Params& params, bool run )
     scalar_t beta_      = params.beta();
     int64_t m_          = params.dim.m();
     int64_t n_          = params.dim.n();
-    int64_t k_          = params.dim.k();
+    int64_t k_          = params.dim.k(); //Used as the tile size nb.
     int64_t device  = params.device();
     int64_t align   = params.align();
     int64_t verbose = params.verbose();
@@ -44,6 +44,13 @@ void test_schur_gemm_work( Params& params, bool run )
         printf("skipping: no GPU devices or no GPU support\n" );
         return;
     }
+
+    // Round m_ and n_ down to a multiple of k, since we are not dealing with
+    // cleanup of partial tiles around the edge of the matrix.
+    m_ = floor( (float)m_/k_ ) * k_;
+    n_ = floor( (float)n_/k_ ) * k_;
+    params.dim.m() = m_;
+    params.dim.n() = n_;
 
     // setup
     int64_t Am = (transA_ == Op::NoTrans ? m_ : k_);
