@@ -4,8 +4,6 @@
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
 #include "test.hh"
-#include "cblas_wrappers.hh"
-#include "lapack_wrappers.hh"
 #include "blas/flops.hh"
 #include "print_matrix.hh"
 #include "check_gemm.hh"
@@ -84,9 +82,6 @@ void test_schur_gemm_work( Params& params, bool run )
     TC* dC = blas::device_malloc<TC>( size_C );
 
     // pointer arrays
-//    std::vector<TA*>    Aarray;
-//    std::vector<TB*>    Barray;
-//    std::vector<TC*>    Carray;
     std::vector<TA*>   dAarray;
     std::vector<TB*>   dBarray;
     std::vector<TC*>   dCarray;
@@ -125,9 +120,6 @@ void test_schur_gemm_work( Params& params, bool run )
     // construct dAarray, dBarray, dCarray (on host) with pointers to tiles in dA, dB, dC
     for(int64_t j = 0; j < nt; ++j) {
         for(int64_t i = 0; i < mt; ++i) {
-//            Aarray.push_back( &A[ i * k_ ] );  // i-th block row
-//            Barray.push_back( &B[ j * k_ * ldb_ ] );  // j-th block col
-//            Carray.push_back( &C[ i * k_ + j * k_ * ldb_ ] );  // (i, j)-th block
             dAarray.push_back( &dA[ i * k_ ] );  // i-th block row
             dBarray.push_back( &dB[ j * k_ * ldb_ ] );  // j-th block col
             dCarray.push_back( &dC[ i * k_ + j * k_ * ldb_ ] );  // (i, j)-th block
@@ -162,8 +154,8 @@ void test_schur_gemm_work( Params& params, bool run )
                     beta_, dC, ldc_, queue );
         queue.sync();
         time_ref = get_wtime() - time_ref;
-        params.ref_time()   = time;
-        params.ref_gflops() = gflop / time;
+        params.ref_time()   = time_ref;
+        params.ref_gflops() = gflop / time_ref;
 
         blas::device_getmatrix(Cm, Cn, dC, ldc_, Cref, ldc_, queue);
         queue.sync();
