@@ -117,7 +117,7 @@ void test_schur_gemm_work( Params& params, bool run )
 
     // Batch version (light blue line)
     double time_with_setup = get_wtime();
-    // construct dAarray, dBarray, dCarray (on device) with pointers to tiles in dA, dB, dC
+    // construct dAarray, dBarray, dCarray (on host) with pointers to tiles in dA, dB, dC
     for(int64_t j = 0; j < nt; ++j) {
         for(int64_t i = 0; i < mt; ++i) {
             dAarray.push_back( &dA[ i * k_ ] );  // i-th block row
