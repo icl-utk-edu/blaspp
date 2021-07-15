@@ -20,9 +20,9 @@ void test_schur_gemm_work( Params& params, bool run )
     typedef long long lld;
 
     // get & mark input values
-    blas::Layout layout = params.layout();
-    blas::Op transA_    = params.transA();
-    blas::Op transB_    = params.transB();
+    blas::Layout layout = Layout::ColMajor; //params.layout();
+    blas::Op transA_    = Op::NoTrans; //params.transA();
+    blas::Op transB_    = Op::NoTrans; //params.transB();
     scalar_t alpha_     = params.alpha();
     scalar_t beta_      = params.beta();
     int64_t m_          = params.dim.m();
@@ -129,7 +129,7 @@ void test_schur_gemm_work( Params& params, bool run )
         for(int64_t i = 0; i < mt; ++i) {
             dAarray.push_back( &dA[ i * k_ ] );  // i-th block row
             dBarray.push_back( &dB[ j * k_ * ldb_ ] );  // j-th block col
-            dCarray.push_back( &dC[ i * k_ + j * k_ * ldb_ ] );  // (i, j)-th block
+            dCarray.push_back( &dC[ i * k_ + j * k_ * ldc_ ] );  // (i, j)-th block
         }
     }
 
