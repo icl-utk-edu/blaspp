@@ -263,7 +263,7 @@ endif()
 #---------------------------------------- default; Cray libsci
 if (test_all OR test_default)
     list( APPEND blas_name_list "default (no library)" )
-    list( APPEND blas_libs_list " " )
+    list( APPEND blas_libs_list " " )  # Use space so APPEND works later.
     debug_print_list( "default" )
 endif()
 
@@ -444,11 +444,14 @@ foreach (blas_name IN LISTS blas_name_list)
     message( "${bold}${blas_name}${not_bold}" )
     message( "   libs:  ${blas_libs}" )
 
+    # Strip to deal with default lib being space, " ".
     # Undo escaping \; semi-colons and split on spaces to make list.
     # But keep '-framework Accelerate' together as one item.
+    message( DEBUG "   blas_libs: '${blas_libs}'" )
+    string( STRIP "${blas_libs}" blas_libs )
     string( REGEX REPLACE "([^ ])( +|\\\;)" "\\1;" blas_libs "${blas_libs}" )
     string( REGEX REPLACE "-framework;" "-framework " blas_libs "${blas_libs}" )
-    #message( "   blas_libs: ${blas_libs}" )
+    message( DEBUG "   blas_libs: '${blas_libs}' (split)" )
 
     foreach (mangling IN LISTS fortran_mangling_list)
         foreach (int_size IN LISTS int_size_list)
