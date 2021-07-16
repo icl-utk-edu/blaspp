@@ -60,6 +60,7 @@ public:
     testsweeper::ParamDouble     ref_gbytes;
 
     testsweeper::ParamOkay       okay;
+    testsweeper::ParamString     msg;
 };
 
 // -----------------------------------------------------------------------------

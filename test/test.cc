@@ -219,7 +219,8 @@ Params::Params():
     ref_gbytes( "Ref.\nGbyte/s",    11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "reference Gbyte/s rate" ),
 
     // default -1 means "no check"
-    okay      ( "status",              6,    ParamType::Output,  -1,   0,   0, "success indicator" )
+    okay      ( "status",              6,    ParamType::Output,  -1,   0,   0, "success indicator" ),
+    msg       ( "",       1, ParamType::Output,  "",           "error message" )
 {
     // mark standard set of output fields as used
     okay();
