@@ -125,8 +125,8 @@ void test_schur_gemm_work( Params& params, bool run )
     // Batch version (light blue line)
     double time_with_setup = get_wtime();
     // construct dAarray, dBarray, dCarray (on host) with pointers to tiles in dA, dB, dC
-    for(int64_t j = 0; j < nt; ++j) {
-        for(int64_t i = 0; i < mt; ++i) {
+    for (int64_t j = 0; j < nt; ++j) {
+        for (int64_t i = 0; i < mt; ++i) {
             dAarray.push_back( &dA[ i * k_ ] );  // i-th block row
             dBarray.push_back( &dB[ j * k_ * ldb_ ] );  // j-th block col
             dCarray.push_back( &dC[ i * k_ + j * k_ * ldc_ ] );  // (i, j)-th block
@@ -138,7 +138,7 @@ void test_schur_gemm_work( Params& params, bool run )
     std::vector<int64_t> info;  // empty info vector (no checks)
     double time = get_wtime();
     blas::batch::gemm( layout, transA, transB, k, k, k, alpha, dAarray, ldda,
-                dBarray, lddb, beta, dCarray, lddc, batch, info, queue );
+                       dBarray, lddb, beta, dCarray, lddc, batch, info, queue );
     queue.sync();
     double t = get_wtime();
     time_with_setup = t - time_with_setup;
