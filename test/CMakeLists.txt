@@ -93,6 +93,7 @@ add_executable(
     test_batch_hemm_device.cc
     test_batch_her2k_device.cc
     test_batch_herk_device.cc
+    test_schur_gemm.cc
     test_batch_symm_device.cc
     test_batch_syr2k_device.cc
     test_batch_syrk_device.cc
