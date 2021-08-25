@@ -64,9 +64,7 @@ void test_copy_device_work( Params& params, bool run )
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
     lapack_larnv( idist, iseed, size_x, x );
-    lapack_larnv( idist, iseed, size_y, y );
     cblas_copy( n, x, incx, xref, incx );
-    cblas_copy( n, y, incy, yref, incy );
 
     // todo: should we have different incdx and incdy
     blas::device_setvector(n, x, std::abs(incx), dx, std::abs(incx), queue);
