@@ -16,7 +16,7 @@
 /// @ingroup copy
 void blas::copy(
     int64_t n,
-    float *dx, int64_t incdx,
+    float const *dx, int64_t incdx,
     float *dy, int64_t incdy,
     blas::Queue &queue )
 {
@@ -48,7 +48,7 @@ void blas::copy(
 /// @ingroup copy
 void blas::copy(
     int64_t n,
-    double *dx, int64_t incdx,
+    double const *dx, int64_t incdx,
     double *dy, int64_t incdy,
     blas::Queue &queue )
 {
@@ -80,7 +80,7 @@ void blas::copy(
 /// @ingroup copy
 void blas::copy(
     int64_t n,
-    std::complex<float> *dx, int64_t incdx,
+    std::complex<float> const *dx, int64_t incdx,
     std::complex<float> *dy, int64_t incdy,
     blas::Queue &queue )
 {
@@ -112,7 +112,7 @@ void blas::copy(
 /// @ingroup copy
 void blas::copy(
     int64_t n,
-    std::complex<double> *dx, int64_t incdx,
+    std::complex<double> const *dx, int64_t incdx,
     std::complex<double> *dy, int64_t incdy,
     blas::Queue &queue )
 {

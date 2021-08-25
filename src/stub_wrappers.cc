@@ -66,7 +66,7 @@ void zswap(
 void scopy(
     blas::Queue& queue,
     device_blas_int n,
-    float *dx, device_blas_int incdx,
+    float const *dx, device_blas_int incdx,
     float *dy, device_blas_int incdy)
 {
     throw blas::Error( "device BLAS not available", __func__ );
@@ -77,7 +77,7 @@ void scopy(
 void dcopy(
     blas::Queue& queue,
     device_blas_int n,
-    double *dx, device_blas_int incdx,
+    double const *dx, device_blas_int incdx,
     double *dy, device_blas_int incdy)
 {
     throw blas::Error( "device BLAS not available", __func__ );
@@ -88,7 +88,7 @@ void dcopy(
 void ccopy(
     blas::Queue& queue,
     device_blas_int n,
-    std::complex<float> *dx, device_blas_int incdx,
+    std::complex<float> const *dx, device_blas_int incdx,
     std::complex<float> *dy, device_blas_int incdy)
 {
     throw blas::Error( "device BLAS not available", __func__ );
@@ -99,12 +99,11 @@ void ccopy(
 void zcopy(
     blas::Queue& queue,
     device_blas_int n,
-    std::complex<double> *dx, device_blas_int incdx,
+    std::complex<double> const *dx, device_blas_int incdx,
     std::complex<double> *dy, device_blas_int incdy)
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
-
 // =============================================================================
 // Level 2 BLAS - Device Interfaces
 
