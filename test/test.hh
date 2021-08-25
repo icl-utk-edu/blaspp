@@ -154,6 +154,7 @@ void test_batch_trsm  ( Params& params, bool run );
 // -----------------------------------------------------------------------------
 // Level 1 GPU BLAS
 void test_swap_device  ( Params& params, bool run );
+void test_copy_device  ( Params& params, bool run );
 
 // -----------------------------------------------------------------------------
 // Level 3 GPU BLAS

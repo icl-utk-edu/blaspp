@@ -124,6 +124,72 @@ void zswap(
             (cuDoubleComplex*) dy, incdy) );
 }
 
+// -----------------------------------------------------------------------------
+// copy
+// -----------------------------------------------------------------------------
+// scopy
+void scopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    float *dx, device_blas_int incdx,
+    float *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        cublasScopy(
+            queue.handle(),
+            n,
+            dx, incdx,
+            dy, incdy) );
+}
+
+// -----------------------------------------------------------------------------
+// dcopy
+void dcopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    double *dx, device_blas_int incdx,
+    double *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        cublasDcopy(
+            queue.handle(),
+            n,
+            dx, incdx,
+            dy, incdy) );
+}
+
+// -----------------------------------------------------------------------------
+// cswap
+void ccopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        cublasCcopy(
+            queue.handle(),
+            n,
+            (cuComplex*) dx, incdx,
+            (cuComplex*) dy, incdy) );
+}
+
+// -----------------------------------------------------------------------------
+// zswap
+void zcopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        cublasZcopy(
+            queue.handle(),
+            n,
+            (cuDoubleComplex*) dx, incdx,
+            (cuDoubleComplex*) dy, incdy) );
+}
+
 // =============================================================================
 // Level 2 BLAS - Device Interfaces
 

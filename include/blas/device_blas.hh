@@ -39,6 +39,31 @@ void swap(
     std::complex<double> *dy, int64_t incdy,
     blas::Queue &queue );
 
+// -----------------------------------------------------------------------------
+// copy
+void copy(
+    int64_t n,
+    float *dx, int64_t incdx,
+    float *dy, int64_t incdy,
+    blas::Queue &queue );
+
+void copy(
+    int64_t n,
+    double *dx, int64_t incdx,
+    double *dy, int64_t incdy,
+    blas::Queue &queue );
+
+void copy(
+    int64_t n,
+    std::complex<float> *dx, int64_t incdx,
+    std::complex<float> *dy, int64_t incdy,
+    blas::Queue &queue );
+
+void copy(
+    int64_t n,
+    std::complex<double> *dx, int64_t incdx,
+    std::complex<double> *dy, int64_t incdy,
+    blas::Queue &queue );
 
 // =============================================================================
 // Level 2 BLAS

@@ -122,6 +122,39 @@ std::vector< testsweeper::routines_t > routines = {
     { "dev-swap",         test_swap_device,         Section::device_blas1   },
     { "",                 nullptr,                  Section::newline },
 
+    { "dev-copy",         test_copy_device,         Section::device_blas1   },
+    { "",                 nullptr,                  Section::newline },
+
+    { "dev-gemm",         test_gemm_device,         Section::device_blas3   },
+    { "",                 nullptr,                  Section::newline },
+
+    { "dev-hemm",         test_hemm_device,         Section::device_blas3   },
+    { "dev-herk",         test_herk_device,         Section::device_blas3   },
+    { "dev-her2k",        test_her2k_device,        Section::device_blas3   },
+    { "",                 nullptr,                  Section::newline },
+
+    { "dev-symm",         test_symm_device,         Section::device_blas3   },
+    { "dev-syrk",         test_syrk_device,         Section::device_blas3   },
+    { "dev-syr2k",        test_syr2k_device,        Section::device_blas3   },
+    { "",                 nullptr,                  Section::newline },
+
+    { "schur-gemm",       test_schur_gemm,          Section::device_blas3   },
+    { "",                 nullptr,                  Section::newline },
+
+    { "dev-trmm",         test_trmm_device,         Section::device_blas3   },
+    { "dev-trsm",         test_trsm_device,         Section::device_blas3   },
+    { "",                 nullptr,                  Section::newline },
+
+    { "dev-batch-gemm",   test_batch_gemm_device,   Section::device_blas3   },
+    { "",                 nullptr,                  Section::newline },
+
+    { "dev-batch-hemm",   test_batch_hemm_device,   Section::device_blas3   },
+    { "dev-batch-herk",   test_batch_herk_device,   Section::device_blas3   },
+    { "dev-batch-her2k",  test_batch_her2k_device,  Section::device_blas3   },
+    { "",                 nullptr,                  Section::newline },
+
+    { "dev-batch-symm",   test_batch_symm_device,   Section::device_blas3   },
+    { "dev-batch-syrk",   test_batch_syrk_device,   Section::device_blas3   },
     { "dev-gemm",         test_gemm_device,         Section::device_blas3   },
     { "",                 nullptr,                  Section::newline },
 
