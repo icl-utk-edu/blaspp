@@ -74,8 +74,8 @@ stages {
                         ./run_tests.py --batch-blas3           --quick --xml ${top}/report-${maker}-batch.xml
 
                         # CUDA or HIP
-                        ./run_tests.py --blas3-device          --quick --xml ${top}/report-${maker}-device.xml
-                        ./run_tests.py --batch-blas3-device    --quick --xml ${top}/report-${maker}-batch-device.xml
+                        ./run_tests.py --blas1-device --blas3-device --quick --xml ${top}/report-${maker}-device.xml
+                        ./run_tests.py --batch-blas3-device          --quick --xml ${top}/report-${maker}-batch-device.xml
                         '''
                     } // steps
 
