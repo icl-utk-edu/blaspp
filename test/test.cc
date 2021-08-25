@@ -155,6 +155,12 @@ std::vector< testsweeper::routines_t > routines = {
 
     { "dev-batch-symm",   test_batch_symm_device,   Section::device_blas3   },
     { "dev-batch-syrk",   test_batch_syrk_device,   Section::device_blas3   },
+    { "dev-batch-syr2k",  test_batch_syr2k_device,  Section::device_blas3   },
+    { "",                 nullptr,                  Section::newline },
+
+    { "dev-batch-trmm",   test_batch_trmm_device,   Section::device_blas3   },
+    { "dev-batch-trsm",   test_batch_trsm_device,   Section::device_blas3   },
+    { "",                 nullptr,                  Section::newline },
     
     // auxiliary
     { "error",  test_error,  Section::aux     },
