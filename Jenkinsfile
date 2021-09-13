@@ -50,23 +50,23 @@ stages {
 
                         echo "========================================"
                         echo "maker ${maker}"
+                        export top=`pwd`
+                        rm -rf ${top}/install
                         if [ "${maker}" = "make" ]; then
                             export color=no
                             make distclean
-                            make config CXXFLAGS="-Werror"
-                            export top=..
+                            make config CXXFLAGS="-Werror" prefix=${top}/install
                         fi
                         if [ "${maker}" = "cmake" ]; then
                             sload cmake
-                            rm -rf build
-                            mkdir build
-                            cd build
-                            cmake -Dcolor=no -DCMAKE_CXX_FLAGS="-Werror" ..
-                            export top=../..
+                            rm -rf build && mkdir build && cd build
+                            cmake -Dcolor=no -DCMAKE_CXX_FLAGS="-Werror" -DCMAKE_INSTALL_PREFIX=${top}/install ..
                         fi
 
                         echo "========================================"
                         make -j8
+                        make install
+                        ls -R ${top}/install
 
                         echo "========================================"
                         echo "Verify that tester linked with cublas or rocblas as intended."
@@ -80,12 +80,30 @@ stages {
 
                         echo "========================================"
                         cd test
+                        export OMP_NUM_THREADS=8
                         ./run_tests.py --blas1 --blas2 --blas3 --quick --xml ${top}/report-${maker}.xml
                         ./run_tests.py --batch-blas3           --quick --xml ${top}/report-${maker}-batch.xml
 
                         # CUDA or HIP
                         ./run_tests.py --blas1-device --blas3-device --quick --xml ${top}/report-${maker}-device.xml
                         ./run_tests.py --batch-blas3-device          --quick --xml ${top}/report-${maker}-batch-device.xml
+
+                        echo "========================================"
+                        echo "Verify install with smoke tests."
+                        cd ${top}/example
+
+                        if [ "${maker}" = "make" ]; then
+                            export PKG_CONFIG_PATH=${top}/install/lib/pkgconfig
+                            make clean
+                        fi
+                        if [ "${maker}" = "cmake" ]; then
+                            rm -rf build && mkdir build && cd build
+                            cmake -DCMAKE_PREFIX_PATH=${top}/install/lib64/blaspp ..
+                        fi
+
+                        make
+                        ./example_gemm || exit 1
+                        ./example_util || exit 1
                         '''
                     } // steps
 
