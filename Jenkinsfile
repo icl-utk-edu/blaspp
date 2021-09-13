@@ -40,8 +40,8 @@ stages {
                             if [ -e /opt/rocm ]; then
                                 export PATH=${PATH}:/opt/rocm/bin
                                 export CPATH=${CPATH}:/opt/rocm/include
-                                export LIBRARY_PATH=${LIBRARY_PATH}:/opt/rocm/lib
-                                export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/opt/rocm/lib
+                                export LIBRARY_PATH=${LIBRARY_PATH}:/opt/rocm/lib:/opt/rocm/lib64
+                                export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/opt/rocm/lib:/opt/rocm/lib64
                             fi
                         fi
 
