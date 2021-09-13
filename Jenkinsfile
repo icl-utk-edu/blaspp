@@ -33,6 +33,9 @@ stages {
                         # run CUDA tests on lips
                         if [ "${host}" = "lips" ]; then
                             sload cuda
+                            # Load CUDA. LD_LIBRARY_PATH already set.
+                            export CPATH=${CPATH}:${CUDA_HOME}/include
+                            export LIBRARY_PATH=${LIBRARY_PATH}:${CUDA_HOME}/lib64
                         fi
 
                         # run HIP tests on caffeine
