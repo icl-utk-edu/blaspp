@@ -69,7 +69,14 @@ stages {
                         make -j8
 
                         echo "========================================"
+                        echo "Verify that tester linked with cublas or rocblas as intended."
                         ldd test/tester
+                        if [ "${host}" = "lips" ]; then
+                            ldd test/tester | grep cublas || exit 1
+                        fi
+                        if [ "${host}" = "caffeine" ]; then
+                            ldd test/tester | grep rocblas || exit 1
+                        fi
 
                         echo "========================================"
                         cd test
