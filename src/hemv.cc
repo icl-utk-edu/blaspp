@@ -112,6 +112,7 @@ void hemv(
                 (blas_complex_float*) y, &incy_ );
 
     if (layout == Layout::RowMajor) {
+        delete[] x2;
         // y = conj( y )
         int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
         for (int64_t i = 0; i < n; ++i) {
@@ -189,6 +190,7 @@ void hemv(
                 (blas_complex_double*) y, &incy_ );
 
     if (layout == Layout::RowMajor) {
+        delete[] x2;
         // y = conj( y )
         int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
         for (int64_t i = 0; i < n; ++i) {
