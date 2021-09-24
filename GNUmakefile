@@ -228,6 +228,7 @@ LDFLAGS_clean  = $(filter-out -fPIC, $(LDFLAGS))
 $(pkg):
 	perl -pe "s'#VERSION'2021.04.01'; \
 	          s'#PREFIX'${prefix}'; \
+	          s'#CXX\b'${CXX}'; \
 	          s'#CXXFLAGS'${CXXFLAGS_clean}'; \
 	          s'#CPPFLAGS'${CPPFLAGS_clean}'; \
 	          s'#LDFLAGS'${LDFLAGS_clean}'; \
