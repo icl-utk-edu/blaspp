@@ -23,60 +23,88 @@ stages {
                     //----------------------------------------------------------
                     steps {
                         sh '''
-                        #!/bin/sh +x
-                        hostname && pwd
+#!/bin/sh +x
+hostname && pwd
+export top=`pwd`
 
-                        source /home/jenkins/spack_setup
-                        sload gcc@6.4.0
-                        sload intel-mkl
+source /home/jenkins/spack_setup
+sload gcc@6.4.0
+sload intel-mkl
 
-                        # run CUDA tests on lips
-                        if [ "${host}" = "lips" ]; then
-                            sload cuda
-                        fi
+# run CUDA tests on lips
+if [ "${host}" = "lips" ]; then
+    sload cuda
+    # Load CUDA. LD_LIBRARY_PATH already set.
+    export CPATH=${CPATH}:${CUDA_HOME}/include
+    export LIBRARY_PATH=${LIBRARY_PATH}:${CUDA_HOME}/lib64
+fi
 
-                        # run HIP tests on caffeine
-                        if [ "${host}" = "caffeine" ]; then
-                            if [ -e /opt/rocm ]; then
-                                export PATH=${PATH}:/opt/rocm/bin
-                                export CPATH=${CPATH}:/opt/rocm/include
-                                export LIBRARY_PATH=${LIBRARY_PATH}:/opt/rocm/lib
-                                export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/opt/rocm/lib
-                            fi
-                        fi
+# run HIP tests on caffeine
+if [ "${host}" = "caffeine" ]; then
+    if [ -e /opt/rocm ]; then
+        export PATH=${PATH}:/opt/rocm/bin
+        export CPATH=${CPATH}:/opt/rocm/include
+        export LIBRARY_PATH=${LIBRARY_PATH}:/opt/rocm/lib:/opt/rocm/lib64
+        export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/opt/rocm/lib:/opt/rocm/lib64
+    fi
+fi
 
-                        echo "========================================"
-                        echo "maker ${maker}"
-                        if [ "${maker}" = "make" ]; then
-                            export color=no
-                            make distclean
-                            make config CXXFLAGS="-Werror"
-                            export top=..
-                        fi
-                        if [ "${maker}" = "cmake" ]; then
-                            sload cmake
-                            rm -rf build
-                            mkdir build
-                            cd build
-                            cmake -Dcolor=no -DCMAKE_CXX_FLAGS="-Werror" ..
-                            export top=../..
-                        fi
+echo "========================================"
+echo "maker ${maker}"
+rm -rf ${top}/install
+if [ "${maker}" = "make" ]; then
+    export color=no
+    make distclean
+    make config CXXFLAGS="-Werror" prefix=${top}/install
+fi
+if [ "${maker}" = "cmake" ]; then
+    sload cmake
+    rm -rf build && mkdir build && cd build
+    cmake -Dcolor=no -DCMAKE_CXX_FLAGS="-Werror" -DCMAKE_INSTALL_PREFIX=${top}/install ..
+fi
 
-                        echo "========================================"
-                        make -j8
+echo "========================================"
+make -j8
+make install
+ls -R ${top}/install
 
-                        echo "========================================"
-                        ldd test/tester
+echo "========================================"
+echo "Verify that tester linked with cublas or rocblas as intended."
+ldd test/tester
+if [ "${host}" = "lips" ]; then
+    ldd test/tester | grep cublas || exit 1
+fi
+if [ "${host}" = "caffeine" ]; then
+    ldd test/tester | grep rocblas || exit 1
+fi
 
-                        echo "========================================"
-                        cd test
-                        ./run_tests.py --blas1 --blas2 --blas3 --quick --xml ${top}/report-${maker}.xml
-                        ./run_tests.py --batch-blas3           --quick --xml ${top}/report-${maker}-batch.xml
+echo "========================================"
+cd test
+export OMP_NUM_THREADS=8
+./run_tests.py --blas1 --blas2 --blas3 --quick --xml ${top}/report-${maker}.xml
+./run_tests.py --batch-blas3           --quick --xml ${top}/report-${maker}-batch.xml
 
-                        # CUDA or HIP
-                        ./run_tests.py --blas3-device          --quick --xml ${top}/report-${maker}-device.xml
-                        ./run_tests.py --batch-blas3-device    --quick --xml ${top}/report-${maker}-batch-device.xml
-                        '''
+# CUDA or HIP
+./run_tests.py --blas1-device --blas3-device --quick --xml ${top}/report-${maker}-device.xml
+./run_tests.py --batch-blas3-device          --quick --xml ${top}/report-${maker}-batch-device.xml
+
+echo "========================================"
+echo "Verify install with smoke tests."
+cd ${top}/example
+
+if [ "${maker}" = "make" ]; then
+    export PKG_CONFIG_PATH=${top}/install/lib/pkgconfig
+    make clean
+fi
+if [ "${maker}" = "cmake" ]; then
+    rm -rf build && mkdir build && cd build
+    cmake -DCMAKE_PREFIX_PATH=${top}/install/lib64/blaspp ..
+fi
+
+make
+./example_gemm || exit 1
+./example_util || exit 1
+'''
                     } // steps
 
                     //----------------------------------------------------------

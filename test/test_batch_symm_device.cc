@@ -42,7 +42,7 @@ void test_batch_symm_device_work( Params& params, bool run )
         return;
 
     if (blas::get_device_count() == 0) {
-        printf("skipping: no GPU devices or no GPU support\n" );
+        params.msg() = "skipping: no GPU devices or no GPU support";
         return;
     }
 

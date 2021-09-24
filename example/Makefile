@@ -8,14 +8,13 @@
 # Sadly, pkg-config doesn't provide a way to query CXX,
 # CXXFLAGS (only cflags), CPPFLAGS, or LDFLAGS.
 
-#CXX = g++
-
 #-------------------------------------------------------------------------------
 # Set CXXFLAGS and LIBS
 pkg_exists := $(shell pkg-config --exists blaspp; echo $$?)
 ifeq ($(pkg_exists),0)
 
   # Get flags from pkg-config.
+  CXX      = $(shell pkg-config --variable CXX blaspp)
   CXXFLAGS = $(shell pkg-config --cflags blaspp)
   LIBS     = $(shell pkg-config --libs   blaspp)
 

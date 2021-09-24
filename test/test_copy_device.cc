@@ -11,7 +11,7 @@
 
 // -----------------------------------------------------------------------------
 template< typename TX, typename TY >
-void test_swap_device_work( Params& params, bool run )
+void test_copy_device_work( Params& params, bool run )
 {
     using namespace testsweeper;
     using namespace blas;
@@ -64,9 +64,7 @@ void test_swap_device_work( Params& params, bool run )
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
     lapack_larnv( idist, iseed, size_x, x );
-    lapack_larnv( idist, iseed, size_y, y );
     cblas_copy( n, x, incx, xref, incx );
-    cblas_copy( n, y, incy, yref, incy );
 
     // todo: should we have different incdx and incdy
     blas::device_setvector(n, x, std::abs(incx), dx, std::abs(incx), queue);
@@ -74,9 +72,9 @@ void test_swap_device_work( Params& params, bool run )
     queue.sync();
 
     // test error exits
-    assert_throw( blas::swap( -1, dx, incx, dy, incy ), blas::Error );
-    assert_throw( blas::swap(  n, dx,    0, dy, incy ), blas::Error );
-    assert_throw( blas::swap(  n, dx, incx, dy,    0 ), blas::Error );
+    assert_throw( blas::copy( -1, dx, incx, dy, incy ), blas::Error );
+    assert_throw( blas::copy(  n, dx,    0, dy, incy ), blas::Error );
+    assert_throw( blas::copy(  n, dx, incx, dy,    0 ), blas::Error );
 
     if (verbose >= 1) {
         printf( "\n"
@@ -93,12 +91,12 @@ void test_swap_device_work( Params& params, bool run )
     // run test
     testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
-    blas::swap( n, dx, incx, dy, incy, queue );
+    blas::copy( n, dx, incx, dy, incy, queue );
     queue.sync();
     time = get_wtime() - time;
 
-    double gflop = Gflop < scalar_t >::swap( n );
-    double gbyte = Gbyte < scalar_t >::swap( n );
+    double gflop = Gflop < scalar_t >::copy( n );
+    double gbyte = Gbyte < scalar_t >::copy( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
@@ -117,7 +115,7 @@ void test_swap_device_work( Params& params, bool run )
         // run reference
         testsweeper::flush_cache( params.cache() );
         time = get_wtime();
-        cblas_swap( n, xref, incx, yref, incy );
+        cblas_copy( n, xref, incx, yref, incy );
         time = get_wtime() - time;
         if (verbose >= 2) {
             printf( "xref = " ); print_vector( n, xref, incx );
@@ -135,7 +133,7 @@ void test_swap_device_work( Params& params, bool run )
                      + cblas_nrm2( n, yref, std::abs(incy) );
         params.error() = error;
 
-        // swap must be exact!
+        // copy must be exact!
         params.okay() = (error == 0);
     }
 
@@ -149,24 +147,24 @@ void test_swap_device_work( Params& params, bool run )
 }
 
 // -----------------------------------------------------------------------------
-void test_swap_device( Params& params, bool run )
+void test_copy_device( Params& params, bool run )
 {
     switch (params.datatype()) {
         case testsweeper::DataType::Single:
-            test_swap_device_work< float, float >( params, run );
+            test_copy_device_work< float, float >( params, run );
             break;
 
         case testsweeper::DataType::Double:
-            test_swap_device_work< double, double >( params, run );
+            test_copy_device_work< double, double >( params, run );
             break;
 
         case testsweeper::DataType::SingleComplex:
-            test_swap_device_work< std::complex<float>, std::complex<float> >
+            test_copy_device_work< std::complex<float>, std::complex<float> >
                 ( params, run );
             break;
 
         case testsweeper::DataType::DoubleComplex:
-            test_swap_device_work< std::complex<double>, std::complex<double> >
+            test_copy_device_work< std::complex<double>, std::complex<double> >
                 ( params, run );
             break;
 

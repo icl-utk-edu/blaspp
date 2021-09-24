@@ -129,6 +129,72 @@ void zswap(
             (rocblas_double_complex*) dy, incdy) );
 }
 
+// -----------------------------------------------------------------------------
+// copy
+// -----------------------------------------------------------------------------
+// scopy
+void scopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    float const *dx, device_blas_int incdx,
+    float *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        rocblas_scopy(
+            queue.handle(),
+            n,
+            dx, incdx,
+            dy, incdy) );
+}
+
+// -----------------------------------------------------------------------------
+// dcopy
+void dcopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    double const *dx, device_blas_int incdx,
+    double *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        rocblas_dcopy(
+            queue.handle(),
+            n,
+            dx, incdx,
+            dy, incdy) );
+}
+
+// -----------------------------------------------------------------------------
+// ccopy
+void ccopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> const *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        rocblas_ccopy(
+            queue.handle(),
+            n,
+            (rocblas_float_complex*) dx, incdx,
+            (rocblas_float_complex*) dy, incdy) );
+}
+
+// -----------------------------------------------------------------------------
+// zcopy
+void zcopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> const *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        rocblas_zcopy(
+            queue.handle(),
+            n,
+            (rocblas_double_complex*) dx, incdx,
+            (rocblas_double_complex*) dy, incdy) );
+}
+
 // =============================================================================
 // Level 2 BLAS - Device Interfaces
 
