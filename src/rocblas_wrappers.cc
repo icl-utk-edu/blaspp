@@ -66,6 +66,68 @@ rocblas_side side2rocblas(blas::Side side)
 // -----------------------------------------------------------------------------
 // swap
 // -----------------------------------------------------------------------------
+// sscal
+void sscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    float alpha,
+    float *dx, device_blas_int incdx)
+{
+    blas_dev_call(
+        rocblas_sscal(
+            queue.handle(),
+            n, alpha,
+            dx, incdx));
+}
+
+// -----------------------------------------------------------------------------
+// dscal
+void dscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    double alpha,
+    double *dx, device_blas_int incdx)
+{
+    blas_dev_call(
+        rocblas_dscal(
+            queue.handle(),
+            n, alpha,
+            dx, incdx));
+}
+
+// -----------------------------------------------------------------------------
+// cscal
+void cscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> alpha,
+    std::complex<float> *dx, device_blas_int incdx)
+{
+    blas_dev_call(
+        rocblas_cscal(
+            queue.handle(),
+            n, (cuComplex) alpha,
+            (cuComplex*) dx, incdx));
+}
+
+// -----------------------------------------------------------------------------
+// zscal
+void zscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> alpha,
+    std::complex<double> *dx, device_blas_int incdx)
+{
+    blas_dev_call(
+        rocblas_zscal(
+            queue.handle(),
+            n, (cuDoubleComplex) alpha,
+            (cuDoubleComplex*) dx, incdx));
+}
+
+// -----------------------------------------------------------------------------
+// swap
+// -----------------------------------------------------------------------------
 // sswap
 void sswap(
     blas::Queue& queue,

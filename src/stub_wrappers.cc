@@ -14,6 +14,52 @@ namespace device {
 // Level 1 BLAS - Device Interfaces
 
 // -----------------------------------------------------------------------------
+// scal
+// -----------------------------------------------------------------------------
+// sscal
+void sscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    float alpha,
+    float *dx, device_blas_int incdx)
+{
+    throw blas::Error( "device BLAS not available", __func__ );
+}
+
+// -----------------------------------------------------------------------------
+// dscal
+void dscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    double alpha,
+    double *dx, device_blas_int incdx)
+{
+    throw blas::Error( "device BLAS not available", __func__ );
+}
+
+// -----------------------------------------------------------------------------
+// cscal
+void cscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> alpha,
+    std::complex<float> *dx, device_blas_int incdx)
+{
+    throw blas::Error( "device BLAS not available", __func__ );
+}
+
+// -----------------------------------------------------------------------------
+// zscal
+void zscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> alpha,
+    std::complex<double> *dx, device_blas_int incdx)
+{
+    throw blas::Error( "device BLAS not available", __func__ );
+}
+
+// -----------------------------------------------------------------------------
 // swap
 // -----------------------------------------------------------------------------
 // sswap

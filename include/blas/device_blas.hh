@@ -13,6 +13,33 @@ namespace blas {
 
 // =============================================================================
 // Level 1 BLAS
+
+// -----------------------------------------------------------------------------
+// scal
+void scal(
+    int64_t n,
+    float alpha,
+    float *dx, int64_t incdx,
+    blas::Queue& queue);
+
+void scal(
+    int64_t n,
+    double alpha,
+    double *dx, int64_t incdx,
+    blas::Queue& queue);
+
+void scal(
+    int64_t n,
+    std::complex<float> alpha,
+    std::complex<float> *dx, int64_t incdx,
+    blas::Queue& queue);
+
+void scal(
+    int64_t n,
+    std::complex<double> alpha,
+    std::complex<double> *dx, int64_t incdx,
+    blas::Queue& queue);
+
 // -----------------------------------------------------------------------------
 // swap
 void swap(

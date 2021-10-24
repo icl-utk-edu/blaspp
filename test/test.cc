@@ -119,6 +119,9 @@ std::vector< testsweeper::routines_t > routines = {
     { "batch-trsm",   test_batch_trsm,   Section::blas3   },
     { "",              nullptr,          Section::newline },
 
+    { "dev-scal",         test_scal_device,         Section::device_blas1   },
+    { "",                 nullptr,                  Section::newline },
+
     { "dev-swap",         test_swap_device,         Section::device_blas1   },
     { "",                 nullptr,                  Section::newline },
 

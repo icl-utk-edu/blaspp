@@ -59,6 +59,66 @@ cublasSideMode_t side2cublas(blas::Side side)
 // Level 1 BLAS - Device Interfaces
 
 // -----------------------------------------------------------------------------
+// sscal
+void sscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    float alpha,
+    float *dx, device_blas_int incdx)
+{
+    blas_dev_call(
+        cublasSscal(
+            queue.handle(),
+            n, &alpha,
+            dx, incdx));
+}
+
+// -----------------------------------------------------------------------------
+// dcal
+void dscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    double alpha,
+    double *dx, device_blas_int incdx)
+{
+    blas_dev_call(
+        cublasDscal(
+            queue.handle(),
+            n, &alpha,
+            dx, incdx));
+}
+
+// -----------------------------------------------------------------------------
+// ccal
+void cscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> alpha,
+    std::complex<float> *dx, device_blas_int incdx)
+{
+    blas_dev_call(
+        cublasCscal(
+            queue.handle(),
+            n, (const cuComplex*) &alpha,
+            (cuComplex*) dx, incdx));
+}
+
+// -----------------------------------------------------------------------------
+// zcal
+void zscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> alpha,
+    std::complex<double> *dx, device_blas_int incdx)
+{
+    blas_dev_call(
+        cublasZscal(
+            queue.handle(),
+            n, (const cuDoubleComplex*) &alpha,
+            (cuDoubleComplex*) dx, incdx));
+}
+
+// -----------------------------------------------------------------------------
 // swap
 // -----------------------------------------------------------------------------
 // sswap
