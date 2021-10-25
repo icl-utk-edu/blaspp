@@ -59,6 +59,8 @@ cublasSideMode_t side2cublas(blas::Side side)
 // Level 1 BLAS - Device Interfaces
 
 // -----------------------------------------------------------------------------
+// scal
+// -----------------------------------------------------------------------------
 // sscal
 void sscal(
     blas::Queue& queue,
@@ -74,7 +76,7 @@ void sscal(
 }
 
 // -----------------------------------------------------------------------------
-// dcal
+// dscal
 void dscal(
     blas::Queue& queue,
     device_blas_int n,
@@ -89,7 +91,7 @@ void dscal(
 }
 
 // -----------------------------------------------------------------------------
-// ccal
+// cscal
 void cscal(
     blas::Queue& queue,
     device_blas_int n,
@@ -104,7 +106,7 @@ void cscal(
 }
 
 // -----------------------------------------------------------------------------
-// zcal
+// zscal
 void zscal(
     blas::Queue& queue,
     device_blas_int n,

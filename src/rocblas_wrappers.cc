@@ -64,7 +64,7 @@ rocblas_side side2rocblas(blas::Side side)
 // Level 1 BLAS - Device Interfaces
 
 // -----------------------------------------------------------------------------
-// swap
+// scal
 // -----------------------------------------------------------------------------
 // sscal
 void sscal(
@@ -76,7 +76,7 @@ void sscal(
     blas_dev_call(
         rocblas_sscal(
             queue.handle(),
-            n, alpha,
+            n, &alpha,
             dx, incdx));
 }
 
@@ -91,7 +91,7 @@ void dscal(
     blas_dev_call(
         rocblas_dscal(
             queue.handle(),
-            n, alpha,
+            n, &alpha,
             dx, incdx));
 }
 
@@ -106,8 +106,8 @@ void cscal(
     blas_dev_call(
         rocblas_cscal(
             queue.handle(),
-            n, (cuComplex) alpha,
-            (cuComplex*) dx, incdx));
+            n, (const rocblas_float_complex*) &alpha,
+            (rocblas_float_complex*) dx, incdx));
 }
 
 // -----------------------------------------------------------------------------
@@ -121,8 +121,8 @@ void zscal(
     blas_dev_call(
         rocblas_zscal(
             queue.handle(),
-            n, (cuDoubleComplex) alpha,
-            (cuDoubleComplex*) dx, incdx));
+            n, (const rocblas_double_complex*) &alpha,
+            (rocblas_double_complex*) dx, incdx));
 }
 
 // -----------------------------------------------------------------------------
