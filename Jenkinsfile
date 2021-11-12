@@ -13,17 +13,18 @@ stages {
                 }
                 axis {
                     name 'host'
-                    values 'caffeine', 'lips'
+                    values 'gpu_amd', 'gpu_nvidia'
                 }
             } // axes
             stages {
                 stage('Build') {
-                    agent { node "${host}.icl.utk.edu" }
+                    agent { label "${host}" }
 
                     //----------------------------------------------------------
                     steps {
                         sh '''
 #!/bin/sh +x
+date
 hostname && pwd
 export top=`pwd`
 
@@ -31,16 +32,16 @@ source /home/jenkins/spack_setup
 sload gcc@6.4.0
 sload intel-mkl
 
-# run CUDA tests on lips
-if [ "${host}" = "lips" ]; then
+# run CUDA tests.
+if [ "${host}" = "gpu_nvidia" ]; then
     sload cuda
     # Load CUDA. LD_LIBRARY_PATH already set.
     export CPATH=${CPATH}:${CUDA_HOME}/include
     export LIBRARY_PATH=${LIBRARY_PATH}:${CUDA_HOME}/lib64
 fi
 
-# run HIP tests on caffeine
-if [ "${host}" = "caffeine" ]; then
+# run HIP tests.
+if [ "${host}" = "gpu_amd" ]; then
     if [ -e /opt/rocm ]; then
         export PATH=${PATH}:/opt/rocm/bin
         export CPATH=${CPATH}:/opt/rocm/include
@@ -71,10 +72,10 @@ ls -R ${top}/install
 echo "========================================"
 echo "Verify that tester linked with cublas or rocblas as intended."
 ldd test/tester
-if [ "${host}" = "lips" ]; then
+if [ "${host}" = "gpu_nvidia" ]; then
     ldd test/tester | grep cublas || exit 1
 fi
-if [ "${host}" = "caffeine" ]; then
+if [ "${host}" = "gpu_amd" ]; then
     ldd test/tester | grep rocblas || exit 1
 fi
 
@@ -104,6 +105,8 @@ fi
 make
 ./example_gemm || exit 1
 ./example_util || exit 1
+
+date
 '''
                     } // steps
 
