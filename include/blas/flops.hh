@@ -90,11 +90,33 @@ inline double fadds_gemm( double m, double n, double k )
     { return m*n*k; }
 
 // -----------------------------------------------------------------------------
-inline double fmuls_gbmm( double m, double n, double kl, double ku )
-    { return (m*kl + m*ku - kl*kl/2. - ku*ku/2. + m - kl/2. - ku/2.)*n; }
+// assume gbmm is band matrix A (mxk) and general matrix B (kxn)
+// usually the bottom equation (m < k+kl and k<m+ku) calculates the flops,
+// but some matrices are too long or too wide and require extra care
+// this bottom equation would fail because it would assume it is subtracting
+// a series of elements (1+2+3+4...), but it should subtract many fewer.
+// for the (m > k+kl) case,
+// think rectangle minus trapezoid minus triangle and reduce:
+//        (m*k - (m-kl+m-k-kl-1.0)*0.5*k - (k-ku-1.0)*(k-ku)*0.5)*n;
+//        (m*k - (m-kl)*k+(k-1.0)*k*0.5 - (k-ku-1.0)*(k-ku)*0.5)*n;
+//        (kl*k + (k+1.0)*k*0.5 - (k-ku-1.0)*(k-ku)*0.5)*n;
+inline double fmuls_gbmm( double m, double n, double k, double kl, double ku )
+{
+    if(m > k+kl)
+        return (kl*k + (k+1.0)*k/2. - (k-ku-1.0)*(k-ku)/2.)*n;
+    if(k > m+ku)
+        return (ku*m - (m-kl-1.0)*(m-kl)/2. + (m+1.0)*m/2.)*n;
+    return (m*k - (m-kl-1.0)*(m-kl)/2. - (k-ku-1.0)*(k-ku)/2.)*n;
+}
 
-inline double fadds_gbmm( double m, double n, double kl, double ku )
-    { return (m*kl + m*ku - kl*kl/2. - ku*ku/2. + m - kl/2. - ku/2.)*n; }
+inline double fadds_gbmm( double m, double n, double k, double kl, double ku )
+{
+    if(m > k+kl)
+        return (kl*k + (k+1.0)*k/2. - (k-ku-1.0)*(k-ku)/2.)*n;
+    if(k > m+ku)
+        return (ku*m - (m-kl-1.0)*(m-kl)/2. + (m+1.0)*m/2.)*n;
+    return (m*k - (m-kl-1.0)*(m-kl)/2. - (k-ku-1.0)*(k-ku)/2.)*n;
+}
 
 // -----------------------------------------------------------------------------
 inline double fmuls_hemm( blas::Side side, double m, double n )
@@ -371,16 +393,8 @@ public:
                          add_ops*fadds_gemm(m, n, k)); }
 
     static double gbmm(double m, double n, double k, double kl, double ku)
-        {
-            // gbmm works if and only if A is a square matrix: m == k.
-            // todo: account for the non-suqare matrix A: m != k
-            // assert(m == k);
-            if (m != k)
-                return nan("1234"); // use testsweeper's no_data_flag to print NA
-            else
-                return 1e-9 * (mul_ops*fmuls_gbmm(m, n, kl, ku) +
-                               add_ops*fadds_gbmm(m, n, kl, ku));
-        }
+        { return 1e-9 * (mul_ops*fmuls_gbmm(m, n, k, kl, ku) +
+                            add_ops*fadds_gbmm(m, n, k, kl, ku)); }
 
     static double hemm(blas::Side side, double m, double n)
         { return 1e-9 * (mul_ops*fmuls_hemm(side, m, n) +
