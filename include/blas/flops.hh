@@ -90,30 +90,32 @@ inline double fadds_gemm( double m, double n, double k )
     { return m*n*k; }
 
 // -----------------------------------------------------------------------------
-// assume gbmm is band matrix A (mxk) and general matrix B (kxn)
-// usually the bottom equation (m < k+kl and k<m+ku) calculates the flops,
-// but some matrices are too long or too wide and require extra care
-// this bottom equation would fail because it would assume it is subtracting
+// Assume gbmm is band matrix A (mxk) and general matrix B (kxn).
+// Usually, the bottom equation (m < k+kl and k<m+ku) calculates the flops,
+// but some matrices are too long or too wide and require extra care.
+// This bottom equation would fail because it would assume it is subtracting
 // a series of elements (1+2+3+4...), but it should subtract many fewer.
-// for the (m > k+kl) case,
+// For the first corner (m > k+kl) case,
 // think rectangle minus trapezoid minus triangle and reduce:
-//        (m*k - (m-kl+m-k-kl-1.0)*0.5*k - (k-ku-1.0)*(k-ku)*0.5)*n;
-//        (m*k - (m-kl)*k+(k-1.0)*k*0.5 - (k-ku-1.0)*(k-ku)*0.5)*n;
-//        (kl*k + (k+1.0)*k*0.5 - (k-ku-1.0)*(k-ku)*0.5)*n;
+//        (m*k - (m-kl+m-k-kl-1.0)/2*k - (k-ku-1.0)*(k-ku)/2)*n;
+//        (m*k - (m-kl)*k+(k-1.0)*k/2 - (k-ku-1.0)*(k-ku)/2)*n;
+//        (kl*k + (k+1.0)*k/2 - (k-ku-1.0)*(k-ku)/2)*n;
+// We are conveniently left with the geometric interpretation of
+// rectangle plus triangle minus triangle.
 inline double fmuls_gbmm( double m, double n, double k, double kl, double ku )
 {
-    if(m > k+kl)
+    if (m > k+kl)
         return (kl*k + (k+1.0)*k/2. - (k-ku-1.0)*(k-ku)/2.)*n;
-    if(k > m+ku)
+    if (k > m+ku)
         return (ku*m - (m-kl-1.0)*(m-kl)/2. + (m+1.0)*m/2.)*n;
     return (m*k - (m-kl-1.0)*(m-kl)/2. - (k-ku-1.0)*(k-ku)/2.)*n;
 }
 
 inline double fadds_gbmm( double m, double n, double k, double kl, double ku )
 {
-    if(m > k+kl)
+    if (m > k+kl)
         return (kl*k + (k+1.0)*k/2. - (k-ku-1.0)*(k-ku)/2.)*n;
-    if(k > m+ku)
+    if (k > m+ku)
         return (ku*m - (m-kl-1.0)*(m-kl)/2. + (m+1.0)*m/2.)*n;
     return (m*k - (m-kl-1.0)*(m-kl)/2. - (k-ku-1.0)*(k-ku)/2.)*n;
 }
