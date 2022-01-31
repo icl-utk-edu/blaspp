@@ -90,34 +90,31 @@ inline double fadds_gemm( double m, double n, double k )
     { return m*n*k; }
 
 // -----------------------------------------------------------------------------
-// Assume gbmm is band matrix A (mxk) and general matrix B (kxn).
-// Usually, the bottom equation (m < k+kl and k<m+ku) calculates the flops,
-// but some matrices are too long or too wide and require extra care.
-// This bottom equation would fail because it would assume it is subtracting
-// a series of elements (1+2+3+4...), but it should subtract many fewer.
-// For the first corner (m > k+kl) case,
+// Assume gbmm is band matrix A (m-by-k) and general matrix B (k-by-n).
+// Usually, the bottom equation (m-kl <= k and k-ku <= m) calculates the flops,
+// but some matrices are too tall or too wide and require extra care.
+// This bottom equation fails because a triangle it subtracts extends beyond
+// the matrix, so it should subtract a trapezoid instead.
+// For the first corner (m-kl > k) case,
 // think rectangle minus trapezoid minus triangle and reduce:
-//        (m*k - (m-kl+m-k-kl-1.0)/2*k - (k-ku-1.0)*(k-ku)/2)*n;
-//        (m*k - (m-kl)*k+(k-1.0)*k/2 - (k-ku-1.0)*(k-ku)/2)*n;
-//        (kl*k + (k+1.0)*k/2 - (k-ku-1.0)*(k-ku)/2)*n;
+//        (m*k - (m-kl+m-k-kl-1)/2*k - (k-ku-1)*(k-ku)/2)*n;
+//        (m*k - (m-kl)*k+(k-1)*k/2 - (k-ku-1)*(k-ku)/2)*n;
+//        (kl*k + (k+1)*k/2 - (k-ku-1)*(k-ku)/2)*n;
 // We are conveniently left with the geometric interpretation of
 // rectangle plus triangle minus triangle.
 inline double fmuls_gbmm( double m, double n, double k, double kl, double ku )
 {
-    if (m > k+kl)
-        return (kl*k + (k+1.0)*k/2. - (k-ku-1.0)*(k-ku)/2.)*n;
-    if (k > m+ku)
-        return (ku*m - (m-kl-1.0)*(m-kl)/2. + (m+1.0)*m/2.)*n;
-    return (m*k - (m-kl-1.0)*(m-kl)/2. - (k-ku-1.0)*(k-ku)/2.)*n;
+    if (m-kl > k)
+        return (kl*k + (k+1)*k/2. - (k-ku-1)*(k-ku)/2.)*n;
+    if (k-ku > m)
+        return (ku*m - (m-kl-1)*(m-kl)/2. + (m+1)*m/2.)*n;
+    return (m*k - (m-kl-1)*(m-kl)/2. - (k-ku-1)*(k-ku)/2.)*n;
 }
 
+// Assuming alpha=1, beta=1, adds are same as muls.
 inline double fadds_gbmm( double m, double n, double k, double kl, double ku )
 {
-    if (m > k+kl)
-        return (kl*k + (k+1.0)*k/2. - (k-ku-1.0)*(k-ku)/2.)*n;
-    if (k > m+ku)
-        return (ku*m - (m-kl-1.0)*(m-kl)/2. + (m+1.0)*m/2.)*n;
-    return (m*k - (m-kl-1.0)*(m-kl)/2. - (k-ku-1.0)*(k-ku)/2.)*n;
+    return fmuls_gbmm( m, n, k, kl, ku );
 }
 
 // -----------------------------------------------------------------------------
@@ -396,7 +393,7 @@ public:
 
     static double gbmm(double m, double n, double k, double kl, double ku)
         { return 1e-9 * (mul_ops*fmuls_gbmm(m, n, k, kl, ku) +
-                            add_ops*fadds_gbmm(m, n, k, kl, ku)); }
+                         add_ops*fadds_gbmm(m, n, k, kl, ku)); }
 
     static double hemm(blas::Side side, double m, double n)
         { return 1e-9 * (mul_ops*fmuls_hemm(side, m, n) +
