@@ -559,9 +559,9 @@ def prog_cxx( choices=['g++', 'c++', 'CC', 'cxx', 'icpc', 'xlc++', 'clang++'] ):
         (rc, out, err) = compile_run( 'config/compiler_cxx.cc', {'CXX': cxx} )
         # print (g++), (clang++), etc., as output by compiler_cxx, after yes
         if (rc == 0):
-            cxx_ = out.strip()
-            out = '(' + cxx_ + ')'
-            actual.append( cxx_ )
+            cxx_actual = out.strip()
+            out = '(' + cxx_actual + ')'
+            actual.append( cxx_actual )
         print_result( cxx, rc, out )
         if (rc == 0):
             passed.append( cxx )
