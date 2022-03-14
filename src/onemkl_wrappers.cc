@@ -6,6 +6,7 @@
 #include "blas/device.hh"
 
 #ifdef BLAS_HAVE_ONEMKL
+#include <oneapi/mkl.hpp>
 
 namespace blas {
 namespace device {
@@ -59,6 +60,77 @@ oneapi::mkl::side side2onemkl(blas::Side side)
 // Level 1 BLAS - Device Interfaces
 
 // -----------------------------------------------------------------------------
+// scal
+// -----------------------------------------------------------------------------
+// sscal
+void sscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    float alpha,
+    float *dx, device_blas_int incdx)
+{
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::scal(
+            dev_queue,
+            n,
+            alpha,
+            dx, incdx));
+}
+
+// -----------------------------------------------------------------------------
+// dscal
+void dscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    double alpha,
+    double *dx, device_blas_int incdx)
+{
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::scal(
+            dev_queue,
+            n,
+            alpha,
+            dx, incdx));
+}
+
+// -----------------------------------------------------------------------------
+// cscal
+void cscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> alpha,
+    std::complex<float> *dx, device_blas_int incdx)
+{
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::scal(
+            dev_queue,
+            n,
+            alpha,
+            dx, incdx));
+}
+
+// -----------------------------------------------------------------------------
+// zscal
+void zscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> alpha,
+    std::complex<double> *dx, device_blas_int incdx)
+{
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::scal(
+            dev_queue,
+            n,
+            alpha,
+            dx,
+            incdx));
+}
+
+// -----------------------------------------------------------------------------
 // swap
 // -----------------------------------------------------------------------------
 // sswap
@@ -71,10 +143,10 @@ void sswap(
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::swap(
-        dev_queue,
-        n,
-        dx, incdx,
-        dy, incdy) );
+            dev_queue,
+            n,
+            dx, incdx,
+            dy, incdy) );
 }
 // -----------------------------------------------------------------------------
 // dswap
@@ -87,10 +159,10 @@ void dswap(
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::swap(
-        dev_queue,
-        n,
-        dx, incdx,
-        dy, incdy) );
+            dev_queue,
+            n,
+            dx, incdx,
+            dy, incdy) );
 }
 // -----------------------------------------------------------------------------
 // cswap
@@ -103,10 +175,10 @@ void cswap(
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::swap(
-        dev_queue,
-        n,
-        dx, incdx,
-        dy, incdy) );
+            dev_queue,
+            n,
+            dx, incdx,
+            dy, incdy) );
 }
 // -----------------------------------------------------------------------------
 // zswap
@@ -119,10 +191,80 @@ void zswap(
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::swap(
-        dev_queue,
-        n,
-        dx, incdx,
-        dy, incdy) );
+            dev_queue,
+            n,
+            dx, incdx,
+            dy, incdy) );
+}
+
+// -----------------------------------------------------------------------------
+// copy
+// -----------------------------------------------------------------------------
+// scopy
+void scopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    float const *dx, device_blas_int incdx,
+    float *dy, device_blas_int incdy)
+{
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::copy(
+            dev_queue,
+            n,
+            dx, incdx,
+            dy, incdy) );
+}
+
+// -----------------------------------------------------------------------------
+// dcopy
+void dcopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    double const *dx, device_blas_int incdx,
+    double *dy, device_blas_int incdy)
+{
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::copy(
+            dev_queue,
+            n,
+            dx, incdx,
+            dy, incdy) );
+}
+
+// -----------------------------------------------------------------------------
+// ccopy
+void ccopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> const *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy)
+{
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::copy(
+            dev_queue,
+            n,
+            dx, incdx,
+            dy, incdy) );
+}
+
+// -----------------------------------------------------------------------------
+// zcopy
+void zcopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> const *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy)
+{
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::copy(
+            dev_queue,
+            n,
+            dx, incdx,
+            dy, incdy) );
 }
 
 // =============================================================================
