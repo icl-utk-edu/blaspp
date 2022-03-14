@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2021, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -64,6 +64,68 @@ rocblas_side side2rocblas(blas::Side side)
 // Level 1 BLAS - Device Interfaces
 
 // -----------------------------------------------------------------------------
+// scal
+// -----------------------------------------------------------------------------
+// sscal
+void sscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    float alpha,
+    float *dx, device_blas_int incdx)
+{
+    blas_dev_call(
+        rocblas_sscal(
+            queue.handle(),
+            n, &alpha,
+            dx, incdx));
+}
+
+// -----------------------------------------------------------------------------
+// dscal
+void dscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    double alpha,
+    double *dx, device_blas_int incdx)
+{
+    blas_dev_call(
+        rocblas_dscal(
+            queue.handle(),
+            n, &alpha,
+            dx, incdx));
+}
+
+// -----------------------------------------------------------------------------
+// cscal
+void cscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> alpha,
+    std::complex<float> *dx, device_blas_int incdx)
+{
+    blas_dev_call(
+        rocblas_cscal(
+            queue.handle(),
+            n, (const rocblas_float_complex*) &alpha,
+            (rocblas_float_complex*) dx, incdx));
+}
+
+// -----------------------------------------------------------------------------
+// zscal
+void zscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> alpha,
+    std::complex<double> *dx, device_blas_int incdx)
+{
+    blas_dev_call(
+        rocblas_zscal(
+            queue.handle(),
+            n, (const rocblas_double_complex*) &alpha,
+            (rocblas_double_complex*) dx, incdx));
+}
+
+// -----------------------------------------------------------------------------
 // swap
 // -----------------------------------------------------------------------------
 // sswap
@@ -123,6 +185,72 @@ void zswap(
 {
     blas_dev_call(
         rocblas_zswap(
+            queue.handle(),
+            n,
+            (rocblas_double_complex*) dx, incdx,
+            (rocblas_double_complex*) dy, incdy) );
+}
+
+// -----------------------------------------------------------------------------
+// copy
+// -----------------------------------------------------------------------------
+// scopy
+void scopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    float const *dx, device_blas_int incdx,
+    float *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        rocblas_scopy(
+            queue.handle(),
+            n,
+            dx, incdx,
+            dy, incdy) );
+}
+
+// -----------------------------------------------------------------------------
+// dcopy
+void dcopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    double const *dx, device_blas_int incdx,
+    double *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        rocblas_dcopy(
+            queue.handle(),
+            n,
+            dx, incdx,
+            dy, incdy) );
+}
+
+// -----------------------------------------------------------------------------
+// ccopy
+void ccopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> const *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        rocblas_ccopy(
+            queue.handle(),
+            n,
+            (rocblas_float_complex*) dx, incdx,
+            (rocblas_float_complex*) dy, incdy) );
+}
+
+// -----------------------------------------------------------------------------
+// zcopy
+void zcopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> const *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        rocblas_zcopy(
             queue.handle(),
             n,
             (rocblas_double_complex*) dx, incdx,

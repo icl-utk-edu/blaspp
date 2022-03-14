@@ -1,3 +1,8 @@
+# Copyright (c) 2017-2021, University of Tennessee. All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause
+# This program is free software: you can redistribute it and/or modify it under
+# the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
+
 # CXX compiler must match the one used to compiler BLAS++.
 # Set it in your environment.
 
@@ -8,14 +13,45 @@ project(
     LANGUAGES CXX
 )
 
+#-------------------------------------------------------------------------------
+# Enforce out-of-source build
+string( TOLOWER "${CMAKE_CURRENT_SOURCE_DIR}" source_dir )
+string( TOLOWER "${CMAKE_CURRENT_BINARY_DIR}" binary_dir )
+if ("${source_dir}" STREQUAL "${binary_dir}")
+    message( FATAL_ERROR
+    "Compiling with CMake requires an out-of-source build. To proceed:
+    rm -rf CMakeCache.txt CMakeFiles/   # delete files in ${CMAKE_CURRENT_SOURCE_DIR}
+    mkdir build
+    cd build
+    cmake ..
+    make" )
+endif()
+
+#-------------------------------------------------------------------------------
+find_package( blaspp REQUIRED )
+
+#--------------------
 add_executable(
     example_gemm
     example_gemm.cc
 )
-
-find_package( blaspp REQUIRED )
-
 target_link_libraries(
     example_gemm
     blaspp
 )
+
+#--------------------
+add_executable(
+    example_util
+    example_util.cc
+)
+target_link_libraries(
+    example_util
+    blaspp
+)
+
+#-------------------------------------------------------------------------------
+# CTest
+enable_testing()
+add_test( NAME example_gemm COMMAND ./example_gemm )
+add_test( NAME example_util COMMAND ./example_util )

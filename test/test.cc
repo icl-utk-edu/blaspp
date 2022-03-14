@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2021, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -119,7 +119,13 @@ std::vector< testsweeper::routines_t > routines = {
     { "batch-trsm",   test_batch_trsm,   Section::blas3   },
     { "",              nullptr,          Section::newline },
 
+    { "dev-scal",         test_scal_device,         Section::device_blas1   },
+    { "",                 nullptr,                  Section::newline },
+
     { "dev-swap",         test_swap_device,         Section::device_blas1   },
+    { "",                 nullptr,                  Section::newline },
+
+    { "dev-copy",         test_copy_device,         Section::device_blas1   },
     { "",                 nullptr,                  Section::newline },
 
     { "dev-gemm",         test_gemm_device,         Section::device_blas3   },
@@ -133,6 +139,9 @@ std::vector< testsweeper::routines_t > routines = {
     { "dev-symm",         test_symm_device,         Section::device_blas3   },
     { "dev-syrk",         test_syrk_device,         Section::device_blas3   },
     { "dev-syr2k",        test_syr2k_device,        Section::device_blas3   },
+    { "",                 nullptr,                  Section::newline },
+
+    { "schur-gemm",       test_schur_gemm,          Section::device_blas3   },
     { "",                 nullptr,                  Section::newline },
 
     { "dev-trmm",         test_trmm_device,         Section::device_blas3   },
@@ -155,7 +164,7 @@ std::vector< testsweeper::routines_t > routines = {
     { "dev-batch-trmm",   test_batch_trmm_device,   Section::device_blas3   },
     { "dev-batch-trsm",   test_batch_trsm_device,   Section::device_blas3   },
     { "",                 nullptr,                  Section::newline },
-
+    
     // auxiliary
     { "error",  test_error,  Section::aux     },
     { "max",    test_max,    Section::aux     },
@@ -216,7 +225,8 @@ Params::Params():
     ref_gbytes( "Ref.\nGbyte/s",    11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "reference Gbyte/s rate" ),
 
     // default -1 means "no check"
-    okay      ( "status",              6,    ParamType::Output,  -1,   0,   0, "success indicator" )
+    okay      ( "status",              6,    ParamType::Output,  -1,   0,   0, "success indicator" ),
+    msg       ( "",       1, ParamType::Output,  "",           "error message" )
 {
     // mark standard set of output fields as used
     okay();

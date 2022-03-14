@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2021, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -57,6 +57,68 @@ cublasSideMode_t side2cublas(blas::Side side)
 
 // =============================================================================
 // Level 1 BLAS - Device Interfaces
+
+// -----------------------------------------------------------------------------
+// scal
+// -----------------------------------------------------------------------------
+// sscal
+void sscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    float alpha,
+    float *dx, device_blas_int incdx)
+{
+    blas_dev_call(
+        cublasSscal(
+            queue.handle(),
+            n, &alpha,
+            dx, incdx));
+}
+
+// -----------------------------------------------------------------------------
+// dscal
+void dscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    double alpha,
+    double *dx, device_blas_int incdx)
+{
+    blas_dev_call(
+        cublasDscal(
+            queue.handle(),
+            n, &alpha,
+            dx, incdx));
+}
+
+// -----------------------------------------------------------------------------
+// cscal
+void cscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> alpha,
+    std::complex<float> *dx, device_blas_int incdx)
+{
+    blas_dev_call(
+        cublasCscal(
+            queue.handle(),
+            n, (const cuComplex*) &alpha,
+            (cuComplex*) dx, incdx));
+}
+
+// -----------------------------------------------------------------------------
+// zscal
+void zscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> alpha,
+    std::complex<double> *dx, device_blas_int incdx)
+{
+    blas_dev_call(
+        cublasZscal(
+            queue.handle(),
+            n, (const cuDoubleComplex*) &alpha,
+            (cuDoubleComplex*) dx, incdx));
+}
 
 // -----------------------------------------------------------------------------
 // swap
@@ -118,6 +180,72 @@ void zswap(
 {
     blas_dev_call(
         cublasZswap(
+            queue.handle(),
+            n,
+            (cuDoubleComplex*) dx, incdx,
+            (cuDoubleComplex*) dy, incdy) );
+}
+
+// -----------------------------------------------------------------------------
+// copy
+// -----------------------------------------------------------------------------
+// scopy
+void scopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    float const *dx, device_blas_int incdx,
+    float *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        cublasScopy(
+            queue.handle(),
+            n,
+            dx, incdx,
+            dy, incdy) );
+}
+
+// -----------------------------------------------------------------------------
+// dcopy
+void dcopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    double const *dx, device_blas_int incdx,
+    double *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        cublasDcopy(
+            queue.handle(),
+            n,
+            dx, incdx,
+            dy, incdy) );
+}
+
+// -----------------------------------------------------------------------------
+// cswap
+void ccopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> const *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        cublasCcopy(
+            queue.handle(),
+            n,
+            (cuComplex*) dx, incdx,
+            (cuComplex*) dy, incdy) );
+}
+
+// -----------------------------------------------------------------------------
+// zswap
+void zcopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> const *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        cublasZcopy(
             queue.handle(),
             n,
             (cuDoubleComplex*) dx, incdx,

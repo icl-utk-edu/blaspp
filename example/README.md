@@ -22,16 +22,18 @@ in /opt/slate:
 
 b. Hard-code CXXFLAGS and LIBS for BLAS++ in the Makefile.
 
-Then, to build `example_gemm` using the Makefile, run:
+Then, to build and run `example_gemm` and `example_util` using the
+Makefile, run:
 
     make
+    make run
 
 ## Option 2: CMake
 
 CMake must know the compiler used to compile BLAS++. Set CXX to the
 compiler, in your environment.
 
-It's best (but not required) to compile out-of-source in a build directory:
+Create a build directory:
 
     mkdir build && cd build
 
@@ -44,6 +46,8 @@ Otherwise, simply run:
 
     cmake ..
 
-Then, to build `example_gemm` using the resulting Makefile, run:
+Then, to build and run `example_gemm` and `example_util` using the
+resulting Makefile, run:
 
     make
+    make test

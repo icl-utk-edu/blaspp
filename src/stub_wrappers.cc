@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2021, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -12,6 +12,52 @@ namespace device {
 
 // =============================================================================
 // Level 1 BLAS - Device Interfaces
+
+// -----------------------------------------------------------------------------
+// scal
+// -----------------------------------------------------------------------------
+// sscal
+void sscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    float alpha,
+    float *dx, device_blas_int incdx)
+{
+    throw blas::Error( "device BLAS not available", __func__ );
+}
+
+// -----------------------------------------------------------------------------
+// dscal
+void dscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    double alpha,
+    double *dx, device_blas_int incdx)
+{
+    throw blas::Error( "device BLAS not available", __func__ );
+}
+
+// -----------------------------------------------------------------------------
+// cscal
+void cscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> alpha,
+    std::complex<float> *dx, device_blas_int incdx)
+{
+    throw blas::Error( "device BLAS not available", __func__ );
+}
+
+// -----------------------------------------------------------------------------
+// zscal
+void zscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> alpha,
+    std::complex<double> *dx, device_blas_int incdx)
+{
+    throw blas::Error( "device BLAS not available", __func__ );
+}
 
 // -----------------------------------------------------------------------------
 // swap
@@ -59,6 +105,51 @@ void zswap(
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
+// -----------------------------------------------------------------------------
+// copy
+// -----------------------------------------------------------------------------
+// scopy
+void scopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    float const *dx, device_blas_int incdx,
+    float *dy, device_blas_int incdy)
+{
+    throw blas::Error( "device BLAS not available", __func__ );
+}
+
+// -----------------------------------------------------------------------------
+// dcopy
+void dcopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    double const *dx, device_blas_int incdx,
+    double *dy, device_blas_int incdy)
+{
+    throw blas::Error( "device BLAS not available", __func__ );
+}
+
+// -----------------------------------------------------------------------------
+// ccopy
+void ccopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> const *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy)
+{
+    throw blas::Error( "device BLAS not available", __func__ );
+}
+
+// -----------------------------------------------------------------------------
+// zcopy
+void zcopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> const *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy)
+{
+    throw blas::Error( "device BLAS not available", __func__ );
+}
 // =============================================================================
 // Level 2 BLAS - Device Interfaces
 

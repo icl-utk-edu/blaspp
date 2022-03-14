@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2021, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -41,10 +41,10 @@ namespace blas {
 
 template< typename TX, typename TY >
 void rotg(
-    TX a,
-    TY b,
-    blas::real_type<TX, TY>   c,
-    blas::scalar_type<TX, TY> s )
+    TX *a,
+    TY *b,
+    blas::real_type<TX, TY>   *c,
+    blas::scalar_type<TX, TY> *s )
 {
     throw std::exception();  // not yet implemented
 }
