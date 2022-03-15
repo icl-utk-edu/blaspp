@@ -12,11 +12,6 @@
 
 #include <complex>
 
-#ifdef BLAS_HAVE_ONEMKL
-    #include <CL/sycl/detail/cl.h>  // For CL version
-    #include <mkl.hpp>
-#endif
-
 // This is a temporary file giving simple LAPACK wrappers,
 // until the real lapackpp wrappers are available.
 
@@ -44,7 +39,6 @@
 #define lapack_zpotrf BLAS_FORTRAN_NAME( zpotrf, ZPOTRF )
 
 // -----------------------------------------------------------------------------
-#ifndef BLAS_HAVE_ONEMKL
 extern "C"
 blas_float_return
 lapack_slange( char const *norm,
@@ -70,7 +64,6 @@ double lapack_zlange( char const *norm,
                       blas_int const *m, blas_int const *n,
                       std::complex<double> const *A, blas_int const *lda,
                       double *work );
-#endif
 
 // -----------------------------------------------------------------------------
 float  lapack_lange( char const *norm,
@@ -118,7 +111,6 @@ double lapack_lange( char const *norm,
 }
 
 // -----------------------------------------------------------------------------
-#ifndef BLAS_HAVE_ONEMKL
 extern "C"
 blas_float_return
 lapack_slansy( char const *norm, char const *uplo,
@@ -144,7 +136,6 @@ double lapack_zlansy( char const *norm, char const *uplo,
                       blas_int const *n,
                       std::complex<double> const *A, blas_int const *lda,
                       double *work );
-#endif
 
 // -----------------------------------------------------------------------------
 float  lapack_lansy( char const *norm, char const *uplo,
@@ -188,7 +179,6 @@ double lapack_lansy( char const *norm, char const *uplo,
 }
 
 // -----------------------------------------------------------------------------
-#ifndef BLAS_HAVE_ONEMKL
 extern "C"
 blas_float_return
 lapack_clanhe( char const *norm, char const *uplo,
@@ -201,7 +191,6 @@ double lapack_zlanhe( char const *norm, char const *uplo,
                       blas_int const *n,
                       std::complex<double> const *A, blas_int const *lda,
                       double *work );
-#endif
 
 // -----------------------------------------------------------------------------
 float  lapack_lanhe( char const *norm, char const *uplo,
@@ -245,7 +234,6 @@ double lapack_lanhe( char const *norm, char const *uplo,
 }
 
 // -----------------------------------------------------------------------------
-#ifndef BLAS_HAVE_ONEMKL
 extern "C"
 blas_float_return
 lapack_slantr( char const *norm, char const *uplo, char const *diag,
@@ -271,7 +259,6 @@ double lapack_zlantr( char const *norm, char const *uplo, char const *diag,
                       blas_int const *m, blas_int const *n,
                       std::complex<double> const *A, blas_int const *lda,
                       double *work );
-#endif
 
 // -----------------------------------------------------------------------------
 float  lapack_lantr( char const *norm, char const *uplo, char const *diag,
@@ -319,7 +306,6 @@ double lapack_lantr( char const *norm, char const *uplo, char const *diag,
 }
 
 // -----------------------------------------------------------------------------
-#ifndef BLAS_HAVE_ONEMKL
 extern "C"
 void lapack_spotrf( char const *uplo, blas_int const *n,
                     float *A, blas_int const *lda,
@@ -339,7 +325,6 @@ extern "C"
 void lapack_zpotrf( char const *uplo, blas_int const *n,
                     std::complex<double> *A, blas_int const *lda,
                     blas_int *info );
-#endif
 
 // -----------------------------------------------------------------------------
 void lapack_potrf(  char const *uplo, int64_t n,
