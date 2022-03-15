@@ -172,7 +172,8 @@
 #define BLAS_ctrsm BLAS_FORTRAN_NAME( ctrsm, CTRSM )
 #define BLAS_ztrsm BLAS_FORTRAN_NAME( ztrsm, ZTRSM )
 
-#ifndef BLAS_HAVE_ONEMKL
+// =============================================================================
+// =============================================================================
 
 #ifdef __cplusplus
 extern "C" {
@@ -1049,7 +1050,5 @@ void BLAS_ztrsm(
 #ifdef __cplusplus
 }  // #endif
 #endif
-
-#endif        // BLAS_HAVE_ONEMKL
 
 #endif        //  #ifndef BLAS_FORTRAN_H
