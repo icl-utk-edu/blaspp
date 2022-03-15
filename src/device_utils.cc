@@ -11,6 +11,7 @@ namespace blas {
 
 // -----------------------------------------------------------------------------
 // set device
+////void set_device_unsupported_sycl( blas::Device device )
 void set_device( blas::Device device )
 {
     #ifdef BLAS_HAVE_CUBLAS
@@ -130,7 +131,6 @@ void device_free( void* ptr )
 
     #elif defined(BLAS_HAVE_ONEMKL)
         /// SYCL requires a device/queue to free.
-        /// Disable for now.
         throw blas::Error( "unsupported function for sycl backend", __func__ );
 
     #else
@@ -172,6 +172,27 @@ void device_free_pinned( void* ptr )
 
     #elif defined(BLAS_HAVE_ONEMKL)
         throw blas::Error( "unsupported function for sycl backend", __func__ );
+
+    #else
+        throw blas::Error( "device BLAS not available", __func__ );
+    #endif
+}
+
+// -----------------------------------------------------------------------------
+/// free a pinned memory space
+void device_free_pinned( void* ptr,  blas::Queue &queue )
+{
+    #ifdef BLAS_HAVE_CUBLAS
+        blas_dev_call(
+            cudaFreeHost( ptr ) );
+
+    #elif defined(BLAS_HAVE_ROCBLAS)
+        blas_dev_call(
+            hipHostFree( ptr ) );
+
+    #elif defined(BLAS_HAVE_ONEMKL)
+        blas_dev_call(
+            sycl::free( ptr, queue.stream() ) );
 
     #else
         throw blas::Error( "device BLAS not available", __func__ );
