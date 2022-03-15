@@ -12,6 +12,7 @@
 #ifdef BLAS_HAVE_CUBLAS
     #include <cuda_runtime.h>
     #include <cublas_v2.h>
+
 #elif defined(BLAS_HAVE_ROCBLAS)
     // Default to HCC platform on ROCm
     #if ! defined(__HIP_PLATFORM_NVCC__) && ! defined(__HIP_PLATFORM_HCC__)
@@ -21,10 +22,15 @@
 
     #include <hip/hip_runtime.h>
     #include <rocblas.h>
+    #ifdef BLAS_HIP_PLATFORM_HCC
+        #undef __HIP_PLATFORM_HCC__
+        #undef BLAS_HIP_PLATFORM_HCC
+    #endif
+
 #elif defined(BLAS_HAVE_ONEMKL)
     #include <CL/sycl/detail/cl.h>  // For CL version
     #include <CL/sycl.hpp>
-    #include <oneapi/mkl.hpp>
+
 #endif
 
 namespace blas {
@@ -336,7 +342,9 @@ void enumerate_devices(std::vector<cl::sycl::device> &devices);
 // memory functions
 void device_free( void* ptr );
 void device_free( void* ptr, blas::Queue &queue );
+
 void device_free_pinned( void* ptr );
+void device_free_pinned( void* ptr, blas::Queue &queue );
 
 // -----------------------------------------------------------------------------
 // Template functions declared here
@@ -390,7 +398,6 @@ T* device_malloc(
             ptr = (T*)cl::sycl::malloc_shared( nelements*sizeof(T), queue.stream() ) );
 
     #else
-
         throw blas::Error( "device BLAS not available", __func__ );
     #endif
     return ptr;
@@ -400,7 +407,7 @@ T* device_malloc(
 /// @return a host pointer to a pinned memory space
 template <typename T>
 T* device_malloc_pinned(
-    int64_t nelements)
+    int64_t nelements, blas::Queue &queue )
 {
     T* ptr = nullptr;
     #ifdef BLAS_HAVE_CUBLAS
@@ -412,10 +419,8 @@ T* device_malloc_pinned(
             hipHostMalloc( (void**)&ptr, nelements * sizeof(T) ) );
 
     #elif defined(BLAS_HAVE_ONEMKL)
-        /*
-         * disable for now on intel gpus
-        */
-        throw blas::Error( "unsupported function for sycl backend", __func__ );
+        blas_dev_call(
+            ptr = (T*)cl::sycl::malloc_host( nelements*sizeof(T), queue.stream() ) );
 
     #else
         throw blas::Error( "device BLAS not available", __func__ );
@@ -694,6 +699,7 @@ void device_memcpy(
     #endif
 }
 
+//------------------------------------------------------------------------------
 // overloaded device memcpy with memcpy direction set to default
 template <typename T>
 void device_memcpy(
@@ -710,7 +716,7 @@ void device_memcpy(
 //------------------------------------------------------------------------------
 // device memcpy 2D
 template <typename T>
-void device_memcpy_2d(
+void device_memcpy_2d( ////  _unsupported_sycl
     T*        dev_ptr, int64_t  dev_pitch,
     T const* host_ptr, int64_t host_pitch,
     int64_t width, int64_t height, MemcpyKind kind, Queue& queue)
@@ -721,6 +727,7 @@ void device_memcpy_2d(
                  dev_ptr, sizeof(T)* dev_pitch,
                 host_ptr, sizeof(T)*host_pitch,
                 sizeof(T)*width, height, memcpy2cuda(kind), queue.stream() ) );
+
     #elif defined(BLAS_HAVE_ROCBLAS)
          blas_dev_call(
             hipMemcpy2DAsync(
