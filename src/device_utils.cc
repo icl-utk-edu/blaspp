@@ -108,12 +108,12 @@ void enumerate_devices(std::vector<cl::sycl::device> &devices)
         }
     }
 
-    // must remove the if statement below in production mode
-    if(devices.size() == 0) {
-        sycl::device default_device;
-        devices.push_back( default_device );
-        dev_count = 1;
-    }
+    // // must remove the if statement below in production mode
+    // if (devices.size() == 0) {
+    //     sycl::device default_device;
+    //     devices.push_back( default_device );
+    //     dev_count = 1;
+    // }
 }
 #endif
 
