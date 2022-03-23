@@ -84,9 +84,9 @@ void test_schur_gemm_work( Params& params, bool run )
 
     // device specifics
     blas::Queue queue( device, batch );
-    TA* dA = blas::device_malloc<TA>( size_A );
-    TB* dB = blas::device_malloc<TB>( size_B );
-    TC* dC = blas::device_malloc<TC>( size_C );
+    TA* dA = blas::device_malloc<TA>( size_A, queue );
+    TB* dB = blas::device_malloc<TB>( size_B, queue );
+    TC* dC = blas::device_malloc<TC>( size_C, queue );
 
     // pointer arrays
     std::vector<TA*>   dAarray;
@@ -183,9 +183,9 @@ void test_schur_gemm_work( Params& params, bool run )
     delete[] B;
     delete[] C;
 
-    blas::device_free( dA );
-    blas::device_free( dB );
-    blas::device_free( dC );
+    blas::device_free( dA, queue );
+    blas::device_free( dB, queue );
+    blas::device_free( dC, queue );
 }
 
 // -----------------------------------------------------------------------------

@@ -57,9 +57,9 @@ void test_device_gemm( int m, int n, int k )
 
         // todo: future update to pass queue into malloc
         blas::set_device( device );
-        T *dA = blas::device_malloc<T>( lda*k );  // m-by-k
-        T *dB = blas::device_malloc<T>( ldb*n );  // k-by-n
-        T *dC = blas::device_malloc<T>( ldc*n );  // m-by-n
+        T *dA = blas::device_malloc<T>( lda*k, queue );  // m-by-k
+        T *dB = blas::device_malloc<T>( ldb*n, queue );  // k-by-n
+        T *dC = blas::device_malloc<T>( ldc*n, queue );  // m-by-n
 
         blas::device_setmatrix( m, k,
                                 A.data(), lda,      // src
@@ -87,9 +87,9 @@ void test_device_gemm( int m, int n, int k )
 
         queue.sync();
 
-        blas::device_free( dA );  dA = nullptr;
-        blas::device_free( dB );  dB = nullptr;
-        blas::device_free( dC );  dC = nullptr;
+        blas::device_free( dA, queue );  dA = nullptr;
+        blas::device_free( dB, queue );  dB = nullptr;
+        blas::device_free( dC, queue );  dC = nullptr;
     }
 }
 

@@ -74,9 +74,9 @@ void test_swap_device_work( Params& params, bool run )
     queue.sync();
 
     // test error exits
-    assert_throw( blas::swap( -1, dx, incx, dy, incy ), blas::Error );
-    assert_throw( blas::swap(  n, dx,    0, dy, incy ), blas::Error );
-    assert_throw( blas::swap(  n, dx, incx, dy,    0 ), blas::Error );
+    assert_throw( blas::swap( -1, dx, incx, dy, incy, queue ), blas::Error );
+    assert_throw( blas::swap(  n, dx,    0, dy, incy, queue ), blas::Error );
+    assert_throw( blas::swap(  n, dx, incx, dy,    0, queue ), blas::Error );
 
     if (verbose >= 1) {
         printf( "\n"

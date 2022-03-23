@@ -50,10 +50,10 @@ void test_scal_device_work( Params& params, bool run )
     T* xref = new T[ size_x ];
 
     // device specifics
-    blas::Queue queue(device,0);
+    blas::Queue queue(device, 0);
     T* dx;
 
-    dx = blas::device_malloc<T>(size_x);
+    dx = blas::device_malloc<T>(size_x, queue);
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
@@ -64,9 +64,9 @@ void test_scal_device_work( Params& params, bool run )
     queue.sync();
 
     // test error exits
-    assert_throw( blas::scal( -1, alpha, x, incx ), blas::Error );
-    assert_throw( blas::scal(  n, alpha, x,    0 ), blas::Error );
-    assert_throw( blas::scal(  n, alpha, x,   -1 ), blas::Error );
+    assert_throw( blas::scal( -1, alpha, x, incx, queue ), blas::Error );
+    assert_throw( blas::scal(  n, alpha, x,    0, queue ), blas::Error );
+    assert_throw( blas::scal(  n, alpha, x,   -1, queue ), blas::Error );
 
     if (verbose >= 1) {
         printf( "\n"
@@ -136,7 +136,7 @@ void test_scal_device_work( Params& params, bool run )
     delete[] x;
     delete[] xref;
 
-    blas::device_free( dx );
+    blas::device_free( dx, queue );
 }
 
 // -----------------------------------------------------------------------------

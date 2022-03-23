@@ -58,8 +58,8 @@ void test_copy_device_work( Params& params, bool run )
     TX* dx;
     TY* dy;
 
-    dx = blas::device_malloc<TX>(size_x);
-    dy = blas::device_malloc<TY>(size_y);
+    dx = blas::device_malloc<TX>(size_x, queue);
+    dy = blas::device_malloc<TY>(size_y, queue);
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
@@ -142,8 +142,8 @@ void test_copy_device_work( Params& params, bool run )
     delete[] xref;
     delete[] yref;
 
-    blas::device_free( dx );
-    blas::device_free( dy );
+    blas::device_free( dx, queue );
+    blas::device_free( dy, queue );
 }
 
 // -----------------------------------------------------------------------------
