@@ -6,6 +6,11 @@
 #include "blas/device.hh"
 
 #ifdef BLAS_HAVE_ONEMKL
+
+// see https://software.intel.com/content/www/us/en/develop/articles/use-of-intel-mkl-data-types-in-cc-applications.html
+#include "blas/config.h"
+#define MKL_Complex8  blas_complex_float
+#define MKL_Complex16 blas_complex_double
 #include <oneapi/mkl.hpp>
 
 namespace blas {
