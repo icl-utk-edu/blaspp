@@ -87,9 +87,10 @@ BLAS++ specific options include (all values are case insensitive):
         cmake -DBLAS_LIBRARIES='-lopenblas' ..
 
     gpu_backend
-        auto            auto-detect CUDA or HIP/ROCm (default)
+        auto            auto-detect CUDA, HIP/ROCm, or oneMKL (default)
         cuda            build with CUDA support
         hip             build with HIP/ROCm support
+        onemkl          build with SYCL and oneMKL support
         none            do not build with GPU backend
 
     color
