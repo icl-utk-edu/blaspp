@@ -407,6 +407,31 @@ T* device_malloc(
 /// @return a host pointer to a pinned memory space
 template <typename T>
 T* device_malloc_pinned(
+    int64_t nelements)
+{
+    T* ptr = nullptr;
+    #ifdef BLAS_HAVE_CUBLAS
+        blas_dev_call(
+            cudaMallocHost( (void**)&ptr, nelements * sizeof(T) ) );
+
+    #elif defined(BLAS_HAVE_ROCBLAS)
+        blas_dev_call(
+            hipHostMalloc( (void**)&ptr, nelements * sizeof(T) ) );
+
+    #elif defined(BLAS_HAVE_ONEMKL)
+        // SYCL requires a device or queue to malloc
+        throw blas::Error( "unsupported function for sycl backend", __func__ );
+
+    #else
+        throw blas::Error( "device BLAS not available", __func__ );
+    #endif
+    return ptr;
+}
+
+//------------------------------------------------------------------------------
+/// @return a host pointer to a pinned memory space using a specific device queue
+template <typename T>
+T* device_malloc_pinned(
     int64_t nelements, blas::Queue &queue )
 {
     T* ptr = nullptr;
