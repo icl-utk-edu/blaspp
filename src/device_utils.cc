@@ -11,7 +11,6 @@ namespace blas {
 
 // -----------------------------------------------------------------------------
 // set device
-////void set_device_unsupported_sycl( blas::Device device )
 void set_device( blas::Device device )
 {
     #ifdef BLAS_HAVE_CUBLAS
