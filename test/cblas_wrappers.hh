@@ -8,14 +8,7 @@
 
 #include "blas/defines.h"
 
-#if defined(BLAS_HAVE_ONEMKL)
-    #if defined(BLAS_ILP64) && ! defined(MKL_ILP64)
-        #define MKL_ILP64
-    #endif
-    #include <CL/sycl/detail/cl.h>  // For CL version
-    #include <mkl_cblas.h>
-
-#elif defined(BLAS_HAVE_MKL)
+#if defined(BLAS_HAVE_MKL) || defined(BLAS_HAVE_ONEMKL)
     #if defined(BLAS_ILP64) && ! defined(MKL_ILP64)
         #define MKL_ILP64
     #endif
