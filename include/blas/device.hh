@@ -593,11 +593,13 @@ void device_setvector(
 
     #elif defined(BLAS_HAVE_ONEMKL)
         if( inch_ == incd_ ) {
-            /* this could be slow if inc >> n */
+            // this could be slow if inc >> n
+            // find an if condition to switch to other copy mode
+            size_t countbytes = (((n_ - 1) * inch_) + 1) * sizeof(T);
             blas_dev_call(
                 (queue.stream()).memcpy( (      void*)dev_ptr,
                                          (const void*)host_ptr,
-                                         n_*inch_*sizeof(T)) );
+                                         countbytes ));
         }
         else {
             for(int64_t ie = 0; ie < n_; ++ie) {
@@ -644,11 +646,13 @@ void device_getvector(
 
     #elif defined(BLAS_HAVE_ONEMKL)
         if( inch_ == incd_ ) {
-            /* this could be slow if inc >> n */
+            // fixme: this could be slow if inc >> n
+            // find an if condition to switch to other copy mode
+            size_t countbytes = (((n_ - 1) * inch_) + 1) * sizeof(T);
             blas_dev_call(
                 (queue.stream()).memcpy( (      void*)host_ptr,
                                          (const void*)dev_ptr,
-                                         n_*inch_*sizeof(T) ) );
+                                         countbytes ) );
         }
         else {
             for(int64_t ie = 0; ie < n_; ++ie) {

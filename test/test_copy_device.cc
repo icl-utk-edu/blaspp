@@ -58,8 +58,10 @@ void test_copy_device_work( Params& params, bool run )
     TX* dx;
     TY* dy;
 
+    // malloc device memory
     dx = blas::device_malloc<TX>(size_x, queue);
     dy = blas::device_malloc<TY>(size_y, queue);
+    queue.sync();
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
@@ -67,6 +69,7 @@ void test_copy_device_work( Params& params, bool run )
     cblas_copy( n, x, incx, xref, incx );
 
     // todo: should we have different incdx and incdy
+    // todo: setvector assumes one type TX=TY
     blas::device_setvector(n, x, std::abs(incx), dx, std::abs(incx), queue);
     blas::device_setvector(n, y, std::abs(incy), dy, std::abs(incy), queue);
     queue.sync();
