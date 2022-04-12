@@ -72,18 +72,23 @@ inline T roundup( T x, T y )
 
 // -----------------------------------------------------------------------------
 #ifndef assert_throw
-    #define assert_throw( expr, exception_type ) \
-        try { \
-            expr; \
-            fprintf( stderr, "Error: didn't throw expected exception at %s:%d\n", \
-                    __FILE__, __LINE__ ); \
-            throw std::exception(); \
-        } \
-        catch (exception_type& err) { \
-            if (verbose >= 3) { \
-                printf( "Caught expected exception: %s\n", err.what() ); \
+    #if defined(BLAS_ERROR_NDEBUG) || (defined(BLAS_ERROR_ASSERT) && defined(NDEBUG))
+        #define assert_throw( expr, exception_type ) \
+            ((void)0)
+    #else
+        #define assert_throw( expr, exception_type ) \
+            try { \
+                expr; \
+                fprintf( stderr, "Error: didn't throw expected exception at %s:%d\n", \
+                        __FILE__, __LINE__ ); \
+                throw std::exception(); \
             } \
-        }
+            catch (exception_type& err) { \
+                if (verbose >= 3) { \
+                    printf( "Caught expected exception: %s\n", err.what() ); \
+                } \
+            }
+    #endif
 #endif
 
 // -----------------------------------------------------------------------------

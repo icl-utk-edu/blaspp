@@ -233,7 +233,7 @@ inline const char* device_error_string( rocblas_status error )
 
     // blaspp does no error checking on device errors;
     #define blas_dev_call( error ) \
-        ((void)0)
+        error
 
 #elif defined(BLAS_ERROR_ASSERT)
 
