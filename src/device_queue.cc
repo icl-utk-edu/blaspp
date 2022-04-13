@@ -144,14 +144,12 @@ void stream_wait_event( hipStream_t stream, hipEvent_t event, unsigned int flags
 // -----------------------------------------------------------------------------
 /// Default constructor.
 Queue::Queue()
+  : work_( nullptr ),
+    lwork_( 0 )
 {
     // get the currently set device ID
     get_device( &device_ );
     batch_limit_ = DEV_QUEUE_DEFAULT_BATCH_LIMIT;
-    // compute workspace for pointer arrays in the queue
-    // fork size + 1 (def. stream), each need 3 pointer arrays
-    size_t workspace_size = 3 * batch_limit_ * ( DEV_QUEUE_FORK_SIZE + 1 );
-    dev_ptr_array_ = device_malloc<void*>( workspace_size );
 
     #if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
         // default stream
@@ -172,6 +170,12 @@ Queue::Queue()
         for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
             event_create(&parallel_events_[ i ]);
         }
+
+        // compute workspace for pointer arrays in the queue
+        // fork size + 1 (def. stream), each need 3 pointer arrays
+        // Must be after creating streams since work_resize syncs.
+        size_t lwork = 3 * batch_limit_ * ( DEV_QUEUE_FORK_SIZE + 1 );
+        work_resize<void*>( lwork );
     #endif
 }
 
@@ -179,15 +183,13 @@ Queue::Queue()
 /// Constructor with device and batch init.
 // todo: merge with default constructor.
 Queue::Queue( blas::Device device, int64_t batch_size )
+  : work_( nullptr ),
+    lwork_( 0 )
 {
     #if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
         device_ = device;
         batch_limit_ = batch_size;
         set_device( device_ );
-        // compute workspace for pointer arrays in the queue
-        // fork size + 1 (def. stream), each need 3 pointer arrays
-        size_t workspace_size = 3 * batch_limit_ * ( DEV_QUEUE_FORK_SIZE + 1 );
-        dev_ptr_array_ = device_malloc<void*>( workspace_size );
 
         stream_create( &default_stream_ );
         handle_create( &handle_ );
@@ -206,6 +208,12 @@ Queue::Queue( blas::Device device, int64_t batch_size )
         for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
             event_create( &parallel_events_[ i ] );
         }
+
+        // compute workspace for pointer arrays in the queue
+        // fork size + 1 (def. stream), each need 3 pointer arrays
+        // Must be after creating streams since work_resize syncs.
+        size_t lwork = 3 * batch_limit_ * ( DEV_QUEUE_FORK_SIZE + 1 );
+        work_resize<void*>( lwork );
     #endif
 }
 
@@ -215,7 +223,7 @@ Queue::~Queue()
 {
     try {
         #if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
-            device_free( dev_ptr_array_ );
+            device_free( work_ );
             handle_destroy( handle_ );
             stream_destroy( default_stream_ );
 
@@ -259,6 +267,8 @@ void Queue::sync()
 /// Get device array pointer for the current stream.
 void**  Queue::get_dev_ptr_array()
 {
+    void** dev_ptr_array_ = (void**) work_;
+
     // in default (join) mode, return dev_ptr_array with no offset
     if (current_stream_ == &default_stream_)
         return dev_ptr_array_;
