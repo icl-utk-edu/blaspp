@@ -118,6 +118,16 @@ public:
     size_t                 get_batch_limit() { return batch_limit_; }
     void**                 get_dev_ptr_array();
 
+    /// @return device workspace.
+    void* work() { return (void*) work_; }
+
+    /// @return size of device workspace, in scalar_t elements.
+    template <typename scalar_t>
+    size_t work_size() const { return lwork_ / sizeof(scalar_t); }
+
+    template <typename scalar_t>
+    void work_resize( size_t lwork );
+
     // switch from default stream to parallel streams
     void fork();
 
@@ -146,8 +156,9 @@ private:
     // (e.g. a pointer array)
     size_t batch_limit_;
 
-    // workspace for pointer arrays of batch routines
-    void** dev_ptr_array_;
+    // Workspace for pointer arrays of batch routines or other purposes.
+    char* work_;
+    size_t lwork_;
 
     // the number of streams the queue is currently using for
     // launching kernels (1 by default)
@@ -783,6 +794,27 @@ void device_memcpy_2d(
          dev_ptr,  dev_pitch,
         host_ptr, host_pitch,
         width, height, MemcpyKind::Default, queue);
+}
+
+//------------------------------------------------------------------------------
+/// Ensures GPU device workspace is of size at least lwork elements of
+/// scalar_t, synchronizing and reallocating if needed.
+///
+/// @param[in] lwork
+///     Minimum size of workspace.
+///
+template <typename scalar_t>
+void Queue::work_resize( size_t lwork )
+{
+    lwork *= sizeof(scalar_t);
+    if (lwork > lwork_) {
+        sync();
+        if (work_) {
+            device_free( work_ );
+        }
+        lwork_ = lwork;
+        work_ = device_malloc<char>( lwork );
+    }
 }
 
 }  // namespace blas
