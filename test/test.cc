@@ -142,6 +142,7 @@ std::vector< testsweeper::routines_t > routines = {
     { "",                 nullptr,                  Section::newline },
 
     { "schur-gemm",       test_schur_gemm,          Section::device_blas3   },
+    { "schur-gemm-tile-layout", test_schur_gemm_tile_layout, Section::device_blas3   },
     { "",                 nullptr,                  Section::newline },
 
     { "dev-trmm",         test_trmm_device,         Section::device_blas3   },
@@ -164,7 +165,7 @@ std::vector< testsweeper::routines_t > routines = {
     { "dev-batch-trmm",   test_batch_trmm_device,   Section::device_blas3   },
     { "dev-batch-trsm",   test_batch_trsm_device,   Section::device_blas3   },
     { "",                 nullptr,                  Section::newline },
-    
+
     // auxiliary
     { "error",  test_error,  Section::aux     },
     { "max",    test_max,    Section::aux     },
