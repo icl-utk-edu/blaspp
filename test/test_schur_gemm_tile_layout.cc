@@ -72,7 +72,7 @@ void test_schur_gemm_tile_layout_work( Params& params, bool run )
     int64_t lda_ = roundup( Am, align );
     int64_t ldb_ = roundup( Bm, align );
     int64_t ldc_ = roundup( Cm, align );
-    int64_t ld_tile = k_;
+    int64_t ld_tile = roundup(k_, align);
     size_t size_A = size_t(lda_)*An;
     size_t size_B = size_t(ldb_)*Bn;
     size_t size_C = size_t(ldc_)*Cn;
@@ -99,7 +99,7 @@ void test_schur_gemm_tile_layout_work( Params& params, bool run )
     std::vector<blas::Op> transB(1, transB_);
     std::vector<int64_t>  k(1, k_);
     std::vector<int64_t>  ldda(1, ld_tile);
-    std::vector<int64_t>  lddb(1, ld_tile);
+    std::vector<int64_t>  lddb(1, ldb_);
     std::vector<int64_t>  lddc(1, ld_tile);
     std::vector<scalar_t> alpha(1, alpha_);
     std::vector<scalar_t> beta(1, beta_);
@@ -112,9 +112,27 @@ void test_schur_gemm_tile_layout_work( Params& params, bool run )
     if (Cref != nullptr)
         lapack_lacpy( "g", Cm, Cn, C, ldc_, Cref, ldc_ );
 
-    blas::device_setmatrix(Am, An, A, lda_, dA, lda_, queue);
+    // Copy A from LAPACK format on host to tile format on device
+    for (int64_t i = 0; i < mt; ++i) {
+        blas::device_setmatrix(
+                k_, k_,
+                &A[ i * ld_tile ], lda_,
+                &dA[ i * k_ * ld_tile ], ld_tile,
+                queue);
+    }
     blas::device_setmatrix(Bm, Bn, B, ldb_, dB, ldb_, queue);
-    blas::device_setmatrix(Cm, Cn, C, ldc_, dC, ldc_, queue);
+
+    // Copy C from LAPACK format on host to tile format on device
+    for (int64_t j = 0; j < nt; ++j) {
+        for (int64_t i = 0; i < mt; ++i) {
+            blas::device_setmatrix(
+                    k_, k_,
+                    &C[ i * k_ + j * k_ * ldc_ ], ldc_,
+                    &dC[ i * k_ * ld_tile + j * k_ * mt * ld_tile ], ld_tile,
+                    queue);
+        }
+    }
+
     queue.sync();
 
     // norms for error check
@@ -129,7 +147,7 @@ void test_schur_gemm_tile_layout_work( Params& params, bool run )
     for (int64_t j = 0; j < nt; ++j) {
         for (int64_t i = 0; i < mt; ++i) {
             dAarray.push_back( &dA[ i * k_ * ld_tile ] );  // i-th block row
-            dBarray.push_back( &dB[ j * k_ * ld_tile ] );  // j-th block col
+            dBarray.push_back( &dB[ j * k_ * ldb_ ] );  // j-th block col
             dCarray.push_back( &dC[ i * k_ * ld_tile + j * k_ * mt * ld_tile ] );  // (i, j)-th block
         }
     }
@@ -148,12 +166,22 @@ void test_schur_gemm_tile_layout_work( Params& params, bool run )
     double gflop = Gflop < scalar_t >::gemm( m_, n_, k_ );
     params.time()   = time;
     params.gflops() = gflop / time;
-    blas::device_getmatrix(Cm, Cn, dC, ldc_, C, ldc_, queue);
+    // Copy C from tile format on device to LAPACK format on host
+    for (int64_t j = 0; j < nt; ++j) {
+        for (int64_t i = 0; i < mt; ++i) {
+            blas::device_getmatrix(
+                    k_, k_,
+                    &dC[ i * k_ * ld_tile + j * k_ * mt * ld_tile ], ld_tile,
+                    &C[ i * k_ + j * k_ * ldc_ ], ldc_,
+                    queue);
+        }
+    }
     queue.sync();
 
     if (params.ref() == 'y' || params.check() == 'y') {
         // Run reference (dark blue line)
         testsweeper::flush_cache( params.cache() );
+        blas::device_setmatrix(Am, An, A, lda_, dA, lda_, queue);
         blas::device_setmatrix(Cm, Cn, Cref, ldc_, dC, ldc_, queue);
         queue.sync();
 
