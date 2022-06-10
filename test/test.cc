@@ -142,7 +142,6 @@ std::vector< testsweeper::routines_t > routines = {
     { "",                 nullptr,                  Section::newline },
 
     { "schur-gemm",       test_schur_gemm,          Section::device_blas3   },
-    { "schur-gemm-tile-layout", test_schur_gemm_tile_layout, Section::device_blas3   },
     { "",                 nullptr,                  Section::newline },
 
     { "dev-trmm",         test_trmm_device,         Section::device_blas3   },
@@ -196,6 +195,7 @@ Params::Params():
     //          name,      w,    type,            def,                    char2enum,         enum2char,         enum2str,         help
     datatype  ( "type",    4,    ParamType::List, DataType::Double,       char2datatype,     datatype2char,     datatype2str,     "s=single (float), d=double, c=complex-single, z=complex-double" ),
     layout    ( "layout",  6,    ParamType::List, blas::Layout::ColMajor, blas::char2layout, blas::layout2char, blas::layout2str, "layout: r=row major, c=column major" ),
+    format    ( "format",  6,    ParamType::List, blas::Format::LAPACK,   blas::char2format, blas::format2char, blas::format2str, "format: l=lapack, t=tile" ),
     side      ( "side",    6,    ParamType::List, blas::Side::Left,       blas::char2side,   blas::side2char,   blas::side2str,   "side: l=left, r=right" ),
     uplo      ( "uplo",    6,    ParamType::List, blas::Uplo::Lower,      blas::char2uplo,   blas::uplo2char,   blas::uplo2str,   "triangle: l=lower, u=upper" ),
     trans     ( "trans",   7,    ParamType::List, blas::Op::NoTrans,      blas::char2op,     blas::op2char,     blas::op2str,     "transpose: n=no-trans, t=trans, c=conj-trans" ),

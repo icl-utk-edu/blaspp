@@ -33,6 +33,7 @@ public:
     // ----- routine parameters
     testsweeper::ParamEnum< testsweeper::DataType > datatype;
     testsweeper::ParamEnum< blas::Layout >      layout;
+    testsweeper::ParamEnum< blas::Format >      format;
     testsweeper::ParamEnum< blas::Side >        side;
     testsweeper::ParamEnum< blas::Uplo >        uplo;
     testsweeper::ParamEnum< blas::Op >          trans;
