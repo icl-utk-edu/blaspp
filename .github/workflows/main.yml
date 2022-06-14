@@ -33,5 +33,4 @@ jobs:
 
       # Runs a set of commands using the runners shell
       - name: Test build
-        shell: bash --login {0}
-        run: .github/workflow/build.sh
+        run: .github/workflows/build.sh
