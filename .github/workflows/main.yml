@@ -27,6 +27,7 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Test build
         run: |
+          env
           module load gcc@7.3.0
           module load cmake
           module load openblas
