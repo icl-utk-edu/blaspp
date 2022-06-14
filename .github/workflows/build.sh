@@ -12,9 +12,11 @@ date
 module load gcc@7.3.0
 module load intel-mkl
 
-print "======================================== load CUDA or ROCm"
+echo "======================================== load CUDA or ROCm"
 # Load CUDA.
-if [ "${host}" = "gpu_nvidia" ]; then
+if [ "${gpu}" = "nvidia" ]; then
+    which nvcc
+    nvcc --version
     # Load CUDA. 
     export CUDA_HOME=/usr/local/cuda/
     export CPATH=${CPATH}:${CUDA_HOME}/include
@@ -22,7 +24,9 @@ if [ "${host}" = "gpu_nvidia" ]; then
 fi
 
 # Load HIP.
-if [ "${host}" = "gpu_amd" ]; then
+if [ "${gpu}" = "amd" ]; then
+    which hipcc
+    hipcc --version
     # Load ROCm/HIP.
     export PATH=${PATH}:/opt/rocm/bin
     export CPATH=${CPATH}:/opt/rocm/include
@@ -30,27 +34,21 @@ if [ "${host}" = "gpu_amd" ]; then
     export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/opt/rocm/lib:/opt/rocm/lib64
 fi
 
-print "======================================== verify dependencies"
+echo "======================================== verify dependencies"
 # Check what is loaded.
 module list
 
 which g++
 g++ --version
 
-which nvcc
-nvcc --version
+echo "MKLROOT ${MKLROOT}"
 
-which hipcc
-hipcc --version
-
-print "MKLROOT ${MKLROOT}"
-
-print "======================================== env"
+echo "======================================== env"
 env
 
-print "======================================== setup build"
+echo "======================================== setup build"
 date
-print "maker ${maker}"
+echo "maker ${maker}"
 export color=no
 rm -rf ${top}/install
 if [ "${maker}" = "make" ]; then
@@ -67,28 +65,28 @@ if [ "${maker}" = "cmake" ]; then
           -DCMAKE_INSTALL_PREFIX=${top}/install ..
 fi
 
-print "======================================== build"
+echo "======================================== build"
 date
 make -j8
 
-print "======================================== install"
+echo "======================================== install"
 date
 make -j8 install
 ls -R ${top}/install
 
-print "======================================== verify build"
-print "Verify that tester linked with cublas or rocblas as intended."
+echo "======================================== verify build"
+echo "Verify that tester linked with cublas or rocblas as intended."
 date
 ldd test/tester
-if [ "${host}" = "gpu_nvidia" ]; then
+if [ "${gpu}" = "nvidia" ]; then
     ldd test/tester | grep cublas || exit 1
 fi
-if [ "${host}" = "gpu_amd" ]; then
+if [ "${gpu}" = "amd" ]; then
     ldd test/tester | grep rocblas || exit 1
 fi
 
-print "======================================== tests"
-print "Run tests."
+echo "======================================== tests"
+echo "Run tests."
 date
 cd test
 export OMP_NUM_THREADS=8
@@ -99,8 +97,8 @@ export OMP_NUM_THREADS=8
 ./run_tests.py --blas1-device --blas3-device --quick --xml ${top}/report-${maker}-device.xml
 ./run_tests.py --batch-blas3-device          --quick --xml ${top}/report-${maker}-batch-device.xml
 
-print "======================================== smoke tests"
-print "Verify install with smoke tests."
+echo "======================================== smoke tests"
+echo "Verify install with smoke tests."
 date
 cd ${top}/example
 
