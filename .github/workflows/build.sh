@@ -1,11 +1,14 @@
 #!/bin/bash -e 
 
+maker=$1
+gpu=$2
 echo maker=$maker gpu=$gpu
-asdf
-echo Done
-exit
 
 source /etc/profile
+
+module avail
+echo Done
+exit
 
 export top=`pwd`
 
