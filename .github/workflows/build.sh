@@ -1,3 +1,4 @@
+#!/bin/bash -e 
 
 echo maker=$maker gpu=$gpu
 asdf

@@ -33,4 +33,4 @@ jobs:
 
       # Runs a set of commands using the runners shell
       - name: Test build
-        run: .github/workflows/build.sh
+        run: .github/workflows/build.sh $maker $gpu
