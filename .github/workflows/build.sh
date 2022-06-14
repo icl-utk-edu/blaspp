@@ -2,13 +2,9 @@
 
 maker=$1
 gpu=$2
-echo maker=$maker gpu=$gpu
+echo Starting maker=$maker gpu=$gpu
 
 source /etc/profile
-
-module avail
-echo Done
-exit
 
 export top=`pwd`
 
