@@ -1,8 +1,9 @@
-#!/bin/bash -e
+#!/bin/sh
 
-maker=$1
-gpu=$2
 echo maker=$maker gpu=$gpu
+asdf
+echo Done
+exit
 
 export top=`pwd`
 
@@ -56,7 +57,7 @@ if [ "${maker}" = "make" ]; then
     make config CXXFLAGS="-Werror" prefix=${top}/install
 fi
 if [ "${maker}" = "cmake" ]; then
-    run sload cmake
+    module load cmake
     which cmake
     cmake --version
 
