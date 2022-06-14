@@ -1,9 +1,10 @@
-#!/bin/sh
 
 echo maker=$maker gpu=$gpu
 asdf
 echo Done
 exit
+
+source /etc/profile
 
 export top=`pwd`
 
