@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 maker=$1
 gpu=$2
