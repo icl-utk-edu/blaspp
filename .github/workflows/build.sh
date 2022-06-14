@@ -1,4 +1,4 @@
-#!/bin/bash --login -x
+#!/bin/bash
 
 maker=$1
 gpu=$2
