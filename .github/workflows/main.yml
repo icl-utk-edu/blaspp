@@ -17,13 +17,13 @@ on:
 jobs:          
   build_at_ICL:
     # The type of runner that the job will run on
-    runs-on: self-hosted
+    runs-on: [self-hosted, gpu_nvidia]
     
     # Add an element in this strategy matrix for each FFT library we want to test
     strategy:
       matrix:
         maker: [make, cmake]
-        gpu: [none, nvidia, amd]
+        gpu: [none, nvidia]
       fail-fast: false
       
     # Steps represent a sequence of tasks that will be executed as part of the job
