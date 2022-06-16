@@ -5,8 +5,7 @@ gpu=$2
 
 source .github/workflows/setup_env.sh
 
-echo "======================================== Setup build"
-date
+section "======================================== Setup build"
 export color=no
 rm -rf ${top}/install
 if [ "${maker}" = "make" ]; then
@@ -14,27 +13,20 @@ if [ "${maker}" = "make" ]; then
     make config CXXFLAGS="-Werror" prefix=${top}/install
 fi
 if [ "${maker}" = "cmake" ]; then
-    module load cmake
-    which cmake
-    cmake --version
-
     rm -rf build && mkdir build && cd build
     cmake -Dcolor=no -DCMAKE_CXX_FLAGS="-Werror" \
           -DCMAKE_INSTALL_PREFIX=${top}/install ..
 fi
 
-echo "======================================== Build"
-date
+section "======================================== Build"
 make -j8
 
-echo "======================================== Install"
-date
+section "======================================== Install"
 make -j8 install
 ls -R ${top}/install
 
-echo "======================================== Verify build"
-echo "Verify that tester linked with cublas or rocblas as intended."
-date
+section "======================================== Verify build"
+# Verify that tester linked with cublas or rocblas as intended.
 ldd test/tester
 if [ "${gpu}" = "nvidia" ]; then
     ldd test/tester | grep cublas || exit 1
