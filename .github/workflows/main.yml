@@ -25,8 +25,11 @@ jobs:
   
     steps:
       - uses: actions/checkout@v2
-      - name: Test build
+      - name: Build
         run: .github/workflows/build.sh ${{matrix.maker}} ${{matrix.gpu}}
+      - name: Test
+        run: .github/workflows/test.sh ${{matrix.maker}} ${{matrix.gpu}}
+
         
   ICL_AMD:
     runs-on: [self-hosted, gpu_amd]
@@ -40,5 +43,5 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build
         run: .github/workflows/build.sh ${{matrix.maker}} ${{matrix.gpu}}
-      - name: Test build
+      - name: Test
         run: .github/workflows/test.sh ${{matrix.maker}} ${{matrix.gpu}}

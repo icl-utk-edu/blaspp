@@ -2,14 +2,11 @@
 
 maker=$1
 gpu=$2
-echo Testing maker=$maker gpu=$gpu
 
 source /etc/profile
 
 export top=`pwd`
 
-echo "======================================== tests"
-echo "Run tests."
 date
 cd test
 export OMP_NUM_THREADS=8
@@ -20,8 +17,7 @@ export OMP_NUM_THREADS=8
 ./run_tests.py --blas1-device --blas3-device --quick --xml ${top}/report-${maker}-device.xml
 ./run_tests.py --batch-blas3-device          --quick --xml ${top}/report-${maker}-batch-device.xml
 
-echo "======================================== smoke tests"
-echo "Verify install with smoke tests."
+echo "======================================== Smoke tests"
 date
 cd ${top}/example
 
