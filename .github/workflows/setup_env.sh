@@ -1,34 +1,28 @@
-#!/bin/bash -e 
+#!/bin/bash
+
+shopt -s expand_aliases
+
+set +x
 
 source /etc/profile
 
 top=`pwd`
 
-# Suppress echo (-x) output of commands executed with `run`. Useful for Spack.
-# set +x, set -x are not echo'd.
-run() {
+# Suppress echo (-x) output of commands executed with `quiet`.
+quiet() {
     { set +x; } 2> /dev/null;
     $@;
     set -x
 }
 
-section() {
-    { set +x; } 2> /dev/null;
-    echo $@;
-    date
-    set -x
-}
-
-# Suppress echo (-x) output of `print` commands. https://superuser.com/a/1141026
-# aliasing `echo` causes issues with spack_setup, so use `print` instead.
-echo_and_restore() {
+print_section() {
     builtin echo "$*"
+    date
     case "$save_flags" in
         (*x*)  set -x
     esac
 }
-alias print='{ save_flags="$-"; set +x; } 2> /dev/null; echo_and_restore'
-
+alias section='{ save_flags="$-"; set +x; } 2> /dev/null; print_section'
 
 module load gcc@7.3.0
 module load intel-mkl
@@ -67,8 +61,9 @@ module list
 which g++
 g++ --version
 
-echo "MKLROOT ${MKLROOT}"
+echo "MKLROOT=${MKLROOT}"
 
 section "======================================== Environment"
 env
 
+set -x
