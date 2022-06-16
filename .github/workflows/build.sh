@@ -88,6 +88,10 @@ if [ "${gpu}" = "amd" ]; then
     ldd test/tester | grep rocblas || exit 1
 fi
 
+exit # Moving tests to second CI step
+
+
+
 echo "======================================== tests"
 echo "Run tests."
 date

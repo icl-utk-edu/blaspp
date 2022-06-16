@@ -38,5 +38,7 @@ jobs:
   
     steps:
       - uses: actions/checkout@v2
-      - name: Test build
+      - name: Build
         run: .github/workflows/build.sh ${{matrix.maker}} ${{matrix.gpu}}
+      - name: Test build
+        run: .github/workflows/test.sh ${{matrix.maker}} ${{matrix.gpu}}
