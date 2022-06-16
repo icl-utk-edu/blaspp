@@ -1,11 +1,8 @@
 #!/bin/bash -e 
 
-maker=$1
-gpu=$2
-
 source /etc/profile
 
-export top=`pwd`
+top=`pwd`
 
 module load gcc@7.3.0
 module load intel-mkl
