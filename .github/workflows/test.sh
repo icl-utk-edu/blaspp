@@ -3,9 +3,7 @@
 maker=$1
 gpu=$2
 
-source /etc/profile
-
-export top=`pwd`
+source .github/workflows/setup_env.sh
 
 date
 cd test
