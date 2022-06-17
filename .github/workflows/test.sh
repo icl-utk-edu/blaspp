@@ -6,7 +6,6 @@ gpu=$2
 source .github/workflows/setup_env.sh
 
 section "======================================== Tests"
-[ "${maker}" = "cmake" ] && cd build
 cd test
 export OMP_NUM_THREADS=8
 ./run_tests.py --blas1 --blas2 --blas3 --quick --xml ${top}/report-${maker}.xml

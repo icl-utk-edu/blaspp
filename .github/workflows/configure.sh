@@ -13,7 +13,6 @@ if [ "${maker}" = "make" ]; then
     make config CXXFLAGS="-Werror" prefix=${top}/install
 fi
 if [ "${maker}" = "cmake" ]; then
-    rm -rf build && mkdir build && cd build
     cmake -Dcolor=no -DCMAKE_CXX_FLAGS="-Werror" \
           -DCMAKE_INSTALL_PREFIX=${top}/install ..
 fi

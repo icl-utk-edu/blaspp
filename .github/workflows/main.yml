@@ -20,11 +20,13 @@ jobs:
     strategy:
       matrix:
         maker: [make, cmake]
-        gpu: [none, nvidia]
+        gpu: [nogpu, nvidia]
       fail-fast: false
   
     steps:
       - uses: actions/checkout@v2
+      - name: Configure
+        run: .github/workflows/configure.sh ${{matrix.maker}} ${{matrix.gpu}}
       - name: Build
         run: .github/workflows/build.sh ${{matrix.maker}} ${{matrix.gpu}}
       - name: Test
@@ -41,6 +43,8 @@ jobs:
   
     steps:
       - uses: actions/checkout@v2
+      - name: Configure
+        run: .github/workflows/configure.sh ${{matrix.maker}} ${{matrix.gpu}}
       - name: Build
         run: .github/workflows/build.sh ${{matrix.maker}} ${{matrix.gpu}}
       - name: Test
