@@ -3,7 +3,13 @@
 maker=$1
 gpu=$2
 
-source .github/workflows/setup_env.sh
+if [ "$maker" = "cmake" ]; then
+   rm -rf build
+   mkdir -p build
+fi
+
+mydir=`$dirname $0`
+source $mydir/setup_env.sh
 
 section "======================================== Setup build"
 export color=no

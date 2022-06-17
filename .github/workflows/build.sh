@@ -3,7 +3,8 @@
 maker=$1
 gpu=$2
 
-source .github/workflows/setup_env.sh
+mydir=`dirname $0`
+source $mydir/setup_env.sh
 
 section "======================================== Build"
 make -j8
