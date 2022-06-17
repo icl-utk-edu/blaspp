@@ -1,7 +1,7 @@
 #!/bin/bash -xe 
 
 maker=$1
-gpu=$2
+device=$2
 
 if [ "$maker" = "cmake" ]; then
    rm -rf build

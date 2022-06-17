@@ -27,7 +27,7 @@ alias section='{ save_flags="$-"; set +x; } 2> /dev/null; print_section'
 module load gcc@7.3.0
 module load intel-mkl
 
-if [ "${gpu}" = "nvidia" ]; then
+if [ "${device}" = "gpu_nvidia" ]; then
     section "======================================== Load CUDA"
     export CUDA_HOME=/usr/local/cuda/
     export PATH=${PATH}:${CUDA_HOME}/bin
@@ -37,7 +37,7 @@ if [ "${gpu}" = "nvidia" ]; then
     nvcc --version
 fi
 
-if [ "${gpu}" = "amd" ]; then
+if [ "${device}" = "gpu_amd" ]; then
     section "======================================== Load ROCm"
     export PATH=${PATH}:/opt/rocm/bin
     export CPATH=${CPATH}:/opt/rocm/include
