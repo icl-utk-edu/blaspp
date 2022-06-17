@@ -8,7 +8,7 @@ if [ "$maker" = "cmake" ]; then
    mkdir -p build
 fi
 
-mydir=`$dirname $0`
+mydir=`dirname $0`
 source $mydir/setup_env.sh
 
 section "======================================== Setup build"
