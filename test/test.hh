@@ -33,6 +33,7 @@ public:
     // ----- routine parameters
     testsweeper::ParamEnum< testsweeper::DataType > datatype;
     testsweeper::ParamEnum< blas::Layout >      layout;
+    testsweeper::ParamEnum< blas::Format >      format;
     testsweeper::ParamEnum< blas::Side >        side;
     testsweeper::ParamEnum< blas::Uplo >        uplo;
     testsweeper::ParamEnum< blas::Op >          trans;
@@ -171,6 +172,7 @@ void test_hemm_device  ( Params& params, bool run );
 void test_her2k_device ( Params& params, bool run );
 void test_herk_device  ( Params& params, bool run );
 void test_schur_gemm   ( Params& params, bool run );
+void test_schur_gemm_tile_layout ( Params& params, bool run );
 void test_symm_device  ( Params& params, bool run );
 void test_syr2k_device ( Params& params, bool run );
 void test_syrk_device  ( Params& params, bool run );
