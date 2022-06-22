@@ -5,7 +5,11 @@ options {
     // Required to clean before build
     skipDefaultCheckout( true )
 }
-triggers { pollSCM 'H/10 * * * *' }
+
+// cron syntax: minute hour day-of-month month day-of-week
+// run hourly
+triggers { pollSCM 'H * * * *' }
+
 stages {
     //======================================================================
     stage('Parallel Build') {
@@ -58,16 +62,17 @@ alias print='{ save_flags="$-"; set +x; } 2> /dev/null; echo_and_restore'
 
 print "======================================== load compiler"
 date
-run source /home/jenkins/spack_setup
-run sload gcc@7.3.0
-run spack compiler find
-run sload intel-mkl
+module load gcc/7.3.0
+module load intel-oneapi-mkl/2022
+
+# hipcc needs /usr/sbin/lsmod
+export PATH=${PATH}:/usr/sbin
 
 print "======================================== load CUDA or ROCm"
 # Load CUDA.
 if [ "${host}" = "gpu_nvidia" ]; then
-    # Load CUDA. LD_LIBRARY_PATH set by Spack.
-    run sload cuda@10.2.89
+    # Load CUDA. LD_LIBRARY_PATH set by module.
+    module load cuda/11
     export CPATH=${CPATH}:${CUDA_HOME}/include
     export LIBRARY_PATH=${LIBRARY_PATH}:${CUDA_HOME}/lib64
 fi
@@ -81,9 +86,9 @@ if [ "${host}" = "gpu_amd" ]; then
     export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/opt/rocm/lib:/opt/rocm/lib64
 fi
 
-print "======================================== verify spack"
+print "======================================== verify modules"
 # Check what is loaded.
-run spack find --loaded
+module list
 
 which g++
 g++ --version
@@ -99,7 +104,7 @@ print "MKLROOT ${MKLROOT}"
 print "======================================== env"
 env
 
-print "======================================== setup build"
+print "======================================== configure"
 date
 print "maker ${maker}"
 export color=no
@@ -109,7 +114,7 @@ if [ "${maker}" = "make" ]; then
     make config CXXFLAGS="-Werror" prefix=${top}/install
 fi
 if [ "${maker}" = "cmake" ]; then
-    run sload cmake
+    module load cmake/3.18
     which cmake
     cmake --version
 
@@ -175,7 +180,7 @@ date
                     //----------------------------------------------------------
                     post {
                         failure {
-                            mail to: 'slate-dev@icl.utk.edu',
+                            mail to: 'slate-test@icl.utk.edu',
                                 subject: "${currentBuild.fullDisplayName} >> ${STAGE_NAME} >> ${maker} ${host} failed",
                                 body: "See more at ${env.BUILD_URL}"
                         }
