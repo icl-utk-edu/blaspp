@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         maker: [make, cmake]
-        device: [cpu_intel, cpu_amd, gpu_nvidia, gpu_amd]
+        device: [cpu, gpu_nvidia, gpu_amd]
       fail-fast: false
     runs-on: ${{ matrix.device }}
     steps:
