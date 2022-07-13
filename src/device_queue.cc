@@ -150,12 +150,7 @@ Queue::Queue()
     #if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
         // get the currently set device ID
         get_device( &device_ );
-
         batch_limit_ = DEV_QUEUE_DEFAULT_BATCH_LIMIT;
-        // compute workspace for pointer arrays in the queue
-        // fork size + 1 (def. stream), each need 3 pointer arrays
-        size_t workspace_size = 3 * batch_limit_ * ( DEV_QUEUE_FORK_SIZE + 1 );
-        dev_ptr_array_ = device_malloc<void*>( workspace_size );
 
         // default stream
         stream_create( &default_stream_ );
@@ -232,57 +227,26 @@ Queue::Queue( blas::Device device, int64_t batch_size = DEV_QUEUE_DEFAULT_BATCH_
 
         sycl_device_    = devices[ device ];
         batch_limit_    = batch_size;
+
+        // Optionally: make sycl::queue be in-order (otherwise default is out-of-order)
+        // sycl::property_list q_prop{sycl::property::queue::in_order()};
+        // default_stream_ = new sycl::queue( sycl_device_ , q_prop );
+
+        // make new sycl:queue (by default out-of-order execution)
         default_stream_ = new sycl::queue( sycl_device_ );
+        current_stream_       = default_stream_;
+
         /// Compute workspace for pointer arrays in the queue
         /// fork_size + 1 (def. stream), each need 3 pointer arrays
         /// fork_size is currently zero for onemkl (fork-join is disabled)
-        size_t fork_size      = 0;
-        size_t workspace_size = 3 * batch_limit_ * ( fork_size + 1 );
-        blas_dev_call(
-            dev_ptr_array_ = (void**) cl::sycl::malloc_shared(
-                              workspace_size*sizeof(void*), *default_stream_ )
-        );
+        size_t fork_size = 0;   // fork-join disabled
+        size_t lwork = 3 * batch_limit_ * ( fork_size + 1 );
+        work_resize<void*>( lwork );
 
-        current_stream_       = default_stream_;
         num_active_streams_   = 1;
         current_stream_index_ = 0;
     #endif
 }
-
-// -----------------------------------------------------------------------------
-/// Constructor with sycl queue and batch init (for onemkl only)
-#ifdef BLAS_HAVE_ONEMKL
-Queue::Queue( cl::sycl::queue &sycl_queue, int64_t batch_size = DEV_QUEUE_DEFAULT_BATCH_LIMIT )
-{
-        /// Check if the sycl queue is created on a gpu.
-        if(!sycl_queue.get_device().is_gpu()) {
-            throw blas::Error( " sycl queue is not attached to a gpu device ",
-            __func__ );
-        }
-
-        /// Setting device_ = 0 is not precise, but the integer device_ isn't
-        /// probably to be used for sycl backend.
-        /// A precise setting = enum devices + search.
-        device_            = 0;
-        sycl_device_       = sycl_queue.get_device();
-        batch_limit_       = batch_size;
-        default_stream_    = new sycl::queue;
-        (*default_stream_) = sycl_queue;
-        /// Compute workspace for pointer arrays in the queue.
-        /// fork_size + 1 (def. stream), each need 3 pointer arrays
-        /// fork_size is zero for onemkl (fork-join is disabled)
-        size_t fork_size      = 0;
-        size_t workspace_size = 3 * batch_limit_ * ( fork_size + 1 );
-        blas_dev_call(
-            dev_ptr_array_ = (void**) cl::sycl::malloc_shared(
-                              workspace_size*sizeof(void*), *default_stream_ )
-        );
-
-        current_stream_       = default_stream_;
-        num_active_streams_   = 1;
-        current_stream_index_ = 0;
-}
-#endif  // BLAS_HAVE_ONEMKL
 
 // -----------------------------------------------------------------------------
 // Default destructor.
@@ -306,8 +270,7 @@ Queue::~Queue()
             }
 
         #elif defined(BLAS_HAVE_ONEMKL)
-            blas_dev_call(
-                sycl::free( dev_ptr_array_, *default_stream_ ) );
+            device_free( work_, *this );
             delete default_stream_;
         #endif
     }
@@ -355,6 +318,7 @@ void**  Queue::get_dev_ptr_array()
         return (dev_ptr_array_ + offset);
 
     #else // includes BLAS_HAVE_ONEMKL
+        void** dev_ptr_array_ = (void**) work_;
         return dev_ptr_array_;
     #endif
 }
@@ -384,7 +348,7 @@ void Queue::fork()
         handle_set_stream( handle_, *current_stream_ );
 
     #elif defined(BLAS_HAVE_ONEMKL)
-        // to do: see possible implementations for sycl
+        // todo: see possible implementations for sycl
         return;
     #endif
 }
@@ -414,7 +378,7 @@ void Queue::join()
         handle_set_stream( handle_, *current_stream_ );
 
     #elif defined(BLAS_HAVE_ONEMKL)
-         // to do: see possible implementations for sycl
+         // todo: see possible implementations for sycl
         return;
     #endif
 }
@@ -437,7 +401,7 @@ void Queue::revolve()
         handle_set_stream( handle_, *current_stream_ );
 
     #elif defined(BLAS_HAVE_ONEMKL)
-         // to do: see possible implementations for sycl
+         // todo: see possible implementations for sycl
         return;
     #endif
 }

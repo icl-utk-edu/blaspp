@@ -108,9 +108,6 @@ public:
     // Disable copying; must construct anew.
     Queue( Queue const& ) = delete;
     Queue& operator=( Queue const& ) = delete;
-    #ifdef BLAS_HAVE_ONEMKL
-    Queue( cl::sycl::queue &sycl_queue, int64_t batch_size );
-    #endif
     ~Queue();
 
     blas::Device           device() const { return device_; }
@@ -492,18 +489,18 @@ void device_setmatrix(
                 dev_ptr,  ldd_, queue.stream() ) );
 
     #elif defined(BLAS_HAVE_ONEMKL)
+        // todo: replace with blas call
         if( ldh_ == m_ && ldd_ == m_ ) {
-            /* one memcpy */
+            // one memcpy
             blas_dev_call(
                 (queue.stream()).memcpy( (      void*)dev_ptr,
                                          (const void*)host_ptr,
                                          m_*n_*sizeof(T) ) );
         }
         else {
-            /* will have to do several mem-copies
-             * sycl does not support set/get matrix
-            */
-            for(int64_t ic = 0; ic < n_; ++ic) {
+            // will have to do several mem-copies
+            // sycl does not support set/get/lacpy matrix
+            for( int64_t ic = 0; ic < n_; ++ic ) {
                 void       *dptr = (      void*) (dev_ptr  + ic*ldd_);
                 const void *hptr = (const void*) (host_ptr + ic*ldh_);
                 blas_dev_call(
@@ -548,17 +545,17 @@ void device_getmatrix(
                 host_ptr, ldh_, queue.stream() ) );
 
     #elif defined(BLAS_HAVE_ONEMKL)
+        // todo: replace with blas call
         if( ldh_ == m_ && ldd_ == m_ ) {
-            /* one memcpy */
+            // one memcpy
             blas_dev_call(
                 (queue.stream()).memcpy( (      void*)host_ptr,
                                          (const void*)dev_ptr,
                                          m_*n_*sizeof(T) ) );
         }
         else {
-            /* will have to do several mem-copies
-             * sycl does not support set/get matrix
-            */
+            // will have to do several mem-copies
+            // sycl does not support set/get/lacpy matrix
             for(int64_t ic = 0; ic < n_; ++ic) {
                 const void *dptr = (const void*) (dev_ptr  + ic*ldd_);
                 void       *hptr = (      void*) (host_ptr + ic*ldh_);
@@ -603,9 +600,9 @@ void device_setvector(
                 dev_ptr,  incd_, queue.stream() ) );
 
     #elif defined(BLAS_HAVE_ONEMKL)
-        if( inch_ == incd_ ) {
-            // this could be slow if inc >> n
-            // find an if condition to switch to other copy mode
+        // todo: replace with oneapi::mkl::blas::copy
+        // oneapi::mkl::blas::copy( dev_queue, n_, host_ptr,  inch_, dev_ptr, incd_ ));
+        if( inch_ == incd_  && inch_ == 1 ) {
             size_t countbytes = (((n_ - 1) * inch_) + 1) * sizeof(T);
             blas_dev_call(
                 (queue.stream()).memcpy( (      void*)dev_ptr,
@@ -656,9 +653,9 @@ void device_getvector(
                 host_ptr, inch_, queue.stream() ) );
 
     #elif defined(BLAS_HAVE_ONEMKL)
-        if( inch_ == incd_ ) {
-            // fixme: this could be slow if inc >> n
-            // find an if condition to switch to other copy mode
+        // todo: replace with oneapi::mkl::blas::copy that supports increments
+        // oneapi::mkl::blas::copy( dev_queue, n_, dev_ptr,  incd_, host_ptr, inch_ ));
+        if( inch_ == incd_ && inch_ == 1 ) {
             size_t countbytes = (((n_ - 1) * inch_) + 1) * sizeof(T);
             blas_dev_call(
                 (queue.stream()).memcpy( (      void*)host_ptr,
@@ -756,9 +753,9 @@ void device_memcpy(
 //------------------------------------------------------------------------------
 // device memcpy 2D
 template <typename T>
-void device_memcpy_2d( ////  _unsupported_sycl
-    T*        dev_ptr, int64_t  dev_pitch,
-    T const* host_ptr, int64_t host_pitch,
+void device_memcpy_2d(
+    T* dev_ptr, int64_t  dev_pitch,
+    T* host_ptr, int64_t host_pitch,
     int64_t width, int64_t height, MemcpyKind kind, Queue& queue)
 {
     #ifdef BLAS_HAVE_CUBLAS
@@ -776,7 +773,16 @@ void device_memcpy_2d( ////  _unsupported_sycl
                 sizeof(T)*width, height, memcpy2hip(kind), queue.stream() ) );
 
     #elif defined(BLAS_HAVE_ONEMKL)
-        throw blas::Error( "unsupported function for sycl backend", __func__ );
+        int64_t n = width; // width cols
+        int64_t m = height; // height rows
+        int64_t ldd = dev_pitch;
+        int64_t ldh = host_pitch;
+        if( kind == blas::MemcpyKind::HostToDevice )
+            blas::device_setmatrix( m, n, dev_ptr, ldd, host_ptr, ldh, queue );
+        else if( kind == blas::MemcpyKind::DeviceToHost )
+            blas::device_setmatrix( m, n, dev_ptr, ldd, host_ptr, ldh, queue );
+        else
+            throw blas::Error( "unsupported data movement for sycl backend", __func__ );
 
     #else
         throw blas::Error( "device BLAS not available", __func__ );
@@ -813,7 +819,7 @@ void Queue::work_resize( size_t lwork )
             device_free( work_ );
         }
         lwork_ = lwork;
-        work_ = device_malloc<char>( lwork );
+        work_ = device_malloc<char>( lwork, *this );
     }
 }
 
