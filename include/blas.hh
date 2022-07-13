@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2021, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2022, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -9,8 +9,8 @@
 #include "blas/defines.h"
 
 // Version is updated by make_release.py; DO NOT EDIT.
-// Version 2021.04.01
-#define BLASPP_VERSION 20210401
+// Version 2022.05.00
+#define BLASPP_VERSION 20220500
 
 namespace blas {
 

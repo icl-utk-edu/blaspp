@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2021, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2022, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -185,7 +185,7 @@ Queue::Queue()
 // -----------------------------------------------------------------------------
 /// Constructor with device and batch init.
 // todo: merge with default constructor.
-Queue::Queue( blas::Device device, int64_t batch_size = DEV_QUEUE_DEFAULT_BATCH_LIMIT)
+Queue::Queue( blas::Device device, int64_t batch_size )
   : work_( nullptr ),
     lwork_( 0 )
 {

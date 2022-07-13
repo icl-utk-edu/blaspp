@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2021, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2022, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -24,6 +24,7 @@ enum class Op     : char { NoTrans  = 'N', Trans    = 'T', ConjTrans = 'C' };
 enum class Uplo   : char { Upper    = 'U', Lower    = 'L', General   = 'G' };
 enum class Diag   : char { NonUnit  = 'N', Unit     = 'U' };
 enum class Side   : char { Left     = 'L', Right    = 'R' };
+enum class Format : char { LAPACK   = 'L', Tile     = 'T' };
 
 // -----------------------------------------------------------------------------
 // Convert enum to LAPACK-style char.
@@ -32,6 +33,7 @@ inline char     op2char( Op     op     ) { return char(op);     }
 inline char   uplo2char( Uplo   uplo   ) { return char(uplo);   }
 inline char   diag2char( Diag   diag   ) { return char(diag);   }
 inline char   side2char( Side   side   ) { return char(side);   }
+inline char format2char( Format format ) { return char(format); }
 
 // -----------------------------------------------------------------------------
 // Convert enum to LAPACK-style string.
@@ -82,6 +84,15 @@ inline const char* side2str( Side side )
     return "";
 }
 
+inline const char* format2str( Format format )
+{
+    switch (format) {
+        case Format::LAPACK: return "lapack";
+        case Format::Tile: return "tile";
+    }
+    return "";
+}
+
 // -----------------------------------------------------------------------------
 // Convert LAPACK-style char to enum.
 inline Layout char2layout( char layout )
@@ -117,6 +128,13 @@ inline Side char2side( char side )
     side = (char) toupper( side );
     assert( side == 'L' || side == 'R' );
     return Side( side );
+}
+
+inline Format char2format( char format )
+{
+    format = (char) toupper( format );
+    assert( format == 'L' || format == 'T' );
+    return Format( format );
 }
 
 // -----------------------------------------------------------------------------

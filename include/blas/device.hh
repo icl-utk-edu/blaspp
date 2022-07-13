@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2021, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2022, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -273,7 +273,7 @@ inline const char* device_error_string( rocblas_status error )
 
     // blaspp does no error checking on device errors;
     #define blas_dev_call( error ) \
-        ((void)0)
+        error
 
 #elif defined(BLAS_ERROR_ASSERT)
 
