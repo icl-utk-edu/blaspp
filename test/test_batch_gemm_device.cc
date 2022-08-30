@@ -77,6 +77,7 @@ void test_device_batch_gemm_work( Params& params, bool run )
     TA* dA = blas::device_malloc<TA>( batch * size_A, queue );
     TB* dB = blas::device_malloc<TB>( batch * size_B, queue );
     TC* dC = blas::device_malloc<TC>( batch * size_C, queue );
+    queue.sync();
 
     // pointer arrays
     std::vector<TA*>    Aarray( batch );
