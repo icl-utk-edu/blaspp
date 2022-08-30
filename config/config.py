@@ -671,7 +671,8 @@ def onemkl_library():
         inc = '-I' + root + '/linux/include ' \
             + '-I' + root + '/linux/include/sycl '
     env = {'LIBS': libs,
-           'CXXFLAGS': inc + define('HAVE_ONEMKL') + ' -Wno-deprecated-declarations'}
+           'CXXFLAGS': inc + define('HAVE_ONEMKL')
+           + ' -fsycl -Wno-deprecated-declarations'}
     (rc, out, err) = compile_exe( 'config/onemkl.cc', env )
     print_result( libs, rc )
     if (rc == 0):
