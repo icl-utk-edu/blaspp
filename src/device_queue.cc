@@ -229,12 +229,12 @@ Queue::Queue( blas::Device device, int64_t batch_size )
         batch_limit_    = batch_size;
 
         // Optionally: make sycl::queue be in-order (otherwise default is out-of-order)
-        // sycl::property_list q_prop{sycl::property::queue::in_order()};
-        // default_stream_ = new sycl::queue( sycl_device_ , q_prop );
+        sycl::property_list q_prop{sycl::property::queue::in_order()};
+        default_stream_ = new sycl::queue( sycl_device_ , q_prop );
 
         // make new sycl:queue (by default out-of-order execution)
-        default_stream_ = new sycl::queue( sycl_device_ );
-        current_stream_       = default_stream_;
+        // default_stream_ = new sycl::queue( sycl_device_ );
+        // current_stream_       = default_stream_;
 
         /// Compute workspace for pointer arrays in the queue
         /// fork_size + 1 (def. stream), each need 3 pointer arrays
