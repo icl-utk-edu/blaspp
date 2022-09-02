@@ -22,6 +22,8 @@
 
     #include <hip/hip_runtime.h>
     #include <rocblas.h>
+
+    // If we defined __HIP_PLATFORM_HCC__, undef it.
     #ifdef BLAS_HIP_PLATFORM_HCC
         #undef __HIP_PLATFORM_HCC__
         #undef BLAS_HIP_PLATFORM_HCC
