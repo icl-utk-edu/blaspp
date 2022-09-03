@@ -48,7 +48,7 @@ void blas::batch::syrk(
         float* dC_   = blas::batch::extract<float*>(Carray, i);
         blas::syrk(
             layout, uplo_, trans_, n_, k_,
-            alpha_, dA_, lda_ ,
+            alpha_, dA_, lda_,
             beta_,  dC_, ldc_ );
     }
 }
@@ -93,7 +93,7 @@ void blas::batch::syrk(
         double* dC_   = blas::batch::extract<double*>(Carray, i);
         blas::syrk(
             layout, uplo_, trans_, n_, k_,
-            alpha_, dA_, lda_ ,
+            alpha_, dA_, lda_,
             beta_,  dC_, ldc_ );
     }
 }
@@ -138,7 +138,7 @@ void blas::batch::syrk(
         std::complex<float>* dC_   = blas::batch::extract<std::complex<float>*>(Carray, i);
         blas::syrk(
             layout, uplo_, trans_, n_, k_,
-            alpha_, dA_, lda_ ,
+            alpha_, dA_, lda_,
             beta_,  dC_, ldc_ );
     }
 }
@@ -183,7 +183,7 @@ void blas::batch::syrk(
         std::complex<double>* dC_   = blas::batch::extract<std::complex<double>*>(Carray, i);
         blas::syrk(
             layout, uplo_, trans_, n_, k_,
-            alpha_, dA_, lda_ ,
+            alpha_, dA_, lda_,
             beta_,  dC_, ldc_ );
     }
 }

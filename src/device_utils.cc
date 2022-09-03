@@ -77,7 +77,7 @@ device_blas_int get_device_count()
         auto platforms = sycl::platform::get_platforms();
         for (auto &platform : platforms) {
             auto devices = platform.get_devices();
-            for (auto &device : devices ) {
+            for (auto &device : devices) {
                 dev_count += device.is_gpu();
             }
         }
@@ -104,7 +104,7 @@ void enumerate_devices(std::vector<cl::sycl::device> &devices)
     auto platforms = sycl::platform::get_platforms();
     for (auto &platform : platforms) {
         auto all_devices = platform.get_devices();
-        for (auto &idevice : all_devices ) {
+        for (auto &idevice : all_devices) {
             if (idevice.is_gpu()) {
                 devices.push_back( idevice );
             }

@@ -52,8 +52,8 @@ void blas::batch::her2k(
         float* dC_   = blas::batch::extract<float*>(Carray, i);
         blas::her2k(
             layout, uplo_, trans_, n_, k_,
-            alpha_, dA_, lda_ ,
-                    dB_, ldb_ ,
+            alpha_, dA_, lda_,
+                    dB_, ldb_,
             beta_,  dC_, ldc_ );
     }
 }
@@ -102,8 +102,8 @@ void blas::batch::her2k(
         double* dC_   = blas::batch::extract<double*>(Carray, i);
         blas::her2k(
             layout, uplo_, trans_, n_, k_,
-            alpha_, dA_, lda_ ,
-                    dB_, ldb_ ,
+            alpha_, dA_, lda_,
+                    dB_, ldb_,
             beta_,  dC_, ldc_ );
     }
 }
@@ -152,8 +152,8 @@ void blas::batch::her2k(
         std::complex<float>* dC_   = blas::batch::extract<std::complex<float>*>(Carray, i);
         blas::her2k(
             layout, uplo_, trans_, n_, k_,
-            alpha_, dA_, lda_ ,
-                    dB_, ldb_ ,
+            alpha_, dA_, lda_,
+                    dB_, ldb_,
             beta_,  dC_, ldc_ );
     }
 }
@@ -202,8 +202,8 @@ void blas::batch::her2k(
         std::complex<double>* dC_   = blas::batch::extract<std::complex<double>*>(Carray, i);
         blas::her2k(
             layout, uplo_, trans_, n_, k_,
-            alpha_, dA_, lda_ ,
-                    dB_, ldb_ ,
+            alpha_, dA_, lda_,
+                    dB_, ldb_,
             beta_,  dC_, ldc_ );
     }
 }

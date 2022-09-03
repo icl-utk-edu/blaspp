@@ -1167,7 +1167,7 @@ void batch_sgemm(
     // todo: probably move transA_/transB_ to blas::Queue
     std::vector<oneapi::mkl::transpose> transA_(group_count);
     std::vector<oneapi::mkl::transpose> transB_(group_count);
-    for(auto i = 0; i < group_count; ++i) {
+    for (auto i = 0; i < group_count; ++i) {
         transA_[i] = op2onemkl( transA[i] );
         transB_[i] = op2onemkl( transB[i] );
     }
@@ -1238,7 +1238,7 @@ void batch_dgemm(
     // todo: probably move transA_/transB_ to blas::Queue
     std::vector<oneapi::mkl::transpose> transA_(group_count);
     std::vector<oneapi::mkl::transpose> transB_(group_count);
-    for(auto i = 0; i < group_count; ++i) {
+    for (auto i = 0; i < group_count; ++i) {
         transA_[i] = op2onemkl( transA[i] );
         transB_[i] = op2onemkl( transB[i] );
     }
@@ -1309,7 +1309,7 @@ void batch_cgemm(
     // todo: probably move transA_/transB_ to blas::Queue
     std::vector<oneapi::mkl::transpose> transA_(group_count);
     std::vector<oneapi::mkl::transpose> transB_(group_count);
-    for(auto i = 0; i < group_count; ++i) {
+    for (auto i = 0; i < group_count; ++i) {
         transA_[i] = op2onemkl( transA[i] );
         transB_[i] = op2onemkl( transB[i] );
     }
@@ -1380,7 +1380,7 @@ void batch_zgemm(
     // todo: probably move transA_/transB_ to blas::Queue
     std::vector<oneapi::mkl::transpose> transA_(group_count);
     std::vector<oneapi::mkl::transpose> transB_(group_count);
-    for(auto i = 0; i < group_count; ++i) {
+    for (auto i = 0; i < group_count; ++i) {
         transA_[i] = op2onemkl( transA[i] );
         transB_[i] = op2onemkl( transB[i] );
     }
@@ -1427,7 +1427,7 @@ void batch_strsm(
     blas_dev_call(
         oneapi::mkl::blas::trsm_batch(
         dev_queue,
-        &side_, &uplo_ , &trans_, &diag_,
+        &side_, &uplo_, &trans_, &diag_,
         &m, &n,
         &alpha,
         (const float**)dAarray, &ldda,
@@ -1453,7 +1453,7 @@ void batch_strsm(
     std::vector<oneapi::mkl::transpose> trans_(group_count);
     std::vector<oneapi::mkl::diag>      diag_(group_count);
 
-    for(auto i = 0; i < group_count; ++i) {
+    for (auto i = 0; i < group_count; ++i) {
         side_[i]  = side2onemkl( side[i] );
         uplo_[i]  = uplo2onemkl( uplo[i] );
         trans_[i] = op2onemkl( trans[i] );
@@ -1500,7 +1500,7 @@ void batch_dtrsm(
     blas_dev_call(
         oneapi::mkl::blas::trsm_batch(
         dev_queue,
-        &side_, &uplo_ , &trans_, &diag_,
+        &side_, &uplo_, &trans_, &diag_,
         &m, &n,
         &alpha,
         (const double**)dAarray, &ldda,
@@ -1526,7 +1526,7 @@ void batch_dtrsm(
     std::vector<oneapi::mkl::transpose> trans_(group_count);
     std::vector<oneapi::mkl::diag>      diag_(group_count);
 
-    for(auto i = 0; i < group_count; ++i) {
+    for (auto i = 0; i < group_count; ++i) {
         side_[i]  = side2onemkl( side[i] );
         uplo_[i]  = uplo2onemkl( uplo[i] );
         trans_[i] = op2onemkl( trans[i] );
@@ -1573,7 +1573,7 @@ void batch_ctrsm(
     blas_dev_call(
         oneapi::mkl::blas::trsm_batch(
         dev_queue,
-        &side_, &uplo_ , &trans_, &diag_,
+        &side_, &uplo_, &trans_, &diag_,
         &m, &n,
         &alpha,
         (const std::complex<float>**)dAarray, &ldda,
@@ -1599,7 +1599,7 @@ void batch_ctrsm(
     std::vector<oneapi::mkl::transpose> trans_(group_count);
     std::vector<oneapi::mkl::diag>      diag_(group_count);
 
-    for(auto i = 0; i < group_count; ++i) {
+    for (auto i = 0; i < group_count; ++i) {
         side_[i]  = side2onemkl( side[i] );
         uplo_[i]  = uplo2onemkl( uplo[i] );
         trans_[i] = op2onemkl( trans[i] );
@@ -1646,7 +1646,7 @@ void batch_ztrsm(
     blas_dev_call(
         oneapi::mkl::blas::trsm_batch(
         dev_queue,
-        &side_, &uplo_ , &trans_, &diag_,
+        &side_, &uplo_, &trans_, &diag_,
         &m, &n,
         &alpha,
         (const std::complex<double>**)dAarray, &ldda,
@@ -1672,7 +1672,7 @@ void batch_ztrsm(
     std::vector<oneapi::mkl::transpose> trans_(group_count);
     std::vector<oneapi::mkl::diag>      diag_(group_count);
 
-    for(auto i = 0; i < group_count; ++i) {
+    for (auto i = 0; i < group_count; ++i) {
         side_[i]  = side2onemkl( side[i] );
         uplo_[i]  = uplo2onemkl( uplo[i] );
         trans_[i] = op2onemkl( trans[i] );

@@ -174,9 +174,9 @@ void blas::batch::hemm(
         std::complex<float>* dC_   = blas::batch::extract<std::complex<float>*>(Carray, i);
         blas::hemm(
             layout, side_, uplo_, m_, n_,
-            alpha_, dA_, lda_ ,
-                    dB_, ldb_ ,
-            beta_,  dC_, ldc_ , queue );
+            alpha_, dA_, lda_,
+                    dB_, ldb_,
+            beta_,  dC_, ldc_, queue );
         queue.revolve();
     }
     queue.join();
@@ -232,9 +232,9 @@ void blas::batch::hemm(
         std::complex<double>* dC_   = blas::batch::extract<std::complex<double>*>(Carray, i);
         blas::hemm(
             layout, side_, uplo_, m_, n_,
-            alpha_, dA_, lda_ ,
-                    dB_, ldb_ ,
-            beta_,  dC_, ldc_ , queue );
+            alpha_, dA_, lda_,
+                    dB_, ldb_,
+            beta_,  dC_, ldc_, queue );
         queue.revolve();
     }
     queue.join();

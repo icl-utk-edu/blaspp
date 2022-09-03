@@ -54,8 +54,8 @@ void blas::batch::herk(
         float* dC_   = blas::batch::extract<float*>(Carray, i);
         blas::herk(
             layout, uplo_, trans_, n_, k_,
-            alpha_, dA_, lda_ ,
-            beta_,  dC_, ldc_ , queue );
+            alpha_, dA_, lda_,
+            beta_,  dC_, ldc_, queue );
         queue.revolve();
     }
     queue.join();
@@ -107,8 +107,8 @@ void blas::batch::herk(
         double* dC_   = blas::batch::extract<double*>(Carray, i);
         blas::herk(
             layout, uplo_, trans_, n_, k_,
-            alpha_, dA_, lda_ ,
-            beta_,  dC_, ldc_ , queue );
+            alpha_, dA_, lda_,
+            beta_,  dC_, ldc_, queue );
         queue.revolve();
     }
     queue.join();
@@ -160,8 +160,8 @@ void blas::batch::herk(
         std::complex<float>* dC_   = blas::batch::extract<std::complex<float>*>(Carray, i);
         blas::herk(
             layout, uplo_, trans_, n_, k_,
-            alpha_, dA_, lda_ ,
-            beta_,  dC_, ldc_ , queue );
+            alpha_, dA_, lda_,
+            beta_,  dC_, ldc_, queue );
         queue.revolve();
     }
     queue.join();
@@ -213,8 +213,8 @@ void blas::batch::herk(
         std::complex<double>* dC_   = blas::batch::extract<std::complex<double>*>(Carray, i);
         blas::herk(
             layout, uplo_, trans_, n_, k_,
-            alpha_, dA_, lda_ ,
-            beta_,  dC_, ldc_ , queue );
+            alpha_, dA_, lda_,
+            beta_,  dC_, ldc_, queue );
         queue.revolve();
     }
     queue.join();

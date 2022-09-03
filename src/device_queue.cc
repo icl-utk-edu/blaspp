@@ -221,7 +221,7 @@ Queue::Queue( blas::Device device, int64_t batch_size )
         std::vector<cl::sycl::device> devices;
         enumerate_devices( devices );
         device_ = device;
-        if(devices.size() <= (size_t)device) {
+        if (devices.size() <= (size_t)device) {
             throw blas::Error( " invalid device id ", __func__ );
         }
 
@@ -230,7 +230,7 @@ Queue::Queue( blas::Device device, int64_t batch_size )
 
         // Optionally: make sycl::queue be in-order (otherwise default is out-of-order)
         sycl::property_list q_prop{sycl::property::queue::in_order()};
-        default_stream_ = new sycl::queue( sycl_device_ , q_prop );
+        default_stream_ = new sycl::queue( sycl_device_, q_prop );
 
         // make new sycl:queue (by default out-of-order execution)
         // default_stream_ = new sycl::queue( sycl_device_ );

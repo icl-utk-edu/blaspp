@@ -196,10 +196,10 @@ void trsm_check(
 
     #pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < batchCount; ++i) {
-        Side  side_ = extract<Side>(side , i);
-        Uplo  uplo_ = extract<Uplo>(uplo , i);
-        Op   trans_ = extract<Op  >(trans, i);
-        Diag  diag_ = extract<Diag>(diag , i);
+        Side  side_ = extract<Side>( side,  i );
+        Uplo  uplo_ = extract<Uplo>( uplo,  i );
+        Op   trans_ = extract<Op  >( trans, i );
+        Diag  diag_ = extract<Diag>( diag,  i );
 
         int64_t m_ = extract<int64_t>(m, i);
         int64_t n_ = extract<int64_t>(n, i);
@@ -311,10 +311,10 @@ void trmm_check(
 
     #pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < batchCount; ++i) {
-        Side  side_ = extract<Side>(side , i);
-        Uplo  uplo_ = extract<Uplo>(uplo , i);
-        Op   trans_ = extract<Op  >(trans, i);
-        Diag  diag_ = extract<Diag>(diag , i);
+        Side  side_ = extract<Side>( side,  i );
+        Uplo  uplo_ = extract<Uplo>( uplo,  i );
+        Op   trans_ = extract<Op  >( trans, i );
+        Diag  diag_ = extract<Diag>( diag,  i );
 
         int64_t m_ = extract<int64_t>(m, i);
         int64_t n_ = extract<int64_t>(n, i);
@@ -441,8 +441,8 @@ void hemm_check(
 
     #pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < batchCount; ++i) {
-        Side  side_ = extract<Side>(side , i);
-        Uplo  uplo_ = extract<Uplo>(uplo , i);
+        Side  side_ = extract<Side>( side, i );
+        Uplo  uplo_ = extract<Uplo>( uplo, i );
 
         int64_t m_ = extract<int64_t>(m, i);
         int64_t n_ = extract<int64_t>(n, i);
@@ -556,8 +556,8 @@ void herk_check(
 
     #pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < batchCount; ++i) {
-        Uplo  uplo_ = extract<Uplo>(uplo , i);
-        Op   trans_ = extract<Op>(trans , i);
+        Uplo  uplo_ = extract<Uplo>( uplo,  i );
+        Op   trans_ = extract<Op>  ( trans, i );
 
         int64_t n_ = extract<int64_t>(n, i);
         int64_t k_ = extract<int64_t>(k, i);
@@ -686,8 +686,8 @@ void syrk_check(
 
     #pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < batchCount; ++i) {
-        Uplo  uplo_ = extract<Uplo>(uplo , i);
-        Op   trans_ = extract<Op>(trans , i);
+        Uplo  uplo_ = extract<Uplo>( uplo,  i );
+        Op   trans_ = extract<Op>  ( trans, i );
 
         int64_t n_ = extract<int64_t>(n, i);
         int64_t k_ = extract<int64_t>(k, i);
@@ -808,8 +808,8 @@ void her2k_check(
 
     #pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < batchCount; ++i) {
-        Uplo  uplo_ = extract<Uplo>(uplo , i);
-        Op   trans_ = extract<Op>(trans , i);
+        Uplo  uplo_ = extract<Uplo>( uplo,  i );
+        Op   trans_ = extract<Op>  ( trans, i );
 
         int64_t n_ = extract<int64_t>(n, i);
         int64_t k_ = extract<int64_t>(k, i);
@@ -933,8 +933,8 @@ void syr2k_check(
 
     #pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < batchCount; ++i) {
-        Uplo  uplo_ = extract<Uplo>(uplo , i);
-        Op   trans_ = extract<Op>(trans , i);
+        Uplo  uplo_ = extract<Uplo>( uplo,  i );
+        Op   trans_ = extract<Op>  ( trans, i );
 
         int64_t n_ = extract<int64_t>(n, i);
         int64_t k_ = extract<int64_t>(k, i);
