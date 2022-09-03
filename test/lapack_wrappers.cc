@@ -15,6 +15,7 @@
 // This is a temporary file giving simple LAPACK wrappers,
 // until the real lapackpp wrappers are available.
 
+// -----------------------------------------------------------------------------
 #define lapack_slange BLAS_FORTRAN_NAME( slange, SLANGE )
 #define lapack_dlange BLAS_FORTRAN_NAME( dlange, DLANGE )
 #define lapack_clange BLAS_FORTRAN_NAME( clange, CLANGE )

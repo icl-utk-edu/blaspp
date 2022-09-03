@@ -73,10 +73,11 @@ void test_device_batch_gemm_work( Params& params, bool run )
     TC* Cref = new TC[ batch * size_C ];
 
     // device specifics
-    blas::Queue queue(device, batch);
-    TA* dA = blas::device_malloc<TA>( batch * size_A );
-    TB* dB = blas::device_malloc<TB>( batch * size_B );
-    TC* dC = blas::device_malloc<TC>( batch * size_C );
+    blas::Queue queue( device, batch );
+    TA* dA = blas::device_malloc<TA>( batch * size_A, queue );
+    TB* dB = blas::device_malloc<TB>( batch * size_B, queue );
+    TC* dC = blas::device_malloc<TC>( batch * size_C, queue );
+    queue.sync();
 
     // pointer arrays
     std::vector<TA*>    Aarray( batch );
@@ -189,9 +190,9 @@ void test_device_batch_gemm_work( Params& params, bool run )
     delete[] Bnorm;
     delete[] Cnorm;
 
-    blas::device_free( dA );
-    blas::device_free( dB );
-    blas::device_free( dC );
+    blas::device_free( dA, queue );
+    blas::device_free( dB, queue );
+    blas::device_free( dC, queue );
 }
 
 // -----------------------------------------------------------------------------

@@ -11,7 +11,9 @@
 
 int main()
 {
-    // xlc must come before clang; clang and icc must come before gcc
+    // xlc must come before clang
+    // clang and icc must come before gcc
+    // icpx and icx must come before clang
     const char* compiler =
     #ifdef __cplusplus
         // IBM's documentation says __IBMCPP__,
@@ -22,6 +24,8 @@ int main()
             "cray";
         #elif defined(__ICC)
             "icpc";
+        #elif defined(__INTEL_LLVM_COMPILER)
+            "icpx";
         #elif defined(_MSC_VER)
             "MSC";
         #elif defined(__clang__)
@@ -38,6 +42,8 @@ int main()
             "cray";
         #elif defined(__ICC)
             "icc";
+        #elif defined(__INTEL_LLVM_COMPILER)
+            "icx";
         #elif defined(_MSC_VER)
             "MSC";
         #elif defined(__clang__)

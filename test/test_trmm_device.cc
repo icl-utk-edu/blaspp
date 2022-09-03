@@ -22,16 +22,16 @@ void test_trmm_device_work( Params& params, bool run )
 
     // get & mark input values
     blas::Layout layout = params.layout();
-    blas::Side side = params.side();
-    blas::Uplo uplo = params.uplo();
-    blas::Op trans  = params.trans();
-    blas::Diag diag = params.diag();
-    scalar_t alpha  = params.alpha();
-    int64_t m       = params.dim.m();
-    int64_t n       = params.dim.n();
-    int64_t device  = params.device();
-    int64_t align   = params.align();
-    int64_t verbose = params.verbose();
+    blas::Side side     = params.side();
+    blas::Uplo uplo     = params.uplo();
+    blas::Op trans      = params.trans();
+    blas::Diag diag     = params.diag();
+    scalar_t alpha      = params.alpha();
+    int64_t m           = params.dim.m();
+    int64_t n           = params.dim.n();
+    int64_t device      = params.device();
+    int64_t align       = params.align();
+    int64_t verbose     = params.verbose();
 
     // mark non-standard output values
     params.gflops();
@@ -62,12 +62,12 @@ void test_trmm_device_work( Params& params, bool run )
     TB* Bref = new TB[ size_B ];
 
     // device specifics
-    blas::Queue queue(device,0);
+    blas::Queue queue( device, 0 );
     TA* dA;
     TB* dB;
 
-    dA = blas::device_malloc<TA>(size_A);
-    dB = blas::device_malloc<TB>(size_B);
+    dA = blas::device_malloc<TA>( size_A, queue );
+    dB = blas::device_malloc<TB>( size_B, queue );
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
@@ -163,8 +163,8 @@ void test_trmm_device_work( Params& params, bool run )
     delete[] B;
     delete[] Bref;
 
-    blas::device_free( dA );
-    blas::device_free( dB );
+    blas::device_free( dA, queue );
+    blas::device_free( dB, queue );
 }
 
 // -----------------------------------------------------------------------------

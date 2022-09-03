@@ -51,7 +51,9 @@ void blas::batch::trsm(
                           Barray.size() == batch &&
                           lddb.size()   == 1  );
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     if (fixed_size) {
         // call the vendor routine
         device_blas_int m_      = (device_blas_int) m[0];
@@ -156,7 +158,9 @@ void blas::batch::trsm(
                           Barray.size() == batch &&
                           lddb.size()   == 1  );
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     if (fixed_size) {
         // call the vendor routine
         device_blas_int m_      = (device_blas_int) m[0];
@@ -261,7 +265,9 @@ void blas::batch::trsm(
                           Barray.size() == batch &&
                           lddb.size()   == 1  );
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     if (fixed_size) {
         // call the vendor routine
         device_blas_int m_      = (device_blas_int) m[0];
@@ -366,7 +372,9 @@ void blas::batch::trsm(
                           Barray.size() == batch &&
                           lddb.size()   == 1  );
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     if (fixed_size) {
         // call the vendor routine
         device_blas_int m_      = (device_blas_int) m[0];

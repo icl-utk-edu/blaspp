@@ -9,6 +9,7 @@
 #include <exception>
 #include <complex>
 #include <cstdarg>
+#include <vector>
 
 #include <assert.h>
 

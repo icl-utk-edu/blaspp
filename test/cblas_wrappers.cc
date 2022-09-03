@@ -5,10 +5,14 @@
 
 // Function definitions moved from cblas_wrappers.hh for ESSL compatability.
 
+// get BLAS_FORTRAN_NAME and blas_int
 #include "blas/fortran.h"
 #include "cblas_wrappers.hh"
 
 #include <complex>
+
+#define BLAS_crotg BLAS_FORTRAN_NAME( crotg, CROTG )
+#define BLAS_zrotg BLAS_FORTRAN_NAME( zrotg, ZROTG )
 
 void
 cblas_rotg(

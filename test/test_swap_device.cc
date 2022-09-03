@@ -20,11 +20,11 @@ void test_swap_device_work( Params& params, bool run )
     typedef long long lld;
 
     // get & mark input values
-    int64_t n       = params.dim.n();
-    int64_t incx    = params.incx();
-    int64_t incy    = params.incy();
-    int64_t device  = params.device();
-    int64_t verbose = params.verbose();
+    int64_t n          = params.dim.n();
+    int64_t incx       = params.incx();
+    int64_t incy       = params.incy();
+    int64_t device     = params.device();
+    int64_t verbose    = params.verbose();
 
     // mark non-standard output values
     params.gflops();
@@ -54,12 +54,12 @@ void test_swap_device_work( Params& params, bool run )
     TY* yref = new TY[ size_y ];
 
     // device specifics
-    blas::Queue queue(device,0);
+    blas::Queue queue( device, 0 );
     TX* dx;
     TY* dy;
 
-    dx = blas::device_malloc<TX>(size_x);
-    dy = blas::device_malloc<TY>(size_y);
+    dx = blas::device_malloc<TX>( size_x, queue );
+    dy = blas::device_malloc<TY>( size_y, queue );
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
@@ -74,9 +74,9 @@ void test_swap_device_work( Params& params, bool run )
     queue.sync();
 
     // test error exits
-    assert_throw( blas::swap( -1, dx, incx, dy, incy ), blas::Error );
-    assert_throw( blas::swap(  n, dx,    0, dy, incy ), blas::Error );
-    assert_throw( blas::swap(  n, dx, incx, dy,    0 ), blas::Error );
+    assert_throw( blas::swap( -1, dx, incx, dy, incy, queue ), blas::Error );
+    assert_throw( blas::swap(  n, dx,    0, dy, incy, queue ), blas::Error );
+    assert_throw( blas::swap(  n, dx, incx, dy,    0, queue ), blas::Error );
 
     if (verbose >= 1) {
         printf( "\n"
@@ -144,8 +144,8 @@ void test_swap_device_work( Params& params, bool run )
     delete[] xref;
     delete[] yref;
 
-    blas::device_free( dx );
-    blas::device_free( dy );
+    blas::device_free( dx, queue );
+    blas::device_free( dy, queue );
 }
 
 // -----------------------------------------------------------------------------
