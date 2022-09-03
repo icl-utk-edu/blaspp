@@ -31,7 +31,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
     int64_t m_          = params.dim.m();
     int64_t n_          = params.dim.n();
     size_t batch        = params.batch();
-    int64_t device_id   = params.device();
+    int64_t device      = params.device();
     int64_t align       = params.align();
     int64_t verbose     = params.verbose();
 
@@ -64,7 +64,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
     TB* Bref      = new TB[ batch * size_B ];
 
     // device specifics
-    blas::Queue queue( device_id, batch );
+    blas::Queue queue( device, batch );
     TA* dA;
     TB* dB;
 

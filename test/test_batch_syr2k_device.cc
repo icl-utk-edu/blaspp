@@ -29,7 +29,7 @@ void test_batch_syr2k_device_work( Params& params, bool run )
     int64_t n_          = params.dim.n();
     int64_t k_          = params.dim.k();
     size_t  batch       = params.batch();
-    int64_t device_id   = params.device();
+    int64_t device      = params.device();
     int64_t align       = params.align();
     int64_t verbose     = params.verbose();
 
@@ -63,7 +63,7 @@ void test_batch_syr2k_device_work( Params& params, bool run )
     TC* Cref = new TC[ batch * size_C ];
 
     // device specifics
-    blas::Queue queue( device_id, batch );
+    blas::Queue queue( device, batch );
     TA* dA = blas::device_malloc<TA>( batch * size_A, queue );
     TB* dB = blas::device_malloc<TB>( batch * size_B, queue );
     TC* dC = blas::device_malloc<TC>( batch * size_C, queue );

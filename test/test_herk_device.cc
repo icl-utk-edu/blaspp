@@ -28,7 +28,7 @@ void test_herk_device_work( Params& params, bool run )
     real_t beta         = params.beta();   // note: real
     int64_t n           = params.dim.n();
     int64_t k           = params.dim.k();
-    int64_t device_id   = params.device();
+    int64_t device      = params.device();
     int64_t align       = params.align();
     int64_t verbose     = params.verbose();
 
@@ -59,7 +59,7 @@ void test_herk_device_work( Params& params, bool run )
     TC* Cref = new TC[ size_C ];
 
     // device specifics
-    blas::Queue queue( device_id, 0 );
+    blas::Queue queue( device, 0 );
     TA* dA;
     TC* dC;
 
@@ -73,7 +73,7 @@ void test_herk_device_work( Params& params, bool run )
     lapack_lacpy( "g", n, n, C, ldc, Cref, ldc );
 
     blas::device_setmatrix(Am, An, A, lda, dA, lda, queue);
-    blas::device_setmatrix(n , n , C, ldc, dC, ldc, queue);
+    blas::device_setmatrix(n,  n,  C, ldc, dC, ldc, queue);
     queue.sync();
 
     // norms for error check

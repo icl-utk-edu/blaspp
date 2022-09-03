@@ -23,7 +23,7 @@ void test_swap_device_work( Params& params, bool run )
     int64_t n          = params.dim.n();
     int64_t incx       = params.incx();
     int64_t incy       = params.incy();
-    int64_t device_id  = params.device();
+    int64_t device     = params.device();
     int64_t verbose    = params.verbose();
 
     // mark non-standard output values
@@ -54,7 +54,7 @@ void test_swap_device_work( Params& params, bool run )
     TY* yref = new TY[ size_y ];
 
     // device specifics
-    blas::Queue queue( device_id, 0 );
+    blas::Queue queue( device, 0 );
     TX* dx;
     TY* dy;
 

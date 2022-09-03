@@ -356,7 +356,7 @@ void test_device()
     require( cnt >= 0 );
 
     #ifndef BLAS_HAVE_ONEMKL
-    int verbose = 3;
+    int verbose = 3; // used in assert_throw
     blas::Device dev;
     if (cnt > 0) {
         blas::get_device( &dev );
