@@ -304,60 +304,65 @@ inline const char* device_error_string( rocblas_status error )
 
     // blaspp aborts on device errors
     #if defined(BLAS_HAVE_ONEMKL)
-    #define blas_dev_call( error ) \
-        try { \
-            error; \
-        } \
-        catch (cl::sycl::exception const& e) { \
-            blas::internal::abort_if( true, __func__, \
-                                      "%s", e.what() ); \
-        } \
-        catch (std::exception const& e) { \
-            blas::internal::abort_if( true, __func__, \
-                                      "%s", e.what() ); \
-        } \
-        catch (...) { \
-            blas::internal::abort_if( true, __func__, \
-                                      "%s", "unknown exception" ); \
-        }
+        #define blas_dev_call( error ) \
+            do {
+                try { \
+                    error; \
+                } \
+                catch (cl::sycl::exception const& e) { \
+                    blas::internal::abort_if( true, __func__, \
+                                              "%s", e.what() ); \
+                } \
+                catch (std::exception const& e) { \
+                    blas::internal::abort_if( true, __func__, \
+                                              "%s", e.what() ); \
+                } \
+                catch (...) { \
+                    blas::internal::abort_if( true, __func__, \
+                                              "%s", "unknown exception" ); \
+                }
+            } while(0)
 
     #else
-    #define blas_dev_call( error ) \
-        do { \
-            auto e = error; \
-            blas::internal::abort_if( blas::is_device_error(e), __func__, \
-                                      "%s", blas::device_error_string(e) ); \
-        } while(0)
+        #define blas_dev_call( error ) \
+            do { \
+                auto e = error; \
+                blas::internal::abort_if( blas::is_device_error(e), __func__, \
+                                          "%s", blas::device_error_string(e) ); \
+            } while(0)
     #endif
 
 #else
 
     // blaspp throws device errors (default)
     #if defined(BLAS_HAVE_ONEMKL)
-    #define blas_dev_call( error ) \
-        try { \
-                error; \
-        } \
-        catch (cl::sycl::exception const& e) { \
-            blas::internal::throw_if( true, \
-                                      e.what(), __func__ ); \
-        } \
-        catch (std::exception const& e) { \
-            blas::internal::throw_if( true, \
-                                      e.what(), __func__ ); \
-        } \
-        catch (...) { \
-            blas::internal::throw_if( true, \
-                                      "unknown exception", __func__ ); \
-        }
+        #define blas_dev_call( error ) \
+            do {
+                try { \
+                        error; \
+                } \
+                catch (cl::sycl::exception const& e) { \
+                    blas::internal::throw_if( true, \
+                                              e.what(), __func__ ); \
+                } \
+                catch (std::exception const& e) { \
+                    blas::internal::throw_if( true, \
+                                              e.what(), __func__ ); \
+                } \
+                catch (...) { \
+                    blas::internal::throw_if( true, \
+                                              "unknown exception", __func__ ); \
+                }
+            } while(0)
 
     #else
-    #define blas_dev_call( error ) \
-        do { \
-            auto e = error; \
-            blas::internal::throw_if( blas::is_device_error(e), \
-                                      blas::device_error_string(e), __func__ ); \
-        } while(0)
+        #define blas_dev_call( error ) \
+            do { \
+                auto e = error; \
+                blas::internal::throw_if( blas::is_device_error(e), \
+                                          blas::device_error_string(e), \
+                                          __func__ ); \
+            } while(0)
     #endif
 
 #endif
