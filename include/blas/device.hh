@@ -52,6 +52,19 @@ typedef int Device;
 #endif
 
 // -----------------------------------------------------------------------------
+/// Direction to copy, one of:
+///
+/// - MemcpyKind::Default:        [recommended] determine direction to copy
+///                               based on virtual addresses where src
+///                               and dst are allocated.
+/// - MemcpyKind::HostToHost:     both src and dst on CPU host.
+/// - MemcpyKind::HostToDevice:   src on CPU host, dst on GPU device.
+/// - MemcpyKind::DeviceToHost:   src on GPU device, dst on CPU host.
+/// - MemcpyKind::DeviceToDevice: both src and dst on GPU devices,
+///                               which may be 2 different devices.
+///
+/// MemcpyKind may be deprecated in the future.
+///
 enum class MemcpyKind : device_blas_int {
     HostToHost     = 0,
     HostToDevice   = 1,
@@ -101,7 +114,11 @@ const int DEV_QUEUE_DEFAULT_BATCH_LIMIT = 50000;
 const int DEV_QUEUE_FORK_SIZE           = 10;
 
 //==============================================================================
-// device queue
+/// Queue for executing GPU device routines.
+/// This wraps CUDA stream and cuBLAS handle,
+/// HIP stream and rocBLAS handle,
+/// or SYCL queue for oneMKL.
+///
 class Queue
 {
 public:
@@ -362,6 +379,9 @@ void device_free_pinned( void* ptr, blas::Queue &queue );
 
 //------------------------------------------------------------------------------
 /// @return a device pointer to an allocated memory space
+/// In CUDA and ROCm, this version uses current device;
+/// in SYCL, this doesn't work since there is no concept of a current device.
+///
 template <typename T>
 T* device_malloc(
     int64_t nelements)
@@ -387,7 +407,15 @@ T* device_malloc(
 }
 
 //------------------------------------------------------------------------------
-/// @return a device pointer to an allocated memory space on specific device
+/// @return a device pointer to an allocated memory space on specific device.
+///
+/// @param[in] nelements
+///     Number of elements of type T to allocate.
+///
+/// @param[in] queue
+///     BLAS++ queue to execute in.
+///     Determines the GPU device on which to allocate memory.
+///
 template <typename T>
 T* device_malloc(
     int64_t nelements, blas::Queue &queue )
@@ -414,7 +442,10 @@ T* device_malloc(
 }
 
 //------------------------------------------------------------------------------
-/// @return a host pointer to a pinned memory space
+/// @return a host pointer to a pinned memory space.
+/// In CUDA and ROCm, this version uses current device;
+/// in SYCL, this doesn't work since there is no concept of a current device.
+///
 template <typename T>
 T* device_malloc_pinned(
     int64_t nelements)
@@ -439,7 +470,16 @@ T* device_malloc_pinned(
 }
 
 //------------------------------------------------------------------------------
-/// @return a host pointer to a pinned memory space using a specific device queue
+/// @return a host pointer to a pinned memory space using a specific device queue.
+///
+/// @param[in] nelements
+///     Number of elements of type T to allocate.
+///
+/// @param[in] queue
+///     BLAS++ queue to execute in.
+///     In CUDA and ROCm, queue is ignored.
+///     In SYCL, queue is passed to sycl::malloc_host to provide context.
+///
 template <typename T>
 T* device_malloc_pinned(
     int64_t nelements, blas::Queue &queue )
@@ -464,225 +504,21 @@ T* device_malloc_pinned(
 }
 
 //------------------------------------------------------------------------------
-// device set matrix
-template <typename T>
-void device_setmatrix(
-    int64_t m, int64_t n,
-    T const* host_ptr, int64_t ldh,
-    T* dev_ptr, int64_t ldd, Queue& queue)
-{
-    device_blas_int m_   = device_blas_int( m );
-    device_blas_int n_   = device_blas_int( n );
-    device_blas_int ldd_ = device_blas_int( ldd );
-    device_blas_int ldh_ = device_blas_int( ldh );
-
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_dev_call(
-            cublasSetMatrixAsync(
-                m_, n_, sizeof(T),
-                host_ptr, ldh_,
-                dev_ptr,  ldd_, queue.stream() ) );
-
-    #elif defined(BLAS_HAVE_ROCBLAS)
-        blas_dev_call(
-            rocblas_set_matrix_async(
-                m_, n_, sizeof(T),
-                host_ptr, ldh_,
-                dev_ptr,  ldd_, queue.stream() ) );
-
-    #elif defined(BLAS_HAVE_ONEMKL)
-        // todo: replace with blas call
-        if( ldh_ == m_ && ldd_ == m_ ) {
-            // one memcpy
-            blas_dev_call(
-                (queue.stream()).memcpy( (      void*)dev_ptr,
-                                         (const void*)host_ptr,
-                                         m_*n_*sizeof(T) ) );
-        }
-        else {
-            // will have to do several mem-copies
-            // sycl does not support set/get/lacpy matrix
-            for( int64_t ic = 0; ic < n_; ++ic ) {
-                void       *dptr = (      void*) (dev_ptr  + ic*ldd_);
-                const void *hptr = (const void*) (host_ptr + ic*ldh_);
-                blas_dev_call(
-                    (queue.stream()).memcpy(dptr, hptr, m_*sizeof(T)) );
-            }
-        }
-
-    #else
-        throw blas::Error( "device BLAS not available", __func__ );
-        blas_unused( m_ );
-        blas_unused( n_ );
-        blas_unused( ldd_ );
-        blas_unused( ldh_ );
-    #endif
-}
-
-//------------------------------------------------------------------------------
-// device get matrix
-template <typename T>
-void device_getmatrix(
-    int64_t m, int64_t n,
-    T const* dev_ptr,  int64_t ldd,
-    T*       host_ptr, int64_t ldh, Queue& queue)
-{
-    device_blas_int m_   = device_blas_int( m );
-    device_blas_int n_   = device_blas_int( n );
-    device_blas_int ldd_ = device_blas_int( ldd );
-    device_blas_int ldh_ = device_blas_int( ldh );
-
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_dev_call(
-            cublasGetMatrixAsync(
-                m_, n_, sizeof(T),
-                dev_ptr,  ldd_,
-                host_ptr, ldh_, queue.stream() ) );
-
-    #elif defined(BLAS_HAVE_ROCBLAS)
-        blas_dev_call(
-            rocblas_get_matrix_async(
-                m_, n_, sizeof(T),
-                dev_ptr,  ldd_,
-                host_ptr, ldh_, queue.stream() ) );
-
-    #elif defined(BLAS_HAVE_ONEMKL)
-        // todo: replace with blas call
-        if( ldh_ == m_ && ldd_ == m_ ) {
-            // one memcpy
-            blas_dev_call(
-                (queue.stream()).memcpy( (      void*)host_ptr,
-                                         (const void*)dev_ptr,
-                                         m_*n_*sizeof(T) ) );
-        }
-        else {
-            // will have to do several mem-copies
-            // sycl does not support set/get/lacpy matrix
-            for(int64_t ic = 0; ic < n_; ++ic) {
-                const void *dptr = (const void*) (dev_ptr  + ic*ldd_);
-                void       *hptr = (      void*) (host_ptr + ic*ldh_);
-                blas_dev_call(
-                    (queue.stream()).memcpy(hptr, dptr, m_*sizeof(T)) );
-            }
-        }
-
-    #else
-        throw blas::Error( "device BLAS not available", __func__ );
-        blas_unused( m_ );
-        blas_unused( n_ );
-        blas_unused( ldd_ );
-        blas_unused( ldh_ );
-    #endif
-}
-
-//------------------------------------------------------------------------------
-// device set vector
-template <typename T>
-void device_setvector(
-    int64_t n,
-    T const* host_ptr, int64_t inch,
-    T*       dev_ptr,  int64_t incd, Queue& queue)
-{
-    device_blas_int n_    = device_blas_int( n );
-    device_blas_int incd_ = device_blas_int( incd );
-    device_blas_int inch_ = device_blas_int( inch );
-
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_dev_call(
-            cublasSetVectorAsync(
-                n_, sizeof(T),
-                host_ptr, inch_,
-                dev_ptr,  incd_, queue.stream() ) );
-
-    #elif defined(BLAS_HAVE_ROCBLAS)
-        blas_dev_call(
-            rocblas_set_vector_async(
-                n_, sizeof(T),
-                host_ptr, inch_,
-                dev_ptr,  incd_, queue.stream() ) );
-
-    #elif defined(BLAS_HAVE_ONEMKL)
-        // todo: replace with oneapi::mkl::blas::copy
-        // oneapi::mkl::blas::copy( dev_queue, n_, host_ptr,  inch_, dev_ptr, incd_ ));
-        if( inch_ == incd_  && inch_ == 1 ) {
-            size_t countbytes = (((n_ - 1) * inch_) + 1) * sizeof(T);
-            blas_dev_call(
-                (queue.stream()).memcpy( (      void*)dev_ptr,
-                                         (const void*)host_ptr,
-                                         countbytes ));
-        }
-        else {
-            for(int64_t ie = 0; ie < n_; ++ie) {
-                const void *hptr = (const void*)(host_ptr + ie * inch);
-                      void *dptr = (      void*)(dev_ptr  + ie * incd);
-                blas_dev_call(
-                    (queue.stream()).memcpy(dptr, hptr, sizeof(T)) );
-            }
-        }
-
-    #else
-        throw blas::Error( "device BLAS not available", __func__ );
-        blas_unused( n_ );
-        blas_unused( incd_ );
-        blas_unused( inch_ );
-    #endif
-}
-
-//------------------------------------------------------------------------------
-// device get vector
-template <typename T>
-void device_getvector(
-    int64_t n,
-    T const* dev_ptr,  int64_t incd,
-    T*       host_ptr, int64_t inch, Queue& queue)
-{
-    device_blas_int n_    = device_blas_int( n );
-    device_blas_int incd_ = device_blas_int( incd );
-    device_blas_int inch_ = device_blas_int( inch );
-
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_dev_call(
-            cublasGetVectorAsync(
-                n_, sizeof(T),
-                dev_ptr,  incd_,
-                host_ptr, inch_, queue.stream() ) );
-
-    #elif defined(BLAS_HAVE_ROCBLAS)
-        blas_dev_call(
-            rocblas_get_vector_async(
-                n_, sizeof(T),
-                dev_ptr,  incd_,
-                host_ptr, inch_, queue.stream() ) );
-
-    #elif defined(BLAS_HAVE_ONEMKL)
-        // todo: replace with oneapi::mkl::blas::copy that supports increments
-        // oneapi::mkl::blas::copy( dev_queue, n_, dev_ptr,  incd_, host_ptr, inch_ ));
-        if( inch_ == incd_ && inch_ == 1 ) {
-            size_t countbytes = (((n_ - 1) * inch_) + 1) * sizeof(T);
-            blas_dev_call(
-                (queue.stream()).memcpy( (      void*)host_ptr,
-                                         (const void*)dev_ptr,
-                                         countbytes ) );
-        }
-        else {
-            for(int64_t ie = 0; ie < n_; ++ie) {
-                void       *hptr = (      void*) (host_ptr + ie * inch);
-                const void *dptr = (const void*) (dev_ptr  + ie * incd);
-                blas_dev_call(
-                    (queue.stream()).memcpy(hptr, dptr, sizeof(T)) );
-            }
-        }
-
-    #else
-        throw blas::Error( "device BLAS not available", __func__ );
-        blas_unused( n_ );
-        blas_unused( incd_ );
-        blas_unused( inch_ );
-    #endif
-}
-
-//------------------------------------------------------------------------------
-// device memset
+/// Sets each byte of memory to a constant value (often 0).
+/// Asynchronous with respect to host.
+///
+/// @param[out] ptr
+///     Pointer to memory to set.
+///
+/// @param[in] value
+///     Value to set each byte; cast to unsigned char.
+///
+/// @param[in] nelements
+///     Number of elements of type T to set. Sets nelements * sizeof(T) bytes.
+///
+/// @param[in] queue
+///     BLAS++ queue to execute in.
+///
 template <typename T>
 void device_memset(
     T* ptr,
@@ -702,7 +538,7 @@ void device_memset(
 
     #elif defined(BLAS_HAVE_ONEMKL)
         blas_dev_call(
-            (queue.stream()).memset(ptr, value, nelements * sizeof(T)) );
+            queue.stream().memset( ptr, value, nelements * sizeof(T) ) );
 
     #else
         throw blas::Error( "device BLAS not available", __func__ );
@@ -710,28 +546,38 @@ void device_memset(
 }
 
 //------------------------------------------------------------------------------
-// device memcpy
+/// @deprecated: recommend using
+///     blas::device_memcpy( dst, src, nelements, queue )
+/// instead, which sets kind = MemcpyKind::Default.
+///
+/// @copydoc device_memcpy(T*,T const*,int64_t,Queue&)
+///
+/// @param[in] kind
+/// @copydoc MemcpyKind
+///
+/// @see device_memcpy(T*,T const*,int64_t,Queue&)
+///
 template <typename T>
 void device_memcpy(
-    T*        dev_ptr,
-    T const* host_ptr,
+    T*       dst,
+    T const* src,
     int64_t nelements, MemcpyKind kind, Queue& queue)
 {
     #ifdef BLAS_HAVE_CUBLAS
         blas_dev_call(
             cudaMemcpyAsync(
-                dev_ptr, host_ptr, sizeof(T)*nelements,
+                dst, src, sizeof(T)*nelements,
                 memcpy2cuda(kind), queue.stream() ) );
 
     #elif defined(BLAS_HAVE_ROCBLAS)
         blas_dev_call(
             hipMemcpyAsync(
-                dev_ptr, host_ptr, sizeof(T)*nelements,
+                dst, src, sizeof(T)*nelements,
                 memcpy2hip(kind), queue.stream() ) );
 
     #elif defined(BLAS_HAVE_ONEMKL)
         blas_dev_call(
-            (queue.stream()).memcpy(dev_ptr, host_ptr, sizeof(T)*nelements) );
+            queue.stream().memcpy( dst, src, sizeof(T)*nelements ) );
 
     #else
         throw blas::Error( "device BLAS not available", __func__ );
@@ -739,69 +585,294 @@ void device_memcpy(
 }
 
 //------------------------------------------------------------------------------
-// overloaded device memcpy with memcpy direction set to default
+/// Copy nelements of type T from src to dst memory region.
+/// src and dst regions must not overlap.
+/// May be asynchronous with respect to host, depending on memory types;
+/// host memory may need to be pinned for this to by async.
+///
+/// @param[out] dst
+///     Pointer to destination memory region of size nelements.
+///
+/// @param[in] src
+///     Pointer to source memory region of size nelements.
+///
+/// @param[in] nelements
+///     Number of elements of type T to copy.
+///
+/// @param[in] queue
+///     BLAS++ queue to execute in.
+///
 template <typename T>
 void device_memcpy(
-    T*        dev_ptr,
-    T const* host_ptr,
+    T*       dst,
+    T const* src,
     int64_t nelements, Queue& queue)
 {
     device_memcpy<T>(
-        dev_ptr,
-        host_ptr,
+        dst, src,
         nelements, MemcpyKind::Default, queue);
 }
 
 //------------------------------------------------------------------------------
-// device memcpy 2D
+/// @deprecated: recommend using
+///     device_memcpy_2d( dst, dst_pitch, src, src_pitch, width, height, queue )
+/// instead, which sets kind = MemcpyKind::Default.
+///
+/// @copydoc device_memcpy_2d(T*,int64_t,T const*,int64_t,int64_t,int64_t,Queue&)
+///
+/// @param[in] kind
+/// @copydoc MemcpyKind
+///
+/// @see device_memcpy_2d(T*,int64_t,T const*,int64_t,int64_t,int64_t,Queue&)
+///
 template <typename T>
 void device_memcpy_2d(
-    T* dev_ptr, int64_t  dev_pitch,
-    T* host_ptr, int64_t host_pitch,
+    T*       dst, int64_t dst_pitch,
+    T const* src, int64_t src_pitch,
     int64_t width, int64_t height, MemcpyKind kind, Queue& queue)
 {
+    blas_error_if( dst_pitch < width );
+    blas_error_if( src_pitch < width );
+
     #ifdef BLAS_HAVE_CUBLAS
         blas_dev_call(
             cudaMemcpy2DAsync(
-                 dev_ptr, sizeof(T)* dev_pitch,
-                host_ptr, sizeof(T)*host_pitch,
+                dst, sizeof(T)*dst_pitch,
+                src, sizeof(T)*src_pitch,
                 sizeof(T)*width, height, memcpy2cuda(kind), queue.stream() ) );
 
     #elif defined(BLAS_HAVE_ROCBLAS)
          blas_dev_call(
             hipMemcpy2DAsync(
-                 dev_ptr, sizeof(T)* dev_pitch,
-                host_ptr, sizeof(T)*host_pitch,
+                dst, sizeof(T)*dst_pitch,
+                src, sizeof(T)*src_pitch,
                 sizeof(T)*width, height, memcpy2hip(kind), queue.stream() ) );
 
     #elif defined(BLAS_HAVE_ONEMKL)
-        int64_t n = width; // width cols
-        int64_t m = height; // height rows
-        int64_t ldd = dev_pitch;
-        int64_t ldh = host_pitch;
-        if( kind == blas::MemcpyKind::HostToDevice )
-            blas::device_setmatrix( m, n, dev_ptr, ldd, host_ptr, ldh, queue );
-        else if( kind == blas::MemcpyKind::DeviceToHost )
-            blas::device_setmatrix( m, n, dev_ptr, ldd, host_ptr, ldh, queue );
-        else
-            throw blas::Error( "unsupported data movement for sycl backend", __func__ );
-
+        if (dst_pitch == width && src_pitch == width) {
+            // one contiguous memcpy
+            blas_dev_call(
+                queue.stream().memcpy( dst, src, width * height * sizeof(T) ) );
+        }
+        else {
+            // Copy each contiguous image row (matrix column).
+            // SYCL does not support set/get/lacpy matrix.
+            for (int64_t i = 0; i < height; ++i) {
+                const T* dst_row = dst + i*dst_pitch;
+                T*       src_row = src + i*src_pitch;
+                blas_dev_call(
+                    queue.stream().memcpy( dst_row, src_row, width*sizeof(T) ) );
+            }
+        }
     #else
         throw blas::Error( "device BLAS not available", __func__ );
     #endif
 }
 
-// overloaded device memcpy 2D with memcpy direction set to default
+//------------------------------------------------------------------------------
+/// Copy width-by-height sub-array of type T from src to dst memory region.
+/// Sub-arrays of src and dst must not overlap.
+/// May be asynchronous with respect to host, depending on memory types;
+/// host memory may need to be pinned for this to by async.
+///
+/// Memory here refers to 2D images, which by convention are
+/// width-by-height (e.g., 1024 x 768), and stored with contiguous rows.
+/// Each row has width elements, and may have padding, making a row
+/// pitch (stride, leading dimension) = width + padding.
+///
+/// If declared as a C-style row-major matrix, the y-coordinate is first,
+/// the x-coordinate second: A[ height ][ row_pitch ].
+///
+/// For a column-major matrix A, m == width, n == height, lda = pitch.
+///
+/// @param[out] dst
+///     The destination width-by-height sub-array,
+///     in a dst_pitch-by-height array.
+///     Each row of width elements is contiguous.
+///
+/// @param[in] dst_pitch
+///     Stride (leading dimension) between rows of the dst array.
+///     dst_pitch >= width.
+///
+/// @param[in] src
+///     The source width-by-height sub-array,
+///     in a src_pitch-by-height array.
+///     Each row of width elements is contiguous.
+///
+/// @param[in] src_pitch
+///     Stride (leading dimension) between rows of the src array.
+///     src_pitch >= width.
+///
+/// @param[in] width
+///     Number of columns in each contiguous row to copy. width >= 0.
+///
+/// @param[in] height
+///     Number of rows to copy. height >= 0.
+///
+/// @param[in] queue
+///     BLAS++ queue to execute in.
+///
 template <typename T>
 void device_memcpy_2d(
-    T*        dev_ptr, int64_t  dev_pitch,
-    T const* host_ptr, int64_t host_pitch,
+    T*       dst, int64_t dst_pitch,
+    T const* src, int64_t src_pitch,
     int64_t width, int64_t height, Queue& queue)
 {
     device_memcpy_2d<T>(
-         dev_ptr,  dev_pitch,
-        host_ptr, host_pitch,
+        dst, dst_pitch,
+        src, src_pitch,
         width, height, MemcpyKind::Default, queue);
+}
+
+//------------------------------------------------------------------------------
+/// Copy n-element vector from host or device memory, to host or device memory.
+/// May be asynchronous with respect to host, depending on memory types;
+/// host memory may need to be pinned for this to by async.
+///
+/// @param[in] n
+///     Number of elements to copy. n >= 0.
+///
+/// @param[in] src
+///     The source n-element vector.
+///
+/// @param[in] inc_src
+///     Stride between elements of src. inc_src >= 1.
+///
+/// @param[in] dst
+///     The destination n-element vector.
+///
+/// @param[in] inc_dst
+///     Stride between elements of src. inc_dst >= 1.
+///
+/// @param[in] queue
+///     BLAS++ queue to execute in.
+///
+template <typename T>
+void device_copy_vector(
+    int64_t n,
+    T const* src, int64_t inc_src,
+    T*       dst, int64_t inc_dst, Queue& queue)
+{
+    if (inc_src == 1 && inc_dst == 1) {
+        // Copy contiguous vector.
+        device_memcpy( dst, src, n, queue );
+    }
+    else {
+        // Interpret as copying one row from inc-by-n matrix.
+        device_memcpy_2d( dst, inc_dst, src, inc_src, 1, n, queue );
+    }
+}
+
+//------------------------------------------------------------------------------
+/// Copy m-by-n column-major matrix in ld-by-n array
+/// from host or device memory, to host or device memory.
+/// May be asynchronous with respect to host, depending on memory types;
+/// host memory may need to be pinned for this to by async.
+///
+/// This is exactly the same as device_memcpy_2d, but with conventions
+/// consistent with BLAS/LAPACK routines: matrices are column-major;
+/// argument order is dimensions, src, dst.
+///
+/// @param[in] m
+///     Number of rows. m >= 0.
+///
+/// @param[in] n
+///     Number of columns. n >= 0.
+///
+/// @param[in] src
+///     The source m-by-n matrix, in ld_src-by-n array.
+///
+/// @param[in] ld_src
+///     Leading dimension of src. ld_src >= m.
+///
+/// @param[in] dst
+///     The destination m-by-n matrix, in ld_dst-by-n array.
+///
+/// @param[in] ld_dst
+///     Leading dimension of dst. ld_dst >= m.
+///
+/// @param[in] queue
+///     BLAS++ queue to execute in.
+///
+template <typename T>
+void device_copy_matrix(
+    int64_t m, int64_t n,
+    T const* src, int64_t ld_src,
+    T*       dst, int64_t ld_dst, Queue& queue)
+{
+    device_memcpy_2d( dst, ld_dst, src, ld_src, m, n, queue );
+}
+
+//------------------------------------------------------------------------------
+/// @deprecated: recommend using
+///     device_copy_vector( n, src, inc_src, dst, inc_dst, queue )
+/// instead, which can copy from host or device, to host or device memory.
+///
+/// Copy n-element vector from host to device memory.
+///
+/// @see device_copy_vector
+///
+template <typename T>
+void device_setvector(
+    int64_t n,
+    T const* src_host, int64_t inc_src,
+    T*       dst_dev,  int64_t inc_dst, Queue& queue)
+{
+    device_copy_vector( n, src_host, inc_src, dst_dev, inc_dst, queue );
+}
+
+//------------------------------------------------------------------------------
+/// @deprecated: recommend using
+///     device_copy_vector( n, src, inc_src, dst, inc_dst, queue )
+/// instead, which can copy from host or device, to host or device memory.
+///
+/// Copy n-element vector from device to host memory.
+///
+/// @see device_copy_vector
+///
+template <typename T>
+void device_getvector(
+    int64_t n,
+    T const* src_dev,  int64_t inc_src,
+    T*       dst_host, int64_t inc_dst, Queue& queue)
+{
+    device_copy_vector( n, src_dev, inc_src, dst_host, inc_dst, queue );
+}
+
+//------------------------------------------------------------------------------
+/// @deprecated: recommend using
+///     device_copy_matrix( m, n, src, ld_src, dst, ld_dst, queue )
+/// instead, which can copy from host or device, to host or device memory.
+///
+/// Copy m-by-n matrix in ld-by-n array from host to device memory.
+///
+/// @see device_copy_matrix
+///
+template <typename T>
+void device_setmatrix(
+    int64_t m, int64_t n,
+    T const* src_host, int64_t ld_src,
+    T*       dst_dev,  int64_t ld_dst, Queue& queue)
+{
+    device_copy_matrix( m, n, src_host, ld_src, dst_dev, ld_dst, queue );
+}
+
+//------------------------------------------------------------------------------
+/// @deprecated: recommend using
+///     device_copy_matrix( m, n, src, ld_src, dst, ld_dst, queue )
+/// instead, which can copy from host or device, to host or device memory.
+///
+/// Copy m-by-n matrix in ld-by-n array from device to host memory.
+///
+/// @see device_copy_matrix
+///
+template <typename T>
+void device_getmatrix(
+    int64_t m, int64_t n,
+    T const* src_dev,  int64_t ld_src,
+    T*       dst_host, int64_t ld_dst, Queue& queue)
+{
+    device_copy_matrix( m, n, src_dev, ld_src, dst_host, ld_dst, queue );
 }
 
 //------------------------------------------------------------------------------
@@ -818,7 +889,7 @@ void Queue::work_resize( size_t lwork )
     if (lwork > lwork_) {
         sync();
         if (work_) {
-            device_free( work_ );
+            device_free( work_, *this );
         }
         lwork_ = lwork;
         work_ = device_malloc<char>( lwork, *this );
