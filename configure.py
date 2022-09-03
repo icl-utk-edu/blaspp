@@ -43,8 +43,9 @@ def main():
 
     print_header( 'C++ compiler flags' )
     # Pick highest level supported. oneAPI needs C++17.
+    # Crusher had issue with -std=c++20 (2022-07).
     config.prog_cxx_flag(
-        ['-std=c++20', '-std=c++17', '-std=c++14', '-std=c++11'])
+        ['-std=c++17', '-std=c++14', '-std=c++11'])
     config.prog_cxx_flag( '-O2' )
     config.prog_cxx_flag( '-MMD' )
     config.prog_cxx_flag( '-Wall' )
