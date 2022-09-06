@@ -66,6 +66,8 @@ categories = [
     group_cat.add_argument( '--blas3-device', action='store_true', help='run Level 3 BLAS on devices (GPUs)' ),
     group_cat.add_argument( '--batch-blas3-device', action='store_true', help='run Level 3 Batch BLAS on devices (GPUs)' ),
 
+    group_cat.add_argument( '--aux', action='store_true', help='run auxiliary routines' ),
+
     group_cat.add_argument( '--device', action='store_true', help='run all GPU device routines' ),
 ]
 # map category objects to category names: ['lu', 'chol', ...]
@@ -372,6 +374,16 @@ if (opts.batch_blas3_device):
     [ 'dev-batch-syr2k', dtype_complex + batch + layout + align + uplo + trans_nt + mn ],
     ]
 
+if (opts.aux):
+    cmds += [
+    [ 'memcpy',      dtype + n ],
+    [ 'copy_vector', dtype + n + incx_pos + incy_pos ],
+    [ 'set_vector',  dtype + n + incx_pos + incy_pos ],
+
+    [ 'memcpy_2d',   dtype + mn + align ],
+    [ 'copy_matrix', dtype + mn + align ],
+    [ 'set_matrix',  dtype + mn + align ],
+    ]
 
 # ------------------------------------------------------------------------------
 # when output is redirected to file instead of TTY console,
