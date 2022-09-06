@@ -80,7 +80,7 @@ void saxpy(
             n, &alpha,
             dx, incdx,
             dy, incdy));
-
+}
 
 // -----------------------------------------------------------------------------
 // daxpy
@@ -115,7 +115,6 @@ void caxpy(
             (rocblas_float_complex*) dx, incdx,
             (rocblas_float_complex*) dy, incdy));
 }
-
 
 // -----------------------------------------------------------------------------
 // zaxpy
