@@ -70,6 +70,8 @@ add_executable(
     test_herk.cc
     test_iamax.cc
     test_max.cc
+    test_memcpy.cc
+    test_memcpy_2d.cc
     test_nrm2.cc
     test_rot.cc
     test_rotg.cc

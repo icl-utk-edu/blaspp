@@ -180,6 +180,12 @@ std::vector< testsweeper::routines_t > routines = {
     { "memcpy",           test_memcpy,              Section::aux            },
     { "copy_vector",      test_memcpy,              Section::aux            },
     { "set_vector",       test_memcpy,              Section::aux            },
+    { "",                 nullptr,                  Section::newline        },
+
+    { "memcpy_2d",        test_memcpy_2d,           Section::aux            },
+    { "copy_matrix",      test_memcpy_2d,           Section::aux            },
+    { "set_matrix",       test_memcpy_2d,           Section::aux            },
+    { "",                 nullptr,                  Section::newline        },
 };
 
 // -----------------------------------------------------------------------------

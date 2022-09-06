@@ -191,7 +191,6 @@ void test_hemm_device  ( Params& params, bool run );
 void test_her2k_device ( Params& params, bool run );
 void test_herk_device  ( Params& params, bool run );
 void test_schur_gemm   ( Params& params, bool run );
-void test_schur_gemm_tile_layout ( Params& params, bool run );
 void test_symm_device  ( Params& params, bool run );
 void test_syr2k_device ( Params& params, bool run );
 void test_syrk_device  ( Params& params, bool run );
@@ -214,6 +213,7 @@ void test_error ( Params& params, bool run );
 void test_max   ( Params& params, bool run );
 void test_util  ( Params& params, bool run );
 void test_memcpy( Params& params, bool run );
+void test_memcpy_2d( Params& params, bool run );
 
 typedef long long llong;
 
