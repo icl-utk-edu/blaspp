@@ -65,6 +65,83 @@ oneapi::mkl::side side2onemkl(blas::Side side)
 // Level 1 BLAS - Device Interfaces
 
 // -----------------------------------------------------------------------------
+// axpy
+// -----------------------------------------------------------------------------
+// saxpy
+void saxpy(
+    blas::Queue& queue,
+    device_blas_int n,
+    float alpha,
+    float *dx, device_blas_int incdx,
+    float *dy, device_blas_int incdy)
+{
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::axpy(
+            dev_queue,
+            n,
+            alpha,
+            dx, incdx,
+            dy, incdy));
+}
+
+// -----------------------------------------------------------------------------
+// daxpy
+void daxpy(
+    blas::Queue& queue,
+    device_blas_int n,
+    double alpha,
+    double *dx, device_blas_int incdx,
+    double *dy, device_blas_int incdy)
+{
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::axpy(
+            dev_queue,
+            n,
+            alpha,
+            dx, incdx,
+            dy, incdy));
+}
+
+// -----------------------------------------------------------------------------
+// caxpy
+void caxpy(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> alpha,
+    std::complex<float> *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy)
+{
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::axpy(
+            dev_queue,
+            n,
+            alpha,
+            dx, incdx,
+            dy, incdy));
+}
+
+// -----------------------------------------------------------------------------
+// zaxpy
+void zaxpy(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> alpha,
+    std::complex<double> *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy)
+{
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::scal(
+            dev_queue,
+            n,
+            alpha,
+            dx, incdx,
+            dy, incdy));
+}
+// -----------------------------------------------------------------------------
 // scal
 // -----------------------------------------------------------------------------
 // sscal
