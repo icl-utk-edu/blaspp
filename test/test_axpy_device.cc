@@ -76,8 +76,10 @@ void test_axpy_device_work( Params& params, bool run )
 
     // test error exits
     assert_throw( blas::axpy( -1, alpha, x, incx, y, incy, queue ), blas::Error );
-    assert_throw( blas::axpy(  n, alpha, x,    0, y,    0, queue ), blas::Error );
-    assert_throw( blas::axpy(  n, alpha, x,   -1, y,   -1, queue ), blas::Error );
+    assert_throw( blas::axpy(  n, alpha, x,    0, y, incy, queue ), blas::Error );
+    assert_throw( blas::axpy(  n, alpha, x, incx, y,    0, queue ), blas::Error );
+    assert_throw( blas::axpy(  n, alpha, x,   -1, y, incy, queue ), blas::Error );
+    assert_throw( blas::axpy(  n, alpha, x, incx, y,   -1, queue ), blas::Error );
 
     if (verbose >= 1) {
         printf( "\n"
@@ -87,7 +89,6 @@ void test_axpy_device_work( Params& params, bool run )
     if (verbose >= 2) {
         printf( "alpha = %.4e + %.4ei;\n",
                 real(alpha), imag(alpha) );
-        printf( "x    = " ); print_vector( n, x, incx );
         printf( "y    = " ); print_vector( n, y, incy );
     }
 
@@ -98,21 +99,17 @@ void test_axpy_device_work( Params& params, bool run )
     queue.sync();
     time = get_wtime() - time;
 
-    double gflop = Gflop < T >::axpy( n );
-    double gbyte = Gbyte < T >::axpy( n );
+    double gflop = Gflop <T>::axpy( n );
+    double gbyte = Gbyte <T>::axpy( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
-
-    blas::device_getvector(n, dx, std::abs(incx), x, std::abs(incx), queue);
-    queue.sync();
 
     blas::device_getvector(n, dy, std::abs(incy), y, std::abs(incy), queue);
     queue.sync();
 
     if (verbose >= 2) {
-        printf( "x2   = " ); print_vector( n, x, incx );
-        printf( "y2   = " ); print_vector( n, y, incy ); // TODO don't think needed
+        printf( "y2   = " ); print_vector( n, y, incy );
     }
 
     if (params.check() == 'y') {
@@ -127,20 +124,18 @@ void test_axpy_device_work( Params& params, bool run )
         params.ref_gbytes() = gbyte / time;
 
         if (verbose >= 2) {
-            printf( "xref = " ); print_vector( n, xref, incx );
             printf( "yref = " ); print_vector( n, yref, incy );
         }
 
         // maximum component-wise forward error:
-        // | fl(xi) - xi | / | xi |
+        // | fl(yi) - yi | / | yi |
         real_t error = 0;
-        int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
+        int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
         for (int64_t i = 0; i < n; ++i) {
-            error = std::max( error, std::abs( (xref[ix] - x[ix]) / xref[ix] ));
-            ix += incx;
+            error = std::max( error, std::abs( (yref[iy] - y[iy]) / yref[iy] ));
+            iy += incy;
         }
         params.error() = error;
-        // TODO add check on y?
 
         // complex needs extra factor; see Higham, 2002, sec. 3.6.
         if (blas::is_complex<T>::value) {

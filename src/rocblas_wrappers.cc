@@ -92,7 +92,7 @@ void daxpy(
     double *dy, device_blas_int incdy)
 {
     blas_dev_call(
-        rocblas_dscal(
+        rocblas_daxpy(
             queue.handle(),
             n, &alpha,
             dx, incdx,
@@ -109,9 +109,9 @@ void caxpy(
     std::complex<float> *dy, device_blas_int incdy)
 {
     blas_dev_call(
-        rocblas_cscal(
+        rocblas_caxpy(
             queue.handle(),
-            n, (const rocblas_float_complex*) &alpha,
+            n, (rocblas_float_complex*) &alpha,
             (rocblas_float_complex*) dx, incdx,
             (rocblas_float_complex*) dy, incdy));
 }
@@ -127,9 +127,9 @@ void zaxpy(
     std::complex<double> *dy, device_blas_int incdy)
 {
     blas_dev_call(
-        rocblas_zscal(
+        rocblas_zaxpy(
             queue.handle(),
-            n, (const rocblas_double_complex*) &alpha,
+            n, (rocblas_double_complex*) &alpha,
             (rocblas_double_complex*) dx, incdx,
             (rocblas_double_complex*) dy, incdy));
 }
@@ -178,7 +178,7 @@ void cscal(
     blas_dev_call(
         rocblas_cscal(
             queue.handle(),
-            n, (const rocblas_float_complex*) &alpha,
+            n, (rocblas_float_complex*) &alpha,
             (rocblas_float_complex*) dx, incdx));
 }
 
@@ -193,7 +193,7 @@ void zscal(
     blas_dev_call(
         rocblas_zscal(
             queue.handle(),
-            n, (const rocblas_double_complex*) &alpha,
+            n, (rocblas_double_complex*) &alpha,
             (rocblas_double_complex*) dx, incdx));
 }
 

@@ -50,7 +50,7 @@ cublasSideMode_t side2cublas(blas::Side side)
 {
     switch (side) {
         case Side::Left:  return CUBLAS_SIDE_LEFT;  break;
-       case Side::Right: return CUBLAS_SIDE_RIGHT; break;
+        case Side::Right: return CUBLAS_SIDE_RIGHT; break;
         default: throw blas::Error( "unknown side" );
     }
 }
