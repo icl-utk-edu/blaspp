@@ -658,8 +658,8 @@ void device_memcpy_2d(
             // Copy each contiguous image row (matrix column).
             // SYCL does not support set/get/lacpy matrix.
             for (int64_t i = 0; i < height; ++i) {
-                const T* dst_row = dst + i*dst_pitch;
-                T*       src_row = src + i*src_pitch;
+                T*       dst_row = dst + i*dst_pitch;
+                T const* src_row = src + i*src_pitch;
                 blas_dev_call(
                     queue.stream().memcpy( dst_row, src_row, width*sizeof(T) ) );
             }
