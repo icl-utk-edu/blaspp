@@ -276,10 +276,10 @@ if (opts.blas1):
 
 if (opts.blas1_device):
     cmds += [
-    [ 'dev-axpy',  dtype + n + incx_pos + incy_pos ],
-    [ 'dev-scal',  dtype + n + incx_pos            ],
-    [ 'dev-swap',  dtype + n + incx + incy         ],
-    [ 'dev-copy',  dtype + n + incx + incy         ],
+    [ 'dev-axpy',  dtype + n + incx + incy ],
+    [ 'dev-scal',  dtype + n + incx_pos    ],
+    [ 'dev-swap',  dtype + n + incx + incy ],
+    [ 'dev-copy',  dtype + n + incx + incy ],
     ]
 
 # Level 2

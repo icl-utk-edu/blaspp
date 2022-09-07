@@ -23,8 +23,8 @@ void blas::axpy(
 {
     // check arguments
     blas_error_if( n < 0 );       // standard BLAS returns, doesn't fail
-    blas_error_if( incdx <= 0 );  // standard BLAS returns, doesn't fail
-    blas_error_if( incdy <= 0 );  // standard BLAS returns, doesn't fail
+    blas_error_if( incdx == 0 );  // standard BLAS returns, doesn't fail
+    blas_error_if( incdy == 0 );  // standard BLAS returns, doesn't fail
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(device_blas_int)) {
@@ -55,8 +55,8 @@ void blas::axpy(
 {
     // check arguments
     blas_error_if( n < 0 );       // standard BLAS returns, doesn't fail
-    blas_error_if( incdx <= 0 );  // standard BLAS returns, doesn't fail
-    blas_error_if( incdy <= 0 );  // standard BLAS returns, doesn't fail
+    blas_error_if( incdx == 0 );  // standard BLAS returns, doesn't fail
+    blas_error_if( incdy == 0 );  // standard BLAS returns, doesn't fail
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(device_blas_int)) {
@@ -87,8 +87,8 @@ void blas::axpy(
 {
     // check arguments
     blas_error_if( n < 0 );       // standard BLAS returns, doesn't fail
-    blas_error_if( incdx <= 0 );  // standard BLAS returns, doesn't fail
-    blas_error_if( incdy <= 0 );  // standard BLAS returns, doesn't fail
+    blas_error_if( incdx == 0 );  // standard BLAS returns, doesn't fail
+    blas_error_if( incdy == 0 );  // standard BLAS returns, doesn't fail
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(device_blas_int)) {
@@ -119,8 +119,8 @@ void blas::axpy(
 {
     // check arguments
     blas_error_if( n < 0 );       // standard BLAS returns, doesn't fail
-    blas_error_if( incdx <= 0 );  // standard BLAS returns, doesn't fail
-    blas_error_if( incdy <= 0 );  // standard BLAS returns, doesn't fail
+    blas_error_if( incdx == 0 );  // standard BLAS returns, doesn't fail
+    blas_error_if( incdy == 0 );  // standard BLAS returns, doesn't fail
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(device_blas_int)) {

@@ -78,8 +78,6 @@ void test_axpy_device_work( Params& params, bool run )
     assert_throw( blas::axpy( -1, alpha, x, incx, y, incy, queue ), blas::Error );
     assert_throw( blas::axpy(  n, alpha, x,    0, y, incy, queue ), blas::Error );
     assert_throw( blas::axpy(  n, alpha, x, incx, y,    0, queue ), blas::Error );
-    assert_throw( blas::axpy(  n, alpha, x,   -1, y, incy, queue ), blas::Error );
-    assert_throw( blas::axpy(  n, alpha, x, incx, y,   -1, queue ), blas::Error );
 
     if (verbose >= 1) {
         printf( "\n"
