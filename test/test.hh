@@ -59,12 +59,26 @@ public:
     testsweeper::ParamDouble     gflops;
     testsweeper::ParamDouble     gbytes;
 
+    testsweeper::ParamDouble     time2;
+    testsweeper::ParamDouble     gflops2;
+    testsweeper::ParamDouble     gbytes2;
+
+    testsweeper::ParamDouble     time3;
+    testsweeper::ParamDouble     gflops3;
+    testsweeper::ParamDouble     gbytes3;
+
+    testsweeper::ParamDouble     time4;
+    testsweeper::ParamDouble     gflops4;
+    testsweeper::ParamDouble     gbytes4;
+
     testsweeper::ParamDouble     ref_time;
     testsweeper::ParamDouble     ref_gflops;
     testsweeper::ParamDouble     ref_gbytes;
 
     testsweeper::ParamOkay       okay;
     testsweeper::ParamString     msg;
+
+    std::string              routine;
 };
 
 // -----------------------------------------------------------------------------
@@ -199,5 +213,8 @@ void test_batch_trsm_device  ( Params& params, bool run );
 void test_error ( Params& params, bool run );
 void test_max   ( Params& params, bool run );
 void test_util  ( Params& params, bool run );
+void test_memcpy( Params& params, bool run );
+
+typedef long long llong;
 
 #endif        //  #ifndef TEST_HH
