@@ -10,16 +10,17 @@
 #include "print_matrix.hh"
 
 // -----------------------------------------------------------------------------
-template< typename T >
+template< typename Tx, typename Ty >
 void test_axpy_device_work( Params& params, bool run )
 {
     using namespace testsweeper;
     using namespace blas;
-    typedef real_type<T> real_t;
+    typedef scalar_type<Tx, Ty> scalar_t;
+    typedef real_type<scalar_t> real_t;
     typedef long long lld;
 
     // get & mark input values
-    T alpha         = params.alpha();
+    scalar_t alpha  = params.alpha();
     int64_t n       = params.dim.n();
     int64_t incx    = params.incx();
     int64_t incy    = params.incy();
@@ -48,29 +49,26 @@ void test_axpy_device_work( Params& params, bool run )
     // setup
     size_t size_x = (n - 1) * std::abs(incx) + 1;
     size_t size_y = (n - 1) * std::abs(incy) + 1;
-    T* x    = new T[ size_x ];
-    T* xref = new T[ size_x ];
-    T* y    = new T[ size_y ];
-    T* yref = new T[ size_y ];
+    Tx* x    = new Tx[ size_x ];
+    Ty* y    = new Ty[ size_y ];
+    Ty* yref = new Ty[ size_y ];
+    Ty* y0   = new Ty[ size_y ];
 
     // device specifics
     blas::Queue queue(device, 0);
-    T* dx;
-    T* dy;
+    Tx* dx;
+    Ty* dy;
 
-    dx = blas::device_malloc<T>(size_x, queue);
-    dy = blas::device_malloc<T>(size_y, queue);
+    dx = blas::device_malloc<Tx>(size_x, queue);
+    dy = blas::device_malloc<Ty>(size_y, queue);
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
-    lapack_larnv( idist, iseed, size_x, x );
-    cblas_copy( n, x, incx, xref, incx );
     lapack_larnv( idist, iseed, size_y, y );
     cblas_copy( n, y, incy, yref, incy );
+    cblas_copy( n, y, incy,   y0, incy );
 
     blas::device_setvector(n, x, std::abs(incx), dx, std::abs(incx), queue);
-    queue.sync();
-
     blas::device_setvector(n, y, std::abs(incy), dy, std::abs(incy), queue);
     queue.sync();
 
@@ -97,8 +95,8 @@ void test_axpy_device_work( Params& params, bool run )
     queue.sync();
     time = get_wtime() - time;
 
-    double gflop = Gflop <T>::axpy( n );
-    double gbyte = Gbyte <T>::axpy( n );
+    double gflop = Gflop <Ty>::axpy( n );
+    double gbyte = Gbyte <Ty>::axpy( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
@@ -114,7 +112,7 @@ void test_axpy_device_work( Params& params, bool run )
         // run reference
         testsweeper::flush_cache( params.cache() );
         time = get_wtime();
-        cblas_axpy( n, alpha, xref, incx, yref, incy );
+        cblas_axpy( n, alpha, x, incx, yref, incy );
         time = get_wtime() - time;
 
         params.ref_time()   = time * 1000;  // msec
@@ -129,25 +127,35 @@ void test_axpy_device_work( Params& params, bool run )
         // | fl(yi) - yi | / | yi |
         real_t error = 0;
         int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
+        int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
         for (int64_t i = 0; i < n; ++i) {
-            error = std::max( error, std::abs( (yref[iy] - y[iy]) / yref[iy] ));
+            y[iy] = std::abs( y[iy] - yref[iy] )                                
+                  / (2*(std::abs( alpha * x[ix] ) + std::abs( y0[iy] )));       
+            ix += incx;                                                         
             iy += incy;
         }
         params.error() = error;
 
-        // complex needs extra factor; see Higham, 2002, sec. 3.6.
-        if (blas::is_complex<T>::value) {
-            error /= 2*sqrt(2);
-        }
 
-        real_t u = 0.5 * std::numeric_limits< real_t >::epsilon();
-        params.okay() = (error < u);
+        if (verbose >= 2) {                                                     
+            printf( "err  = " ); print_vector( n, y, incy, "%9.2e" );           
+        }                                                                       
+                                                                                
+        // complex needs extra factor; see Higham, 2002, sec. 3.6.              
+        if (blas::is_complex<scalar_t>::value) {                                
+            error /= 2*sqrt(2);                                                 
+        }                                                                       
+                                                                                
+        real_t u = 0.5 * std::numeric_limits< real_t >::epsilon();              
+        params.error() = error;                                                 
+        params.okay() = (error < u);  
+
     }
 
     delete[] x;
-    delete[] xref;
     delete[] y;
     delete[] yref;
+    delete[] y0;
 
     blas::device_free( dx, queue );
     blas::device_free( dy, queue );
@@ -158,19 +166,21 @@ void test_axpy_device( Params& params, bool run )
 {
     switch (params.datatype()) {
         case testsweeper::DataType::Single:
-            test_axpy_device_work< float >( params, run );
+            test_axpy_device_work< float, float >( params, run );
             break;
 
         case testsweeper::DataType::Double:
-            test_axpy_device_work< double >( params, run );
+            test_axpy_device_work< double, double >( params, run );
             break;
 
         case testsweeper::DataType::SingleComplex:
-            test_axpy_device_work< std::complex<float> >( params, run );
+            test_axpy_device_work< std::complex<float>, std::complex<float> >
+                ( params, run );
             break;
 
         case testsweeper::DataType::DoubleComplex:
-            test_axpy_device_work< std::complex<double> >( params, run );
+            test_axpy_device_work< std::complex<double>, std::complex<double> >
+                ( params, run );
             break;
 
         default:
