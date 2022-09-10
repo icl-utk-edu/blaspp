@@ -6,6 +6,7 @@
 #include "test.hh"
 #include "print_matrix.hh"
 #include "lapack_wrappers.hh"
+#include "blas/flops.hh"
 
 // -----------------------------------------------------------------------------
 template <typename T>
@@ -191,7 +192,7 @@ void test_memcpy_work( Params& params, bool run )
     ref_time = get_wtime() - ref_time;
 
     // read n, write n
-    double gbyte = 2*n * 1e-9;
+    double gbyte = blas::Gbyte<T>::copy( n );
 
     params.time()     = time;
     params.time2()    = time2;

@@ -236,6 +236,10 @@ public:
     static double syr2( double n )
         { return her2( n ); }
 
+    // read A; write B
+    static double copy_2d( double m, double n )
+        { return 1e-9 * (2*m*n * sizeof(T)); }
+
     // ----------------------------------------
     // Level 3 BLAS
     // read A, B, C; write C
