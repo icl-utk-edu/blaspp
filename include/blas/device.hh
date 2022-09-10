@@ -588,7 +588,7 @@ void device_memcpy(
 /// Copy nelements of type T from src to dst memory region.
 /// src and dst regions must not overlap.
 /// May be asynchronous with respect to host, depending on memory types;
-/// host memory may need to be pinned for this to by async.
+/// host memory may need to be pinned for this to be async.
 ///
 /// @param[out] dst
 ///     Pointer to destination memory region of size nelements.
@@ -673,7 +673,7 @@ void device_memcpy_2d(
 /// Copy width-by-height sub-array of type T from src to dst memory region.
 /// Sub-arrays of src and dst must not overlap.
 /// May be asynchronous with respect to host, depending on memory types;
-/// host memory may need to be pinned for this to by async.
+/// host memory may need to be pinned for this to be async.
 ///
 /// Memory here refers to 2D images, which by convention are
 /// width-by-height (e.g., 1024 x 768), and stored with contiguous rows.
@@ -727,7 +727,7 @@ void device_memcpy_2d(
 //------------------------------------------------------------------------------
 /// Copy n-element vector from host or device memory, to host or device memory.
 /// May be asynchronous with respect to host, depending on memory types;
-/// host memory may need to be pinned for this to by async.
+/// host memory may need to be pinned for this to be async.
 ///
 /// @param[in] n
 ///     Number of elements to copy. n >= 0.
@@ -767,7 +767,7 @@ void device_copy_vector(
 /// Copy m-by-n column-major matrix in ld-by-n array
 /// from host or device memory, to host or device memory.
 /// May be asynchronous with respect to host, depending on memory types;
-/// host memory may need to be pinned for this to by async.
+/// host memory may need to be pinned for this to be async.
 ///
 /// This is exactly the same as device_memcpy_2d, but with conventions
 /// consistent with BLAS/LAPACK routines: matrices are column-major;
