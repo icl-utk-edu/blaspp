@@ -56,7 +56,7 @@ void test_memcpy_2d_work( Params& params, bool run )
     enum class Method {
         memcpy_2d,
         copy_matrix,
-        set_matrix,
+        set_matrix,   // tests both set_matrix and get_matrix
     };
 
     Method method;
@@ -74,17 +74,18 @@ void test_memcpy_2d_work( Params& params, bool run )
     }
 
     // setup
+    blas::Queue queue( device, 0 );
+
     // Allocate extra to verify copy doesn't overrun buffer.
     int64_t ld = roundup( m, align );
     int64_t extra = 2;
     int64_t size = ld*(n + extra);
-    T* a_host = new T[ size ];
-    T* b_host = new T[ size ];
-    T* c_host = new T[ size ];
-    T* d_host = new T[ size ];
+    T* a_host = blas::device_malloc_pinned<T>( size, queue );
+    T* b_host = blas::device_malloc_pinned<T>( size, queue );
+    T* c_host = blas::device_malloc_pinned<T>( size, queue );
+    T* d_host = blas::device_malloc_pinned<T>( size, queue );
 
     // device specifics
-    blas::Queue queue( device, 0 );
     T* b_dev = blas::device_malloc<T>( size, queue );
     T* c_dev = blas::device_malloc<T>( size, queue );
 
@@ -130,7 +131,7 @@ void test_memcpy_2d_work( Params& params, bool run )
 
     //----------
     // a_host -> b_dev
-    double time = get_wtime();
+    double time = sync_get_wtime( queue );
     if (method == Method::memcpy_2d) {
         blas::device_memcpy_2d( b_dev, ld, a_host, ld, m, n, queue );
     }
@@ -140,23 +141,23 @@ void test_memcpy_2d_work( Params& params, bool run )
     else if (method == Method::set_matrix) {
         blas::device_setmatrix( m, n, a_host, ld, b_dev, ld, queue );
     }
-    time = get_wtime() - time;
+    time = sync_get_wtime( queue ) - time;
 
     //----------
     // b_dev -> c_dev
-    double time2 = get_wtime();
-    if (method == Method::copy_matrix) {
-        blas::device_copy_matrix( m, n, b_dev, ld, c_dev, ld, queue );
-    }
-    else {
-        // For method = memcpy_2d or set_matrix, use memcpy_2d.
+    double time2 = sync_get_wtime( queue );
+    if (method == Method::memcpy_2d) {
         blas::device_memcpy_2d( c_dev, ld, b_dev, ld, m, n, queue );
     }
-    time2 = get_wtime() - time2;
+    else {
+        // For method = copy_matrix or set_matrix, use copy_matrix.
+        blas::device_copy_matrix( m, n, b_dev, ld, c_dev, ld, queue );
+    }
+    time2 = sync_get_wtime( queue ) - time2;
 
     //----------
     // c_dev -> d_host
-    double time3 = get_wtime();
+    double time3 = sync_get_wtime( queue );
     if (method == Method::memcpy_2d) {
         blas::device_memcpy_2d( d_host, ld, c_dev, ld, m, n, queue );
     }
@@ -166,25 +167,25 @@ void test_memcpy_2d_work( Params& params, bool run )
     else if (method == Method::set_matrix) {
         blas::device_getmatrix( m, n, c_dev, ld, d_host, ld, queue );
     }
-    time3 = get_wtime() - time3;
+    time3 = sync_get_wtime( queue ) - time3;
 
     //----------
     // a_host -> b_host
-    double time4 = get_wtime();
-    if (method == Method::copy_matrix) {
-        blas::device_copy_matrix( m, n, a_host, ld, b_host, ld, queue );
-    }
-    else {
-        // For method = memcpy_2d or set_matrix, use memcpy_2d.
+    double time4 = sync_get_wtime( queue );
+    if (method == Method::memcpy_2d) {
         blas::device_memcpy_2d( b_host, ld, a_host, ld, m, n, queue );
     }
-    time4 = get_wtime() - time4;
+    else {
+        // For method = copy_matrix or set_matrix, use copy_matrix.
+        blas::device_copy_matrix( m, n, a_host, ld, b_host, ld, queue );
+    }
+    time4 = sync_get_wtime( queue ) - time4;
 
     //----------
     // b_host -> c_host
-    double ref_time = get_wtime();
+    double ref_time = sync_get_wtime( queue );
     lapack_lacpy( "g", m, n, b_host, ld, c_host, ld );
-    ref_time = get_wtime() - ref_time;
+    ref_time = sync_get_wtime( queue ) - ref_time;
 
     // read m*n, write m*n
     double gbyte = blas::Gbyte<T>::copy_2d( m, n );
@@ -233,10 +234,10 @@ void test_memcpy_2d_work( Params& params, bool run )
     params.error() = error;
     params.okay() = (error == 0);  // copy must be exact
 
-    delete[] a_host;
-    delete[] b_host;
-    delete[] c_host;
-    delete[] d_host;
+    blas::device_free_pinned( a_host, queue );
+    blas::device_free_pinned( b_host, queue );
+    blas::device_free_pinned( c_host, queue );
+    blas::device_free_pinned( d_host, queue );
     blas::device_free( b_dev, queue );
     blas::device_free( c_dev, queue );
 }

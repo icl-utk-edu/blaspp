@@ -123,6 +123,15 @@ void require_( bool cond, const char* condstr, const char* file, int line )
 #define require( cond ) require_( (cond), #cond, __FILE__, __LINE__ )
 
 // -----------------------------------------------------------------------------
+/// Synchronize the GPU queue, then return the current time in seconds.
+inline
+double sync_get_wtime( blas::Queue& queue )
+{
+    queue.sync();
+    return testsweeper::get_wtime();
+}
+
+// -----------------------------------------------------------------------------
 // Level 1 BLAS
 void test_asum  ( Params& params, bool run );
 void test_axpy  ( Params& params, bool run );

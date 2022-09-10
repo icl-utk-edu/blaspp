@@ -56,7 +56,7 @@ void test_memcpy_work( Params& params, bool run )
     enum class Method {
         memcpy,
         copy_vector,
-        set_vector,
+        set_vector,   // tests both set_vector and get_vector
     };
 
     Method method;
@@ -76,6 +76,8 @@ void test_memcpy_work( Params& params, bool run )
     }
 
     // setup
+    blas::Queue queue( device, 0 );
+
     // Allocate extra to verify copy doesn't overrun buffer.
     // When routine is copy/set/get_vector,
     // inc_ac is used for a, c vectors,
@@ -83,13 +85,12 @@ void test_memcpy_work( Params& params, bool run )
     int64_t inc = std::max( inc_ac, inc_bd );
     int64_t extra = 2;
     int64_t size = inc*(n + extra);
-    T* a_host = new T[ size ];
-    T* b_host = new T[ size ];
-    T* c_host = new T[ size ];
-    T* d_host = new T[ size ];
+    T* a_host = blas::device_malloc_pinned<T>( size, queue );
+    T* b_host = blas::device_malloc_pinned<T>( size, queue );
+    T* c_host = blas::device_malloc_pinned<T>( size, queue );
+    T* d_host = blas::device_malloc_pinned<T>( size, queue );
 
     // device specifics
-    blas::Queue queue( device, 0 );
     T* b_dev = blas::device_malloc<T>( size, queue );
     T* c_dev = blas::device_malloc<T>( size, queue );
 
@@ -129,7 +130,7 @@ void test_memcpy_work( Params& params, bool run )
 
     //----------
     // a_host -> b_dev
-    double time = get_wtime();
+    double time = sync_get_wtime( queue );
     if (method == Method::memcpy) {
         blas::device_memcpy( b_dev, a_host, n, queue );
     }
@@ -139,22 +140,23 @@ void test_memcpy_work( Params& params, bool run )
     else if (method == Method::set_vector) {
         blas::device_setvector( n, a_host, inc_ac, b_dev, inc_bd, queue );
     }
-    time = get_wtime() - time;
+    time = sync_get_wtime( queue ) - time;
 
     //----------
     // b_dev -> c_dev
-    double time2 = get_wtime();
+    double time2 = sync_get_wtime( queue );
     if (method == Method::memcpy) {
         blas::device_memcpy( c_dev, b_dev, n, queue );
     }
-    else if (method == Method::copy_vector || method == Method::set_vector) {
+    else {
+        // For method = copy_vector or set_vector, use copy_vector.
         blas::device_copy_vector( n, b_dev, inc_bd, c_dev, inc_ac, queue );
     }
-    time2 = get_wtime() - time2;
+    time2 = sync_get_wtime( queue ) - time2;
 
     //----------
     // c_dev -> d_host
-    double time3 = get_wtime();
+    double time3 = sync_get_wtime( queue );
     if (method == Method::memcpy) {
         blas::device_memcpy( d_host, c_dev, n, queue );
     }
@@ -164,32 +166,25 @@ void test_memcpy_work( Params& params, bool run )
     else if (method == Method::set_vector) {
         blas::device_getvector( n, c_dev, inc_ac, d_host, inc_bd, queue );
     }
-    time3 = get_wtime() - time3;
+    time3 = sync_get_wtime( queue ) - time3;
 
     //----------
     // a_host -> b_host
-    double time4 = get_wtime();
-    if (method == Method::copy_vector) {
-        blas::device_copy_vector( n, a_host, inc_ac, b_host, inc_bd, queue );
+    double time4 = sync_get_wtime( queue );
+    if (method == Method::memcpy) {
+        blas::device_memcpy( b_host, a_host, n, queue );
     }
     else {
-        // For method = memcpy or set_vector, use memcpy.
-        if (inc_ac == 1 && inc_bd == 1) {
-            // Contiguous copy.
-            blas::device_memcpy( b_host, a_host, n, queue );
-        }
-        else {
-            // Interpret as copying one row from inc-by-n matrix.
-            blas::device_memcpy_2d( b_host, inc_bd, a_host, inc_ac, 1, n, queue );
-        }
+        // For method = copy_vector or set_vector, use copy_vector.
+        blas::device_copy_vector( n, a_host, inc_ac, b_host, inc_bd, queue );
     }
-    time4 = get_wtime() - time4;
+    time4 = sync_get_wtime( queue ) - time4;
 
     //----------
     // b_host -> c_host
-    double ref_time = get_wtime();
+    double ref_time = sync_get_wtime( queue );
     blas::copy( n, b_host, inc_bd, c_host, inc_ac );
-    ref_time = get_wtime() - ref_time;
+    ref_time = sync_get_wtime( queue ) - ref_time;
 
     // read n, write n
     double gbyte = blas::Gbyte<T>::copy( n );
@@ -240,10 +235,10 @@ void test_memcpy_work( Params& params, bool run )
     params.error() = error;
     params.okay() = (error == 0);  // copy must be exact
 
-    delete[] a_host;
-    delete[] b_host;
-    delete[] c_host;
-    delete[] d_host;
+    blas::device_free_pinned( a_host, queue );
+    blas::device_free_pinned( b_host, queue );
+    blas::device_free_pinned( c_host, queue );
+    blas::device_free_pinned( d_host, queue );
     blas::device_free( b_dev, queue );
     blas::device_free( c_dev, queue );
 }
