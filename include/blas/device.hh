@@ -137,9 +137,24 @@ class Queue
 public:
     Queue();
     Queue( int device, int64_t batch_size );
+
+    #if defined( BLAS_HAVE_CUBLAS )
+        Queue( int device, cudaStream_t   stream, int64_t batch_size );
+        Queue( int device, cublasHandle_t handle, int64_t batch_size );
+
+    #elif defined( BLAS_HAVE_ROCBLAS )
+        Queue( int device, hipStream_t    stream, int64_t batch_size );
+        Queue( int device, rocblas_handle handle, int64_t batch_size );
+
+    #elif defined( BLAS_HAVE_ONEMKL )
+        Queue( int device, sycl::queue queue, int64_t batch_size );
+
+    #endif
+
     // Disable copying; must construct anew.
     Queue( Queue const& ) = delete;
     Queue& operator=( Queue const& ) = delete;
+
     ~Queue();
 
     int    device() const { return device_; }
@@ -196,7 +211,7 @@ private:
     // an index to the current stream in use
     size_t current_stream_index_;
 
-    #ifdef BLAS_HAVE_CUBLAS
+    #if defined( BLAS_HAVE_CUBLAS )
         // associated device blas handle
         cublasHandle_t handle_;
 
@@ -212,7 +227,10 @@ private:
         cudaEvent_t  default_event_;
         cudaEvent_t  parallel_events_[DEV_QUEUE_FORK_SIZE];
 
-    #elif defined(BLAS_HAVE_ROCBLAS)
+        bool own_handle_;
+        bool own_default_stream_;
+
+    #elif defined( BLAS_HAVE_ROCBLAS )
         // associated device blas handle
         rocblas_handle handle_;
 
@@ -228,7 +246,10 @@ private:
         hipEvent_t   default_event_;
         hipEvent_t   parallel_events_[DEV_QUEUE_FORK_SIZE];
 
-    #elif defined(BLAS_HAVE_ONEMKL)
+        bool own_handle_;
+        bool own_default_stream_;
+
+    #elif defined( BLAS_HAVE_ONEMKL )
         // in addition to the integer device_ member, we need
         // the sycl device id
         sycl::device  sycl_device_;
@@ -239,6 +260,8 @@ private:
 
         // pointer to current stream (default or fork mode)
         // sycl::queue *current_stream_; // not currently used
+
+        bool own_default_stream_;
 
     #else
         // pointer to current stream (default or fork mode)
