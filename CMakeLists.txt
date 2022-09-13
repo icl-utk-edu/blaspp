@@ -233,8 +233,8 @@ add_library(
     src/device_symm.cc
     src/device_syr2k.cc
     src/device_syrk.cc
-    src/device_nrm2.cc
     src/device_axpy.cc
+    src/device_nrm2.cc
     src/device_scal.cc
     src/device_swap.cc
     src/device_copy.cc

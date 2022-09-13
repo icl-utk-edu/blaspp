@@ -85,8 +85,8 @@ void test_nrm2_device_work( Params& params, bool run )
     queue.sync();
     time = get_wtime() - time;
 
-    double gflop = Gflop <Tx>::nrm2( n );
-    double gbyte = Gbyte <Tx>::nrm2( n );
+    double gflop = Gflop<Tx>::nrm2( n );
+    double gbyte = Gbyte<Tx>::nrm2( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;

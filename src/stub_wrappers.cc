@@ -14,52 +14,6 @@ namespace device {
 // Level 1 BLAS - Device Interfaces
 
 // -----------------------------------------------------------------------------
-// nrm2
-// -----------------------------------------------------------------------------
-// snrm2
-void snrm2(
-    blas::Queue& queue,
-    device_blas_int n,
-    float *dx, device_blas_int incdx,
-    float *result)
-{
-    throw blas::Error( "device BLAS not available", __func__ );
-}
-
-// -----------------------------------------------------------------------------
-// dnrm2
-void dnrm2(
-    blas::Queue& queue,
-    device_blas_int n,
-    double *dx, device_blas_int incdx,
-    double *result)
-{
-    throw blas::Error( "device BLAS not available", __func__ );
-}
-
-// -----------------------------------------------------------------------------
-// cnrm2
-void cnrm2(
-    blas::Queue& queue,
-    device_blas_int n,
-    std::complex<float> *dx, device_blas_int incdx,
-    float *result)
-{
-    throw blas::Error( "device BLAS not available", __func__ );
-}
-
-// -----------------------------------------------------------------------------
-// znrm2
-void znrm2(
-    blas::Queue& queue,
-    device_blas_int n,
-    std::complex<double> *dx, device_blas_int incdx,
-    double *result)
-{
-    throw blas::Error( "device BLAS not available", __func__ );
-}
-
-// -----------------------------------------------------------------------------
 // axpy
 // -----------------------------------------------------------------------------
 // saxpy
@@ -105,6 +59,52 @@ void zaxpy(
     std::complex<double> alpha,
     std::complex<double> *dx, device_blas_int incdx,
     std::complex<double> *dy, device_blas_int incdy)
+{
+    throw blas::Error( "device BLAS not available", __func__ );
+}
+
+// -----------------------------------------------------------------------------
+// nrm2
+// -----------------------------------------------------------------------------
+// snrm2
+void snrm2(
+    blas::Queue& queue,
+    device_blas_int n,
+    float *dx, device_blas_int incdx,
+    float *result)
+{
+    throw blas::Error( "device BLAS not available", __func__ );
+}
+
+// -----------------------------------------------------------------------------
+// dnrm2
+void dnrm2(
+    blas::Queue& queue,
+    device_blas_int n,
+    double *dx, device_blas_int incdx,
+    double *result)
+{
+    throw blas::Error( "device BLAS not available", __func__ );
+}
+
+// -----------------------------------------------------------------------------
+// cnrm2
+void cnrm2(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> *dx, device_blas_int incdx,
+    float *result)
+{
+    throw blas::Error( "device BLAS not available", __func__ );
+}
+
+// -----------------------------------------------------------------------------
+// znrm2
+void znrm2(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> *dx, device_blas_int incdx,
+    double *result)
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }

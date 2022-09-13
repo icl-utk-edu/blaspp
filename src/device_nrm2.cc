@@ -13,7 +13,7 @@
 // Overloaded wrappers for s, d, c, z precisions.
 
 // -----------------------------------------------------------------------------
-/// @ingroup axpy
+/// @ingroup nrm2
 void blas::nrm2(
     int64_t n,
     float *dx, int64_t incdx,
@@ -41,7 +41,7 @@ void blas::nrm2(
 }
 
 // -----------------------------------------------------------------------------
-/// @ingroup axpy
+/// @ingroup nrm2
 void blas::nrm2(
     int64_t n,
     double *dx, int64_t incdx,
@@ -69,7 +69,7 @@ void blas::nrm2(
 }
 
 // -----------------------------------------------------------------------------
-/// @ingroup axpy
+/// @ingroup nrm2
 void blas::nrm2(
     int64_t n,
     std::complex<float> *dx, int64_t incdx,
@@ -97,7 +97,7 @@ void blas::nrm2(
 }
 
 // -----------------------------------------------------------------------------
-/// @ingroup axpy
+/// @ingroup nrm2
 void blas::nrm2(
     int64_t n,
     std::complex<double> *dx, int64_t incdx,

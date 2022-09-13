@@ -99,8 +99,8 @@ add_executable(
     test_batch_syrk_device.cc
     test_batch_trmm_device.cc
     test_batch_trsm_device.cc
-    test_nrm2_device.cc
     test_axpy_device.cc
+    test_nrm2_device.cc
     test_scal_device.cc
     test_swap_device.cc
     test_copy_device.cc
