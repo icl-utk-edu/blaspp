@@ -276,6 +276,7 @@ if (opts.blas1):
 
 if (opts.blas1_device):
     cmds += [
+    [ 'dev-nrm2',  dtype + n + incx_pos    ],
     [ 'dev-axpy',  dtype + n + incx + incy ],
     [ 'dev-scal',  dtype + n + incx_pos    ],
     [ 'dev-swap',  dtype + n + incx + incy ],

@@ -64,6 +64,68 @@ rocblas_side side2rocblas(blas::Side side)
 // Level 1 BLAS - Device Interfaces
 
 // -----------------------------------------------------------------------------
+// nrm2
+// -----------------------------------------------------------------------------
+// snrm2
+void snrm2(
+    blas::Queue& queue,
+    device_blas_int n,
+    float *dx, device_blas_int incdx,
+    float *result)
+{
+    blas_dev_call(
+        rocblas_snrm2(
+            queue.handle(),
+            n, dx, incdx,
+            result));
+}
+
+// -----------------------------------------------------------------------------
+// dnrm2
+void dnrm2(
+    blas::Queue& queue,
+    device_blas_int n,
+    double *dx, device_blas_int incdx,
+    double *result)
+{
+    blas_dev_call(
+        rocblas_dnrm2(
+            queue.handle(),
+            n, dx, incdx,
+            result));
+}
+
+// -----------------------------------------------------------------------------
+// cnrm2
+void cnrm2(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> *dx, device_blas_int incdx,
+    float *result)
+{
+    blas_dev_call(
+        rocblas_cnrm2(
+            queue.handle(),
+            n, (rocblas_float_complex*) dx, incdx,
+            result));
+}
+
+// -----------------------------------------------------------------------------
+// znrm2
+void znrm2(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> *dx, device_blas_int incdx,
+    double *result)
+{
+    blas_dev_call(
+        rocblas_znrm2(
+            queue.handle(),
+            n, (rocblas_double_complex*) dx, incdx,
+            result));
+}
+
+// -----------------------------------------------------------------------------
 // axpy
 // -----------------------------------------------------------------------------
 // saxpy

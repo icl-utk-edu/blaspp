@@ -1,0 +1,165 @@
+// Copyright (c) 2017-2022, University of Tennessee. All rights reserved.
+// SPDX-License-Identifier: BSD-3-Clause
+// This program is free software: you can redistribute it and/or modify it under
+// the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
+
+#include "test.hh"
+#include "cblas_wrappers.hh"
+#include "lapack_wrappers.hh"
+#include "blas/flops.hh"
+#include "print_matrix.hh"
+
+// -----------------------------------------------------------------------------
+template< typename Tx >
+void test_nrm2_device_work( Params& params, bool run )
+{
+    using namespace testsweeper;
+    using namespace blas;
+    typedef scalar_type<Tx> scalar_t;
+    typedef real_type<scalar_t> real_t;
+    typedef long long lld;
+
+    // get & mark input values
+    int64_t n       = params.dim.n();
+    int64_t incx    = params.incx();
+    int64_t device  = params.device();
+    int64_t verbose = params.verbose();
+    real_t result = 0;
+    real_t result0;
+
+    // mark non-standard output values
+    params.gflops();
+    params.gbytes();
+    params.ref_time();
+    params.ref_gflops();
+    params.ref_gbytes();
+
+    // adjust header to msec
+    params.time.name( "BLAS++\ntime (ms)" );
+    params.ref_time.name( "Ref.\ntime (ms)" );
+
+    if (! run)
+        return;
+
+    if (blas::get_device_count() == 0) {
+        params.msg() = "skipping: no GPU devices or no GPU support";
+        return;
+    }
+
+    // setup
+    size_t size_x = (n - 1) * std::abs(incx) + 1;
+    Tx* x    = new Tx[ size_x ];
+    Tx* xref = new Tx[ size_x ];
+
+    // device specifics
+    blas::Queue queue(device, 0);
+    Tx* dx;
+
+    dx = blas::device_malloc<Tx>(size_x, queue);
+
+    int64_t idist = 1;
+    int iseed[4] = { 0, 0, 0, 1 };
+    lapack_larnv( idist, iseed, size_x, x );
+    cblas_copy( n, x, incx, xref, incx );
+
+    blas::device_setvector(n, x, std::abs(incx), dx, std::abs(incx), queue);
+    queue.sync();
+
+    // test error exits
+    assert_throw( blas::nrm2( -1, x, incx, &result, queue ), blas::Error );
+    assert_throw( blas::nrm2(  n, x,    0, &result, queue ), blas::Error );
+
+    if (verbose >= 1) {
+        printf( "\n"
+                "n=%5lld, incx=%5lld, sizex=%10lld\n",
+                (lld) n, (lld) incx, (lld) size_x );
+    }
+    if (verbose >= 2) {
+        printf( "x    = " ); print_vector( n, x, incx );
+    }
+
+    // run test
+    testsweeper::flush_cache( params.cache() );
+    double time = get_wtime();
+    blas::nrm2( n, dx, incx, &result, queue );
+    queue.sync();
+    time = get_wtime() - time;
+
+    double gflop = Gflop <Tx>::nrm2( n );
+    double gbyte = Gbyte <Tx>::nrm2( n );
+    params.time()   = time * 1000;  // msec
+    params.gflops() = gflop / time;
+    params.gbytes() = gbyte / time;
+
+    blas::device_getvector(n, dx, std::abs(incx), x, std::abs(incx), queue);
+    queue.sync();
+
+    if (verbose >= 2) {
+        printf( "x2   = " ); print_vector( n, x, incx );
+    }
+
+    if (params.check() == 'y') {
+        // run reference
+        testsweeper::flush_cache( params.cache() );
+        time = get_wtime();
+        result0 = cblas_nrm2( n, xref, incx );
+        time = get_wtime() - time;
+
+        params.ref_time()   = time * 1000;  // msec
+        params.ref_gflops() = gflop / time;
+        params.ref_gbytes() = gbyte / time;
+
+        if (verbose >= 2) {
+            printf( "result0 = %3.2lld\n", (lld) result0);
+        }
+
+        // relative forward error:
+        real_t error = std::abs( (result0 - result) / (sqrt(n+1) * result0) );          
+        params.error() = error;
+
+
+        if (verbose >= 2) {                                                     
+            printf( "err  = " ); print_vector( n, x, incx, "%9.2e" );           
+        }                                                                       
+                                                                                
+        // complex needs extra factor; see Higham, 2002, sec. 3.6.              
+        if (blas::is_complex<scalar_t>::value) {                                
+            error /= 2*sqrt(2);                                                 
+        }                                                                       
+                                                                                
+        real_t u = 0.5 * std::numeric_limits< real_t >::epsilon();              
+        params.error() = error;                                                 
+        params.okay() = (error < u);  
+    }
+
+    delete[] x;
+    delete[] xref;
+
+    blas::device_free( dx, queue );
+}
+
+// -----------------------------------------------------------------------------
+void test_nrm2_device( Params& params, bool run )
+{
+    switch (params.datatype()) {
+        case testsweeper::DataType::Single:
+            test_nrm2_device_work< float >( params, run );
+            break;
+
+        case testsweeper::DataType::Double:
+            test_nrm2_device_work< double >( params, run );
+            break;
+
+        case testsweeper::DataType::SingleComplex:
+            test_nrm2_device_work< std::complex<float> >( params, run );
+            break;
+
+        case testsweeper::DataType::DoubleComplex:
+            test_nrm2_device_work< std::complex<double> >( params, run );
+            break;
+
+        default:
+            throw std::exception();
+            break;
+    }
+}

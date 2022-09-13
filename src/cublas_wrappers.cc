@@ -59,6 +59,68 @@ cublasSideMode_t side2cublas(blas::Side side)
 // Level 1 BLAS - Device Interfaces
 
 // -----------------------------------------------------------------------------
+// nrm2
+// -----------------------------------------------------------------------------
+// snrm2
+void snrm2(
+    blas::Queue& queue,
+    device_blas_int n,
+    float *dx, device_blas_int incdx,
+    float *result)
+{
+    blas_dev_call(
+        cublasSnrm2(
+            queue.handle(),
+            n, dx, incdx,
+            result));
+}
+
+// -----------------------------------------------------------------------------
+// dnrm2
+void dnrm2(
+    blas::Queue& queue,
+    device_blas_int n,
+    double *dx, device_blas_int incdx,
+    double *result)
+{
+    blas_dev_call(
+        cublasDnrm2(
+            queue.handle(),
+            n, dx, incdx,
+            result));
+}
+
+// -----------------------------------------------------------------------------
+// cnrm2
+void cnrm2(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> *dx, device_blas_int incdx,
+    float *result)
+{
+    blas_dev_call(
+        cublasScnrm2(
+            queue.handle(),
+            n, (const cuComplex*) dx, incdx,
+            result));
+}
+
+// -----------------------------------------------------------------------------
+// znrm2
+void znrm2(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> *dx, device_blas_int incdx,
+    double *result)
+{
+    blas_dev_call(
+        cublasDznrm2(
+            queue.handle(),
+            n, (const cuDoubleComplex*) dx, incdx,
+            result));
+}
+
+// -----------------------------------------------------------------------------
 // axpy
 // -----------------------------------------------------------------------------
 // saxpy
