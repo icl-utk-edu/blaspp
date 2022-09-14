@@ -10,6 +10,7 @@
 
 #include <complex>
 
+// -----------------------------------------------------------------------------
 void
 cblas_rotg(
     std::complex<float> *a, std::complex<float> *b,
@@ -32,4 +33,39 @@ cblas_rotg(
         (blas_complex_double*) b,
         c,
         (blas_complex_double*) s );
+}
+
+// -----------------------------------------------------------------------------
+void
+cblas_rot(
+    int n,
+    std::complex<float> *x, int incx,
+    std::complex<float> *y, int incy,
+    float c, std::complex<float> s )
+{
+    BLAS_crot(
+        &n,
+        (blas_complex_float*) x,
+        &incx,
+        (blas_complex_float*) y,
+        &incy,
+        &c,
+        (blas_complex_float*) &s );
+}
+
+void
+cblas_rot(
+    int n,
+    std::complex<double> *x, int incx,
+    std::complex<double> *y, int incy,
+    double c, std::complex<double> s )
+{
+    BLAS_zrot(
+        &n,
+        (blas_complex_double*) x,
+        &incx,
+        (blas_complex_double*) y,
+        &incy,
+        &c,
+        (blas_complex_double*) &s );
 }

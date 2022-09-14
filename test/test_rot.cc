@@ -49,15 +49,18 @@ void test_rot_work( Params& params, bool run )
     TX* xref = new TX[ size_x ];
     TX* y    = new TX[ size_y ];
     TX* yref = new TX[ size_y ];
-    TX s = rand() / double(RAND_MAX);    // todo: imag
-    real_t c = sqrt( 1 - real(s*conj(s)) );  // real
+    TX s;
+    real_t c;  // real
 
-    int64_t idist = 1;
+    int64_t idist = 2;
     int iseed[4] = { 0, 0, 0, 1 };
     lapack_larnv( idist, iseed, size_x, x );
     lapack_larnv( idist, iseed, size_y, y );
     cblas_copy( n, x, incx, xref, incx );
     cblas_copy( n, y, incy, yref, incy );
+
+    lapack_larnv( idist, iseed, 1, &s );
+    c = sqrt( 1 - real(s*conj(s)) );  // real
 
     // norms for error check
     real_t Xnorm = cblas_nrm2( n, x, std::abs(incx) );
@@ -153,6 +156,13 @@ void test_rot( Params& params, bool run )
             test_rot_work< double, double >( params, run );
             break;
 
+        case testsweeper::DataType::SingleComplex:
+            test_rot_work< std::complex<float>, std::complex<float> >( params, run );
+            break;
+
+        case testsweeper::DataType::DoubleComplex:
+            test_rot_work< std::complex<double>, std::complex<double> >( params, run );
+            break;
         // todo: real sine
         // todo: complex sine
 
