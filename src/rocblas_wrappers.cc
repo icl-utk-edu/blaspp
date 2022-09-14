@@ -174,7 +174,7 @@ void cnrm2(
     float *result)
 {
     blas_dev_call(
-        rocblas_cnrm2(
+        rocblas_scnrm2(
             queue.handle(),
             n, (rocblas_float_complex*) dx, incdx,
             result));
@@ -189,7 +189,7 @@ void znrm2(
     double *result)
 {
     blas_dev_call(
-        rocblas_znrm2(
+        rocblas_dznrm2(
             queue.handle(),
             n, (rocblas_double_complex*) dx, incdx,
             result));
