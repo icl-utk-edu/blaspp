@@ -189,35 +189,36 @@ Params::Params():
     // def = default
     // ----- test framework parameters
     //         name,       w,    type,         default, valid, help
-    check     ( "check",   0,    ParamType::Value, 'y', "ny",  "check the results" ),
-    ref       ( "ref",     0,    ParamType::Value, 'n', "ny",  "run reference; sometimes check -> ref" ),
+    check        ( "check",   0,    ParamType::Value, 'y', "ny",  "check the results" ),
+    ref          ( "ref",     0,    ParamType::Value, 'n', "ny",  "run reference; sometimes check -> ref" ),
 
-    //          name,      w, p, type,         default, min,  max, help
-    repeat    ( "repeat",  0,    ParamType::Value,   1,   1, 1000, "times to repeat each test" ),
-    verbose   ( "verbose", 0,    ParamType::Value,   0,   0,   10, "verbose level" ),
-    cache     ( "cache",   0,    ParamType::Value,  20,   1, 1024, "total cache size, in MiB" ),
+    //             name,      w, p, type,         default, min,  max, help
+    repeat       ( "repeat",  0,    ParamType::Value,   1,   1, 1000, "times to repeat each test" ),
+    verbose      ( "verbose", 0,    ParamType::Value,   0,   0,   10, "verbose level" ),
+    cache        ( "cache",   0,    ParamType::Value,  20,   1, 1024, "total cache size, in MiB" ),
 
     // ----- routine parameters
     //          name,      w,    type,            def,                    char2enum,         enum2char,         enum2str,         help
-    datatype  ( "type",    4,    ParamType::List, DataType::Double,       char2datatype,     datatype2char,     datatype2str,     "s=single (float), d=double, c=complex-single, z=complex-double" ),
-    layout    ( "layout",  6,    ParamType::List, blas::Layout::ColMajor, blas::char2layout, blas::layout2char, blas::layout2str, "layout: r=row major, c=column major" ),
-    format    ( "format",  6,    ParamType::List, blas::Format::LAPACK,   blas::char2format, blas::format2char, blas::format2str, "format: l=lapack, t=tile" ),
-    side      ( "side",    6,    ParamType::List, blas::Side::Left,       blas::char2side,   blas::side2char,   blas::side2str,   "side: l=left, r=right" ),
-    uplo      ( "uplo",    6,    ParamType::List, blas::Uplo::Lower,      blas::char2uplo,   blas::uplo2char,   blas::uplo2str,   "triangle: l=lower, u=upper" ),
-    trans     ( "trans",   7,    ParamType::List, blas::Op::NoTrans,      blas::char2op,     blas::op2char,     blas::op2str,     "transpose: n=no-trans, t=trans, c=conj-trans" ),
-    transA    ( "transA",  7,    ParamType::List, blas::Op::NoTrans,      blas::char2op,     blas::op2char,     blas::op2str,     "transpose of A: n=no-trans, t=trans, c=conj-trans" ),
-    transB    ( "transB",  7,    ParamType::List, blas::Op::NoTrans,      blas::char2op,     blas::op2char,     blas::op2str,     "transpose of B: n=no-trans, t=trans, c=conj-trans" ),
-    diag      ( "diag",    7,    ParamType::List, blas::Diag::NonUnit,    blas::char2diag,   blas::diag2char,   blas::diag2str,   "diagonal: n=non-unit, u=unit" ),
+    datatype     ( "type",    4,    ParamType::List, DataType::Double,       char2datatype,     datatype2char,     datatype2str,     "s=single (float), d=double, c=complex-single, z=complex-double" ),
+    layout       ( "layout",  6,    ParamType::List, blas::Layout::ColMajor, blas::char2layout, blas::layout2char, blas::layout2str, "layout: r=row major, c=column major" ),
+    format       ( "format",  6,    ParamType::List, blas::Format::LAPACK,   blas::char2format, blas::format2char, blas::format2str, "format: l=lapack, t=tile" ),
+    side         ( "side",    6,    ParamType::List, blas::Side::Left,       blas::char2side,   blas::side2char,   blas::side2str,   "side: l=left, r=right" ),
+    uplo         ( "uplo",    6,    ParamType::List, blas::Uplo::Lower,      blas::char2uplo,   blas::uplo2char,   blas::uplo2str,   "triangle: l=lower, u=upper" ),
+    trans        ( "trans",   7,    ParamType::List, blas::Op::NoTrans,      blas::char2op,     blas::op2char,     blas::op2str,     "transpose: n=no-trans, t=trans, c=conj-trans" ),
+    transA       ( "transA",  7,    ParamType::List, blas::Op::NoTrans,      blas::char2op,     blas::op2char,     blas::op2str,     "transpose of A: n=no-trans, t=trans, c=conj-trans" ),
+    transB       ( "transB",  7,    ParamType::List, blas::Op::NoTrans,      blas::char2op,     blas::op2char,     blas::op2str,     "transpose of B: n=no-trans, t=trans, c=conj-trans" ),
+    diag         ( "diag",    7,    ParamType::List, blas::Diag::NonUnit,    blas::char2diag,   blas::diag2char,   blas::diag2str,   "diagonal: n=non-unit, u=unit" ),
 
-    //          name,      w, p, type,            def,   min,     max, help
-    dim       ( "dim",     6,    ParamType::List,          0, 1000000, "m by n by k dimensions" ),
-    alpha     ( "alpha",   9, 4, ParamType::List,  pi,  -inf,     inf, "scalar alpha" ),
-    beta      ( "beta",    9, 4, ParamType::List,   e,  -inf,     inf, "scalar beta" ),
-    incx      ( "incx",    4,    ParamType::List,   1, -1000,    1000, "stride of x vector" ),
-    incy      ( "incy",    4,    ParamType::List,   1, -1000,    1000, "stride of y vector" ),
-    align     ( "align",   0,    ParamType::List,   1,     1,    1024, "column alignment (sets lda, ldb, etc. to multiple of align)" ),
-    batch     ( "batch",   6,    ParamType::List, 100,     0, 1000000, "batch size" ),
-    device    ( "device",  6,    ParamType::List,   0,     0,     100, "device id" ),
+    //             name,             w, p, type,             def,   min,     max, help
+    dim          ( "dim",            6,    ParamType::List,          0, 1000000, "m by n by k dimensions" ),
+    alpha        ( "alpha",          9, 4, ParamType::List,   pi,  -inf,     inf, "scalar alpha" ),
+    beta         ( "beta",           9, 4, ParamType::List,    e,  -inf,     inf, "scalar beta" ),
+    incx         ( "incx",           4,    ParamType::List,    1, -1000,    1000, "stride of x vector" ),
+    incy         ( "incy",           4,    ParamType::List,    1, -1000,    1000, "stride of y vector" ),
+    align        ( "align",          0,    ParamType::List,    1,     1,    1024, "column alignment (sets lda, ldb, etc. to multiple of align)" ),
+    batch        ( "batch",          6,    ParamType::List,  100,     0, 1000000, "batch size" ),
+    device       ( "device",         6,    ParamType::List,    0,     0,     100, "device id" ),
+    pointer_mode ( "pointer-mode",   0,    ParamType::Value, 'h',  "hd",          "h == host, d == device" ),
 
     // ----- output parameters
     // min, max are ignored

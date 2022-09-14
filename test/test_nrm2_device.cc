@@ -20,12 +20,15 @@ void test_nrm2_device_work( Params& params, bool run )
     typedef long long lld;
 
     // get & mark input values
+    char mode       = params.pointer_mode();
     int64_t n       = params.dim.n();
     int64_t incx    = params.incx();
     int64_t device  = params.device();
     int64_t verbose = params.verbose();
-    real_t result = 0;
-    real_t result0;
+
+    real_t  result_host;
+    real_t* result = &result_host;
+    real_t  result_cblas;
 
     // mark non-standard output values
     params.gflops();
@@ -56,6 +59,18 @@ void test_nrm2_device_work( Params& params, bool run )
     Tx* dx;
 
     dx = blas::device_malloc<Tx>(size_x, queue);
+    if (mode == 'd') {
+        result = blas::device_malloc<real_t>(1, queue);
+        #if defined( BLAS_HAVE_CUBLAS )
+        cublasSetPointerMode(queue.handle(), CUBLAS_POINTER_MODE_DEVICE);
+        #elif defined( BLAS_HAVE_ROCBLAS )
+        rocblas_set_pointer_mode( queue.handle(), rocblas_pointer_mode_device );
+        #endif
+    }
+
+    // test error exits
+    assert_throw( blas::nrm2( -1, x, incx, result, queue ), blas::Error );
+    assert_throw( blas::nrm2(  n, x,    0, result, queue ), blas::Error );
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
@@ -64,10 +79,6 @@ void test_nrm2_device_work( Params& params, bool run )
 
     blas::device_setvector(n, x, std::abs(incx), dx, std::abs(incx), queue);
     queue.sync();
-
-    // test error exits
-    assert_throw( blas::nrm2( -1, x, incx, &result, queue ), blas::Error );
-    assert_throw( blas::nrm2(  n, x,    0, &result, queue ), blas::Error );
 
     if (verbose >= 1) {
         printf( "\n"
@@ -81,9 +92,18 @@ void test_nrm2_device_work( Params& params, bool run )
     // run test
     testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
-    blas::nrm2( n, dx, incx, &result, queue );
+    if (mode == 'd') {
+        blas::nrm2( n, dx, incx, result, queue );
+    }
+    else {
+        blas::nrm2( n, dx, incx, &result_host, queue );
+    }
     queue.sync();
     time = get_wtime() - time;
+
+    if (mode == 'd') {
+        device_memcpy( &result_host, result, 1, queue );
+    }
 
     double gflop = Gflop<Tx>::nrm2( n );
     double gbyte = Gbyte<Tx>::nrm2( n );
@@ -102,7 +122,7 @@ void test_nrm2_device_work( Params& params, bool run )
         // run reference
         testsweeper::flush_cache( params.cache() );
         time = get_wtime();
-        result0 = cblas_nrm2( n, xref, incx );
+        result_cblas = cblas_nrm2( n, xref, incx );
         time = get_wtime() - time;
 
         params.ref_time()   = time * 1000;  // msec
@@ -110,11 +130,12 @@ void test_nrm2_device_work( Params& params, bool run )
         params.ref_gbytes() = gbyte / time;
 
         if (verbose >= 2) {
-            printf( "result0 = %3.2lld\n", (lld) result0);
+            printf( "result0 = %3.2lld\n", (lld) result_cblas);
         }
 
         // relative forward error:
-        real_t error = std::abs( (result0 - result) / (sqrt(n+1) * result0) );          
+        real_t error = std::abs( (result_cblas - result_host) 
+                           / (sqrt(n+1) * result_cblas) );          
         params.error() = error;
 
 
@@ -136,6 +157,8 @@ void test_nrm2_device_work( Params& params, bool run )
     delete[] xref;
 
     blas::device_free( dx, queue );
+    if (mode == 'd')
+        blas::device_free( result, queue );
 }
 
 // -----------------------------------------------------------------------------

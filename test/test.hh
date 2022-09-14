@@ -49,6 +49,7 @@ public:
     testsweeper::ParamInt    align;
     testsweeper::ParamInt    batch;
     testsweeper::ParamInt    device;
+    testsweeper::ParamChar   pointer_mode;
 
     // ----- output parameters
     testsweeper::ParamScientific error;
