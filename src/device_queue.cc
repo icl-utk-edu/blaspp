@@ -371,6 +371,23 @@ Queue::Queue( int device, int64_t batch_size )
         // size_t lwork = 3 * batch_limit_ * ( DEV_QUEUE_FORK_SIZE + 1 );
         // work_resize<void*>( lwork );
     }
+
+    // -----------------------------------------------------------------------------
+    /// Change the stream used in the queue.
+    /// Kernels executing on the current stream will continue.
+    /// todo: what to do if we're in multi-stream state?
+    void Queue::set_stream( stream_t in_stream )
+    {
+        if (current_stream_ == &default_stream_) {
+            if (own_default_stream_) {
+                stream_destroy( default_stream_ );
+                own_default_stream_ = false;
+            }
+            default_stream_ = in_stream;
+            current_stream_ = &default_stream_;
+            handle_set_stream( handle_, default_stream_ );
+        }
+    }
 #endif // HAVE_CUBLAS or HAVE_ROCBLAS
 
 // -----------------------------------------------------------------------------

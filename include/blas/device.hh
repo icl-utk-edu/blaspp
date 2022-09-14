@@ -181,13 +181,18 @@ public:
     // return the next-in-line stream (for both default and fork modes)
     void revolve();
 
-    #ifdef BLAS_HAVE_CUBLAS
-        cudaStream_t   stream()        const { return *current_stream_; }
-        cublasHandle_t handle()        const { return handle_; }
-    #elif defined(BLAS_HAVE_ROCBLAS)
-        hipStream_t    stream()        const { return *current_stream_; }
-        rocblas_handle handle()        const { return handle_; }
+    #if defined( BLAS_HAVE_CUBLAS )
+        void set_stream( cudaStream_t in_stream );
+        cudaStream_t   stream() const { return *current_stream_; }
+        cublasHandle_t handle() const { return handle_; }
+
+    #elif defined( BLAS_HAVE_ROCBLAS )
+        void set_stream( hipStream_t in_stream );
+        hipStream_t    stream() const { return *current_stream_; }
+        rocblas_handle handle() const { return handle_; }
+
     #elif defined(BLAS_HAVE_ONEMKL)
+        void set_stream( sycl::queue in_queue );
         sycl::device sycl_device() const { return sycl_device_; }
         sycl::queue  stream()      const { return *default_stream_; }
     #endif
