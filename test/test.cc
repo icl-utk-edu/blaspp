@@ -223,8 +223,6 @@ Params::Params():
     // mark standard set of output fields as used
     okay();
     error();
-    error2();
-    error3();
     time();
 
     // mark framework parameters as used, so they will be accepted on the command line

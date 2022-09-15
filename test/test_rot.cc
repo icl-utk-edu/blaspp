@@ -49,7 +49,9 @@ void test_rot_work( Params& params, bool run )
     TX* xref = new TX[ size_x ];
     TX* y    = new TX[ size_y ];
     TX* yref = new TX[ size_y ];
-    TX s;
+
+    // When TX is complex, TS can be real or complex.
+    TS s, data[ 2 ];
     real_t c;  // real
 
     int64_t idist = 2;
@@ -59,8 +61,9 @@ void test_rot_work( Params& params, bool run )
     cblas_copy( n, x, incx, xref, incx );
     cblas_copy( n, y, incy, yref, incy );
 
-    lapack_larnv( idist, iseed, 1, &s );
-    c = sqrt( 1 - real(s*conj(s)) );  // real
+    // Compute [c, s] to eliminate data[1].
+    lapack_larnv( idist, iseed, 2, data );
+    blas::rotg( &data[0], &data[0], &c, &s );
 
     // norms for error check
     real_t Xnorm = cblas_nrm2( n, x, std::abs(incx) );
@@ -74,8 +77,10 @@ void test_rot_work( Params& params, bool run )
 
     if (verbose >= 1) {
         printf( "\n"
+                "s = %.4f + %.4fi, c = %.4f, s^2 + c^2 = %.4f\n"
                 "x n=%5lld, inc=%5lld, size=%10lld\n"
                 "y n=%5lld, inc=%5lld, size=%10lld\n",
+                real( s ), imag( s ), c, real( s*conj(s) ) + c*c,
                 (lld) n, (lld) incx, (lld) size_x,
                 (lld) n, (lld) incy, (lld) size_y );
     }

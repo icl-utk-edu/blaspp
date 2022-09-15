@@ -23,6 +23,8 @@ void test_rotg_work( Params& params, bool run )
 
     // mark non-standard output values
     params.ref_time();
+    params.error2();
+    params.error3();
 
     // adjust header to msec
     params.time.name( "BLAS++\ntime (ms)" );

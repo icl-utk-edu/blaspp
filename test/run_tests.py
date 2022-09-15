@@ -268,7 +268,7 @@ if (opts.blas1):
     [ 'dotu',  dtype      + n + incx + incy ],
     [ 'iamax', dtype      + n + incx_pos ],
     [ 'nrm2',  dtype      + n + incx_pos ],
-    [ 'rot',   dtype_real + n + incx + incy ],
+    [ 'rot',   dtype      + n + incx + incy ],
     [ 'rotg',  dtype ],
     [ 'rotm',  dtype_real + n + incx + incy ],
     [ 'rotmg', dtype_real ],
