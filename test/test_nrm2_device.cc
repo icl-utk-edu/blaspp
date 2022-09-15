@@ -92,12 +92,7 @@ void test_nrm2_device_work( Params& params, bool run )
     // run test
     testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
-    if (mode == 'd') {
-        blas::nrm2( n, dx, incx, result, queue );
-    }
-    else {
-        blas::nrm2( n, dx, incx, &result_host, queue );
-    }
+    blas::nrm2( n, dx, incx, result, queue );
     queue.sync();
     time = get_wtime() - time;
 
