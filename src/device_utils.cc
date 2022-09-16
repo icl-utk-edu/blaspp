@@ -117,7 +117,10 @@ void enumerate_devices(std::vector<cl::sycl::device> &devices)
 #endif
 
 // -----------------------------------------------------------------------------
-/// free a device pointer
+/// @deprecated: use device_free( ptr, queue ).
+/// Free a device memory space on the current device,
+/// allocated with device_malloc.
+/// (CUDA, ROCm only; doesn't work with SYCL.)
 void device_free( void* ptr )
 {
     #ifdef BLAS_HAVE_CUBLAS
@@ -138,7 +141,8 @@ void device_free( void* ptr )
 }
 
 // -----------------------------------------------------------------------------
-/// free a device pointer for a given device
+/// Free a device memory space, allocated with device_malloc,
+/// on the queue's device.
 void device_free( void* ptr, blas::Queue &queue )
 {
     #ifdef BLAS_HAVE_CUBLAS
@@ -152,14 +156,16 @@ void device_free( void* ptr, blas::Queue &queue )
             hipFree( ptr ) );
 
     #elif defined(BLAS_HAVE_ONEMKL)
-       blas_dev_call(
-           sycl::free( ptr, queue.stream() ) );
+        blas_dev_call(
+            sycl::free( ptr, queue.stream() ) );
     #endif
 }
 
 // -----------------------------------------------------------------------------
-/// free a pinned memory space
-void device_free_pinned( void* ptr )
+/// @deprecated: use host_free_pinned( ptr, queue ).
+/// Free a pinned host memory space, allocated with host_malloc_pinned.
+/// (CUDA, ROCm only; doesn't work with SYCL.)
+void host_free_pinned( void* ptr )
 {
     #ifdef BLAS_HAVE_CUBLAS
         blas_dev_call(
@@ -178,8 +184,8 @@ void device_free_pinned( void* ptr )
 }
 
 // -----------------------------------------------------------------------------
-/// free a pinned memory space
-void device_free_pinned( void* ptr,  blas::Queue &queue )
+/// Free a pinned host memory space, allocated with host_malloc_pinned.
+void host_free_pinned( void* ptr, blas::Queue &queue )
 {
     #ifdef BLAS_HAVE_CUBLAS
         blas_dev_call(

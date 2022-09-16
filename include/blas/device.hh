@@ -373,17 +373,35 @@ void enumerate_devices(std::vector<cl::sycl::device> &devices);
 
 // -----------------------------------------------------------------------------
 // memory functions
+
+/// @deprecated: use device_free( ptr, queue ).
 void device_free( void* ptr );
+
 void device_free( void* ptr, blas::Queue &queue );
 
-void device_free_pinned( void* ptr );
-void device_free_pinned( void* ptr, blas::Queue &queue );
+/// @deprecated: use host_free_pinned( ptr, queue ).
+void host_free_pinned( void* ptr );
+
+void host_free_pinned( void* ptr, blas::Queue &queue );
+
+/// @deprecated: use host_free_pinned( ptr, queue ).
+inline void device_free_pinned( void* ptr ) {
+    host_free_pinned( ptr );
+}
+
+/// @deprecated: use host_free_pinned( ptr, queue ).
+inline void device_free_pinned( void* ptr, blas::Queue &queue )
+{
+    host_free_pinned( ptr, queue );
+}
 
 // -----------------------------------------------------------------------------
 // Template functions declared here
 // -----------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
+/// @deprecated: use device_malloc( nelements, queue ).
+///
 /// @return a device pointer to an allocated memory space
 /// In CUDA and ROCm, this version uses current device;
 /// in SYCL, this doesn't work since there is no concept of a current device.
@@ -392,6 +410,8 @@ template <typename T>
 T* device_malloc(
     int64_t nelements)
 {
+    blas_error_if( nelements < 0 );
+
     T* ptr = nullptr;
     #ifdef BLAS_HAVE_CUBLAS
         blas_dev_call(
@@ -413,7 +433,7 @@ T* device_malloc(
 }
 
 //------------------------------------------------------------------------------
-/// @return a device pointer to an allocated memory space on specific device.
+/// @return a pointer to an allocated GPU device memory.
 ///
 /// @param[in] nelements
 ///     Number of elements of type T to allocate.
@@ -426,6 +446,8 @@ template <typename T>
 T* device_malloc(
     int64_t nelements, blas::Queue &queue )
 {
+    blas_error_if( nelements < 0 );
+
     T* ptr = nullptr;
     #ifdef BLAS_HAVE_CUBLAS
         blas::set_device( queue.device() );
@@ -448,6 +470,8 @@ T* device_malloc(
 }
 
 //------------------------------------------------------------------------------
+/// @deprecated: use host_malloc_pinned( nelements, queue ).
+///
 /// @return a host pointer to a pinned memory space.
 /// In CUDA and ROCm, this version uses current device;
 /// in SYCL, this doesn't work since there is no concept of a current device.
@@ -456,6 +480,8 @@ template <typename T>
 T* device_malloc_pinned(
     int64_t nelements)
 {
+    blas_error_if( nelements < 0 );
+
     T* ptr = nullptr;
     #ifdef BLAS_HAVE_CUBLAS
         blas_dev_call(
@@ -476,7 +502,10 @@ T* device_malloc_pinned(
 }
 
 //------------------------------------------------------------------------------
-/// @return a host pointer to a pinned memory space using a specific device queue.
+/// @return a pointer to an allocated CPU host memory.
+/// In CUDA and ROCm, the memory will be pinned.
+/// SYCL does not have an explicit pinned memory allocation, so this
+/// just calls sycl::malloc_host.
 ///
 /// @param[in] nelements
 ///     Number of elements of type T to allocate.
@@ -487,9 +516,11 @@ T* device_malloc_pinned(
 ///     In SYCL, queue is passed to sycl::malloc_host to provide context.
 ///
 template <typename T>
-T* device_malloc_pinned(
+T* host_malloc_pinned(
     int64_t nelements, blas::Queue &queue )
 {
+    blas_error_if( nelements < 0 );
+
     T* ptr = nullptr;
     #ifdef BLAS_HAVE_CUBLAS
         blas_dev_call(
@@ -507,6 +538,16 @@ T* device_malloc_pinned(
         throw blas::Error( "device BLAS not available", __func__ );
     #endif
     return ptr;
+}
+
+//------------------------------------------------------------------------------
+/// @deprecated: use host_malloc_pinned( nelements, queue ).
+///
+template <typename T>
+T* device_malloc_pinned(
+    int64_t nelements, blas::Queue &queue )
+{
+    return host_malloc_pinned<T>( nelements, queue );
 }
 
 //------------------------------------------------------------------------------
@@ -530,6 +571,8 @@ void device_memset(
     T* ptr,
     int value, int64_t nelements, Queue& queue)
 {
+    blas_error_if( nelements < 0 );
+
     #ifdef BLAS_HAVE_CUBLAS
         blas::set_device( queue.device() );
         blas_dev_call(

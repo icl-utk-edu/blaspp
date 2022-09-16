@@ -80,10 +80,10 @@ void test_memcpy_2d_work( Params& params, bool run )
     int64_t ld = roundup( m, align );
     int64_t extra = 2;
     int64_t size = ld*(n + extra);
-    T* a_host = blas::device_malloc_pinned<T>( size, queue );
-    T* b_host = blas::device_malloc_pinned<T>( size, queue );
-    T* c_host = blas::device_malloc_pinned<T>( size, queue );
-    T* d_host = blas::device_malloc_pinned<T>( size, queue );
+    T* a_host = blas::host_malloc_pinned<T>( size, queue );
+    T* b_host = blas::host_malloc_pinned<T>( size, queue );
+    T* c_host = blas::host_malloc_pinned<T>( size, queue );
+    T* d_host = blas::host_malloc_pinned<T>( size, queue );
 
     // device specifics
     T* b_dev = blas::device_malloc<T>( size, queue );
@@ -234,10 +234,10 @@ void test_memcpy_2d_work( Params& params, bool run )
     params.error() = error;
     params.okay() = (error == 0);  // copy must be exact
 
-    blas::device_free_pinned( a_host, queue );
-    blas::device_free_pinned( b_host, queue );
-    blas::device_free_pinned( c_host, queue );
-    blas::device_free_pinned( d_host, queue );
+    blas::host_free_pinned( a_host, queue );
+    blas::host_free_pinned( b_host, queue );
+    blas::host_free_pinned( c_host, queue );
+    blas::host_free_pinned( d_host, queue );
     blas::device_free( b_dev, queue );
     blas::device_free( c_dev, queue );
 }
