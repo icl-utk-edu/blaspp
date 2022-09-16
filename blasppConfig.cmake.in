@@ -9,6 +9,10 @@ if (blaspp_use_openmp)
     find_dependency( OpenMP )
 endif()
 
+if (blaspp_use_cuda)
+    find_dependency( CUDAToolkit )
+endif()
+
 if (blaspp_use_hip)
     find_dependency( rocblas )
 endif()

@@ -5,12 +5,13 @@
 #
 # CMake script for BLAS++ library.
 
-cmake_minimum_required( VERSION 3.15 )
+cmake_minimum_required( VERSION 3.17 )
 # 3.1  target_compile_features
 # 3.8  target_compile_features( cxx_std_11 )
 # 3.14 install( LIBRARY DESTINATION lib ) default
 # 3.15 $<$COMPILE_LANG_AND_ID  # optional
 # 3.15 message DEBUG, string REPEAT
+# 3.17 find_package( CUDAToolkit )
 
 project(
     blaspp
@@ -221,44 +222,36 @@ add_library(
 
 #-------------------------------------------------------------------------------
 # CUDA support.
+message( "" )
 set( blaspp_use_cuda false )  # output in blasppConfig.cmake.in
 if (gpu_backend MATCHES "^(auto|cuda)$")
-    include( CheckLanguage )
-    check_language( CUDA )
-    if (gpu_backend STREQUAL "cuda" AND NOT CMAKE_CUDA_COMPILER)
-        message( FATAL_ERROR "gpu_backend = ${gpu_backend}, but CUDA was not found")
+    message( STATUS "Looking for CUDA" )
+    if (gpu_backend STREQUAL "cuda")
+        find_package( CUDAToolkit REQUIRED )
+    else()
+        find_package( CUDAToolkit QUIET )
+    endif()
+    if (CUDAToolkit_FOUND)
+        set( gpu_backend "cuda" )
+        set( blaspp_defs_cuda_ "-DBLAS_HAVE_CUBLAS" )
+        set( blaspp_use_cuda true )
+
+        # Some platforms need these to be public libraries.
+        target_link_libraries(
+            blaspp PUBLIC CUDA::cudart CUDA::cublas )
+        message( STATUS "Building CUDA support" )
+    else()
+        message( STATUS "No CUDA support: CUDA not found" )
     endif()
 else()
-    message( STATUS "Skipping CUDA search. gpu_backend = ${gpu_backend}" )
-endif()
-if (CMAKE_CUDA_COMPILER)
-    enable_language( CUDA )
-
-    # todo: check for cuda 10.0+ and force newer CMake version - if possible
-
-    # CMake 3.17 adds find_package( CUDAToolkit )
-    # with CUDA::cudart and CUDA::cublas targets.
-    # For compatibility with older CMake, for now do search ourselves.
-    find_library( cudart_lib cudart ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES} )
-    find_library( cublas_lib cublas ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES} )
-
-    set( blaspp_defs_cuda_ "-DBLAS_HAVE_CUBLAS" )
-    set( blaspp_use_cuda true )
-
-    # Some platforms need these to be public libraries.
-    target_link_libraries(
-        blaspp PUBLIC "${cudart_lib}" "${cublas_lib}" )
-    target_include_directories(
-        blaspp PUBLIC "${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}" )
-    message( STATUS "Building CUDA support in BLAS++" )
-else()
-    message( STATUS "Not building CUDA support in BLAS++" )
+    message( STATUS "No CUDA support: gpu_backend = ${gpu_backend}" )
 endif()
 
 #-------------------------------------------------------------------------------
 # HIP/ROCm support.
+message( "" )
 set( blaspp_use_hip false )  # output in blasppConfig.cmake.in
-if (NOT CMAKE_CUDA_COMPILER
+if (NOT CUDAToolkit_FOUND
     AND gpu_backend MATCHES "^(auto|hip)$")
 
     message( STATUS "Looking for HIP/ROCm" )
@@ -267,22 +260,25 @@ if (NOT CMAKE_CUDA_COMPILER
     else()
         find_package( rocblas QUIET )
     endif()
-else()
-    message( STATUS "Skipping HIP/ROCm search. gpu_backend = ${gpu_backend}" )
-endif()
-if (rocblas_FOUND)
-    set( blaspp_defs_hip_ "-DBLAS_HAVE_ROCBLAS" )
-    set( blaspp_use_hip true )
+    if (rocblas_FOUND)
+        set( gpu_backend "hip" )
+        set( blaspp_defs_hip_ "-DBLAS_HAVE_ROCBLAS" )
+        set( blaspp_use_hip true )
 
-    # Some platforms need these to be public libraries.
-    target_link_libraries( blaspp PUBLIC roc::rocblas )
-    message( STATUS "Building HIP/ROCm support in BLAS++" )
+        # Some platforms need these to be public libraries.
+        target_link_libraries(
+            blaspp PUBLIC roc::rocblas )
+        message( STATUS "Building HIP/ROCm support" )
+    else()
+        message( STATUS "No HIP/ROCm support: ROCm not found" )
+    endif()
 else()
-    message( STATUS "Not building HIP/ROCm support in BLAS++" )
+    message( STATUS "No HIP/ROCm support: gpu_backend = ${gpu_backend}" )
 endif()
 
 #-------------------------------------------------------------------------------
 # Clean stale defines.h from Makefile-based build.
+message( "" )
 file( REMOVE "${CMAKE_CURRENT_SOURCE_DIR}/include/blas/defines.h" )
 
 # Include directory.
@@ -337,6 +333,7 @@ endif()
 
 #-------------------------------------------------------------------------------
 # Search for BLAS library.
+message( "" )
 if (BLA_VENDOR OR use_cmake_find_blas)
     message( DEBUG "Using CMake's FindBLAS" )
     find_package( BLAS )
@@ -384,9 +381,11 @@ if (true)
     )
 else()
     # Pass defines via compiler flags.
-    target_compile_definitions( blaspp PRIVATE ${blaspp_defines} )
+    target_compile_definitions(
+        blaspp PRIVATE ${blaspp_defines} )
 endif()
 
+# Export via blasppConfig.cmake
 set( blaspp_libraries "${BLAS_LIBRARIES};${openmp_lib}" CACHE INTERNAL "" )
 message( DEBUG "blaspp_libraries = '${blaspp_libraries}'" )
 

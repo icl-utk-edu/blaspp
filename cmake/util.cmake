@@ -30,6 +30,9 @@ endif()
 function( pad_string input length output_variable )
     string( LENGTH "${input}" len )
     math( EXPR pad_len "${length} - ${len}" )
+    if (pad_len LESS 0)
+        set( pad_len 0 )
+    endif()
     string( REPEAT " " ${pad_len} pad )
     set( ${output_variable} "${input}${pad}" PARENT_SCOPE )
 endfunction()
@@ -53,4 +56,13 @@ function( debug_try_run msg compile_result compile_output run_result run_output 
     message( DEBUG "${msg}: compile_result '${compile_result}', run_result '${run_result}'" )
     message( TRACE "compile_output: '''\n${compile_output}'''" )
     message( TRACE "run_output: '''\n${run_output}'''" )
+endfunction()
+
+#-------------------------------------------------------------------------------
+# assert( condition )
+# Aborts if condition is not true.
+function( assert var )
+    if (NOT ${var})
+        message( FATAL_ERROR "\n${red}Assertion failed: ${var} (value is '${${var}}')${default_color}\n" )
+    endif()
 endfunction()
