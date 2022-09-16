@@ -201,7 +201,7 @@ void znrm2(
     blas::Queue& queue,
     device_blas_int n,
     std::complex<double> *dx, device_blas_int incdx,
-    double result)
+    double *result)
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
