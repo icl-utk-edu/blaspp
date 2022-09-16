@@ -50,28 +50,6 @@ set( gpu_backend "auto" CACHE STRING "GPU backend to use" )
 set_property( CACHE gpu_backend PROPERTY STRINGS
               auto cuda hip none )
 
-# Deprecated since 2021-04
-set( use_cuda "" CACHE STRING "Use CUDA, if available [deprecated: use gpu_backend]" )
-set( use_hip  "" CACHE STRING "Use HIP, if available [deprecated: use gpu_backend]" )
-
-if (use_cuda)
-    message( DEPRECATION "WARNING: `use_cuda=${use_cuda}` is deprecated; "
-                         "setting `gpu_backend = cuda`" )
-    set( gpu_backend "cuda" CACHE STRING "" FORCE )
-
-elseif (use_hip)
-    message( DEPRECATION "WARNING: `use_hip=${use_hip}` is deprecated; "
-                         "setting `gpu_backend = hip`" )
-    set( gpu_backend "hip" CACHE STRING "" FORCE )
-
-elseif (NOT use_cuda STREQUAL "" OR NOT use_hip STREQUAL "")
-    # use_cuda or use_hip is explicitly false; the other may be unset or false.
-    # If both are unset, they are ignored.
-    message( DEPRECATION "WARNING: `use_cuda=${use_cuda}` and `use_hip=${use_hip}` are deprecated; "
-                         "setting `gpu_backend = none`" )
-    set( gpu_backend "none" CACHE STRING "" FORCE )
-endif()
-
 # Default prefix=/opt/slate
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT
     AND blaspp_is_project)
@@ -145,8 +123,6 @@ build_tests            = ${build_tests}
 color                  = ${color}
 use_cmake_find_blas    = ${use_cmake_find_blas}
 gpu_backend            = ${gpu_backend}
-use_hip                = ${use_hip}
-use_cuda               = ${use_cuda}
 use_openmp             = ${use_openmp}
 blaspp_is_project      = ${blaspp_is_project}
 blaspp_                = ${blaspp_}
