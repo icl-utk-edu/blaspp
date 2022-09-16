@@ -231,9 +231,6 @@ not installed, you can point to its directory.
 Besides the Environment variables and Options listed above, additional
 options include:
 
-    use_cuda [deprecated; use gpu_backend]
-    use_hip  [deprecated; use gpu_backend]
-
     use_openmp
         Whether to use OpenMP, if available. One of:
         yes (default)
