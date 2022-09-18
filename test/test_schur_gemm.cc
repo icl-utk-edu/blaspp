@@ -214,7 +214,7 @@ void test_schur_gemm_work( Params& params, bool run )
     time_with_setup = t - time_with_setup;
     time = t - time;
 
-    double gflop = Gflop < scalar_t >::gemm( m_, n_, k_ );
+    double gflop = blas::Gflop< scalar_t >::gemm( m_, n_, k_ );
     params.time()   = time;
     params.gflops() = gflop / time;
 

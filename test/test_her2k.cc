@@ -119,7 +119,7 @@ void test_her2k_work( Params& params, bool run )
                  alpha, A, lda, B, ldb, beta, C, ldc );
     time = get_wtime() - time;
 
-    double gflop = Gflop < scalar_t >::her2k( n, k );
+    double gflop = blas::Gflop< scalar_t >::her2k( n, k );
     params.time()   = time;
     params.gflops() = gflop / time;
 

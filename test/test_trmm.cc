@@ -99,7 +99,7 @@ void test_trmm_work( Params& params, bool run )
     blas::trmm( layout, side, uplo, trans, diag, m, n, alpha, A, lda, B, ldb );
     time = get_wtime() - time;
 
-    double gflop = Gflop < scalar_t >::trmm( side, m, n );
+    double gflop = blas::Gflop< scalar_t >::trmm( side, m, n );
     params.time()   = time;
     params.gflops() = gflop / time;
 

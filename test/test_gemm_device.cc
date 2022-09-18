@@ -149,7 +149,7 @@ void test_gemm_device_work( Params& params, bool run )
     queue.sync();
     time = get_wtime() - time;
 
-    double gflop = Gflop < scalar_t >::gemm( m, n, k );
+    double gflop = blas::Gflop< scalar_t >::gemm( m, n, k );
     params.time()   = time;
     params.gflops() = gflop / time;
     blas::device_getmatrix(Cm, Cn, dC, ldc, C, ldc, queue);

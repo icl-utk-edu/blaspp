@@ -87,8 +87,8 @@ void test_her_work( Params& params, bool run )
     blas::her( layout, uplo, n, alpha, x, incx, A, lda );
     time = get_wtime() - time;
 
-    double gflop = Gflop < scalar_t >::her( n );
-    double gbyte = Gbyte < scalar_t >::her( n );
+    double gflop = blas::Gflop< scalar_t >::her( n );
+    double gbyte = blas::Gbyte< scalar_t >::her( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;

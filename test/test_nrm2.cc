@@ -65,8 +65,8 @@ void test_nrm2_work( Params& params, bool run )
     real_t result = blas::nrm2( n, x, incx );
     time = get_wtime() - time;
 
-    double gflop = Gflop < T >::nrm2( n );
-    double gbyte = Gbyte < T >::nrm2( n );
+    double gflop = blas::Gflop< T >::nrm2( n );
+    double gbyte = blas::Gbyte< T >::nrm2( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;

@@ -80,7 +80,7 @@ void test_axpy_work( Params& params, bool run )
     blas::axpy( n, alpha, x, incx, y, incy );
     time = get_wtime() - time;
 
-    double gflop = Gflop < scalar_t >::axpy( n );
+    double gflop = blas::Gflop< scalar_t >::axpy( n );
     double gbyte = Gbyte< scalar_t >::axpy( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;

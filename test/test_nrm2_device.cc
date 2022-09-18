@@ -99,8 +99,8 @@ void test_nrm2_device_work( Params& params, bool run )
         device_memcpy( &result_host, result, 1, queue );
     }
 
-    double gflop = Gflop<Tx>::nrm2( n );
-    double gbyte = Gbyte<Tx>::nrm2( n );
+    double gflop = blas::Gflop< Tx >::nrm2( n );
+    double gbyte = blas::Gbyte< Tx >::nrm2( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
@@ -128,23 +128,23 @@ void test_nrm2_device_work( Params& params, bool run )
         }
 
         // relative forward error:
-        real_t error = std::abs( (result_cblas - result_host) 
-                           / (sqrt(n+1) * result_cblas) );          
+        real_t error = std::abs( (result_cblas - result_host)
+                           / (sqrt(n+1) * result_cblas) );
         params.error() = error;
 
 
-        if (verbose >= 2) {                                                     
-            printf( "err  = " ); print_vector( n, x, incx, "%9.2e" );           
-        }                                                                       
-                                                                                
-        // complex needs extra factor; see Higham, 2002, sec. 3.6.              
-        if (blas::is_complex<scalar_t>::value) {                                
-            error /= 2*sqrt(2);                                                 
-        }                                                                       
-                                                                                
-        real_t u = 0.5 * std::numeric_limits< real_t >::epsilon();              
-        params.error() = error;                                                 
-        params.okay() = (error < u);  
+        if (verbose >= 2) {
+            printf( "err  = " ); print_vector( n, x, incx, "%9.2e" );
+        }
+
+        // complex needs extra factor; see Higham, 2002, sec. 3.6.
+        if (blas::is_complex<scalar_t>::value) {
+            error /= 2*sqrt(2);
+        }
+
+        real_t u = 0.5 * std::numeric_limits< real_t >::epsilon();
+        params.error() = error;
+        params.okay() = (error < u);
     }
 
     delete[] x;

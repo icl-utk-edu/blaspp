@@ -64,8 +64,8 @@ void test_iamax_work( Params& params, bool run )
     int64_t result = blas::iamax( n, x, incx );
     time = get_wtime() - time;
 
-    double gflop = Gflop < T >::iamax( n );
-    double gbyte = Gbyte < T >::iamax( n );
+    double gflop = blas::Gflop< T >::iamax( n );
+    double gbyte = blas::Gbyte< T >::iamax( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;

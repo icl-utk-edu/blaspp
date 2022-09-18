@@ -149,7 +149,7 @@ void test_trsm_device_work( Params& params, bool run )
     queue.sync();
     time = get_wtime() - time;
 
-    double gflop = Gflop < scalar_t >::trsm( side, m, n );
+    double gflop = blas::Gflop< scalar_t >::trsm( side, m, n );
     params.time()   = time;
     params.gflops() = gflop / time;
     blas::device_getmatrix(Bm, Bn, dB, ldb, B, ldb, queue);

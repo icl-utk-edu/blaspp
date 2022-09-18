@@ -94,8 +94,8 @@ void test_axpy_device_work( Params& params, bool run )
     queue.sync();
     time = get_wtime() - time;
 
-    double gflop = Gflop <Ty>::axpy( n );
-    double gbyte = Gbyte <Ty>::axpy( n );
+    double gflop = blas::Gflop< Ty >::axpy( n );
+    double gbyte = blas::Gbyte< Ty >::axpy( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;

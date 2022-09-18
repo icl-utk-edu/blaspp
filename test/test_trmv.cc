@@ -91,8 +91,8 @@ void test_trmv_work( Params& params, bool run )
     blas::trmv( layout, uplo, trans, diag, n, A, lda, x, incx );
     time = get_wtime() - time;
 
-    double gflop = Gflop < scalar_t >::trmv( n );
-    double gbyte = Gbyte < scalar_t >::trmv( n );
+    double gflop = blas::Gflop< scalar_t >::trmv( n );
+    double gbyte = blas::Gbyte< scalar_t >::trmv( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;

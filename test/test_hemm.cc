@@ -111,7 +111,7 @@ void test_hemm_work( Params& params, bool run )
                 alpha, A, lda, B, ldb, beta, C, ldc );
     time = get_wtime() - time;
 
-    double gflop = Gflop < scalar_t >::hemm( side, m, n );
+    double gflop = blas::Gflop< scalar_t >::hemm( side, m, n );
     params.time()   = time;
     params.gflops() = gflop / time;
 

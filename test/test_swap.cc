@@ -76,8 +76,8 @@ void test_swap_work( Params& params, bool run )
     blas::swap( n, x, incx, y, incy );
     time = get_wtime() - time;
 
-    double gflop = Gflop < scalar_t >::swap( n );
-    double gbyte = Gbyte < scalar_t >::swap( n );
+    double gflop = blas::Gflop< scalar_t >::swap( n );
+    double gbyte = blas::Gbyte< scalar_t >::swap( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;

@@ -124,7 +124,7 @@ void test_batch_gemm_work( Params& params, bool run )
                        batch, info );
     time = get_wtime() - time;
 
-    double gflop = batch * Gflop < scalar_t >::gemm( m_, n_, k_ );
+    double gflop = batch * blas::Gflop< scalar_t >::gemm( m_, n_, k_ );
     params.time()   = time;
     params.gflops() = gflop / time;
 

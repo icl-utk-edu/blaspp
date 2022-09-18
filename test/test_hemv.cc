@@ -99,8 +99,8 @@ void test_hemv_work( Params& params, bool run )
     blas::hemv( layout, uplo, n, alpha, A, lda, x, incx, beta, y, incy );
     time = get_wtime() - time;
 
-    double gflop = Gflop < scalar_t >::hemv( n );
-    double gbyte = Gbyte < scalar_t >::hemv( n );
+    double gflop = blas::Gflop< scalar_t >::hemv( n );
+    double gbyte = blas::Gbyte< scalar_t >::hemv( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;

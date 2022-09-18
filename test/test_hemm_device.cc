@@ -133,7 +133,7 @@ void test_hemm_device_work( Params& params, bool run )
     queue.sync();
     time = get_wtime() - time;
 
-    double gflop = Gflop < scalar_t >::hemm( side, m, n );
+    double gflop = blas::Gflop< scalar_t >::hemm( side, m, n );
     params.time()   = time;
     params.gflops() = gflop / time;
     blas::device_getmatrix(Cm, Cn, dC, ldc, C, ldc, queue);

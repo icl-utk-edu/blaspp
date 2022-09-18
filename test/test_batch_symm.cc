@@ -111,7 +111,7 @@ void test_batch_symm_work( Params& params, bool run )
                        batch, info );
     time = get_wtime() - time;
 
-    double gflop = batch * Gflop < scalar_t >::symm( side_, m_, n_ );
+    double gflop = batch * blas::Gflop< scalar_t >::symm( side_, m_, n_ );
     params.time()   = time;
     params.gflops() = gflop / time;
 

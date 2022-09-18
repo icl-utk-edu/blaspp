@@ -101,7 +101,7 @@ void test_herk_work( Params& params, bool run )
                 alpha, A, lda, beta, C, ldc );
     time = get_wtime() - time;
 
-    double gflop = Gflop < scalar_t >::herk( n, k );
+    double gflop = blas::Gflop< scalar_t >::herk( n, k );
     params.time()   = time;
     params.gflops() = gflop / time;
 

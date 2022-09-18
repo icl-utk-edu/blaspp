@@ -85,8 +85,8 @@ void test_scal_device_work( Params& params, bool run )
     queue.sync();
     time = get_wtime() - time;
 
-    double gflop = Gflop < T >::scal( n );
-    double gbyte = Gbyte < T >::scal( n );
+    double gflop = blas::Gflop< T >::scal( n );
+    double gbyte = blas::Gbyte< T >::scal( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;

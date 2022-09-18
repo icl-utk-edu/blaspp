@@ -97,8 +97,8 @@ void test_her2_work( Params& params, bool run )
     blas::her2( layout, uplo, n, alpha, x, incx, y, incy, A, lda );
     time = get_wtime() - time;
 
-    double gflop = Gflop < scalar_t >::her2( n );
-    double gbyte = Gbyte < scalar_t >::her2( n );
+    double gflop = blas::Gflop< scalar_t >::her2( n );
+    double gbyte = blas::Gbyte< scalar_t >::her2( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;

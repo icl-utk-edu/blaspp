@@ -135,7 +135,7 @@ void test_batch_her2k_device_work( Params& params, bool run )
     queue.sync();
     time = get_wtime() - time;
 
-    double gflop = batch * Gflop < scalar_t >::her2k( n_, k_ );
+    double gflop = batch * blas::Gflop< scalar_t >::her2k( n_, k_ );
     params.time()   = time;
     params.gflops() = gflop / time;
     blas::device_getmatrix(n_, batch * n_, dC, ldc_, C, ldc_, queue);

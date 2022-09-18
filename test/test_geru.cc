@@ -102,8 +102,8 @@ void test_geru_work( Params& params, bool run )
     blas::geru( layout, m, n, alpha, x, incx, y, incy, A, lda );
     time = get_wtime() - time;
 
-    double gflop = Gflop < scalar_t >::ger( m, n );
-    double gbyte = Gbyte < scalar_t >::ger( m, n );
+    double gflop = blas::Gflop< scalar_t >::ger( m, n );
+    double gbyte = blas::Gbyte< scalar_t >::ger( m, n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;

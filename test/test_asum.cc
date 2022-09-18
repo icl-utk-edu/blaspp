@@ -65,8 +65,8 @@ void test_asum_work( Params& params, bool run )
     real_t result = blas::asum( n, x, incx );
     time = get_wtime() - time;
 
-    double gflop = Gflop < T >::asum( n );
-    double gbyte = Gbyte < T >::asum( n );
+    double gflop = blas::Gflop< T >::asum( n );
+    double gbyte = blas::Gbyte< T >::asum( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;

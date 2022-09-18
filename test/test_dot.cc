@@ -77,8 +77,8 @@ void test_dot_work( Params& params, bool run )
     scalar_t result = blas::dot( n, x, incx, y, incy );
     time = get_wtime() - time;
 
-    double gflop = Gflop < scalar_t >::dot( n );
-    double gbyte = Gbyte < scalar_t >::dot( n );
+    double gflop = blas::Gflop< scalar_t >::dot( n );
+    double gbyte = blas::Gbyte< scalar_t >::dot( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;

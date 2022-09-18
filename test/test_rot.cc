@@ -94,8 +94,8 @@ void test_rot_work( Params& params, bool run )
     blas::rot( n, x, incx, y, incy, c, s );
     time = get_wtime() - time;
 
-    double gflop = Gflop < TX >::dot( n );
-    double gbyte = Gbyte < TX >::dot( n );
+    double gflop = blas::Gflop< TX >::dot( n );
+    double gbyte = blas::Gbyte< TX >::dot( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;

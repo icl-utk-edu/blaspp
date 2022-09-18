@@ -101,7 +101,7 @@ void test_batch_herk_work( Params& params, bool run )
                        batch, info );
     time = get_wtime() - time;
 
-    double gflop = batch * Gflop < scalar_t >::herk( n_, k_ );
+    double gflop = batch * blas::Gflop< scalar_t >::herk( n_, k_ );
     params.time()   = time;
     params.gflops() = gflop / time;
 

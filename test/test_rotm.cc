@@ -87,8 +87,8 @@ void test_rotm_work( Params& params, bool run )
     blas::rotm( n, x, incx, y, incy, p );
     time = get_wtime() - time;
 
-    double gflop = Gflop < TX >::dot( n );
-    double gbyte = Gbyte < TX >::dot( n );
+    double gflop = blas::Gflop< TX >::dot( n );
+    double gbyte = blas::Gbyte< TX >::dot( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;

@@ -97,8 +97,8 @@ void test_copy_device_work( Params& params, bool run )
     queue.sync();
     time = get_wtime() - time;
 
-    double gflop = Gflop < scalar_t >::copy( n );
-    double gbyte = Gbyte < scalar_t >::copy( n );
+    double gflop = blas::Gflop< scalar_t >::copy( n );
+    double gbyte = blas::Gbyte< scalar_t >::copy( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;

@@ -122,7 +122,7 @@ void test_syrk_device_work( Params& params, bool run )
     queue.sync();
     time = get_wtime() - time;
 
-    double gflop = Gflop < scalar_t >::syrk( n, k );
+    double gflop = blas::Gflop< scalar_t >::syrk( n, k );
     params.time()   = time;
     params.gflops() = gflop / time;
     blas::device_getmatrix(n, n, dC, ldc, C, ldc, queue);
