@@ -18,7 +18,6 @@ void test_syr_work( Params& params, bool run )
     using namespace blas;
     typedef scalar_type<TA, TX> scalar_t;
     typedef real_type<scalar_t> real_t;
-    typedef long long lld;
 
     // get & mark input values
     blas::Layout layout = params.layout();
@@ -73,8 +72,8 @@ void test_syr_work( Params& params, bool run )
         printf( "\n"
                 "A n=%5lld, lda=%5lld, size=%10lld, norm=%.2e\n"
                 "x n=%5lld, inc=%5lld, size=%10lld, norm=%.2e\n",
-                (lld) n, (lld) lda,  (lld) size_A, Anorm,
-                (lld) n, (lld) incx, (lld) size_x, Xnorm );
+                llong( n ), llong( lda ),  llong( size_A ), Anorm,
+                llong( n ), llong( incx ), llong( size_x ), Xnorm );
     }
     if (verbose >= 2) {
         printf( "alpha = %.4e + %.4ei;\n",

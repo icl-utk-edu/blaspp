@@ -19,6 +19,11 @@ namespace blas {
 /// Use to silence compiler warning of unused variable.
 #define blas_unused( var ) ((void)var)
 
+// For printf, int64_t could be long (%ld), which is >= 32 bits,
+// or long long (%lld), guaranteed >= 64 bits.
+// Cast to llong to ensure printing 64 bits.
+using llong = long long;
+
 // -----------------------------------------------------------------------------
 enum class Layout : char { ColMajor = 'C', RowMajor = 'R' };
 enum class Op     : char { NoTrans  = 'N', Trans    = 'T', ConjTrans = 'C' };

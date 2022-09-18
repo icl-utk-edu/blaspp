@@ -18,7 +18,6 @@ void test_batch_her2k_device_work( Params& params, bool run )
     using namespace blas;
     typedef scalar_type<TA, TC> scalar_t;
     typedef real_type<scalar_t> real_t;
-    typedef long long lld;
 
     // get & mark input values
     blas::Layout layout = params.layout();

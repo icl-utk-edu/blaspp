@@ -8,8 +8,6 @@
 
 void test_error( Params& params, bool run )
 {
-    typedef long long lld;
-
     int64_t m = params.dim.m();
     int64_t n = params.dim.n();
 
@@ -25,7 +23,7 @@ void test_error( Params& params, bool run )
         blas_error_if( m == n );
     }
     else if (m == 200) {
-        blas_error_if_msg( m == n, "m %lld == n %lld", (lld) m, (lld) n );
+        blas_error_if_msg( m == n, "m %lld == n %lld", llong( m ), llong( n ) );
     }
     else if (m == 300) {
         assert( m != n );

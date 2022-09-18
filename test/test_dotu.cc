@@ -18,7 +18,6 @@ void test_dotu_work( Params& params, bool run )
     using namespace blas;
     typedef scalar_type<TX, TY> scalar_t;
     typedef real_type<scalar_t> real_t;
-    typedef long long lld;
 
     // get & mark input values
     int64_t n       = params.dim.n();
@@ -64,8 +63,8 @@ void test_dotu_work( Params& params, bool run )
         printf( "\n"
                 "x n=%5lld, inc=%5lld, size=%10lld, norm %.2e\n"
                 "y n=%5lld, inc=%5lld, size=%10lld, norm %.2e\n",
-                (lld) n, (lld) incx, (lld) size_x, Xnorm,
-                (lld) n, (lld) incy, (lld) size_y, Ynorm );
+                llong( n ), llong( incx ), llong( size_x ), Xnorm,
+                llong( n ), llong( incy ), llong( size_y ), Ynorm );
     }
     if (verbose >= 2) {
         printf( "x = " ); print_vector( n, x, incx );

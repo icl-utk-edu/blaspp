@@ -18,7 +18,6 @@ void test_gemm_device_work( Params& params, bool run )
     using namespace blas;
     using scalar_t = blas::scalar_type< TA, TB, TC >;
     using real_t = blas::real_type< scalar_t >;
-    typedef long long lld;
 
     // get & mark input values
     blas::Layout layout = params.layout();
@@ -129,9 +128,9 @@ void test_gemm_device_work( Params& params, bool run )
                 "A Am=%5lld, An=%5lld, lda=%5lld, size=%10lld, norm %.2e\n"
                 "B Bm=%5lld, Bn=%5lld, ldb=%5lld, size=%10lld, norm %.2e\n"
                 "C Cm=%5lld, Cn=%5lld, ldc=%5lld, size=%10lld, norm %.2e\n",
-                (lld) Am, (lld) An, (lld) lda, (lld) size_A, Anorm,
-                (lld) Bm, (lld) Bn, (lld) ldb, (lld) size_B, Bnorm,
-                (lld) Cm, (lld) Cn, (lld) ldc, (lld) size_C, Cnorm );
+                llong( Am ), llong( An ), llong( lda ), llong( size_A ), Anorm,
+                llong( Bm ), llong( Bn ), llong( ldb ), llong( size_B ), Bnorm,
+                llong( Cm ), llong( Cn ), llong( ldc ), llong( size_C ), Cnorm );
     }
     if (verbose >= 2) {
         printf( "alpha = %.4e + %.4ei; beta = %.4e + %.4ei;\n",

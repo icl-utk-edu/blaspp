@@ -17,7 +17,6 @@ void test_axpy_device_work( Params& params, bool run )
     using namespace blas;
     typedef scalar_type<Tx, Ty> scalar_t;
     typedef real_type<scalar_t> real_t;
-    typedef long long lld;
 
     // get & mark input values
     scalar_t alpha  = params.alpha();
@@ -80,7 +79,7 @@ void test_axpy_device_work( Params& params, bool run )
     if (verbose >= 1) {
         printf( "\n"
                 "n=%5lld, incx=%5lld, sizex=%10lld, incy=%5lld, sizey=%10lld\n",
-                (lld) n, (lld) incx, (lld) size_x, (lld) incy, (lld) size_y );
+                llong( n ), llong( incx ), llong( size_x ), llong( incy ), llong( size_y ) );
     }
     if (verbose >= 2) {
         printf( "alpha = %.4e + %.4ei;\n",
@@ -129,26 +128,26 @@ void test_axpy_device_work( Params& params, bool run )
         int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
         int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
         for (int64_t i = 0; i < n; ++i) {
-            y[iy] = std::abs( y[iy] - yref[iy] )                                
-                  / (2*(std::abs( alpha * x[ix] ) + std::abs( y0[iy] )));       
-            ix += incx;                                                         
+            y[iy] = std::abs( y[iy] - yref[iy] )
+                  / (2*(std::abs( alpha * x[ix] ) + std::abs( y0[iy] )));
+            ix += incx;
             iy += incy;
         }
         params.error() = error;
 
 
-        if (verbose >= 2) {                                                     
-            printf( "err  = " ); print_vector( n, y, incy, "%9.2e" );           
-        }                                                                       
-                                                                                
-        // complex needs extra factor; see Higham, 2002, sec. 3.6.              
-        if (blas::is_complex<scalar_t>::value) {                                
-            error /= 2*sqrt(2);                                                 
-        }                                                                       
-                                                                                
-        real_t u = 0.5 * std::numeric_limits< real_t >::epsilon();              
-        params.error() = error;                                                 
-        params.okay() = (error < u);  
+        if (verbose >= 2) {
+            printf( "err  = " ); print_vector( n, y, incy, "%9.2e" );
+        }
+
+        // complex needs extra factor; see Higham, 2002, sec. 3.6.
+        if (blas::is_complex<scalar_t>::value) {
+            error /= 2*sqrt(2);
+        }
+
+        real_t u = 0.5 * std::numeric_limits< real_t >::epsilon();
+        params.error() = error;
+        params.okay() = (error < u);
 
     }
 

@@ -17,7 +17,6 @@ void test_asum_work( Params& params, bool run )
     using namespace testsweeper;
     using namespace blas;
     typedef real_type<T> real_t;
-    typedef long long lld;
 
     // get & mark input values
     int64_t n       = params.dim.n();
@@ -54,7 +53,7 @@ void test_asum_work( Params& params, bool run )
     if (verbose >= 1) {
         printf( "\n"
                 "x n=%5lld, inc=%5lld, size=%10lld\n",
-                (lld) n, (lld) incx, (lld) size_x );
+                llong( n ), llong( incx ), llong( size_x ) );
     }
     if (verbose >= 2) {
         printf( "x = " ); print_vector( n, x, incx );

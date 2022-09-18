@@ -31,8 +31,6 @@ void check_gemm(
     blas::real_type<T> error[1],
     bool* okay )
 {
-    typedef long long int lld;
-
     #define    C(i_, j_)    C[ (i_) + (j_)*ldc ]
     #define Cref(i_, j_) Cref[ (i_) + (j_)*ldcref ]
 
@@ -57,9 +55,12 @@ void check_gemm(
              / (sqrt(real_t(k)+2)*std::abs(alpha)*Anorm*Bnorm
                  + 2*std::abs(beta)*Cnorm);
     if (verbose) {
-        printf( "error: ||Cout||=%.2e / (sqrt(k=%lld + 2) * |alpha|=%.2e * ||A||=%.2e * ||B||=%.2e + 2 * |beta|=%.2e * ||C||=%.2e) = %.2e\n",
-                Cout_norm, (lld) k, std::abs(alpha), Anorm, Bnorm,
-                std::abs(beta), Cnorm, error[0] );
+        printf( "error: ||Cout||=%.2e / (sqrt(k=%lld + 2)"
+                " * |alpha|=%.2e * ||A||=%.2e * ||B||=%.2e"
+                " + 2 * |beta|=%.2e * ||C||=%.2e) = %.2e\n",
+                Cout_norm, llong( k ),
+                std::abs( alpha ), Anorm, Bnorm,
+                std::abs( beta ), Cnorm, error[0] );
     }
 
     // complex needs extra factor; see Higham, 2002, sec. 3.6.
@@ -99,8 +100,6 @@ void check_herk(
     blas::real_type<T> error[1],
     bool* okay )
 {
-    typedef long long int lld;
-
     #define    C(i_, j_)    C[ (i_) + (j_)*ldc ]
     #define Cref(i_, j_) Cref[ (i_) + (j_)*ldcref ]
 
@@ -137,9 +136,12 @@ void check_herk(
              / (sqrt(real_t(k)+2)*std::abs(alpha)*Anorm*Bnorm
                  + 2*std::abs(beta)*Cnorm);
     if (verbose) {
-        printf( "error: ||Cout||=%.2e / (sqrt(k=%lld + 2) * |alpha|=%.2e * ||A||=%.2e * ||B||=%.2e + 2 * |beta|=%.2e * ||C||=%.2e) = %.2e\n",
-                Cout_norm, (lld) k, std::abs(alpha), Anorm, Bnorm,
-                std::abs(beta), Cnorm, error[0] );
+        printf( "error: ||Cout||=%.2e / (sqrt(k=%lld + 2)"
+                " * |alpha|=%.2e * ||A||=%.2e * ||B||=%.2e"
+                " + 2 * |beta|=%.2e * ||C||=%.2e) = %.2e\n",
+                Cout_norm, llong( k ),
+                std::abs( alpha ), Anorm, Bnorm,
+                std::abs( beta ), Cnorm, error[0] );
     }
 
     // complex needs extra factor; see Higham, 2002, sec. 3.6.

@@ -26,8 +26,6 @@ void symm(
     float beta,
     float       *C, int64_t ldc )
 {
-    typedef long long lld;
-
     // check arguments
     blas_error_if( layout != Layout::ColMajor &&
                    layout != Layout::RowMajor );
@@ -39,9 +37,11 @@ void symm(
     blas_error_if( n < 0 );
 
     if (side == Side::Left)
-        blas_error_if_msg( lda < m, "lda %lld < m %lld", (lld) lda, (lld) m );
+        blas_error_if_msg( lda < m, "lda %lld < m %lld",
+                           llong( lda ), llong( m ) );
     else
-        blas_error_if_msg( lda < n, "lda %lld < n %lld", (lld) lda, (lld) n );
+        blas_error_if_msg( lda < n, "lda %lld < n %lld",
+                           llong( lda ), llong( n ) );
 
     if (layout == Layout::ColMajor) {
         blas_error_if( ldb < m );
@@ -93,8 +93,6 @@ void symm(
     double beta,
     double       *C, int64_t ldc )
 {
-    typedef long long lld;
-
     // check arguments
     blas_error_if( layout != Layout::ColMajor &&
                    layout != Layout::RowMajor );
@@ -106,9 +104,11 @@ void symm(
     blas_error_if( n < 0 );
 
     if (side == Side::Left)
-        blas_error_if_msg( lda < m, "lda %lld < m %lld", (lld) lda, (lld) m );
+        blas_error_if_msg( lda < m, "lda %lld < m %lld",
+                           llong( lda ), llong( m ) );
     else
-        blas_error_if_msg( lda < n, "lda %lld < n %lld", (lld) lda, (lld) n );
+        blas_error_if_msg( lda < n, "lda %lld < n %lld",
+                           llong( lda ), llong( n ) );
 
     if (layout == Layout::ColMajor) {
         blas_error_if( ldb < m );
@@ -160,8 +160,6 @@ void symm(
     std::complex<float> beta,
     std::complex<float>       *C, int64_t ldc )
 {
-    typedef long long lld;
-
     // check arguments
     blas_error_if( layout != Layout::ColMajor &&
                    layout != Layout::RowMajor );
@@ -173,9 +171,11 @@ void symm(
     blas_error_if( n < 0 );
 
     if (side == Side::Left)
-        blas_error_if_msg( lda < m, "lda %lld < m %lld", (lld) lda, (lld) m );
+        blas_error_if_msg( lda < m, "lda %lld < m %lld",
+                           llong( lda ), llong( m ) );
     else
-        blas_error_if_msg( lda < n, "lda %lld < n %lld", (lld) lda, (lld) n );
+        blas_error_if_msg( lda < n, "lda %lld < n %lld",
+                           llong( lda ), llong( n ) );
 
     if (layout == Layout::ColMajor) {
         blas_error_if( ldb < m );
@@ -231,8 +231,6 @@ void symm(
     std::complex<double> beta,
     std::complex<double>       *C, int64_t ldc )
 {
-    typedef long long lld;
-
     // check arguments
     blas_error_if( layout != Layout::ColMajor &&
                    layout != Layout::RowMajor );
@@ -244,9 +242,11 @@ void symm(
     blas_error_if( n < 0 );
 
     if (side == Side::Left)
-        blas_error_if_msg( lda < m, "lda %lld < m %lld", (lld) lda, (lld) m );
+        blas_error_if_msg( lda < m, "lda %lld < m %lld",
+                           llong( lda ), llong( m ) );
     else
-        blas_error_if_msg( lda < n, "lda %lld < n %lld", (lld) lda, (lld) n );
+        blas_error_if_msg( lda < n, "lda %lld < n %lld",
+                           llong( lda ), llong( n ) );
 
     if (layout == Layout::ColMajor) {
         blas_error_if( ldb < m );

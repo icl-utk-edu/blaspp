@@ -20,7 +20,6 @@ void test_rot_work( Params& params, bool run )
     using namespace testsweeper;
     using namespace blas;
     typedef real_type<TX> real_t;
-    typedef long long lld;
 
     // get & mark input values
     int64_t n       = params.dim.n();
@@ -81,8 +80,8 @@ void test_rot_work( Params& params, bool run )
                 "x n=%5lld, inc=%5lld, size=%10lld\n"
                 "y n=%5lld, inc=%5lld, size=%10lld\n",
                 real( s ), imag( s ), c, real( s*conj(s) ) + c*c,
-                (lld) n, (lld) incx, (lld) size_x,
-                (lld) n, (lld) incy, (lld) size_y );
+                llong( n ), llong( incx ), llong( size_x ),
+                llong( n ), llong( incy ), llong( size_y ) );
     }
     if (verbose >= 2) {
         printf( "x    = " ); print_vector( n, x, incx );

@@ -18,7 +18,6 @@ void test_herk_work( Params& params, bool run )
     using namespace blas;
     typedef scalar_type<TA, TC> scalar_t;
     typedef real_type<scalar_t> real_t;
-    typedef long long lld;
 
     // get & mark input values
     blas::Layout layout = params.layout();
@@ -86,8 +85,8 @@ void test_herk_work( Params& params, bool run )
                 "A An=%5lld, An=%5lld, lda=%5lld, size=%10lld, norm %.2e\n"
                 "C  n=%5lld,  n=%5lld, ldc=%5lld, size=%10lld, norm %.2e\n",
                 uplo2char(uplo), op2char(trans),
-                (lld) Am, (lld) An, (lld) lda, (lld) size_A, Anorm,
-                (lld)  n, (lld)  n, (lld) ldc, (lld) size_C, Cnorm );
+                llong( Am ), llong( An ), llong( lda ), llong( size_A ), Anorm,
+                llong( n ), llong( n ), llong( ldc ), llong( size_C ), Cnorm );
     }
     if (verbose >= 2) {
         printf( "alpha = %.4e; beta = %.4e;  %% real\n", alpha, beta );

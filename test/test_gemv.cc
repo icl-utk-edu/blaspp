@@ -18,7 +18,6 @@ void test_gemv_work( Params& params, bool run )
     using namespace blas;
     typedef scalar_type<TA, TX, TY> scalar_t;
     typedef real_type<scalar_t> real_t;
-    typedef long long lld;
 
     // get & mark input values
     blas::Layout layout = params.layout();
@@ -90,9 +89,9 @@ void test_gemv_work( Params& params, bool run )
                 "A Am=%5lld, An=%5lld, lda=%5lld, size=%10lld, norm=%.2e\n"
                 "x Xm=%5lld, inc=%5lld,           size=%10lld, norm=%.2e\n"
                 "y Ym=%5lld, inc=%5lld,           size=%10lld, norm=%.2e\n",
-                (lld) Am, (lld) An, (lld) lda, (lld) size_A, Anorm,
-                (lld) Xm, (lld) incx,          (lld) size_x, Xnorm,
-                (lld) Ym, (lld) incy,          (lld) size_y, Ynorm );
+                llong( Am ), llong( An ), llong( lda ), llong( size_A ), Anorm,
+                llong( Xm ), llong( incx ),          llong( size_x ), Xnorm,
+                llong( Ym ), llong( incy ),          llong( size_y ), Ynorm );
     }
     if (verbose >= 2) {
         printf( "alpha = %.4e + %.4ei; beta = %.4e + %.4ei;\n",

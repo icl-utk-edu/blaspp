@@ -20,7 +20,6 @@ void test_batch_gemm_work( Params& params, bool run )
     using namespace blas::batch;
     using scalar_t = blas::scalar_type< TA, TB, TC >;
     using real_t = blas::real_type< scalar_t >;
-    typedef long long lld;
 
     // get & mark input values
     blas::Layout layout = params.layout();

@@ -17,7 +17,6 @@ void test_nrm2_device_work( Params& params, bool run )
     using namespace blas;
     typedef scalar_type<Tx> scalar_t;
     typedef real_type<scalar_t> real_t;
-    typedef long long lld;
 
     // get & mark input values
     char mode       = params.pointer_mode();
@@ -83,7 +82,7 @@ void test_nrm2_device_work( Params& params, bool run )
     if (verbose >= 1) {
         printf( "\n"
                 "n=%5lld, incx=%5lld, sizex=%10lld\n",
-                (lld) n, (lld) incx, (lld) size_x );
+                llong( n ), llong( incx ), llong( size_x ) );
     }
     if (verbose >= 2) {
         printf( "x    = " ); print_vector( n, x, incx );
@@ -125,7 +124,7 @@ void test_nrm2_device_work( Params& params, bool run )
         params.ref_gbytes() = gbyte / time;
 
         if (verbose >= 2) {
-            printf( "result0 = %3.2lld\n", (lld) result_cblas);
+            printf( "result0 = %.2e\n", result_cblas );
         }
 
         // relative forward error:

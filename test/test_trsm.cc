@@ -18,7 +18,6 @@ void test_trsm_work( Params& params, bool run )
     using namespace blas;
     typedef scalar_type<TA, TB> scalar_t;
     typedef real_type<scalar_t> real_t;
-    typedef long long lld;
 
     // get & mark input values
     blas::Layout layout = params.layout();
@@ -117,8 +116,8 @@ void test_trsm_work( Params& params, bool run )
         printf( "\n"
                 "A Am=%5lld, Am=%5lld, lda=%5lld, size=%10lld, norm=%.2e\n"
                 "B Bm=%5lld, Bn=%5lld, ldb=%5lld, size=%10lld, norm=%.2e\n",
-                (lld) Am, (lld) Am, (lld) lda, (lld) size_A, Anorm,
-                (lld) Bm, (lld) Bn, (lld) ldb, (lld) size_B, Bnorm );
+                llong( Am ), llong( Am ), llong( lda ), llong( size_A ), Anorm,
+                llong( Bm ), llong( Bn ), llong( ldb ), llong( size_B ), Bnorm );
     }
     if (verbose >= 2) {
         printf( "A = " ); print_matrix( Am, Am, A, lda );

@@ -10,6 +10,12 @@
 #include "blas.hh"
 
 // -----------------------------------------------------------------------------
+// For printf, int64_t could be long (%ld), which is >= 32 bits,
+// or long long (%lld), guaranteed >= 64 bits.
+// Cast to llong to ensure printing 64 bits.
+using llong = long long;
+
+// -----------------------------------------------------------------------------
 class Params: public testsweeper::ParamsBase
 {
 public:

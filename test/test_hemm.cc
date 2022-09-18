@@ -18,7 +18,6 @@ void test_hemm_work( Params& params, bool run )
     using namespace blas;
     typedef scalar_type<TA, TB, TC> scalar_t;
     typedef real_type<scalar_t> real_t;
-    typedef long long lld;
 
     // get & mark input values
     blas::Layout layout = params.layout();
@@ -92,9 +91,9 @@ void test_hemm_work( Params& params, bool run )
                 "B  m=%5lld,  n=%5lld, ldb=%5lld, size=%10lld, norm %.2e\n"
                 "C  m=%5lld,  n=%5lld, ldc=%5lld, size=%10lld, norm %.2e\n",
                 side2char(side), uplo2char(uplo),
-                (lld) An, (lld) An, (lld) lda, (lld) size_A, Anorm,
-                (lld)  m, (lld)  n, (lld) ldb, (lld) size_B, Bnorm,
-                (lld)  m, (lld)  n, (lld) ldc, (lld) size_C, Cnorm );
+                llong( An ), llong( An ), llong( lda ), llong( size_A ), Anorm,
+                llong( m ), llong( n ), llong( ldb ), llong( size_B ), Bnorm,
+                llong( m ), llong( n ), llong( ldc ), llong( size_C ), Cnorm );
     }
     if (verbose >= 2) {
         printf( "alpha = %.4e + %.4ei; beta = %.4e + %.4ei;\n",
