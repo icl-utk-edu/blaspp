@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2022, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -33,6 +33,7 @@ public:
     // ----- routine parameters
     testsweeper::ParamEnum< testsweeper::DataType > datatype;
     testsweeper::ParamEnum< blas::Layout >      layout;
+    testsweeper::ParamEnum< blas::Format >      format;
     testsweeper::ParamEnum< blas::Side >        side;
     testsweeper::ParamEnum< blas::Uplo >        uplo;
     testsweeper::ParamEnum< blas::Op >          trans;
@@ -62,6 +63,7 @@ public:
     testsweeper::ParamDouble     ref_gbytes;
 
     testsweeper::ParamOkay       okay;
+    testsweeper::ParamString     msg;
 };
 
 // -----------------------------------------------------------------------------
@@ -72,18 +74,25 @@ inline T roundup( T x, T y )
 }
 
 // -----------------------------------------------------------------------------
-#define assert_throw( expr, exception_type ) \
-    try { \
-        expr; \
-        fprintf( stderr, "Error: didn't throw expected exception at %s:%d\n", \
-                 __FILE__, __LINE__ ); \
-        throw std::exception(); \
-    } \
-    catch (exception_type& err) { \
-        if (verbose >= 3) { \
-            printf( "Caught expected exception: %s\n", err.what() ); \
-        } \
-    }
+#ifndef assert_throw
+    #if defined(BLAS_ERROR_NDEBUG) || (defined(BLAS_ERROR_ASSERT) && defined(NDEBUG))
+        #define assert_throw( expr, exception_type ) \
+            ((void)0)
+    #else
+        #define assert_throw( expr, exception_type ) \
+            try { \
+                expr; \
+                fprintf( stderr, "Error: didn't throw expected exception at %s:%d\n", \
+                        __FILE__, __LINE__ ); \
+                throw std::exception(); \
+            } \
+            catch (exception_type& err) { \
+                if (verbose >= 3) { \
+                    printf( "Caught expected exception: %s\n", err.what() ); \
+                } \
+            }
+    #endif
+#endif
 
 // -----------------------------------------------------------------------------
 // Like assert(), but throws error and is not disabled by NDEBUG.
@@ -154,7 +163,10 @@ void test_batch_trsm  ( Params& params, bool run );
 
 // -----------------------------------------------------------------------------
 // Level 1 GPU BLAS
+void test_axpy_device  ( Params& params, bool run );
+void test_scal_device  ( Params& params, bool run );
 void test_swap_device  ( Params& params, bool run );
+void test_copy_device  ( Params& params, bool run );
 
 // -----------------------------------------------------------------------------
 // Level 3 GPU BLAS
@@ -162,6 +174,8 @@ void test_gemm_device  ( Params& params, bool run );
 void test_hemm_device  ( Params& params, bool run );
 void test_her2k_device ( Params& params, bool run );
 void test_herk_device  ( Params& params, bool run );
+void test_schur_gemm   ( Params& params, bool run );
+void test_schur_gemm_tile_layout ( Params& params, bool run );
 void test_symm_device  ( Params& params, bool run );
 void test_syr2k_device ( Params& params, bool run );
 void test_syrk_device  ( Params& params, bool run );

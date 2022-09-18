@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+# Copyright (c) 2017-2022, University of Tennessee. All rights reserved.
 # SPDX-License-Identifier: BSD-3-Clause
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -12,7 +12,7 @@ from __future__ import print_function
 import sys
 import re
 import config
-from   config import Error, font, print_warn
+from   config import Error, font, print_msg, print_warn, print_header
 import config.lapack
 
 #-------------------------------------------------------------------------------
@@ -40,17 +40,23 @@ are set so your compiler can find libraries. See INSTALL.md for more details.
 def main():
     config.init( namespace='BLAS', prefix='/opt/slate' )
     config.prog_cxx()
-    config.prog_cxx_flags([
-        '-O2', '-std=c++11', '-MMD',
-        '-Wall',
-        # '-pedantic',  # todo: conflict with ROCm 3.9.0
-        # '-Wshadow',   # todo: conflict with ROCm 3.9.0
-        '-Wno-unused-local-typedefs',
-        '-Wno-unused-function',
-        #'-Wmissing-declarations',
-        #'-Wconversion',
-        #'-Werror',
-    ])
+
+    print_header( 'C++ compiler flags' )
+    # Pick highest level supported. oneAPI needs C++17.
+    # Crusher had issue with -std=c++20 (2022-07).
+    config.prog_cxx_flag(
+        ['-std=c++17', '-std=c++14', '-std=c++11'])
+    config.prog_cxx_flag( '-O2' )
+    config.prog_cxx_flag( '-MMD' )
+    config.prog_cxx_flag( '-Wall' )
+    config.prog_cxx_flag( '-Wno-unused-local-typedefs' )
+    config.prog_cxx_flag( '-Wno-unused-function' )
+   #config.prog_cxx_flag( '-pedantic',  # todo: conflict with ROCm 3.9.0
+   #config.prog_cxx_flag( '-Wshadow',   # todo: conflict with ROCm 3.9.0
+   #config.prog_cxx_flag( '-Wmissing-declarations' )
+   #config.prog_cxx_flag( '-Wconversion' )
+   #config.prog_cxx_flag( '-Werror' )
+
     config.openmp()
 
     config.lapack.blas()
@@ -70,17 +76,7 @@ def main():
     except Error:
         print_warn( 'BLAS++ needs LAPACK only in testers.' )
 
-    try:
-        config.cublas_library()
-        config.environ.merge({'devtarget': 'cuda'})
-    except Error:
-        print_warn( 'BLAS++ CUDA wrappers will not be compiled.' )
-
-    try:
-        config.rocblas_library()
-        config.environ.merge({'devtarget': 'rocm'})
-    except Error:
-        print_warn( 'BLAS++ ROCm wrappers will not be compiled.' )
+    config.gpu_blas()
 
     testsweeper = config.get_package(
         'testsweeper',

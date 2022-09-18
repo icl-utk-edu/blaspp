@@ -1,3 +1,23 @@
+2022.07.00
+  - Added workspace in queue; used in LAPACK++
+  - Set device in memcpy, etc.
+  - Updated Schur gemm test with tile layout
+
+2022.05.00
+  - Added Level 3 BLAS template implementations
+  - Added device copy, scal
+  - Added Schur gemm test, batched tile and LAPACK formats
+  - Fixed gbmm flops when rectangular
+  - Fixed CMake when BLAS_LIBRARIES is empty
+
+2021.04.01
+  - Fixed bug in test_trsm_device for row-major
+
+2021.04.00
+  - Added HIP/ROCm support
+  - Added include/blas/defines.h based on configuration
+  - Various bug and CMake fixes
+
 2020.10.02
   - CMake support for including as subdirectory
 

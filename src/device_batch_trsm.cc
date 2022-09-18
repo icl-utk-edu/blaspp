@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2022, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -51,7 +51,9 @@ void blas::batch::trsm(
                           Barray.size() == batch &&
                           lddb.size()   == 1  );
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     if (fixed_size) {
         // call the vendor routine
         device_blas_int m_      = (device_blas_int) m[0];
@@ -156,7 +158,9 @@ void blas::batch::trsm(
                           Barray.size() == batch &&
                           lddb.size()   == 1  );
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     if (fixed_size) {
         // call the vendor routine
         device_blas_int m_      = (device_blas_int) m[0];
@@ -261,7 +265,9 @@ void blas::batch::trsm(
                           Barray.size() == batch &&
                           lddb.size()   == 1  );
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     if (fixed_size) {
         // call the vendor routine
         device_blas_int m_      = (device_blas_int) m[0];
@@ -366,7 +372,9 @@ void blas::batch::trsm(
                           Barray.size() == batch &&
                           lddb.size()   == 1  );
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     if (fixed_size) {
         // call the vendor routine
         device_blas_int m_      = (device_blas_int) m[0];

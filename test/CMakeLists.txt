@@ -1,3 +1,8 @@
+# Copyright (c) 2017-2022, University of Tennessee. All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause
+# This program is free software: you can redistribute it and/or modify it under
+# the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
+
 # Can't build testers if CBLAS, LAPACK, or TestSweeper are not found.
 if (NOT blaspp_cblas_found)
     message( WARNING "CBLAS not found; tester cannot be built." )
@@ -17,7 +22,7 @@ if (NOT TARGET testsweeper)
         message( "   Found TestSweeper library: ${testsweeper_DIR}" )
     else()
         set( url "https://bitbucket.org/icl/testsweeper" )
-        set( tag "2020.09.00" )
+        set( tag "2021.04.00" )
         message( "" )
         message( "---------- TestSweeper" )
         message( STATUS "Fetching TestSweeper ${tag} from ${url}" )
@@ -84,20 +89,20 @@ add_executable(
     test_trsv.cc
     cblas_wrappers.cc
     lapack_wrappers.cc
-)
-
-# Used if building with HIP or CUDA
-set( shared_cuda_hip_src_ 
     test_batch_gemm_device.cc
     test_batch_hemm_device.cc
     test_batch_her2k_device.cc
     test_batch_herk_device.cc
+    test_schur_gemm.cc
     test_batch_symm_device.cc
     test_batch_syr2k_device.cc
     test_batch_syrk_device.cc
     test_batch_trmm_device.cc
     test_batch_trsm_device.cc
+    test_axpy_device.cc
+    test_scal_device.cc
     test_swap_device.cc
+    test_copy_device.cc
     test_gemm_device.cc
     test_hemm_device.cc
     test_her2k_device.cc
@@ -108,25 +113,6 @@ set( shared_cuda_hip_src_
     test_trmm_device.cc
     test_trsm_device.cc
 )
-
-if (CMAKE_CUDA_COMPILER)
-    message( STATUS "Building CUDA wrapper testers." )
-    target_sources(
-        ${tester}
-        PRIVATE
-        ${shared_cuda_hip_src_}
-    )
-elseif (EXISTS ${ROCMDIR})
-    message( STATUS "Building HIP wrapper testers." )
-    target_sources(
-        ${tester}
-        PRIVATE
-        ${shared_cuda_hip_src_}
-    )
-else()
-    message( STATUS "No CUDA or HIP support in testers" )
-endif()
-
 
 # C++11 is inherited from blaspp, but disabling extensions is not.
 set_target_properties( ${tester} PROPERTIES CXX_EXTENSIONS false )

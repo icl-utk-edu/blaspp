@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2022, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -55,7 +55,9 @@ void blas::batch::gemm(
                           Carray.size() == batch &&
                           lddc.size()   == 1 );
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     if (fixed_size) {
         // call the vendor routine
         blas::Op        transA_ = transA[0];
@@ -170,7 +172,9 @@ void blas::batch::gemm(
                           Carray.size() == batch &&
                           lddc.size()   == 1 );
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     if (fixed_size) {
         // call the vendor routine
         blas::Op        transA_ = transA[0];
@@ -285,8 +289,10 @@ void blas::batch::gemm(
                           beta.size()   == 1     &&
                           Carray.size() == batch &&
                           lddc.size()   == 1 );
-    blas::set_device( queue.device() );
 
+    #ifndef BLAS_HAVE_ONEMKL
+    blas::set_device( queue.device() );
+    #endif
     if (fixed_size) {
         // call the vendor routine
         blas::Op        transA_ = transA[0];
@@ -401,8 +407,10 @@ void blas::batch::gemm(
                           beta.size()   == 1     &&
                           Carray.size() == batch &&
                           lddc.size()   == 1 );
-    blas::set_device( queue.device() );
 
+    #ifndef BLAS_HAVE_ONEMKL
+    blas::set_device( queue.device() );
+    #endif
     if (fixed_size) {
         // call the vendor routine
         blas::Op        transA_ = transA[0];
@@ -533,7 +541,9 @@ void blas::batch::gemm(
     }
 
     // set device
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
 
     float **dAarray, **dBarray, **dCarray;
     size_t batch_limit = queue.get_batch_limit();
@@ -655,7 +665,9 @@ void blas::batch::gemm(
     }
 
     // set device
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
 
     double **dAarray, **dBarray, **dCarray;
     size_t batch_limit = queue.get_batch_limit();
@@ -777,7 +789,9 @@ void blas::batch::gemm(
     }
 
     // set device
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
 
     std::complex<float> **dAarray, **dBarray, **dCarray;
     size_t batch_limit = queue.get_batch_limit();
@@ -899,7 +913,9 @@ void blas::batch::gemm(
     }
 
     // set device
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
 
     std::complex<double> **dAarray, **dBarray, **dCarray;
     size_t batch_limit = queue.get_batch_limit();

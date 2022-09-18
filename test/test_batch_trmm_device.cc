@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2022, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -42,6 +42,11 @@ void test_batch_trmm_work_device( Params& params, bool run )
     if (! run)
         return;
 
+    if (blas::get_device_count() == 0) {
+        params.msg() = "skipping: no GPU devices or no GPU support";
+        return;
+    }
+
     // ----------
     // setup
     int64_t Am = (side_ == Side::Left ? m_ : n_);
@@ -58,9 +63,9 @@ void test_batch_trmm_work_device( Params& params, bool run )
     TB* Bref = new TB[ batch * size_B ];
 
     // device specifics
-    blas::Queue queue(device, batch);
-    TA* dA = blas::device_malloc<TA>( batch * size_A );
-    TB* dB = blas::device_malloc<TB>( batch * size_B );
+    blas::Queue queue( device, batch );
+    TA* dA = blas::device_malloc<TA>( batch * size_A, queue );
+    TB* dB = blas::device_malloc<TB>( batch * size_B, queue );
 
     // pointer arrays
     std::vector<TA*>    Aarray( batch );
@@ -167,8 +172,8 @@ void test_batch_trmm_work_device( Params& params, bool run )
     delete[] Anorm;
     delete[] Bnorm;
 
-    blas::device_free( dA );
-    blas::device_free( dB );
+    blas::device_free( dA, queue );
+    blas::device_free( dB, queue );
 }
 
 // -----------------------------------------------------------------------------

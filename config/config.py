@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+# Copyright (c) 2017-2022, University of Tennessee. All rights reserved.
 # SPDX-License-Identifier: BSD-3-Clause
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -559,9 +559,9 @@ def prog_cxx( choices=['g++', 'c++', 'CC', 'cxx', 'icpc', 'xlc++', 'clang++'] ):
         (rc, out, err) = compile_run( 'config/compiler_cxx.cc', {'CXX': cxx} )
         # print (g++), (clang++), etc., as output by compiler_cxx, after yes
         if (rc == 0):
-            cxx_ = out.strip()
-            out = '(' + cxx_ + ')'
-            actual.append( cxx_ )
+            cxx_actual = out.strip()
+            out = '(' + cxx_actual + ')'
+            actual.append( cxx_actual )
         print_result( cxx, rc, out )
         if (rc == 0):
             passed.append( cxx )
@@ -574,11 +574,14 @@ def prog_cxx( choices=['g++', 'c++', 'CC', 'cxx', 'icpc', 'xlc++', 'clang++'] ):
 # end
 
 #-------------------------------------------------------------------------------
-def prog_cxx_flags( flags ):
+def prog_cxx_flag( flags ):
     '''
-    Tests each flag in flags; if it passes, adds the flag to CXXFLAGS.
+    Tests each flag in flags; the first that passes is added to CXXFLAGS.
+    flags can be an individual string or an iterable (list, tuple, etc.).
     '''
-    print_header( 'C++ compiler flags' )
+    if (type( flags ) == str):
+        flags = [ flags ]
+    # end
     for flag in flags:
         print_test( flag )
         (rc, out, err) = compile_obj( 'config/compiler_cxx.cc', {'CXXFLAGS': flag} )
@@ -588,6 +591,7 @@ def prog_cxx_flags( flags ):
         print_result( flag, rc )
         if (rc == 0):
             environ.append( 'CXXFLAGS', flag )
+            break
     # end
 # end
 
@@ -618,8 +622,8 @@ def cublas_library():
     machine without GPUs.
     '''
     libs = '-lcublas -lcudart'
-    print_header( 'CUDA and cuBLAS libraries' )
-    print_test( libs )
+    print_subhead( 'CUDA and cuBLAS libraries' )
+    print_test( '    ' + libs )
     env = {'LIBS': libs, 'CXXFLAGS': define('HAVE_CUBLAS')}
     (rc, out, err) = compile_exe( 'config/cublas.cc', env )
     print_result( libs, rc )
@@ -637,16 +641,92 @@ def rocblas_library():
     machine without GPUs.
     '''
     libs = '-lrocblas -lamdhip64'
-    print_header( 'ROCm and rocBLAS libraries' )
-    print_test( libs )
+    print_subhead( 'HIP/ROCm and rocBLAS libraries' )
+    print_test( '    ' + libs )
     env = {'LIBS': libs,
-           'CXXFLAGS': '-D__HIP_PLATFORM_HCC__ ' + define('HAVE_ROCBLAS')}
+           'CXXFLAGS': define('HAVE_ROCBLAS')}
     (rc, out, err) = compile_exe( 'config/rocblas.cc', env )
     print_result( libs, rc )
     if (rc == 0):
         environ.merge( env )
     else:
         raise Error( 'rocBLAS not found' )
+# end
+
+#-------------------------------------------------------------------------------
+def onemkl_library():
+    '''
+    Tests for linking oneMKL library.
+    Does not actually run the resulting exe, to allow compiling on a
+    machine without GPUs.
+    '''
+    libs = '-lmkl_sycl -lsycl -lOpenCL'
+    print_subhead( 'SYCL and oneMKL libraries' )
+    print_test( '    ' + libs )
+
+    # Intel compiler vars.sh defines $CMPLR_ROOT
+    root = environ['CMPLR_ROOT'] or environ['CMPROOT']
+    inc = ''
+    if (root):
+        inc = '-I' + root + '/linux/include ' \
+            + '-I' + root + '/linux/include/sycl '
+    env = {'LIBS': libs,
+           'CXXFLAGS': inc + define('HAVE_ONEMKL')
+           + ' -fsycl -Wno-deprecated-declarations'}
+    (rc, out, err) = compile_exe( 'config/onemkl.cc', env )
+    print_result( libs, rc )
+    if (rc == 0):
+        environ.merge( env )
+    else:
+        raise Error( 'oneMKL not found' )
+# end
+
+#-------------------------------------------------------------------------------
+def gpu_blas():
+    gpu_backend = environ['gpu_backend'] or 'auto'
+    print_header( 'GPU BLAS libraries: gpu_backend = ' + gpu_backend )
+
+    test_auto   = re.search( r'\b(auto)\b',     gpu_backend )
+    test_cuda   = re.search( r'\b(cuda)\b',     gpu_backend ) or test_auto
+    test_rocm   = re.search( r'\b(hip|rocm)\b', gpu_backend ) or test_auto
+    test_onemkl = re.search( r'\b(onemkl)\b',   gpu_backend ) or test_auto
+
+    #----- CUDA
+    gpu_blas_found = False
+    if (test_cuda):
+        try:
+            cublas_library()
+            gpu_blas_found = True
+        except Error as ex:
+            if (gpu_backend == 'cuda'):
+                raise ex  # fatal
+    else:
+        print_msg( font.red( 'skipping CUDA search' ) )
+
+    #----- ROCm
+    if (not gpu_blas_found and test_rocm):
+        try:
+            rocblas_library()
+            gpu_blas_found = True
+        except Error as ex:
+            if (gpu_backend in ('hip', 'rocm')):
+                raise ex  # fatal
+    else:
+        print_msg( font.red( 'skipping HIP/ROCm search' ) )
+
+    #----- oneMKL
+    if (not gpu_blas_found and test_onemkl):
+        try:
+            onemkl_library()
+            gpu_blas_found = True
+        except Error as ex:
+            if (gpu_backend == 'onemkl'):
+                raise ex  # fatal
+    else:
+        print_msg( font.red( 'skipping oneMKL search' ) )
+
+    if (not gpu_blas_found):
+        print_warn( 'No GPU BLAS library found' )
 # end
 
 #-------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2022, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -61,8 +61,6 @@ void syr(
     TX const *x, int64_t incx,
     TA       *A, int64_t lda )
 {
-    printf( "template syr implementation\n" );
-
     typedef blas::scalar_type<TA, TX> scalar_t;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]

@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2022, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -36,7 +36,9 @@ void blas::batch::syrk(
                         batch, info );
     }
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
 
     queue.fork();
     for (size_t i = 0; i < batch; ++i) {
@@ -87,7 +89,9 @@ void blas::batch::syrk(
                         batch, info );
     }
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
 
     queue.fork();
     for (size_t i = 0; i < batch; ++i) {
@@ -138,7 +142,9 @@ void blas::batch::syrk(
                         batch, info );
     }
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
 
     queue.fork();
     for (size_t i = 0; i < batch; ++i) {
@@ -189,7 +195,9 @@ void blas::batch::syrk(
                         batch, info );
     }
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
 
     queue.fork();
     for (size_t i = 0; i < batch; ++i) {

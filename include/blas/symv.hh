@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2022, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -73,6 +73,7 @@ void symv(
     blas::scalar_type<TA, TX, TY> beta,
     TY *y, int64_t incy )
 {
+printf( "%s: %s\n", __func__, __PRETTY_FUNCTION__ );
     typedef blas::scalar_type<TA, TX, TY> scalar_t;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]

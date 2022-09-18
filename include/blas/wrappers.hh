@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2022, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -8,6 +8,8 @@
 #include "blas/util.hh"
 
 namespace blas {
+
+#ifndef BLAS_USE_TEMPLATE
 
 // =============================================================================
 // Level 1 BLAS
@@ -179,8 +181,6 @@ double nrm2(
     int64_t n,
     std::complex<double> const *x, int64_t incx );
 
-#ifndef BLAS_USE_TEMPLATE
-
 // -----------------------------------------------------------------------------
 /// @ingroup rot
 void rot(
@@ -215,24 +215,6 @@ void rot(
     std::complex<double> *y, int64_t incy,
     double c,
     double s );
-
-/// @ingroup rot
-// real cosine, complex sine
-void rot(
-    int64_t n,
-    std::complex<float> *x, int64_t incx,
-    std::complex<float> *y, int64_t incy,
-    float c,
-    std::complex<float> s );
-
-/// @ingroup rot
-// real cosine, complex sine
-void rot(
-    int64_t n,
-    std::complex<double> *x, int64_t incx,
-    std::complex<double> *y, int64_t incy,
-    double c,
-    std::complex<double> s );
 
 // -----------------------------------------------------------------------------
 /// @ingroup rotg
@@ -297,8 +279,6 @@ void rotmg(
     double  b,
     double  param[5] );
 
-#endif
-
 // -----------------------------------------------------------------------------
 /// @ingroup scal
 void scal(
@@ -348,6 +328,7 @@ void swap(
     int64_t n,
     std::complex<double> *x, int64_t incx,
     std::complex<double> *y, int64_t incy );
+
 // =============================================================================
 // Level 2 BLAS
 
@@ -780,12 +761,11 @@ void trsv(
     int64_t n,
     std::complex<double> const *A, int64_t lda,
     std::complex<double>       *x, int64_t incx );
+
 // =============================================================================
 // Level 3 BLAS
 
 // -----------------------------------------------------------------------------
-#ifndef BLAS_USE_TEMPLATE_GEMM
-
 /// @ingroup gemm
 void gemm(
     blas::Layout layout,
@@ -833,8 +813,6 @@ void gemm(
     std::complex<double> const *B, int64_t ldb,
     std::complex<double> beta,
     std::complex<double>       *C, int64_t ldc );
-
-#endif
 
 // -----------------------------------------------------------------------------
 /// @ingroup hemm
@@ -1227,6 +1205,8 @@ void trsm(
     std::complex<double> alpha,
     std::complex<double> const *A, int64_t lda,
     std::complex<double>       *B, int64_t ldb );
+
+#endif  // BLAS_USE_TEMPLATE
 
 // =============================================================================
 //                     Batch BLAS APIs ( host )

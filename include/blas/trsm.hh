@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2022, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -33,7 +33,6 @@ namespace blas {
 /// @see latrs for a more numerically robust implementation.
 ///
 /// Generic implementation for arbitrary data types.
-/// TODO: generic version not yet implemented.
 ///
 /// @param[in] layout
 ///     Matrix storage, Layout::ColMajor or Layout::RowMajor.
@@ -90,7 +89,7 @@ namespace blas {
 ///
 /// @ingroup trsm
 
-template< typename TA, typename TX >
+template< typename TA, typename TB >
 void trsm(
     blas::Layout layout,
     blas::Side side,
@@ -99,11 +98,238 @@ void trsm(
     blas::Diag diag,
     int64_t m,
     int64_t n,
-    blas::scalar_type<TA, TX> alpha,
+    blas::scalar_type<TA, TB> alpha,
     TA const *A, int64_t lda,
-    TX       *B, int64_t ldb )
+    TB       *B, int64_t ldb )
 {
-    throw std::exception();
+    typedef blas::scalar_type<TA, TB> scalar_t;
+
+    #define A(i_, j_) A[ (i_) + (j_)*lda ]
+    #define B(i_, j_) B[ (i_) + (j_)*ldb ]
+
+    // constants
+    const scalar_t zero = 0;
+
+    // check arguments
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( side != Side::Left &&
+                   side != Side::Right );
+    blas_error_if( uplo != Uplo::Lower &&
+                   uplo != Uplo::Upper );
+    blas_error_if( trans != Op::NoTrans &&
+                   trans != Op::Trans &&
+                   trans != Op::ConjTrans );
+    blas_error_if( diag != Diag::NonUnit &&
+                   diag != Diag::Unit );
+    blas_error_if( m < 0 );
+    blas_error_if( n < 0 );
+
+    // adapt if row major
+    if (layout == Layout::RowMajor) {
+        side = (side == Side::Left)
+               ? Side::Right
+               : Side::Left;
+        if (uplo == Uplo::Lower)
+            uplo = Uplo::Upper;
+        else if (uplo == Uplo::Upper)
+            uplo = Uplo::Lower;
+        std::swap( m, n );
+    }
+
+    // check remaining arguments
+    blas_error_if( lda < ((side == Side::Left) ? m : n) );
+    blas_error_if( ldb < m );
+
+    // quick return
+    if (m == 0 || n == 0)
+        return;
+
+    // alpha == zero
+    if (alpha == zero) {
+        for (int64_t j = 0; j < n; ++j) {
+            for (int64_t i = 0; i < m; ++i)
+                B(i, j) = zero;
+        }
+        return;
+    }
+
+    // alpha != zero
+    if (side == Side::Left) {
+        if (trans == Op::NoTrans) {
+            if (uplo == Uplo::Upper) {
+                for (int64_t j = 0; j < n; ++j) {
+                    for (int64_t i = 0; i < m; ++i)
+                        B(i, j) *= alpha;
+                    for (int64_t k = m-1; k >= 0; --k) {
+                        if (diag == Diag::NonUnit)
+                            B(k, j) /= A(k, k);
+                        for (int64_t i = 0; i < k; ++i)
+                            B(i, j) -= A(i, k)*B(k, j);
+                    }
+                }
+            }
+            else { // uplo == Uplo::Lower
+                for (int64_t j = 0; j < n; ++j) {
+                    for (int64_t i = 0; i < m; ++i)
+                        B(i, j) *= alpha;
+                    for (int64_t k = 0; k < m; ++k) {
+                        if (diag == Diag::NonUnit)
+                            B(k, j) /= A(k, k);
+                        for (int64_t i = k+1; i < m; ++i)
+                            B(i, j) -= A(i, k)*B(k, j);
+                    }
+                }
+            }
+        }
+        else if (trans == Op::Trans) {
+            if (uplo == Uplo::Upper) {
+                for (int64_t j = 0; j < n; ++j) {
+                    for (int64_t i = 0; i < m; ++i) {
+                        scalar_t sum = alpha*B(i, j);
+                        for (int64_t k = 0; k < i; ++k)
+                            sum -= A(k, i)*B(k, j);
+                        B(i, j) = (diag == Diag::NonUnit)
+                                  ? sum / A(i, i)
+                                  : sum;
+                    }
+                }
+            }
+            else { // uplo == Uplo::Lower
+                for (int64_t j = 0; j < n; ++j) {
+                    for (int64_t i = m-1; i >= 0; --i) {
+                        scalar_t sum = alpha*B(i, j);
+                        for (int64_t k = i+1; k < m; ++k)
+                            sum -= A(k, i)*B(k, j);
+                        B(i, j) = (diag == Diag::NonUnit)
+                                  ? sum / A(i, i)
+                                  : sum;
+                    }
+                }
+            }
+        }
+        else { // trans == Op::ConjTrans
+            if (uplo == Uplo::Upper) {
+                for (int64_t j = 0; j < n; ++j) {
+                    for (int64_t i = 0; i < m; ++i) {
+                        scalar_t sum = alpha*B(i, j);
+                        for (int64_t k = 0; k < i; ++k)
+                            sum -= conj(A(k, i))*B(k, j);
+                        B(i, j) = (diag == Diag::NonUnit)
+                                  ? sum / conj(A(i, i))
+                                  : sum;
+                    }
+                }
+            }
+            else { // uplo == Uplo::Lower
+                for (int64_t j = 0; j < n; ++j) {
+                    for (int64_t i = m-1; i >= 0; --i) {
+                        scalar_t sum = alpha*B(i, j);
+                        for (int64_t k = i+1; k < m; ++k)
+                            sum -= conj(A(k, i))*B(k, j);
+                        B(i, j) = (diag == Diag::NonUnit)
+                                  ? sum / conj(A(i, i))
+                                  : sum;
+                    }
+                }
+            }
+        }
+    }
+    else { // side == Side::Right
+        if (trans == Op::NoTrans) {
+            if (uplo == Uplo::Upper) {
+                for (int64_t j = 0; j < n; ++j) {
+                    for (int64_t i = 0; i < m; ++i)
+                        B(i, j) *= alpha;
+                    for (int64_t k = 0; k < j; ++k) {
+                        for (int64_t i = 0; i < m; ++i)
+                            B(i, j) -= B(i, k)*A(k, j);
+                    }
+                    if (diag == Diag::NonUnit) {
+                        for (int64_t i = 0; i < m; ++i)
+                            B(i, j) /= A(j, j);
+                    }
+                }
+            }
+            else { // uplo == Uplo::Lower
+                for (int64_t j = n-1; j >= 0; --j) {
+                    for (int64_t i = 0; i < m; ++i)
+                        B(i, j) *= alpha;
+                    for (int64_t k = j+1; k < n; ++k) {
+                        for (int64_t i = 0; i < m; ++i)
+                            B(i, j) -= B(i, k)*A(k, j);
+                    }
+                    if (diag == Diag::NonUnit) {
+                        for (int64_t i = 0; i < m; ++i)
+                            B(i, j) /= A(j, j);
+                    }
+                }
+            }
+        }
+        else if (trans == Op::Trans) {
+            if (uplo == Uplo::Upper) {
+                for (int64_t k = n-1; k >= 0; --k) {
+                    if (diag == Diag::NonUnit) {
+                        for (int64_t i = 0; i < m; ++i)
+                            B(i, k) /= A(k, k);
+                    }
+                    for (int64_t j = 0; j < k; ++j) {
+                        for (int64_t i = 0; i < m; ++i)
+                            B(i, j) -= B(i, k)*A(j, k);
+                    }
+                    for (int64_t i = 0; i < m; ++i)
+                        B(i, k) *= alpha;
+                }
+            }
+            else { // uplo == Uplo::Lower
+                for (int64_t k = 0; k < n; ++k) {
+                    if (diag == Diag::NonUnit) {
+                        for (int64_t i = 0; i < m; ++i)
+                            B(i, k) /= A(k, k);
+                    }
+                    for (int64_t j = k+1; j < n; ++j) {
+                        for (int64_t i = 0; i < m; ++i)
+                            B(i, j) -= B(i, k)*A(j, k);
+                    }
+                    for (int64_t i = 0; i < m; ++i)
+                        B(i, k) *= alpha;
+                }
+            }
+        }
+        else { // trans == Op::ConjTrans
+            if (uplo == Uplo::Upper) {
+                for (int64_t k = n-1; k >= 0; --k) {
+                    if (diag == Diag::NonUnit) {
+                        for (int64_t i = 0; i < m; ++i)
+                            B(i, k) /= conj(A(k, k));
+                    }
+                    for (int64_t j = 0; j < k; ++j) {
+                        for (int64_t i = 0; i < m; ++i)
+                            B(i, j) -= B(i, k)*conj(A(j, k));
+                    }
+                    for (int64_t i = 0; i < m; ++i)
+                        B(i, k) *= alpha;
+                }
+            }
+            else { // uplo == Uplo::Lower
+                for (int64_t k = 0; k < n; ++k) {
+                    if (diag == Diag::NonUnit) {
+                        for (int64_t i = 0; i < m; ++i)
+                            B(i, k) /= conj(A(k, k));
+                    }
+                    for (int64_t j = k+1; j < n; ++j) {
+                        for (int64_t i = 0; i < m; ++i)
+                            B(i, j) -= B(i, k)*conj(A(j, k));
+                    }
+                    for (int64_t i = 0; i < m; ++i)
+                        B(i, k) *= alpha;
+                }
+            }
+        }
+    }
+
+    #undef A
+    #undef B
 }
 
 }  // namespace blas

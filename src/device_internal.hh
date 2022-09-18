@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2022, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -15,6 +15,62 @@ namespace device {
 
 // =============================================================================
 // Level 1 BLAS - Device Interfaces
+
+// -----------------------------------------------------------------------------
+// axpy
+void saxpy(
+    blas::Queue& queue,
+    device_blas_int n,
+    float alpha,
+    float *dx, device_blas_int incdx,
+    float *dy, device_blas_int incdy);
+
+void daxpy(
+    blas::Queue& queue,
+    device_blas_int n,
+    double alpha,
+    double *dx, device_blas_int incdx,
+    double *dy, device_blas_int incdy);
+
+void caxpy(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> alpha,
+    std::complex<float> *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy);
+
+void zaxpy(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> alpha,
+    std::complex<double> *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy);
+
+// -----------------------------------------------------------------------------
+// scal
+void sscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    float alpha,
+    float *dx, device_blas_int incdx);
+
+void dscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    double alpha,
+    double *dx, device_blas_int incdx);
+
+void cscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> alpha,
+    std::complex<float> *dx, device_blas_int incdx);
+
+void zscal(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> alpha,
+    std::complex<double> *dx, device_blas_int incdx);
 
 // -----------------------------------------------------------------------------
 // swap
@@ -41,6 +97,32 @@ void zswap(
     device_blas_int n,
     std::complex<double> *dx, device_blas_int incdx,
     std::complex<double> *dy, device_blas_int incdy);
+
+// -----------------------------------------------------------------------------
+void scopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    float const *dx, device_blas_int incdx,
+    float *dy, device_blas_int incdy);
+
+void dcopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    double const *dx, device_blas_int incdx,
+    double *dy, device_blas_int incdy);
+
+void ccopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> const *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy);
+
+void zcopy(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> const *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy);
+
 
 // =============================================================================
 // Level 2 BLAS - Device Interfaces

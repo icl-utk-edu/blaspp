@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2022, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -108,7 +108,9 @@ void blas::hemm(
         std::swap( m_, n_ );
     }
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     device::chemm(
             queue,
             side, uplo, m_, n_,
@@ -179,7 +181,9 @@ void blas::hemm(
         std::swap( m_, n_ );
     }
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     device::zhemm(
             queue,
             side, uplo, m_, n_,

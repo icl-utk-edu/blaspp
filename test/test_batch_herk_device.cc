@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2022, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -22,12 +22,12 @@ void test_batch_herk_device_work( Params& params, bool run )
 
     // get & mark input values
     blas::Layout layout = params.layout();
-    blas::Op trans_      = params.trans();
-    blas::Uplo uplo_     = params.uplo();
-    real_t alpha_        = params.alpha();  // note: real
-    real_t beta_         = params.beta();   // note: real
-    int64_t n_           = params.dim.n();
-    int64_t k_           = params.dim.k();
+    blas::Op trans_     = params.trans();
+    blas::Uplo uplo_    = params.uplo();
+    real_t alpha_       = params.alpha();  // note: real
+    real_t beta_        = params.beta();   // note: real
+    int64_t n_          = params.dim.n();
+    int64_t k_          = params.dim.k();
     size_t  batch       = params.batch();
     int64_t device      = params.device();
     int64_t align       = params.align();
@@ -40,6 +40,11 @@ void test_batch_herk_device_work( Params& params, bool run )
 
     if (! run)
         return;
+
+    if (blas::get_device_count() == 0) {
+        params.msg() = "skipping: no GPU devices or no GPU support";
+        return;
+    }
 
     // setup
     int64_t Am = (trans_ == Op::NoTrans ? n_ : k_);
@@ -55,9 +60,9 @@ void test_batch_herk_device_work( Params& params, bool run )
     TC* Cref = new TC[ batch * size_C ];
 
     // device specifics
-    blas::Queue queue(device, batch);
-    TA* dA = blas::device_malloc<TA>( batch * size_A );
-    TC* dC = blas::device_malloc<TC>( batch * size_C );
+    blas::Queue queue( device, batch );
+    TA* dA = blas::device_malloc<TA>( batch * size_A, queue );
+    TC* dC = blas::device_malloc<TC>( batch * size_C, queue );
 
     // pointer arrays
     std::vector<TA*>    Aarray( batch );
@@ -159,8 +164,8 @@ void test_batch_herk_device_work( Params& params, bool run )
     delete[] Anorm;
     delete[] Cnorm;
 
-    blas::device_free( dA );
-    blas::device_free( dC );
+    blas::device_free( dA, queue );
+    blas::device_free( dC, queue );
 }
 
 // -----------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2022, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -97,11 +97,6 @@ void hemv(
     // quick return
     if (n == 0 || (alpha == zero && beta == one))
         return;
-
-    // for row major, swap lower <=> upper
-    if (layout == Layout::RowMajor) {
-        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
-    }
 
     int64_t kx = (incx > 0 ? 0 : (-n + 1)*incx);
     int64_t ky = (incy > 0 ? 0 : (-n + 1)*incy);

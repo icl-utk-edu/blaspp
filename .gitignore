@@ -23,6 +23,7 @@ config/openmp
 config/return_complex
 config/return_complex_argument
 config/return_float
+config/rocblas
 docs/doxygen/errors.txt
 docs/html/
 files.txt

@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2022, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -13,6 +13,63 @@ namespace blas {
 
 // =============================================================================
 // Level 1 BLAS
+
+// -----------------------------------------------------------------------------
+// axpy
+void axpy(
+    int64_t n,
+    float alpha,
+    float *dx, int64_t incdx,
+    float *dy, int64_t incdy,
+    blas::Queue& queue);
+
+void axpy(
+    int64_t n,
+    double alpha,
+    double *dx, int64_t incdx,
+    double *dy, int64_t incdy,
+    blas::Queue& queue);
+
+void axpy(
+    int64_t n,
+    std::complex<float> alpha,
+    std::complex<float> *dx, int64_t incdx,
+    std::complex<float> *dy, int64_t incdy,
+    blas::Queue& queue);
+
+void axpy(
+    int64_t n,
+    std::complex<double> alpha,
+    std::complex<double> *dx, int64_t incdx,
+    std::complex<double> *dy, int64_t incdy,
+    blas::Queue& queue);
+
+// -----------------------------------------------------------------------------
+// scal
+void scal(
+    int64_t n,
+    float alpha,
+    float *dx, int64_t incdx,
+    blas::Queue& queue);
+
+void scal(
+    int64_t n,
+    double alpha,
+    double *dx, int64_t incdx,
+    blas::Queue& queue);
+
+void scal(
+    int64_t n,
+    std::complex<float> alpha,
+    std::complex<float> *dx, int64_t incdx,
+    blas::Queue& queue);
+
+void scal(
+    int64_t n,
+    std::complex<double> alpha,
+    std::complex<double> *dx, int64_t incdx,
+    blas::Queue& queue);
+
 // -----------------------------------------------------------------------------
 // swap
 void swap(
@@ -39,6 +96,31 @@ void swap(
     std::complex<double> *dy, int64_t incdy,
     blas::Queue &queue );
 
+// -----------------------------------------------------------------------------
+// copy
+void copy(
+    int64_t n,
+    float const *dx, int64_t incdx,
+    float *dy, int64_t incdy,
+    blas::Queue &queue );
+
+void copy(
+    int64_t n,
+    double const *dx, int64_t incdx,
+    double *dy, int64_t incdy,
+    blas::Queue &queue );
+
+void copy(
+    int64_t n,
+    std::complex<float> const *dx, int64_t incdx,
+    std::complex<float> *dy, int64_t incdy,
+    blas::Queue &queue );
+
+void copy(
+    int64_t n,
+    std::complex<double> const *dx, int64_t incdx,
+    std::complex<double> *dy, int64_t incdy,
+    blas::Queue &queue );
 
 // =============================================================================
 // Level 2 BLAS

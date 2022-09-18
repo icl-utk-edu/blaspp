@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2022, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -23,17 +23,17 @@ void test_device_batch_trsm_work( Params& params, bool run )
 
     // get & mark input values
     blas::Layout layout = params.layout();
-    blas::Side side_ = params.side();
-    blas::Uplo uplo_ = params.uplo();
-    blas::Op trans_  = params.trans();
-    blas::Diag diag_ = params.diag();
-    scalar_t alpha_  = params.alpha();
-    int64_t m_       = params.dim.m();
-    int64_t n_       = params.dim.n();
-    size_t batch     = params.batch();
-    int64_t device  = params.device();
-    int64_t align    = params.align();
-    int64_t verbose  = params.verbose();
+    blas::Side side_    = params.side();
+    blas::Uplo uplo_    = params.uplo();
+    blas::Op trans_     = params.trans();
+    blas::Diag diag_    = params.diag();
+    scalar_t alpha_     = params.alpha();
+    int64_t m_          = params.dim.m();
+    int64_t n_          = params.dim.n();
+    size_t batch        = params.batch();
+    int64_t device      = params.device();
+    int64_t align       = params.align();
+    int64_t verbose     = params.verbose();
 
     // mark non-standard output values
     params.gflops();
@@ -42,6 +42,11 @@ void test_device_batch_trsm_work( Params& params, bool run )
 
     if (! run)
         return;
+
+    if (blas::get_device_count() == 0) {
+        params.msg() = "skipping: no GPU devices or no GPU support";
+        return;
+    }
 
     // ----------
     // setup
@@ -59,12 +64,12 @@ void test_device_batch_trsm_work( Params& params, bool run )
     TB* Bref      = new TB[ batch * size_B ];
 
     // device specifics
-    blas::Queue queue(device, batch);
+    blas::Queue queue( device, batch );
     TA* dA;
     TB* dB;
 
-    dA = blas::device_malloc<TA>( batch * size_A );
-    dB = blas::device_malloc<TB>( batch * size_B );
+    dA = blas::device_malloc<TA>( batch * size_A, queue );
+    dB = blas::device_malloc<TB>( batch * size_B, queue );
 
     // pointer arrays
     std::vector<TA*>    Aarray( batch );
@@ -206,8 +211,8 @@ void test_device_batch_trsm_work( Params& params, bool run )
     delete[] Anorm;
     delete[] Bnorm;
 
-    blas::device_free( dA );
-    blas::device_free( dB );
+    blas::device_free( dA, queue );
+    blas::device_free( dB, queue );
 }
 
 // -----------------------------------------------------------------------------

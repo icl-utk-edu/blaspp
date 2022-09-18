@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2022, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -36,8 +36,10 @@ void blas::swap(
     device_blas_int incdx_  = (device_blas_int) incdx;
     device_blas_int incdy_  = (device_blas_int) incdy;
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
-    
+    #endif
+
     device::sswap(
         queue,
         n_,
@@ -69,8 +71,10 @@ void blas::swap(
     device_blas_int incdx_  = (device_blas_int) incdx;
     device_blas_int incdy_  = (device_blas_int) incdy;
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
-    
+    #endif
+
     device::dswap(
         queue,
         n_,
@@ -102,8 +106,10 @@ void blas::swap(
     device_blas_int incdx_  = (device_blas_int) incdx;
     device_blas_int incdy_  = (device_blas_int) incdy;
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
-    
+    #endif
+
     device::cswap(
         queue,
         n_,
@@ -135,8 +141,10 @@ void blas::swap(
     device_blas_int incdx_  = (device_blas_int) incdx;
     device_blas_int incdy_  = (device_blas_int) incdy;
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
-    
+    #endif
+
     device::zswap(
         queue,
         n_,

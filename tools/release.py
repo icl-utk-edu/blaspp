@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+# Copyright (c) 2017-2022, University of Tennessee. All rights reserved.
 # SPDX-License-Identifier: BSD-3-Clause
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -13,8 +13,9 @@ Requires Python >= 3.7.
 
 Usage:
 
-    #!/usr/bin/env python
+    #!/usr/bin/env python3
     import release
+    release.copyright()
     release.make( 'project', 'version.h', 'version.c' )
 
 'project' is the name of the project, used for the tar filename.
@@ -97,6 +98,38 @@ def file_sub( filename, search, replace, **kwargs ):
 # end
 
 #-------------------------------------------------------------------------------
+def copyright():
+    '''
+    Update copyright in all files.
+    '''
+    today = datetime.date.today()
+    year  = today.year
+
+    files = myrun( 'git ls-tree -r master --name-only',
+                   stdout=PIPE, text=True ).rstrip().split( '\n' )
+    print( '\n>> Updating copyright in:', end=' ' )
+    for file in files:
+        if (re.search( r'^(old/|src/hip/)', file ) or os.path.isdir( file )):
+            continue
+
+        print( file, end=', ' )
+        file_sub( file,
+                  r'Copyright \(c\) (\d+)(-\d+)?, University of Tennessee',
+                  r'Copyright (c) \1-%04d, University of Tennessee' % (year) )
+    # end
+    print()
+
+    myrun( 'git diff' )
+    print( '>> Commit changes [yn]? ', end='' )
+    response = input()
+    if (response != 'y'):
+        print( '>> Release aborted. Please revert changes as desired.' )
+        exit(1)
+
+    myrun( ['git', 'commit', '-m', 'copyright '+ str(year), '.'] )
+# end
+
+#-------------------------------------------------------------------------------
 def make( project, version_h, version_c ):
     '''
     Makes project release.
@@ -105,6 +138,8 @@ def make( project, version_h, version_c ):
     year  = today.year
     month = today.month
     release = 0
+
+    top_dir = os.getcwd()
 
     # Search for latest tag this month and increment release if found.
     tags = myrun( 'git tag', stdout=PIPE, text=True ).rstrip().split( '\n' )
@@ -121,8 +156,14 @@ def make( project, version_h, version_c ):
     print( '\n>> Tag '+ tag +', Version '+ version )
 
     #--------------------
+    # Check change log
+    txt = open( 'CHANGELOG.md' ).read()
+    if (not re.search( tag, txt )):
+        print( '>> Add', tag, 'to CHANGELOG.md. Release aborted.' )
+        exit(1)
+
+    #--------------------
     # Update version in version_h.
-    # TODO update in CMakeLists.txt?
     print( '\n>> Updating version in:', version_h )
     file_sub( version_h,
               r'// Version \d\d\d\d.\d\d.\d\d\n(#define \w+_VERSION) \d+',
@@ -142,18 +183,6 @@ def make( project, version_h, version_c ):
     file_sub( 'docs/doxygen/doxyfile.conf',
               r'(PROJECT_NUMBER *=) *"\d+\.\d+\.\d+"',
               r'\1 "%s"' % (tag), count=1 )
-
-    # Update copyright in all files.
-    files = myrun( 'git ls-tree -r master --name-only',
-                   stdout=PIPE, text=True ).rstrip().split( '\n' )
-    print( '\n>> Updating copyright in:', end=' ' )
-    for file in files:
-        print( file, end=', ' )
-        file_sub( file,
-                  r'Copyright \(c\) (\d+)(-\d+)?, University of Tennessee',
-                  r'Copyright (c) \1-%04d, University of Tennessee' % (year) )
-    # end
-    print()
 
     myrun( 'git diff' )
     myrun( 'git diff --staged' )
@@ -202,4 +231,33 @@ def make( project, version_h, version_c ):
     tar = dir + '.tar.gz'
     print( '\n>> Creating tar file', tar )
     myrun( 'tar -zcvf '+ tar +' '+ dir )
+
+    #--------------------
+    # Update online docs.
+    myrun( ['rsync', '-av', '--delete',
+            '--exclude', 'artwork',  # keep artwork on icl.bitbucket.io
+            dir + '/docs/html/',
+            'icl.bitbucket.io/' + project + '/'] )
+
+    os.chdir( 'icl.bitbucket.io' )
+    myrun( 'git add ' + project )
+    myrun( 'git status' )
+    print( '>> Do changes look good? Commit docs [yn]? ', end='' )
+    response = input()
+    if (response != 'y'):
+        print( '>> Doc update aborted. Please revert changes as desired.' )
+        exit(1)
+
+    # Commit staged files.
+    myrun( ['git', 'commit', '-m', project + ' version ' + tag] )
+
+    print( '>> Run `git push` to make changes live [yn]? ', end='' )
+    response = input()
+    if (response == 'y'):
+        myrun( 'git push' )
+    else:
+        print( '>> Doc update aborted. Please revert changes as desired.' )
+        exit(1)
+
+    os.chdir( top_dir )
 # end

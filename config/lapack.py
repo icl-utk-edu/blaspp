@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2020, University of Tennessee. All rights reserved.
+# Copyright (c) 2017-2022, University of Tennessee. All rights reserved.
 # SPDX-License-Identifier: BSD-3-Clause
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -280,7 +280,7 @@ def blas():
                         ['Intel MKL (int64, GNU Fortran conventions, threaded)',
                          {'LIBS': '-lmkl_gf_ilp64 -lmkl_gnu_thread' + t_core}])
 
-            elif (test_ifort and cxx_actual == 'icpc'):
+            elif (test_ifort and cxx_actual in ('icpc', 'icpx')):
                 # Intel compiler + OpenMP: require intel_thread library.
                 if (test_int):
                     choices_ifort.append(
@@ -320,9 +320,9 @@ def blas():
             # end
         # end
 
-        # For Intel icpc, prefer Intel fortran interfaces first;
-        # otherwise,      prefer GNU   fortran interfaces first.
-        if (cxx_actual == 'icpc'):
+        # For Intel compilers, prefer Intel fortran interfaces first;
+        # otherwise,           prefer GNU   fortran interfaces first.
+        if (cxx_actual in ('icpc', 'icpx')):
             choices.extend( choices_ifort )
             choices.extend( choices_gfortran )
         else:
