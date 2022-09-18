@@ -65,7 +65,7 @@ namespace blas {
 ///
 /// @ingroup trmv
 
-template< typename TA, typename TX >
+template <typename TA, typename TX>
 void trmv(
     blas::Layout layout,
     blas::Uplo uplo,

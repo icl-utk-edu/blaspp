@@ -10,7 +10,7 @@
 #include "print_matrix.hh"
 
 // -----------------------------------------------------------------------------
-template< typename Tx, typename Ty >
+template <typename Tx, typename Ty>
 void test_axpy_device_work( Params& params, bool run )
 {
     using namespace testsweeper;

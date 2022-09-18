@@ -88,7 +88,7 @@ public:
 };
 
 // -----------------------------------------------------------------------------
-template< typename T >
+template <typename T>
 inline T roundup( T x, T y )
 {
     return T( (x + y - 1) / y ) * y;

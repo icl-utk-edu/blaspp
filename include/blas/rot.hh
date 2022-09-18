@@ -49,7 +49,7 @@ namespace blas {
 ///
 /// @ingroup rot
 
-template< typename TX, typename TY >
+template <typename TX, typename TY>
 void rot(
     int64_t n,
     TX *x, int64_t incx,

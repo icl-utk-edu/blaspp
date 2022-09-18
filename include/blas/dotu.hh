@@ -37,7 +37,7 @@ namespace blas {
 ///
 /// @ingroup dotu
 
-template< typename TX, typename TY >
+template <typename TX, typename TY>
 scalar_type<TX, TY> dotu(
     int64_t n,
     TX const *x, int64_t incx,

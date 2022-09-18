@@ -75,7 +75,7 @@ namespace blas {
 ///
 /// @ingroup gemv
 
-template< typename TA, typename TX, typename TY >
+template <typename TA, typename TX, typename TY>
 void gemv(
     blas::Layout layout,
     blas::Op trans,

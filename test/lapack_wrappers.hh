@@ -14,7 +14,7 @@
 // until the real lapackpp wrappers are available.
 
 // -----------------------------------------------------------------------------
-template < typename TX > inline
+template <typename TX>
 void lapack_larnv( int64_t idist, int iseed[4], int64_t size, TX *x )
 {
     for (int64_t i = 0; i < size; ++i) {
@@ -22,7 +22,7 @@ void lapack_larnv( int64_t idist, int iseed[4], int64_t size, TX *x )
     }
 }
 
-template < typename TX > inline
+template <typename TX>
 void lapack_larnv( int64_t idist, int iseed[4], int64_t size, std::complex <TX> *x )
 {
     for (int64_t i = 0; i < size; ++i) {
@@ -115,7 +115,7 @@ double lapack_lantr( char const *norm, char const *uplo, char const *diag,
                      double *work );
 
 // -----------------------------------------------------------------------------
-template< typename TA, typename TB > inline
+template <typename TA, typename TB> inline
 void lapack_lacpy( char const* uplo,
                      int64_t m, int64_t n,
                      TA const *A, int64_t lda,

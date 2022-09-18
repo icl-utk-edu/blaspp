@@ -11,7 +11,7 @@
 #include "check_gemm.hh"
 
 // -----------------------------------------------------------------------------
-template< typename T >
+template <typename T>
 void test_asum_work( Params& params, bool run )
 {
     using namespace testsweeper;

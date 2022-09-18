@@ -10,7 +10,7 @@
 #include "print_matrix.hh"
 
 // -----------------------------------------------------------------------------
-template< typename T >
+template <typename T>
 void test_nrm2_work( Params& params, bool run )
 {
     using namespace testsweeper;

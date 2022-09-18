@@ -52,7 +52,7 @@ namespace blas {
 ///
 /// @ingroup syr
 
-template< typename TA, typename TX >
+template <typename TA, typename TX>
 void syr(
     blas::Layout layout,
     blas::Uplo uplo,

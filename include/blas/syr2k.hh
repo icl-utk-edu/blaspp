@@ -86,7 +86,7 @@ namespace blas {
 ///
 /// @ingroup syr2k
 
-template< typename TA, typename TB, typename TC >
+template <typename TA, typename TB, typename TC>
 void syr2k(
     blas::Layout layout,
     blas::Uplo uplo,

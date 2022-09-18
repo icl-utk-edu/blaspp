@@ -15,7 +15,7 @@ namespace batch {
 
 #define INTERNAL_INFO_DEFAULT    (-1000)
 
-template<typename T>
+template <typename T>
 T extract(std::vector<T> const &ivector, const int64_t index)
 {
     return (ivector.size() == 1) ? ivector[0] : ivector[index];
@@ -23,7 +23,7 @@ T extract(std::vector<T> const &ivector, const int64_t index)
 
 // -----------------------------------------------------------------------------
 // batch gemm check
-template<typename T>
+template <typename T>
 void gemm_check(
         blas::Layout                 layout,
         std::vector<blas::Op> const &transA,
@@ -143,7 +143,7 @@ void gemm_check(
 
 // -----------------------------------------------------------------------------
 // batch trsm check
-template<typename T>
+template <typename T>
 void trsm_check(
         blas::Layout                   layout,
         std::vector<blas::Side> const &side,
@@ -258,7 +258,7 @@ void trsm_check(
 
 // -----------------------------------------------------------------------------
 // batch trmm check
-template<typename T>
+template <typename T>
 void trmm_check(
         blas::Layout                   layout,
         std::vector<blas::Side> const &side,
@@ -373,7 +373,7 @@ void trmm_check(
 
 // -----------------------------------------------------------------------------
 // batch hemm check
-template<typename T>
+template <typename T>
 void hemm_check(
         blas::Layout                   layout,
         std::vector<blas::Side> const &side,
@@ -498,7 +498,7 @@ void hemm_check(
 
 // -----------------------------------------------------------------------------
 // batch herk check
-template<typename T, typename scalarT>
+template <typename T, typename scalarT>
 void herk_check(
         blas::Layout                   layout,
         std::vector<blas::Uplo> const &uplo,
@@ -609,7 +609,7 @@ void herk_check(
 
 // -----------------------------------------------------------------------------
 // batch hemm check
-template<typename T>
+template <typename T>
 void symm_check(
         blas::Layout                   layout,
         std::vector<blas::Side> const &side,
@@ -628,7 +628,7 @@ void symm_check(
 
 // -----------------------------------------------------------------------------
 // batch syrk check
-template<typename T>
+template <typename T>
 void syrk_check(
         blas::Layout                   layout,
         std::vector<blas::Uplo> const &uplo,
@@ -739,7 +739,7 @@ void syrk_check(
 
 // -----------------------------------------------------------------------------
 // batch her2k check
-template<typename T, typename scalarT>
+template <typename T, typename scalarT>
 void her2k_check(
         blas::Layout                   layout,
         std::vector<blas::Uplo> const &uplo,
@@ -864,7 +864,7 @@ void her2k_check(
 
 // -----------------------------------------------------------------------------
 // batch syr2k check
-template<typename T>
+template <typename T>
 void syr2k_check(
         blas::Layout                   layout,
         std::vector<blas::Uplo> const &uplo,

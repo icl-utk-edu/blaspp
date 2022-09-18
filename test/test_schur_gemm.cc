@@ -10,7 +10,7 @@
 
 
 // Copy A from LAPACK format on host to tile format on device.
-template< typename T >
+template <typename T>
 void copy_lapack_to_tile_format(
         int64_t m, int64_t n, int64_t mt, int64_t nt,
         T const*  A, int64_t ldA,
@@ -28,7 +28,7 @@ void copy_lapack_to_tile_format(
 }
 
 // Copy A from tile format on device to LAPACK format on host.
-template< typename T >
+template <typename T>
 void copy_tile_to_lapack_format(
         int64_t m, int64_t n, int64_t mt, int64_t nt,
         T const* dA, int64_t ld_tile,
@@ -46,7 +46,7 @@ void copy_tile_to_lapack_format(
 }
 
 // -----------------------------------------------------------------------------
-template< typename TA, typename TB, typename TC >
+template <typename TA, typename TB, typename TC>
 void test_schur_gemm_work( Params& params, bool run )
 {
     using namespace testsweeper;

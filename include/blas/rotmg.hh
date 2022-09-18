@@ -95,7 +95,7 @@ namespace blas {
 ///
 /// @ingroup rotmg
 
-template< typename T >
+template <typename T>
 void rotmg(
     T *d1,
     T *d2,

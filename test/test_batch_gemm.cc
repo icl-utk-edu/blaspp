@@ -12,7 +12,7 @@
 
 #include "blas.hh"
 // -----------------------------------------------------------------------------
-template< typename TA, typename TB, typename TC >
+template <typename TA, typename TB, typename TC>
 void test_batch_gemm_work( Params& params, bool run )
 {
     using namespace testsweeper;

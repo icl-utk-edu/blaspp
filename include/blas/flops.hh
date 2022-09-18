@@ -160,7 +160,7 @@ inline double fadds_trmm( blas::Side side, double m, double n )
 // gflop< float >::gemm( m, n, k ) yields flops for sgemm.
 // gflop< std::complex<float> >::gemm( m, n, k ) yields flops for cgemm.
 //==============================================================================
-template< typename T >
+template <typename T>
 class Gbyte
 {
 public:
@@ -315,7 +315,7 @@ public:
 // gflop< float >::gemm( m, n, k ) yields flops for sgemm.
 // gflop< std::complex<float> >::gemm( m, n, k ) yields flops for cgemm.
 //==============================================================================
-template< typename T >
+template <typename T>
 class Gflop
 {
 public:

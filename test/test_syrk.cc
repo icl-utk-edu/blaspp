@@ -11,7 +11,7 @@
 #include "check_gemm.hh"
 
 // -----------------------------------------------------------------------------
-template< typename TA, typename TC >
+template <typename TA, typename TC>
 void test_syrk_work( Params& params, bool run )
 {
     using namespace testsweeper;

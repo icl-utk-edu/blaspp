@@ -36,7 +36,7 @@ namespace blas {
 ///
 /// @ingroup swap
 
-template< typename TX, typename TY >
+template <typename TX, typename TY>
 void swap(
     int64_t n,
     TX *x, int64_t incx,

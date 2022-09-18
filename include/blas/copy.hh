@@ -36,7 +36,7 @@ namespace blas {
 ///
 /// @ingroup copy
 
-template< typename TX, typename TY >
+template <typename TX, typename TY>
 void copy(
     int64_t n,
     TX const *x, int64_t incx,

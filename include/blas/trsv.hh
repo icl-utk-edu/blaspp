@@ -69,7 +69,7 @@ namespace blas {
 ///
 /// @ingroup trsv
 
-template< typename TA, typename TX >
+template <typename TA, typename TX>
 void trsv(
     blas::Layout layout,
     blas::Uplo uplo,

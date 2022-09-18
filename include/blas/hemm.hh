@@ -81,7 +81,7 @@ namespace blas {
 ///
 /// @ingroup hemm
 
-template< typename TA, typename TB, typename TC >
+template <typename TA, typename TB, typename TC>
 void hemm(
     blas::Layout layout,
     blas::Side side,

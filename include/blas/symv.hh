@@ -62,7 +62,7 @@ namespace blas {
 ///
 /// @ingroup symv
 
-template< typename TA, typename TX, typename TY >
+template <typename TA, typename TX, typename TY>
 void symv(
     blas::Layout layout,
     blas::Uplo uplo,

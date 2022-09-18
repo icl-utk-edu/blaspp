@@ -65,7 +65,7 @@ namespace blas {
 ///
 /// @ingroup hemv
 
-template< typename TA, typename TX, typename TY >
+template <typename TA, typename TX, typename TY>
 void hemv(
     blas::Layout layout,
     blas::Uplo uplo,

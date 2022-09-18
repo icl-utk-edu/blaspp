@@ -86,7 +86,7 @@ namespace blas {
 ///
 /// @ingroup gemm
 
-template< typename TA, typename TB, typename TC >
+template <typename TA, typename TB, typename TC>
 void gemm(
     blas::Layout layout,
     blas::Op transA,

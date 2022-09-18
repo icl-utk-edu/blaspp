@@ -57,7 +57,7 @@ namespace blas {
 ///
 /// @ingroup geru
 
-template< typename TA, typename TX, typename TY >
+template <typename TA, typename TX, typename TY>
 void geru(
     blas::Layout layout,
     int64_t m, int64_t n,

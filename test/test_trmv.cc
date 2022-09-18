@@ -11,7 +11,7 @@
 #include "check_gemm.hh"
 
 // -----------------------------------------------------------------------------
-template< typename TA, typename TX >
+template <typename TA, typename TX>
 void test_trmv_work( Params& params, bool run )
 {
     using namespace testsweeper;

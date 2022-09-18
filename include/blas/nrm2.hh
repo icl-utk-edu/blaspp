@@ -30,7 +30,7 @@ namespace blas {
 ///
 /// @ingroup nrm2
 
-template< typename T >
+template <typename T>
 real_type<T>
 nrm2(
     int64_t n,

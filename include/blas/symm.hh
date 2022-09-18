@@ -74,7 +74,7 @@ namespace blas {
 ///
 /// @ingroup symm
 
-template< typename TA, typename TB, typename TC >
+template <typename TA, typename TB, typename TC>
 void symm(
     blas::Layout layout,
     blas::Side side,

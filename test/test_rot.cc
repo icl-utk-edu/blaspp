@@ -14,7 +14,7 @@
 // TX is data [x, y]
 // TS is for sine, which can be real (zdrot) or complex (zrot)
 // cosine is always real
-template< typename TX, typename TS >
+template <typename TX, typename TS>
 void test_rot_work( Params& params, bool run )
 {
     using namespace testsweeper;

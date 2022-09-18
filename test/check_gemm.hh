@@ -17,7 +17,7 @@
 // Computes error for multiplication with general matrix result.
 // Covers dot, gemv, ger, geru, gemm, symv, hemv, symm, trmv, trsv?, trmm, trsm?.
 // Cnorm is norm of original C, before multiplication operation.
-template< typename T >
+template <typename T>
 void check_gemm(
     int64_t m, int64_t n, int64_t k,
     T alpha,
@@ -85,7 +85,7 @@ void check_gemm(
 // alpha    real    complex real    complex complex complex complex complex
 // beta     --      --      real    real    --      --      complex complex
 // zsyr2 doesn't exist in standard BLAS or LAPACK.
-template< typename TA, typename TB, typename T >
+template <typename TA, typename TB, typename T>
 void check_herk(
     blas::Uplo uplo,
     int64_t n, int64_t k,

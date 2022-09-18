@@ -31,7 +31,7 @@ namespace blas {
 ///
 /// @ingroup scal
 
-template< typename T >
+template <typename T>
 void scal(
     int64_t n,
     T alpha,

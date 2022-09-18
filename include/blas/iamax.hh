@@ -30,7 +30,7 @@ namespace blas {
 ///
 /// @ingroup iamax
 
-template< typename T >
+template <typename T>
 int64_t iamax(
     int64_t n,
     T const *x, int64_t incx )

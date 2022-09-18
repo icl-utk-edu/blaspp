@@ -11,7 +11,7 @@
 #include "check_gemm.hh"
 
 // -----------------------------------------------------------------------------
-template< typename TA, typename TX >
+template <typename TA, typename TX>
 void test_trsv_work( Params& params, bool run )
 {
     #define A(i_, j_) (A + (i_) + (j_)*lda)

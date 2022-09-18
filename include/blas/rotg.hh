@@ -126,7 +126,7 @@ void rotg(
 ///
 /// @ingroup rotg
 
-template< typename TA, typename TB >
+template <typename TA, typename TB>
 void rotg(
     std::complex<TA> *a,
     std::complex<TB> *b,

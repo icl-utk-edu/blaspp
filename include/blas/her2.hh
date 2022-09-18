@@ -62,7 +62,7 @@ namespace blas {
 ///
 /// @ingroup her2
 
-template< typename TA, typename TX, typename TY >
+template <typename TA, typename TX, typename TY>
 void her2(
     blas::Layout layout,
     blas::Uplo  uplo,

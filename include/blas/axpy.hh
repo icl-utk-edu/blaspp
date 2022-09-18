@@ -39,7 +39,7 @@ namespace blas {
 ///
 /// @ingroup axpy
 
-template< typename TX, typename TY >
+template <typename TX, typename TY>
 void axpy(
     int64_t n,
     blas::scalar_type<TX, TY> alpha,

@@ -76,7 +76,7 @@ namespace blas {
 ///
 /// @ingroup herk
 
-template< typename TA, typename TC >
+template <typename TA, typename TC>
 void herk(
     blas::Layout layout,
     blas::Uplo uplo,

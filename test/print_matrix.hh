@@ -10,7 +10,7 @@
 #include <complex>
 
 // -----------------------------------------------------------------------------
-template< typename T >
+template <typename T>
 void print_matrix( int64_t m, int64_t n, T *A, int64_t lda,
                    const char* format="%9.4f" )
 {
@@ -35,7 +35,7 @@ void print_matrix( int64_t m, int64_t n, T *A, int64_t lda,
 }
 
 // -----------------------------------------------------------------------------
-template< typename T >
+template <typename T>
 void print_matrix( int64_t m, int64_t n, std::complex<T>* A, int64_t lda,
                    const char* format="%9.4f" )
 {
@@ -60,7 +60,7 @@ void print_matrix( int64_t m, int64_t n, std::complex<T>* A, int64_t lda,
 }
 
 // -----------------------------------------------------------------------------
-template< typename T >
+template <typename T>
 void print_vector( int64_t n, T *x, int64_t incx,
                    const char* format="%9.4f" )
 {
@@ -79,7 +79,7 @@ void print_vector( int64_t n, T *x, int64_t incx,
 }
 
 // -----------------------------------------------------------------------------
-template< typename T >
+template <typename T>
 void print_vector( int64_t n, std::complex<T>* x, int64_t incx,
                    const char* format="%9.4f" )
 {

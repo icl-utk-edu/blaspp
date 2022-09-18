@@ -174,13 +174,13 @@ private:
 
 // -----------------------------------------------------------------------------
 // 1-norm absolute value, |Re(x)| + |Im(x)|
-template< typename T >
+template <typename T>
 T abs1( T x )
 {
     return std::abs( x );
 }
 
-template< typename T >
+template <typename T>
 T abs1( std::complex<T> x )
 {
     return std::abs( real(x) ) + std::abs( imag(x) );
@@ -192,10 +192,10 @@ T abs1( std::complex<T> x )
     using std::common_type_t;
     using std::decay_t;
 #else
-    template< typename... Ts >
+    template <typename... Ts>
     using common_type_t = typename std::common_type< Ts... >::type;
 
-    template< typename... Ts >
+    template <typename... Ts>
     using decay_t = typename std::decay< Ts... >::type;
 #endif
 
@@ -228,7 +228,7 @@ using std::imag;
 /// That will use std::conj for complex types, and blas::conj for other types.
 /// This prohibits complex types; it can't be called as y = blas::conj( x ).
 ///
-template< typename T >
+template <typename T>
 inline T conj( T x )
 {
     static_assert(
@@ -250,15 +250,15 @@ inline T conj( T x )
 //        scalar_type< int, complex<long> > is complex<long> (right)
 
 // for zero types
-template< typename... Types >
+template <typename... Types>
 struct scalar_type_traits;
 
 // define scalar_type<> type alias
-template< typename... Types >
+template <typename... Types>
 using scalar_type = typename scalar_type_traits< Types... >::type;
 
 // for one type
-template< typename T >
+template <typename T>
 struct scalar_type_traits< T >
 {
     using type = decay_t<T>;
@@ -266,7 +266,7 @@ struct scalar_type_traits< T >
 
 // for two types
 // relies on type of ?: operator being the common type of its two arguments
-template< typename T1, typename T2 >
+template <typename T1, typename T2>
 struct scalar_type_traits< T1, T2 >
 {
     using type = decay_t< decltype( true ? std::declval<T1>() : std::declval<T2>() ) >;
@@ -274,26 +274,26 @@ struct scalar_type_traits< T1, T2 >
 
 // for either or both complex,
 // find common type of associated real types, then add complex
-template< typename T1, typename T2 >
+template <typename T1, typename T2>
 struct scalar_type_traits< std::complex<T1>, T2 >
 {
     using type = std::complex< common_type_t< T1, T2 > >;
 };
 
-template< typename T1, typename T2 >
+template <typename T1, typename T2>
 struct scalar_type_traits< T1, std::complex<T2> >
 {
     using type = std::complex< common_type_t< T1, T2 > >;
 };
 
-template< typename T1, typename T2 >
+template <typename T1, typename T2>
 struct scalar_type_traits< std::complex<T1>, std::complex<T2> >
 {
     using type = std::complex< common_type_t< T1, T2 > >;
 };
 
 // for three or more types
-template< typename T1, typename T2, typename... Types >
+template <typename T1, typename T2, typename... Types>
 struct scalar_type_traits< T1, T2, Types... >
 {
     using type = scalar_type< scalar_type< T1, T2 >, Types... >;
@@ -315,33 +315,33 @@ struct scalar_type_traits< T1, T2, Types... >
 // complex_type< float, double, complex<float> >    is complex<double>
 
 // for zero types
-template< typename... Types >
+template <typename... Types>
 struct real_type_traits;
 
 // define real_type<> type alias
-template< typename... Types >
+template <typename... Types>
 using real_type = typename real_type_traits< Types... >::real_t;
 
 // define complex_type<> type alias
-template< typename... Types >
+template <typename... Types>
 using complex_type = std::complex< real_type< Types... > >;
 
 // for one type
-template< typename T >
+template <typename T>
 struct real_type_traits<T>
 {
     using real_t = T;
 };
 
 // for one complex type, strip complex
-template< typename T >
+template <typename T>
 struct real_type_traits< std::complex<T> >
 {
     using real_t = T;
 };
 
 // for two or more types
-template< typename T1, typename... Types >
+template <typename T1, typename... Types>
 struct real_type_traits< T1, Types... >
 {
     using real_t = scalar_type< real_type<T1>, real_type< Types... > >;
@@ -352,14 +352,14 @@ struct real_type_traits< T1, Types... >
 // and any number of arguments: max( a, b, c, d )
 
 // one argument
-template< typename T >
+template <typename T>
 T max( T x )
 {
     return x;
 }
 
 // two arguments
-template< typename T1, typename T2 >
+template <typename T1, typename T2>
 scalar_type< T1, T2 >
     max( T1 x, T2 y )
 {
@@ -367,7 +367,7 @@ scalar_type< T1, T2 >
 }
 
 // three or more arguments
-template< typename T1, typename... Types >
+template <typename T1, typename... Types>
 scalar_type< T1, Types... >
     max( T1 first, Types... args )
 {
@@ -379,14 +379,14 @@ scalar_type< T1, Types... >
 // and any number of arguments: min( a, b, c, d )
 
 // one argument
-template< typename T >
+template <typename T>
 T min( T x )
 {
     return x;
 }
 
 // two arguments
-template< typename T1, typename T2 >
+template <typename T1, typename T2>
 scalar_type< T1, T2 >
     min( T1 x, T2 y )
 {
@@ -394,7 +394,7 @@ scalar_type< T1, T2 >
 }
 
 // three or more arguments
-template< typename T1, typename... Types >
+template <typename T1, typename... Types>
 scalar_type< T1, Types... >
     min( T1 first, Types... args )
 {

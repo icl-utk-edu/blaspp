@@ -10,7 +10,7 @@
 #include "print_matrix.hh"
 
 // -----------------------------------------------------------------------------
-template< typename TX, typename TY >
+template <typename TX, typename TY>
 void test_copy_device_work( Params& params, bool run )
 {
     using namespace testsweeper;

@@ -84,7 +84,7 @@ namespace blas {
 ///
 /// @ingroup trmm
 
-template< typename TA, typename TB >
+template <typename TA, typename TB>
 void trmm(
     blas::Layout layout,
     blas::Side side,

@@ -30,7 +30,7 @@ namespace blas {
 ///
 /// @ingroup asum
 
-template< typename T >
+template <typename T>
 real_type<T>
 asum(
     int64_t n,
