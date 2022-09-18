@@ -14,9 +14,10 @@ template< typename Tx, typename Ty >
 void test_axpy_device_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using namespace blas;
-    typedef scalar_type<Tx, Ty> scalar_t;
-    typedef real_type<scalar_t> real_t;
+    using std::real;
+    using std::imag;
+    using scalar_t = blas::scalar_type< Tx, Ty >;
+    using real_t   = blas::real_type< scalar_t >;
 
     // get & mark input values
     scalar_t alpha  = params.alpha();

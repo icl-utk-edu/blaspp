@@ -15,9 +15,12 @@ template< typename TA, typename TB, typename TC >
 void test_gemm_device_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using namespace blas;
+    using std::real;
+    using std::imag;
+    using blas::Op;
+    using blas::Layout;
     using scalar_t = blas::scalar_type< TA, TB, TC >;
-    using real_t = blas::real_type< scalar_t >;
+    using real_t   = blas::real_type< scalar_t >;
 
     // get & mark input values
     blas::Layout layout = params.layout();

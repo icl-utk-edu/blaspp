@@ -15,9 +15,10 @@ template< typename TX, typename TY >
 void test_axpy_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using namespace blas;
-    typedef scalar_type<TX, TY> scalar_t;
-    typedef real_type<scalar_t> real_t;
+    using std::real;
+    using std::imag;
+    using scalar_t = blas::scalar_type< TX, TY >;
+    using real_t   = blas::real_type< scalar_t >;
 
     // get & mark input values
     scalar_t alpha  = params.alpha();
@@ -81,7 +82,7 @@ void test_axpy_work( Params& params, bool run )
     time = get_wtime() - time;
 
     double gflop = blas::Gflop< scalar_t >::axpy( n );
-    double gbyte = Gbyte< scalar_t >::axpy( n );
+    double gbyte = blas::Gbyte< scalar_t >::axpy( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;

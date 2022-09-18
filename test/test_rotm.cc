@@ -15,8 +15,7 @@ template< typename TX >
 void test_rotm_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using namespace blas;
-    typedef real_type<TX> real_t;
+    using real_t   = blas::real_type< TX >;
 
     // get & mark input values
     int64_t n       = params.dim.n();

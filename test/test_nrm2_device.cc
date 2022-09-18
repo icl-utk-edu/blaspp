@@ -14,9 +14,8 @@ template< typename Tx >
 void test_nrm2_device_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using namespace blas;
-    typedef scalar_type<Tx> scalar_t;
-    typedef real_type<scalar_t> real_t;
+    using scalar_t = blas::scalar_type<Tx>;
+    using real_t   = blas::real_type<scalar_t>;
 
     // get & mark input values
     char mode       = params.pointer_mode();

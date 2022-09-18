@@ -14,8 +14,9 @@ template< typename T >
 void test_scal_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using namespace blas;
-    typedef real_type<T> real_t;
+    using std::real;
+    using std::imag;
+    using real_t = blas::real_type< T >;
 
     // get & mark input values
     T alpha         = params.alpha();

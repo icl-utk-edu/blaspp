@@ -50,10 +50,12 @@ template< typename TA, typename TB, typename TC >
 void test_schur_gemm_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using namespace blas;
     using namespace blas::batch;
+    using blas::Op;
+    using blas::Layout;
+    using blas::Format;
     using scalar_t = blas::scalar_type< TA, TB, TC >;
-    using real_t = blas::real_type< scalar_t >;
+    using real_t   = blas::real_type< scalar_t >;
 
     // get & mark input values
     blas::Layout layout = Layout::ColMajor; //params.layout();

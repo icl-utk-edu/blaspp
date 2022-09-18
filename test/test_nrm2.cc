@@ -14,9 +14,8 @@ template< typename T >
 void test_nrm2_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using namespace blas;
     typedef T scalar_t;
-    typedef real_type<T> real_t;
+    using real_t   = blas::real_type< T >;
 
     // get & mark input values
     int64_t n       = params.dim.n();

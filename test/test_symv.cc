@@ -15,9 +15,12 @@ template< typename TA, typename TX, typename TY >
 void test_symv_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using namespace blas;
-    typedef scalar_type<TA, TX, TY> scalar_t;
-    typedef real_type<scalar_t> real_t;
+    using std::real;
+    using std::imag;
+    using blas::Uplo;
+    using blas::Layout;
+    using scalar_t = blas::scalar_type< TA, TX, TY >;
+    using real_t   = blas::real_type< scalar_t >;
 
     // get & mark input values
     blas::Layout layout = params.layout();

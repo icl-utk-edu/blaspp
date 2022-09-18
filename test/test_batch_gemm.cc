@@ -16,10 +16,11 @@ template< typename TA, typename TB, typename TC >
 void test_batch_gemm_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using namespace blas;
     using namespace blas::batch;
+    using blas::Op;
+    using blas::Layout;
     using scalar_t = blas::scalar_type< TA, TB, TC >;
-    using real_t = blas::real_type< scalar_t >;
+    using real_t   = blas::real_type< scalar_t >;
 
     // get & mark input values
     blas::Layout layout = params.layout();
@@ -149,7 +150,7 @@ void test_batch_gemm_work( Params& params, bool run )
         for (size_t i = 0; i < batch; ++i) {
             check_gemm( Cm, Cn, k_, alpha_, beta_, Anorm[i], Bnorm[i], Cnorm[i],
                         Crefarray[i], ldc_, Carray[i], ldc_, verbose, &err, &ok );
-            error = max(error, err);
+            error = std::max( error, err );
             okay &= ok;
         }
         params.error() = error;

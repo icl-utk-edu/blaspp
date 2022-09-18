@@ -15,10 +15,14 @@ template< typename TA, typename TB >
 void test_device_batch_trsm_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using namespace blas;
     using namespace blas::batch;
-    typedef scalar_type<TA, TB> scalar_t;
-    typedef real_type<scalar_t> real_t;
+    using blas::Uplo;
+    using blas::Side;
+    using blas::Op;
+    using blas::Layout;
+    using blas::Diag;
+    using scalar_t = blas::scalar_type< TA, TB >;
+    using real_t   = blas::real_type< scalar_t >;
 
     // get & mark input values
     blas::Layout layout = params.layout();
@@ -197,7 +201,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
         for (size_t i = 0; i < batch; ++i) {
             check_gemm( Bm, Bn, Am, alpha_, scalar_t(0), Anorm[i], Bnorm[i], real_t(0),
                         Brefarray[i], ldb_, Barray[i], ldb_, verbose, &err, &ok );
-            error = max(error, err);
+            error = std::max( error, err );
             okay &= ok;
         }
         params.error() = error;

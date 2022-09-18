@@ -15,9 +15,12 @@ template< typename TA, typename TX >
 void test_trmv_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using namespace blas;
-    typedef scalar_type<TA, TX> scalar_t;
-    typedef real_type<scalar_t> real_t;
+    using blas::Uplo;
+    using blas::Op;
+    using blas::Layout;
+    using blas::Diag;
+    using scalar_t = blas::scalar_type< TA, TX >;
+    using real_t   = blas::real_type< scalar_t >;
 
     // get & mark input values
     blas::Layout layout = params.layout();

@@ -15,9 +15,10 @@ template< typename TA, typename TB, typename TC >
 void test_batch_syr2k_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using namespace blas;
-    typedef scalar_type<TA, TC> scalar_t;
-    typedef real_type<scalar_t> real_t;
+    using blas::Op;
+    using blas::Layout;
+    using scalar_t = blas::scalar_type< TA, TC >;
+    using real_t   = blas::real_type< scalar_t >;
 
     // get & mark input values
     blas::Layout layout = params.layout();
@@ -136,7 +137,7 @@ void test_batch_syr2k_work( Params& params, bool run )
             check_herk( uplo_, n_, 2*k_, alpha_, beta_, Anorm[s], Bnorm[s], Cnorm[s],
                         Crefarray[s], ldc_, Carray[s], ldc_, verbose, &err, &ok );
 
-            error = max( error, err );
+            error = std::max( error, err );
             okay &= ok;
         }
 

@@ -18,8 +18,10 @@ template< typename TX, typename TS >
 void test_rot_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using namespace blas;
-    typedef real_type<TX> real_t;
+    using std::real;
+    using std::imag;
+    using blas::conj;
+    using real_t = blas::real_type< TX >;
 
     // get & mark input values
     int64_t n       = params.dim.n();
