@@ -76,6 +76,9 @@ void test_memcpy_work( Params& params, bool run )
     }
 
     // setup
+    if (verbose >= 1)
+        printf( "setup\n" );
+
     blas::Queue queue( device, 0 );
 
     // Allocate extra to verify copy doesn't overrun buffer.
@@ -102,6 +105,9 @@ void test_memcpy_work( Params& params, bool run )
     lapack_larnv( idist, iseed, size, d_host );
 
     // test error exits
+    if (verbose >= 1)
+        printf( "error exits\n" );
+
     assert_throw( blas::device_memcpy( c_dev, b_dev, -1, queue ), blas::Error );
 
     assert_throw( blas::device_copy_vector( -1, b_dev, 1, c_dev, 1, queue ), blas::Error );
@@ -130,6 +136,9 @@ void test_memcpy_work( Params& params, bool run )
 
     //----------
     // a_host -> b_dev
+    if (verbose >= 1)
+        printf( "a_host -> b_dev,  method %d\n", int( method ) );
+
     double time = sync_get_wtime( queue );
     if (method == Method::memcpy) {
         blas::device_memcpy( b_dev, a_host, n, queue );
@@ -144,6 +153,9 @@ void test_memcpy_work( Params& params, bool run )
 
     //----------
     // b_dev -> c_dev
+    if (verbose >= 1)
+        printf( "b_dev  -> c_dev,  method %d\n", int( method ) );
+
     double time2 = sync_get_wtime( queue );
     if (method == Method::memcpy) {
         blas::device_memcpy( c_dev, b_dev, n, queue );
@@ -156,6 +168,9 @@ void test_memcpy_work( Params& params, bool run )
 
     //----------
     // c_dev -> d_host
+    if (verbose >= 1)
+        printf( "c_dev  -> d_host, method %d\n", int( method ) );
+
     double time3 = sync_get_wtime( queue );
     if (method == Method::memcpy) {
         blas::device_memcpy( d_host, c_dev, n, queue );
@@ -170,6 +185,9 @@ void test_memcpy_work( Params& params, bool run )
 
     //----------
     // a_host -> b_host
+    if (verbose >= 1)
+        printf( "a_host -> b_host, method %d\n", int( method ) );
+
     double time4 = sync_get_wtime( queue );
     if (method == Method::memcpy) {
         blas::device_memcpy( b_host, a_host, n, queue );
@@ -182,6 +200,9 @@ void test_memcpy_work( Params& params, bool run )
 
     //----------
     // b_host -> c_host
+    if (verbose >= 1)
+        printf( "b_host -> c_host, method %d\n", int( method ) );
+
     double ref_time = sync_get_wtime( queue );
     blas::copy( n, b_host, inc_bd, c_host, inc_ac );
     ref_time = sync_get_wtime( queue ) - ref_time;
@@ -234,6 +255,9 @@ void test_memcpy_work( Params& params, bool run )
     }
     params.error() = error;
     params.okay() = (error == 0);  // copy must be exact
+
+    if (verbose >= 1)
+        printf( "cleanup\n" );
 
     blas::device_free_pinned( a_host, queue );
     blas::device_free_pinned( b_host, queue );
