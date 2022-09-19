@@ -563,6 +563,8 @@ void device_memcpy(
     T const* src,
     int64_t nelements, MemcpyKind kind, Queue& queue)
 {
+    blas_error_if( nelements < 0 );
+
     #ifdef BLAS_HAVE_CUBLAS
         blas_dev_call(
             cudaMemcpyAsync(
@@ -631,6 +633,8 @@ void device_memcpy_2d(
     T const* src, int64_t src_pitch,
     int64_t width, int64_t height, MemcpyKind kind, Queue& queue)
 {
+    blas_error_if( width  < 0 );
+    blas_error_if( height < 0 );
     blas_error_if( dst_pitch < width );
     blas_error_if( src_pitch < width );
 
