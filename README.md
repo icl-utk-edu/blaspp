@@ -35,7 +35,7 @@ which is funded by the [Department of Energy](https://energy.gov)
 as part of its [Exascale Computing Initiative](https://exascaleproject.org)
 (ECP).
 Closely related to BLAS++ is the
-[LAPACK++](https://bitbucket.org/icl/lapackpp) project,
+[LAPACK++](https://github.com/icl-utk-edu/lapackpp) project,
 which provides a C++ API for LAPACK.
 
 ![BLASPP](http://icl.bitbucket.io/slate/artwork/Bitbucket/blaspp_stack.png)
@@ -60,15 +60,15 @@ For assistance, visit the *SLATE User Forum* at
 Join by signing in with your Google credentials, then clicking
 *Join group to post*.
 
-Bug reports can be filed directly on Bitbucket's issue tracker:
-<https://bitbucket.org/icl/blaspp/issues?status=new&status=open>.
+Bug reports can be filed directly on Github's issue tracker:
+<https://github.com/icl-utk-edu/blaspp/issues>.
 
 * * *
 
 Resources
 --------------------------------------------------------------------------------
 
-* Visit the [LAPACK++ repository](https://bitbucket.org/icl/lapackpp)
+* Visit the [LAPACK++ repository](https://github.com/icl-utk-edu/lapackpp)
   for more information about the C++ API for LAPACK.
 * Visit the [SLATE website](http://icl.utk.edu/slate/)
   for more information about the SLATE project.
@@ -83,7 +83,7 @@ Contributing
 --------------------------------------------------------------------------------
 
 The SLATE project welcomes contributions from new developers.
-Contributions can be offered through the standard Bitbucket pull request model.
+Contributions can be offered through the standard Github pull request model.
 We strongly encourage you to coordinate large contributions with the SLATE
 development team early in the process.
 

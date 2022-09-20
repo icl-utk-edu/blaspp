@@ -3,10 +3,7 @@
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 #
-# CMake script for BLAS++ library
-# repo: http://bitbucket.org/icl/blaspp
-# Tests require TestSweeper library from
-#     http://bitbucket.org/icl/testsweeper
+# CMake script for BLAS++ library.
 
 cmake_minimum_required( VERSION 3.15 )
 # 3.1  target_compile_features

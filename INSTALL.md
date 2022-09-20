@@ -218,7 +218,7 @@ directory under the BLAS++ root directory:
     make
     make install
 
-BLAS++ uses the TestSweeper library (https://bitbucket.org/icl/testsweeper)
+BLAS++ uses the TestSweeper library (https://github.com/icl-utk-edu/testsweeper)
 to run its tests. If CMake doesn't find TestSweeper, it will be
 downloaded and compiled. To use a different TestSweeper build that was
 not installed, you can point to its directory.
