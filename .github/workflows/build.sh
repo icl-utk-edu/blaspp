@@ -1,4 +1,4 @@
-#!/bin/bash -xe 
+#!/bin/bash -xe
 
 maker=$1
 device=$2
@@ -14,8 +14,9 @@ make -j8 install
 ls -R ${top}/install
 
 section "======================================== Verify build"
-# Verify that tester linked with cublas or rocblas as intended.
 ldd test/tester
+
+# Verify that tester linked with cublas or rocblas as intended.
 if [ "${device}" = "gpu_nvidia" ]; then
     ldd test/tester | grep cublas || exit 1
 fi

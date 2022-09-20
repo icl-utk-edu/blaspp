@@ -30,4 +30,3 @@ jobs:
         run: .github/workflows/build.sh ${{matrix.maker}} ${{matrix.device}}
       - name: Test
         run: .github/workflows/test.sh ${{matrix.maker}} ${{matrix.device}}
-
