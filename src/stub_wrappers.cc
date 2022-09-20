@@ -5,13 +5,63 @@
 
 #include "blas/device.hh"
 
-#if ! defined(BLAS_HAVE_CUBLAS) && ! defined(BLAS_HAVE_ROCBLAS)
+#if ! defined(BLAS_HAVE_CUBLAS) && ! defined(BLAS_HAVE_ROCBLAS) && ! defined(BLAS_HAVE_ONEMKL)
 
 namespace blas {
 namespace device {
 
 // =============================================================================
 // Level 1 BLAS - Device Interfaces
+
+// -----------------------------------------------------------------------------
+// axpy
+// -----------------------------------------------------------------------------
+// saxpy
+void saxpy(
+    blas::Queue& queue,
+    device_blas_int n,
+    float alpha,
+    float *dx, device_blas_int incdx,
+    float *dy, device_blas_int incdy)
+{
+    throw blas::Error( "device BLAS not available", __func__ );
+}
+
+// -----------------------------------------------------------------------------
+// daxpy
+void daxpy(
+    blas::Queue& queue,
+    device_blas_int n,
+    double alpha,
+    double *dx, device_blas_int incdx,
+    double *dy, device_blas_int incdy)
+{
+    throw blas::Error( "device BLAS not available", __func__ );
+}
+
+// -----------------------------------------------------------------------------
+// caxpy
+void caxpy(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> alpha,
+    std::complex<float> *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy)
+{
+    throw blas::Error( "device BLAS not available", __func__ );
+}
+
+// -----------------------------------------------------------------------------
+// zaxpy
+void zaxpy(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> alpha,
+    std::complex<double> *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy)
+{
+    throw blas::Error( "device BLAS not available", __func__ );
+}
 
 // -----------------------------------------------------------------------------
 // scal
@@ -730,4 +780,4 @@ void batch_ztrsm(
 }  // namespace device
 }  // namespace blas
 
-#endif  // BLAS_HAVE_CUBLAS
+#endif  // ! defined(BLAS_HAVE_CUBLAS) && ! defined(BLAS_HAVE_ROCBLAS) ! defined(BLAS_HAVE_ONEMKL)

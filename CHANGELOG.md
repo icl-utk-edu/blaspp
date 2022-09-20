@@ -1,3 +1,8 @@
+2022.07.00
+  - Added workspace in queue; used in LAPACK++
+  - Set device in memcpy, etc.
+  - Updated Schur gemm test with tile layout
+
 2022.05.00
   - Added Level 3 BLAS template implementations
   - Added device copy, scal

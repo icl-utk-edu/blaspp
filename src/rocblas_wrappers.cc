@@ -64,6 +64,77 @@ rocblas_side side2rocblas(blas::Side side)
 // Level 1 BLAS - Device Interfaces
 
 // -----------------------------------------------------------------------------
+// axpy
+// -----------------------------------------------------------------------------
+// saxpy
+void saxpy(
+    blas::Queue& queue,
+    device_blas_int n,
+    float alpha,
+    float *dx, device_blas_int incdx,
+    float *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        rocblas_saxpy(
+            queue.handle(),
+            n, &alpha,
+            dx, incdx,
+            dy, incdy));
+}
+
+// -----------------------------------------------------------------------------
+// daxpy
+void daxpy(
+    blas::Queue& queue,
+    device_blas_int n,
+    double alpha,
+    double *dx, device_blas_int incdx,
+    double *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        rocblas_daxpy(
+            queue.handle(),
+            n, &alpha,
+            dx, incdx,
+            dy, incdy));
+}
+
+// -----------------------------------------------------------------------------
+// caxpy
+void caxpy(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> alpha,
+    std::complex<float> *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        rocblas_caxpy(
+            queue.handle(),
+            n, (rocblas_float_complex*) &alpha,
+            (rocblas_float_complex*) dx, incdx,
+            (rocblas_float_complex*) dy, incdy));
+}
+
+// -----------------------------------------------------------------------------
+// zaxpy
+void zaxpy(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> alpha,
+    std::complex<double> *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        rocblas_zaxpy(
+            queue.handle(),
+            n, (rocblas_double_complex*) &alpha,
+            (rocblas_double_complex*) dx, incdx,
+            (rocblas_double_complex*) dy, incdy));
+}
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // scal
 // -----------------------------------------------------------------------------
 // sscal
@@ -106,7 +177,7 @@ void cscal(
     blas_dev_call(
         rocblas_cscal(
             queue.handle(),
-            n, (const rocblas_float_complex*) &alpha,
+            n, (rocblas_float_complex*) &alpha,
             (rocblas_float_complex*) dx, incdx));
 }
 
@@ -121,7 +192,7 @@ void zscal(
     blas_dev_call(
         rocblas_zscal(
             queue.handle(),
-            n, (const rocblas_double_complex*) &alpha,
+            n, (rocblas_double_complex*) &alpha,
             (rocblas_double_complex*) dx, incdx));
 }
 

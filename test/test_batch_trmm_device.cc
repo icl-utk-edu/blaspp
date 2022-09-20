@@ -63,9 +63,9 @@ void test_batch_trmm_work_device( Params& params, bool run )
     TB* Bref = new TB[ batch * size_B ];
 
     // device specifics
-    blas::Queue queue(device, batch);
-    TA* dA = blas::device_malloc<TA>( batch * size_A );
-    TB* dB = blas::device_malloc<TB>( batch * size_B );
+    blas::Queue queue( device, batch );
+    TA* dA = blas::device_malloc<TA>( batch * size_A, queue );
+    TB* dB = blas::device_malloc<TB>( batch * size_B, queue );
 
     // pointer arrays
     std::vector<TA*>    Aarray( batch );
@@ -172,8 +172,8 @@ void test_batch_trmm_work_device( Params& params, bool run )
     delete[] Anorm;
     delete[] Bnorm;
 
-    blas::device_free( dA );
-    blas::device_free( dB );
+    blas::device_free( dA, queue );
+    blas::device_free( dB, queue );
 }
 
 // -----------------------------------------------------------------------------

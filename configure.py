@@ -12,7 +12,7 @@ from __future__ import print_function
 import sys
 import re
 import config
-from   config import Error, font, print_msg, print_warn
+from   config import Error, font, print_msg, print_warn, print_header
 import config.lapack
 
 #-------------------------------------------------------------------------------
@@ -40,17 +40,23 @@ are set so your compiler can find libraries. See INSTALL.md for more details.
 def main():
     config.init( namespace='BLAS', prefix='/opt/slate' )
     config.prog_cxx()
-    config.prog_cxx_flags([
-        '-O2', '-std=c++11', '-MMD',
-        '-Wall',
-        # '-pedantic',  # todo: conflict with ROCm 3.9.0
-        # '-Wshadow',   # todo: conflict with ROCm 3.9.0
-        '-Wno-unused-local-typedefs',
-        '-Wno-unused-function',
-        #'-Wmissing-declarations',
-        #'-Wconversion',
-        #'-Werror',
-    ])
+
+    print_header( 'C++ compiler flags' )
+    # Pick highest level supported. oneAPI needs C++17.
+    # Crusher had issue with -std=c++20 (2022-07).
+    config.prog_cxx_flag(
+        ['-std=c++17', '-std=c++14', '-std=c++11'])
+    config.prog_cxx_flag( '-O2' )
+    config.prog_cxx_flag( '-MMD' )
+    config.prog_cxx_flag( '-Wall' )
+    config.prog_cxx_flag( '-Wno-unused-local-typedefs' )
+    config.prog_cxx_flag( '-Wno-unused-function' )
+   #config.prog_cxx_flag( '-pedantic',  # todo: conflict with ROCm 3.9.0
+   #config.prog_cxx_flag( '-Wshadow',   # todo: conflict with ROCm 3.9.0
+   #config.prog_cxx_flag( '-Wmissing-declarations' )
+   #config.prog_cxx_flag( '-Wconversion' )
+   #config.prog_cxx_flag( '-Werror' )
+
     config.openmp()
 
     config.lapack.blas()
@@ -70,32 +76,7 @@ def main():
     except Error:
         print_warn( 'BLAS++ needs LAPACK only in testers.' )
 
-    gpu_backend = config.environ['gpu_backend'] or 'auto'
-    cuda_found = False
-    if (re.search( r'^(auto|cuda)$', gpu_backend )):
-        try:
-            config.cublas_library()
-            cuda_found = True
-            print_msg( "Building CUDA support in BLAS++" )
-        except Error as ex:
-            print_msg( "Not building CUDA support in BLAS++" )
-            if (gpu_backend == 'cuda'):
-                raise ex  # fatal
-    else:
-        print_warn( 'Skipping CUDA search. gpu_backend = ' + gpu_backend )
-
-    hip_found = False
-    if (not cuda_found and re.search( r'^(auto|hip)$', gpu_backend )):
-        try:
-            config.rocblas_library()
-            hip_found = True
-            print_msg( "Building HIP/ROCm support in BLAS++" )
-        except Error as ex:
-            print_msg( "Not building HIP/ROCm support in BLAS++" )
-            if (gpu_backend == 'hip'):
-                raise ex  # fatal
-    else:
-        print_warn( 'Skipping HIP/ROCm search. gpu_backend = ' + gpu_backend )
+    config.gpu_blas()
 
     testsweeper = config.get_package(
         'testsweeper',

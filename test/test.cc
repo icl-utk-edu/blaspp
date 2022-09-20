@@ -119,6 +119,9 @@ std::vector< testsweeper::routines_t > routines = {
     { "batch-trsm",   test_batch_trsm,   Section::blas3   },
     { "",              nullptr,          Section::newline },
 
+    { "dev-axpy",         test_axpy_device,         Section::device_blas1   },
+    { "",                 nullptr,                  Section::newline },
+
     { "dev-scal",         test_scal_device,         Section::device_blas1   },
     { "",                 nullptr,                  Section::newline },
 
@@ -164,7 +167,7 @@ std::vector< testsweeper::routines_t > routines = {
     { "dev-batch-trmm",   test_batch_trmm_device,   Section::device_blas3   },
     { "dev-batch-trsm",   test_batch_trsm_device,   Section::device_blas3   },
     { "",                 nullptr,                  Section::newline },
-    
+
     // auxiliary
     { "error",  test_error,  Section::aux     },
     { "max",    test_max,    Section::aux     },
@@ -195,6 +198,7 @@ Params::Params():
     //          name,      w,    type,            def,                    char2enum,         enum2char,         enum2str,         help
     datatype  ( "type",    4,    ParamType::List, DataType::Double,       char2datatype,     datatype2char,     datatype2str,     "s=single (float), d=double, c=complex-single, z=complex-double" ),
     layout    ( "layout",  6,    ParamType::List, blas::Layout::ColMajor, blas::char2layout, blas::layout2char, blas::layout2str, "layout: r=row major, c=column major" ),
+    format    ( "format",  6,    ParamType::List, blas::Format::LAPACK,   blas::char2format, blas::format2char, blas::format2str, "format: l=lapack, t=tile" ),
     side      ( "side",    6,    ParamType::List, blas::Side::Left,       blas::char2side,   blas::side2char,   blas::side2str,   "side: l=left, r=right" ),
     uplo      ( "uplo",    6,    ParamType::List, blas::Uplo::Lower,      blas::char2uplo,   blas::uplo2char,   blas::uplo2str,   "triangle: l=lower, u=upper" ),
     trans     ( "trans",   7,    ParamType::List, blas::Op::NoTrans,      blas::char2op,     blas::op2char,     blas::op2str,     "transpose: n=no-trans, t=trans, c=conj-trans" ),
@@ -216,6 +220,8 @@ Params::Params():
     // min, max are ignored
     //          name,                w, p, type,              default,               min, max, help
     error     ( "BLAS++\nerror",    11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "numerical error" ),
+    error2    ( "BLAS++\nerror2",   11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "numerical error 2" ),
+    error3    ( "BLAS++\nerror3",   11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "numerical error 3" ),
     time      ( "BLAS++\ntime (s)", 11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "time to solution" ),
     gflops    ( "BLAS++\nGflop/s",  11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "Gflop/s rate" ),
     gbytes    ( "BLAS++\nGbyte/s",  11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "Gbyte/s rate" ),

@@ -15,6 +15,36 @@ namespace blas {
 // Level 1 BLAS
 
 // -----------------------------------------------------------------------------
+// axpy
+void axpy(
+    int64_t n,
+    float alpha,
+    float *dx, int64_t incdx,
+    float *dy, int64_t incdy,
+    blas::Queue& queue);
+
+void axpy(
+    int64_t n,
+    double alpha,
+    double *dx, int64_t incdx,
+    double *dy, int64_t incdy,
+    blas::Queue& queue);
+
+void axpy(
+    int64_t n,
+    std::complex<float> alpha,
+    std::complex<float> *dx, int64_t incdx,
+    std::complex<float> *dy, int64_t incdy,
+    blas::Queue& queue);
+
+void axpy(
+    int64_t n,
+    std::complex<double> alpha,
+    std::complex<double> *dx, int64_t incdx,
+    std::complex<double> *dy, int64_t incdy,
+    blas::Queue& queue);
+
+// -----------------------------------------------------------------------------
 // scal
 void scal(
     int64_t n,

@@ -9,6 +9,8 @@
 #include <exception>
 #include <complex>
 #include <cstdarg>
+#include <limits>
+#include <vector>
 
 #include <assert.h>
 
@@ -23,6 +25,7 @@ enum class Op     : char { NoTrans  = 'N', Trans    = 'T', ConjTrans = 'C' };
 enum class Uplo   : char { Upper    = 'U', Lower    = 'L', General   = 'G' };
 enum class Diag   : char { NonUnit  = 'N', Unit     = 'U' };
 enum class Side   : char { Left     = 'L', Right    = 'R' };
+enum class Format : char { LAPACK   = 'L', Tile     = 'T' };
 
 // -----------------------------------------------------------------------------
 // Convert enum to LAPACK-style char.
@@ -31,6 +34,7 @@ inline char     op2char( Op     op     ) { return char(op);     }
 inline char   uplo2char( Uplo   uplo   ) { return char(uplo);   }
 inline char   diag2char( Diag   diag   ) { return char(diag);   }
 inline char   side2char( Side   side   ) { return char(side);   }
+inline char format2char( Format format ) { return char(format); }
 
 // -----------------------------------------------------------------------------
 // Convert enum to LAPACK-style string.
@@ -81,6 +85,15 @@ inline const char* side2str( Side side )
     return "";
 }
 
+inline const char* format2str( Format format )
+{
+    switch (format) {
+        case Format::LAPACK: return "lapack";
+        case Format::Tile: return "tile";
+    }
+    return "";
+}
+
 // -----------------------------------------------------------------------------
 // Convert LAPACK-style char to enum.
 inline Layout char2layout( char layout )
@@ -116,6 +129,13 @@ inline Side char2side( char side )
     side = (char) toupper( side );
     assert( side == 'L' || side == 'R' );
     return Side( side );
+}
+
+inline Format char2format( char format )
+{
+    format = (char) toupper( format );
+    assert( format == 'L' || format == 'T' );
+    return Format( format );
 }
 
 // -----------------------------------------------------------------------------
@@ -401,6 +421,66 @@ scalar_t make_scalar( blas::real_type<scalar_t> re,
     return MakeScalarTraits<scalar_t>::make( re, im );
 }
 
+// -----------------------------------------------------------------------------
+/// Type-safe sgn function
+/// @see Source: https://stackoverflow.com/a/4609795/5253097
+///
+template <typename real_t>
+int sgn( real_t val )
+{
+    return (real_t(0) < val) - (val < real_t(0));
+}
+
+// -----------------------------------------------------------------------------
+// Macros to compute scaling constants
+//
+// __Further details__
+//
+// Anderson E (2017) Algorithm 978: Safe scaling in the level 1 BLAS.
+// ACM Trans Math Softw 44:. https://doi.org/10.1145/3061665
+
+/// Unit in Last Place
+template <typename real_t>
+inline const real_t ulp()
+{
+    return std::numeric_limits< real_t >::epsilon();
+}
+
+/// Safe Minimum such that 1/safe_min() is representable
+template <typename real_t>
+inline const real_t safe_min()
+{
+    const int fradix = std::numeric_limits<real_t>::radix;
+    const int expm = std::numeric_limits<real_t>::min_exponent;
+    const int expM = std::numeric_limits<real_t>::max_exponent;
+
+    return max( pow(fradix, expm-1), pow(fradix, 1-expM) );
+}
+
+/// Safe Maximum such that 1/safe_max() is representable (SAFMAX := 1/SAFMIN)
+template <typename real_t>
+inline const real_t safe_max()
+{
+    const int fradix = std::numeric_limits<real_t>::radix;
+    const int expm = std::numeric_limits<real_t>::min_exponent;
+    const int expM = std::numeric_limits<real_t>::max_exponent;
+
+    return min( pow(fradix, 1-expm), pow(fradix, expM-1) );
+}
+
+/// Safe Minimum such that its square is representable
+template <typename real_t>
+inline const real_t root_min()
+{
+    return sqrt( safe_min<real_t>() / ulp<real_t>() );
+}
+
+/// Safe Maximum such that its square is representable
+template <typename real_t>
+inline const real_t root_max()
+{
+    return sqrt( safe_max<real_t>() * ulp<real_t>() );
+}
 
 //==============================================================================
 namespace internal {

@@ -109,6 +109,9 @@ def copyright():
                    stdout=PIPE, text=True ).rstrip().split( '\n' )
     print( '\n>> Updating copyright in:', end=' ' )
     for file in files:
+        if (re.search( r'^(old/|src/hip/)', file ) or os.path.isdir( file )):
+            continue
+
         print( file, end=', ' )
         file_sub( file,
                   r'Copyright \(c\) (\d+)(-\d+)?, University of Tennessee',
@@ -135,6 +138,8 @@ def make( project, version_h, version_c ):
     year  = today.year
     month = today.month
     release = 0
+
+    top_dir = os.getcwd()
 
     # Search for latest tag this month and increment release if found.
     tags = myrun( 'git tag', stdout=PIPE, text=True ).rstrip().split( '\n' )
@@ -226,4 +231,33 @@ def make( project, version_h, version_c ):
     tar = dir + '.tar.gz'
     print( '\n>> Creating tar file', tar )
     myrun( 'tar -zcvf '+ tar +' '+ dir )
+
+    #--------------------
+    # Update online docs.
+    myrun( ['rsync', '-av', '--delete',
+            '--exclude', 'artwork',  # keep artwork on icl.bitbucket.io
+            dir + '/docs/html/',
+            'icl.bitbucket.io/' + project + '/'] )
+
+    os.chdir( 'icl.bitbucket.io' )
+    myrun( 'git add ' + project )
+    myrun( 'git status' )
+    print( '>> Do changes look good? Commit docs [yn]? ', end='' )
+    response = input()
+    if (response != 'y'):
+        print( '>> Doc update aborted. Please revert changes as desired.' )
+        exit(1)
+
+    # Commit staged files.
+    myrun( ['git', 'commit', '-m', project + ' version ' + tag] )
+
+    print( '>> Run `git push` to make changes live [yn]? ', end='' )
+    response = input()
+    if (response == 'y'):
+        myrun( 'git push' )
+    else:
+        print( '>> Doc update aborted. Please revert changes as desired.' )
+        exit(1)
+
+    os.chdir( top_dir )
 # end

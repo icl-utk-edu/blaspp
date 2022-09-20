@@ -350,12 +350,13 @@ void test_make_scalar()
 void test_device()
 {
     printf( "%s\n", __func__ );
-    int verbose = 3;
 
     int cnt = blas::get_device_count();
     printf( "    get_device_count %d\n", cnt );
     require( cnt >= 0 );
 
+    #ifndef BLAS_HAVE_ONEMKL
+    int verbose = 3; // used in assert_throw
     blas::Device dev;
     if (cnt > 0) {
         blas::get_device( &dev );
@@ -373,6 +374,7 @@ void test_device()
         printf( "    get_device %d\n", dev );
         require( dev == cnt-1 );
     }
+    #endif
 }
 
 // -----------------------------------------------------------------------------

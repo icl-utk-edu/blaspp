@@ -36,8 +36,10 @@ void blas::copy(
     device_blas_int incdx_  = (device_blas_int) incdx;
     device_blas_int incdy_  = (device_blas_int) incdy;
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
-    
+    #endif
+
     device::scopy(
         queue,
         n_,
@@ -68,8 +70,10 @@ void blas::copy(
     device_blas_int incdx_  = (device_blas_int) incdx;
     device_blas_int incdy_  = (device_blas_int) incdy;
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
-    
+    #endif
+
     device::dcopy(
         queue,
         n_,
@@ -100,8 +104,10 @@ void blas::copy(
     device_blas_int incdx_  = (device_blas_int) incdx;
     device_blas_int incdy_  = (device_blas_int) incdy;
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
-    
+    #endif
+
     device::ccopy(
         queue,
         n_,
@@ -132,8 +138,10 @@ void blas::copy(
     device_blas_int incdx_  = (device_blas_int) incdx;
     device_blas_int incdy_  = (device_blas_int) incdy;
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
-    
+    #endif
+
     device::zcopy(
         queue,
         n_,

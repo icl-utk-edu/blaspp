@@ -17,7 +17,7 @@ cmake_minimum_required( VERSION 3.15 )
 
 project(
     blaspp
-    VERSION 2022.05.00
+    VERSION 2022.07.00
     LANGUAGES CXX
 )
 
@@ -233,6 +233,7 @@ add_library(
     src/device_symm.cc
     src/device_syr2k.cc
     src/device_syrk.cc
+    src/device_axpy.cc
     src/device_scal.cc
     src/device_swap.cc
     src/device_copy.cc

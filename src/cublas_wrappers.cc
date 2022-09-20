@@ -59,6 +59,76 @@ cublasSideMode_t side2cublas(blas::Side side)
 // Level 1 BLAS - Device Interfaces
 
 // -----------------------------------------------------------------------------
+// axpy
+// -----------------------------------------------------------------------------
+// saxpy
+void saxpy(
+    blas::Queue& queue,
+    device_blas_int n,
+    float alpha,
+    float *dx, device_blas_int incdx,
+    float *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        cublasSaxpy(
+            queue.handle(),
+            n, &alpha,
+            dx, incdx,
+            dy, incdy));
+}
+
+// -----------------------------------------------------------------------------
+// daxpy
+void daxpy(
+    blas::Queue& queue,
+    device_blas_int n,
+    double alpha,
+    double *dx, device_blas_int incdx,
+    double *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        cublasDaxpy(
+            queue.handle(),
+            n, &alpha,
+            dx, incdx,
+            dy, incdy));
+}
+
+// -----------------------------------------------------------------------------
+// caxpy
+void caxpy(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> alpha,
+    std::complex<float> *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        cublasCaxpy(
+            queue.handle(),
+            n, (const cuComplex*) &alpha,
+            (const cuComplex*) dx, incdx,
+            (cuComplex*) dy, incdy));
+}
+
+// -----------------------------------------------------------------------------
+// zaxpy
+void zaxpy(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> alpha,
+    std::complex<double> *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy)
+{
+    blas_dev_call(
+        cublasZaxpy(
+            queue.handle(),
+            n, (const cuDoubleComplex*) &alpha,
+            (const cuDoubleComplex*) dx, incdx,
+            (cuDoubleComplex*) dy, incdy));
+}
+
+// -----------------------------------------------------------------------------
 // scal
 // -----------------------------------------------------------------------------
 // sscal

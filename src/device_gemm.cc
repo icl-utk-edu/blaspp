@@ -71,7 +71,9 @@ void blas::gemm(
     device_blas_int lddb_   = (device_blas_int) lddb;
     device_blas_int lddc_   = (device_blas_int) lddc;
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     if (layout == Layout::RowMajor) {
         // swap transA <=> transB, m <=> n, B <=> A
         device::sgemm(
@@ -161,7 +163,9 @@ void blas::gemm(
     device_blas_int lddb_   = (device_blas_int) lddb;
     device_blas_int lddc_   = (device_blas_int) lddc;
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     if (layout == Layout::RowMajor) {
         // swap transA <=> transB, m <=> n, B <=> A
         device::dgemm(
@@ -250,7 +254,9 @@ void blas::gemm(
     device_blas_int lddb_   = (device_blas_int) lddb;
     device_blas_int lddc_   = (device_blas_int) lddc;
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     if (layout == Layout::RowMajor) {
         // swap transA <=> transB, m <=> n, B <=> A
         device::cgemm(
@@ -339,7 +345,9 @@ void blas::gemm(
     device_blas_int lddb_   = (device_blas_int) lddb;
     device_blas_int lddc_   = (device_blas_int) lddc;
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     if (layout == Layout::RowMajor) {
         // swap transA <=> transB, m <=> n, B <=> A
         device::zgemm(

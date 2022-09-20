@@ -60,9 +60,9 @@ void test_batch_syrk_device_work( Params& params, bool run )
     TC* Cref = new TC[ batch * size_C ];
 
     // device specifics
-    blas::Queue queue(device, batch);
-    TA* dA = blas::device_malloc<TA>( batch * size_A );
-    TC* dC = blas::device_malloc<TC>( batch * size_C );
+    blas::Queue queue( device, batch );
+    TA* dA = blas::device_malloc<TA>( batch * size_A, queue );
+    TC* dC = blas::device_malloc<TC>( batch * size_C, queue );
 
     // pointer arrays
     std::vector<TA*>    Aarray( batch );
@@ -165,8 +165,8 @@ void test_batch_syrk_device_work( Params& params, bool run )
     delete[] Anorm;
     delete[] Cnorm;
 
-    blas::device_free( dA );
-    blas::device_free( dC );
+    blas::device_free( dA, queue );
+    blas::device_free( dC, queue );
 }
 
 // -----------------------------------------------------------------------------

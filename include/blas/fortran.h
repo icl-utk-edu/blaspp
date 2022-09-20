@@ -358,22 +358,6 @@ void BLAS_drotmg(
     double const *y1,
     double *param );
 
-#define BLAS_crotmg BLAS_FORTRAN_NAME( crotmg, CROTMG )
-void BLAS_crotmg(
-    blas_complex_float *d1,
-    blas_complex_float *d2,
-    blas_complex_float *x1,
-    blas_complex_float const *y1,
-    blas_complex_float *param );
-
-#define BLAS_zrotmg BLAS_FORTRAN_NAME( zrotmg, ZROTMG )
-void BLAS_zrotmg(
-    blas_complex_double *d1,
-    blas_complex_double *d2,
-    blas_complex_double *x1,
-    blas_complex_double const *y1,
-    blas_complex_double *param );
-
 // -----------------------------------------------------------------------------
 #define BLAS_srotm BLAS_FORTRAN_NAME( srotm, SROTM )
 void BLAS_srotm(
@@ -388,20 +372,6 @@ void BLAS_drotm(
     double *x, blas_int const *incx,
     double *y, blas_int const *incy,
     double const *param );
-
-#define BLAS_crotm BLAS_FORTRAN_NAME( crotm, CROTM )
-void BLAS_crotm(
-    blas_int const *n,
-    blas_complex_float *x, blas_int const *incx,
-    blas_complex_float *y, blas_int const *incy,
-    blas_complex_float const *param );
-
-#define BLAS_zrotm BLAS_FORTRAN_NAME( zrotm, ZROTM )
-void BLAS_zrotm(
-    blas_int const *n,
-    blas_complex_double *x, blas_int const *incx,
-    blas_complex_double *y, blas_int const *incy,
-    blas_complex_double const *param );
 
 // =============================================================================
 // Level 2 BLAS - Fortran prototypes

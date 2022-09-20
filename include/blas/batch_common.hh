@@ -244,7 +244,7 @@ void trsm_check(
         delete[] internal_info;
 
         // throw an exception if needed
-         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
+        blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
     else {
         int64_t info_ = 0;
@@ -252,7 +252,7 @@ void trsm_check(
         for (size_t i = 0; i < batchCount; ++i) {
             info_ += info[i];
         }
-         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
+        blas_error_if_msg( info_ != 0, "One or more non-zero entry in vector info");
     }
 }
 
@@ -367,7 +367,7 @@ void trmm_check(
         for (size_t i = 0; i < batchCount; ++i) {
             info_ += info[i];
         }
-        blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
+        blas_error_if_msg( info_ != 0, "One or more non-zero entry in vector info");
     }
 }
 
@@ -492,7 +492,7 @@ void hemm_check(
         for (size_t i = 0; i < batchCount; ++i) {
             info_ += info[i];
         }
-         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
+        blas_error_if_msg( info_ != 0, "One or more non-zero entry in vector info");
     }
 }
 
@@ -595,7 +595,7 @@ void herk_check(
         delete[] internal_info;
 
         // throw an exception if needed
-         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
+        blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
     else {
         int64_t info_ = 0;
@@ -603,7 +603,7 @@ void herk_check(
         for (size_t i = 0; i < batchCount; ++i) {
             info_ += info[i];
         }
-         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
+        blas_error_if_msg( info_ != 0, "One or more non-zero entry in vector info");
     }
 }
 
@@ -725,7 +725,7 @@ void syrk_check(
         delete[] internal_info;
 
         // throw an exception if needed
-         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
+        blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
     else {
         int64_t info_ = 0;
@@ -733,7 +733,7 @@ void syrk_check(
         for (size_t i = 0; i < batchCount; ++i) {
             info_ += info[i];
         }
-         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
+        blas_error_if_msg( info_ != 0, "One or more non-zero entry in vector info");
     }
 }
 
@@ -850,7 +850,7 @@ void her2k_check(
         delete[] internal_info;
 
         // throw an exception if needed
-         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
+        blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
     else {
         int64_t info_ = 0;
@@ -858,7 +858,7 @@ void her2k_check(
         for (size_t i = 0; i < batchCount; ++i) {
             info_ += info[i];
         }
-         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
+        blas_error_if_msg( info_ != 0, "One or more non-zero entry in vector info");
     }
 }
 
@@ -975,7 +975,7 @@ void syr2k_check(
         delete[] internal_info;
 
         // throw an exception if needed
-         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
+        blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
     }
     else {
         int64_t info_ = 0;
@@ -983,7 +983,7 @@ void syr2k_check(
         for (size_t i = 0; i < batchCount; ++i) {
             info_ += info[i];
         }
-         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
+        blas_error_if_msg( info_ != 0, "One or more non-zero entry in vector info");
     }
 }
 

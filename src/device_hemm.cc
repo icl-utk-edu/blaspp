@@ -108,7 +108,9 @@ void blas::hemm(
         std::swap( m_, n_ );
     }
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     device::chemm(
             queue,
             side, uplo, m_, n_,
@@ -179,7 +181,9 @@ void blas::hemm(
         std::swap( m_, n_ );
     }
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
     device::zhemm(
             queue,
             side, uplo, m_, n_,

@@ -38,7 +38,9 @@ void blas::batch::hemm(
                         batch, info );
     }
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
 
     queue.fork();
     for (size_t i = 0; i < batch; ++i) {
@@ -94,7 +96,9 @@ void blas::batch::hemm(
                         batch, info );
     }
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
 
     queue.fork();
     for (size_t i = 0; i < batch; ++i) {
@@ -150,7 +154,9 @@ void blas::batch::hemm(
                         batch, info );
     }
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
 
     queue.fork();
     for (size_t i = 0; i < batch; ++i) {
@@ -206,7 +212,9 @@ void blas::batch::hemm(
                         batch, info );
     }
 
+    #ifndef BLAS_HAVE_ONEMKL
     blas::set_device( queue.device() );
+    #endif
 
     queue.fork();
     for (size_t i = 0; i < batch; ++i) {

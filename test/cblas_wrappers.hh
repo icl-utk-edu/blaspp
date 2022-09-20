@@ -8,7 +8,7 @@
 
 #include "blas/defines.h"
 
-#if defined(BLAS_HAVE_MKL)
+#if defined(BLAS_HAVE_MKL) || defined(BLAS_HAVE_ONEMKL)
     #if defined(BLAS_ILP64) && ! defined(MKL_ILP64)
         #define MKL_ILP64
     #endif
@@ -450,7 +450,6 @@ cblas_nrm2(
     return cblas_dznrm2( n, x, incx );
 }
 
-
 // -----------------------------------------------------------------------------
 inline void
 cblas_rot(
@@ -472,28 +471,19 @@ cblas_rot(
     cblas_drot( n, x, incx, y, incy, c, s );
 }
 
-inline void
+void
 cblas_rot(
     int n,
     std::complex<float> *x, int incx,
     std::complex<float> *y, int incy,
-    float c, std::complex<float> s )
-{
-    throw std::exception();
-    //cblas_crot( n, x, incx, y, incy, c, s );
-}
+    float c, std::complex<float> s );
 
-inline void
+void
 cblas_rot(
     int n,
     std::complex<double> *x, int incx,
     std::complex<double> *y, int incy,
-    double c, std::complex<double> s )
-{
-    throw std::exception();
-    //cblas_zrot( n, x, incx, y, incy, c, s );
-}
-
+    double c, std::complex<double> s );
 
 // -----------------------------------------------------------------------------
 inline void

@@ -17,6 +17,36 @@ namespace device {
 // Level 1 BLAS - Device Interfaces
 
 // -----------------------------------------------------------------------------
+// axpy
+void saxpy(
+    blas::Queue& queue,
+    device_blas_int n,
+    float alpha,
+    float *dx, device_blas_int incdx,
+    float *dy, device_blas_int incdy);
+
+void daxpy(
+    blas::Queue& queue,
+    device_blas_int n,
+    double alpha,
+    double *dx, device_blas_int incdx,
+    double *dy, device_blas_int incdy);
+
+void caxpy(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> alpha,
+    std::complex<float> *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy);
+
+void zaxpy(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> alpha,
+    std::complex<double> *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy);
+
+// -----------------------------------------------------------------------------
 // scal
 void sscal(
     blas::Queue& queue,

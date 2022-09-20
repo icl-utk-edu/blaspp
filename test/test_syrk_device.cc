@@ -22,15 +22,15 @@ void test_syrk_device_work( Params& params, bool run )
 
     // get & mark input values
     blas::Layout layout = params.layout();
-    blas::Op trans  = params.trans();
-    blas::Uplo uplo = params.uplo();
-    scalar_t alpha  = params.alpha();
-    scalar_t beta   = params.beta();
-    int64_t n       = params.dim.n();
-    int64_t k       = params.dim.k();
-    int64_t device  = params.device();
-    int64_t align   = params.align();
-    int64_t verbose = params.verbose();
+    blas::Op trans      = params.trans();
+    blas::Uplo uplo     = params.uplo();
+    scalar_t alpha      = params.alpha();
+    scalar_t beta       = params.beta();
+    int64_t n           = params.dim.n();
+    int64_t k           = params.dim.k();
+    int64_t device      = params.device();
+    int64_t align       = params.align();
+    int64_t verbose     = params.verbose();
 
     // mark non-standard output values
     params.gflops();
@@ -59,12 +59,12 @@ void test_syrk_device_work( Params& params, bool run )
     TC* Cref = new TC[ size_C ];
 
     // device specifics
-    blas::Queue queue(device,0);
+    blas::Queue queue( device, 0 );
     TA* dA;
     TC* dC;
 
-    dA = blas::device_malloc<TA>(size_A);
-    dC = blas::device_malloc<TC>(size_C);
+    dA = blas::device_malloc<TA>( size_A, queue );
+    dC = blas::device_malloc<TC>( size_C, queue );
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
@@ -73,7 +73,7 @@ void test_syrk_device_work( Params& params, bool run )
     lapack_lacpy( "g", n, n, C, ldc, Cref, ldc );
 
     blas::device_setmatrix(Am, An, A, lda, dA, lda, queue);
-    blas::device_setmatrix(n , n , C, ldc, dC, ldc, queue);
+    blas::device_setmatrix(n,  n,  C, ldc, dC, ldc, queue);
     queue.sync();
 
     // norms for error check
@@ -163,8 +163,8 @@ void test_syrk_device_work( Params& params, bool run )
     delete[] C;
     delete[] Cref;
 
-    blas::device_free( dA );
-    blas::device_free( dC );
+    blas::device_free( dA, queue );
+    blas::device_free( dC, queue );
 }
 
 // -----------------------------------------------------------------------------

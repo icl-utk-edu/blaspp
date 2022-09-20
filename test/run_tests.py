@@ -268,14 +268,17 @@ if (opts.blas1):
     [ 'dotu',  dtype      + n + incx + incy ],
     [ 'iamax', dtype      + n + incx_pos ],
     [ 'nrm2',  dtype      + n + incx_pos ],
-    [ 'rot',   dtype_real + n + incx + incy ],
+    [ 'rot',   dtype      + n + incx + incy ],
+    [ 'rotg',  dtype ],
     [ 'rotm',  dtype_real + n + incx + incy ],
+    [ 'rotmg', dtype_real ],
     [ 'scal',  dtype      + n + incx_pos ],
     [ 'swap',  dtype      + n + incx + incy ],
     ]
 
 if (opts.blas1_device):
     cmds += [
+    [ 'dev-axpy',  dtype + n + incx + incy ],
     [ 'dev-scal',  dtype + n + incx_pos    ],
     [ 'dev-swap',  dtype + n + incx + incy ],
     [ 'dev-copy',  dtype + n + incx + incy ],
@@ -336,7 +339,7 @@ if (opts.batch_blas3):
 if (opts.blas3_device):
     cmds += [
     [ 'dev-gemm',  dtype         + layout + align + transA + transB + mnk ],
-    [ 'schur-gemm',dtype         + align + ' --dim 512x512x32:64:32' ],
+    [ 'schur-gemm',dtype         + align + ' --dim 512x512x32:64:32' + ' --format l,t' ],
     [ 'dev-hemm',  dtype         + layout + align + side + uplo + mn ],
     [ 'dev-symm',  dtype         + layout + align + side + uplo + mn ],
     [ 'dev-trmm',  dtype         + layout + align + side + uplo + trans + diag + mn ],
