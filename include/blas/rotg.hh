@@ -34,7 +34,7 @@ namespace blas {
 ///     Cosine of rotation; real.
 ///
 /// @param[out] s
-///     Sine of rotation;   real.
+///     Sine of rotation; real.
 ///
 /// __Further details__
 ///
