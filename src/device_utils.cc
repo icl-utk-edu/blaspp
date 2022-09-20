@@ -10,7 +10,9 @@
 namespace blas {
 
 // -----------------------------------------------------------------------------
-// set device
+/// @deprecated
+/// Set current GPU device.
+/// (CUDA, ROCm only; doesn't work with SYCL.)
 void set_device( blas::Device device )
 {
     #ifdef BLAS_HAVE_CUBLAS
@@ -30,7 +32,9 @@ void set_device( blas::Device device )
 }
 
 // -----------------------------------------------------------------------------
-// get current device
+/// @deprecated
+/// Get current GPU device.
+/// (CUDA, ROCm only; doesn't work with SYCL.)
 void get_device( blas::Device *device )
 {
     #ifdef BLAS_HAVE_CUBLAS
@@ -54,7 +58,7 @@ void get_device( blas::Device *device )
 }
 
 // -----------------------------------------------------------------------------
-// @return number of GPU devices
+/// @return number of GPU devices.
 device_blas_int get_device_count()
 {
     device_blas_int dev_count = 0;
@@ -70,13 +74,13 @@ device_blas_int get_device_count()
             blas_dev_call( err );
 
     #elif defined(BLAS_HAVE_ONEMKL)
-    auto platforms = sycl::platform::get_platforms();
-    for (auto &platform : platforms) {
-        auto devices = platform.get_devices();
-        for (auto &device : devices ) {
-            dev_count += device.is_gpu();
+        auto platforms = sycl::platform::get_platforms();
+        for (auto &platform : platforms) {
+            auto devices = platform.get_devices();
+            for (auto &device : devices ) {
+                dev_count += device.is_gpu();
+            }
         }
-    }
 
     #else
         // return dev_count = 0
@@ -86,13 +90,13 @@ device_blas_int get_device_count()
 }
 
 // -----------------------------------------------------------------------------
-// @return a vector of sycl gpu devices
+/// @return vector of SYCL GPU devices.
 #ifdef BLAS_HAVE_ONEMKL
 void enumerate_devices(std::vector<cl::sycl::device> &devices)
 {
     device_blas_int dev_count = get_device_count();
 
-    if(devices.size() != (size_t)dev_count) {
+    if (devices.size() != (size_t)dev_count) {
         devices.clear();
         devices.reserve( dev_count );
     }
