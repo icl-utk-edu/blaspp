@@ -49,6 +49,7 @@ public:
     testsweeper::ParamInt    align;
     testsweeper::ParamInt    batch;
     testsweeper::ParamInt    device;
+    testsweeper::ParamChar   pointer_mode;
 
     // ----- output parameters
     testsweeper::ParamScientific error;
@@ -164,6 +165,7 @@ void test_batch_trsm  ( Params& params, bool run );
 // -----------------------------------------------------------------------------
 // Level 1 GPU BLAS
 void test_axpy_device  ( Params& params, bool run );
+void test_nrm2_device  ( Params& params, bool run );
 void test_scal_device  ( Params& params, bool run );
 void test_swap_device  ( Params& params, bool run );
 void test_copy_device  ( Params& params, bool run );

@@ -47,6 +47,32 @@ void zaxpy(
     std::complex<double> *dy, device_blas_int incdy);
 
 // -----------------------------------------------------------------------------
+// nrm2
+void snrm2(
+    blas::Queue& queue,
+    device_blas_int n,
+    float *dx, device_blas_int incdx,
+    float *result);
+
+void dnrm2(
+    blas::Queue& queue,
+    device_blas_int n,
+    double *dx, device_blas_int incdx,
+    double *result);
+
+void cnrm2(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> *dx, device_blas_int incdx,
+    float *result);
+
+void znrm2(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> *dx, device_blas_int incdx,
+    double *result);
+
+// -----------------------------------------------------------------------------
 // scal
 void sscal(
     blas::Queue& queue,

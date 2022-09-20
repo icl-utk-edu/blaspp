@@ -134,13 +134,84 @@ void zaxpy(
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
-        oneapi::mkl::blas::scal(
+        oneapi::mkl::blas::axpy(
             dev_queue,
             n,
             alpha,
             dx, incdx,
             dy, incdy));
 }
+
+// -----------------------------------------------------------------------------
+// nrm2
+// -----------------------------------------------------------------------------
+// snrm2
+void snrm2(
+    blas::Queue& queue,
+    device_blas_int n,
+    float *dx, device_blas_int incdx,
+    float *result)
+{
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::nrm2(
+            dev_queue,
+            n,
+            dx, incdx,
+            result));
+}
+
+// -----------------------------------------------------------------------------
+// dnrm2
+void dnrm2(
+    blas::Queue& queue,
+    device_blas_int n,
+    double *dx, device_blas_int incdx,
+    double *result)
+{
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::nrm2(
+            dev_queue,
+            n,
+            dx, incdx,
+            result));
+}
+
+// -----------------------------------------------------------------------------
+// cnrm2
+void cnrm2(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> *dx, device_blas_int incdx,
+    float *result)
+{
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::nrm2(
+            dev_queue,
+            n,
+            dx, incdx,
+            result));
+}
+
+// -----------------------------------------------------------------------------
+// znrm2
+void znrm2(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> *dx, device_blas_int incdx,
+    double *result)
+{
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::nrm2(
+            dev_queue,
+            n,
+            dx, incdx,
+            result));
+}
+
 // -----------------------------------------------------------------------------
 // scal
 // -----------------------------------------------------------------------------
