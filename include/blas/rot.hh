@@ -23,7 +23,6 @@ namespace blas {
 /// @see rotg to generate the rotation.
 ///
 /// Generic implementation for arbitrary data types.
-/// TODO: generic version not yet implemented.
 ///
 /// @param[in] n
 ///     Number of elements in x and y. n >= 0.
@@ -58,29 +57,39 @@ void rot(
     blas::real_type<TX, TY>   c,
     blas::scalar_type<TX, TY> s )
 {
-    throw std::exception();  // not yet implemented
+    typedef scalar_type<TX, TY> scalar_t;
 
-    // // check arguments
-    // blas_error_if( n < 0 );
-    // blas_error_if( incx == 0 );
-    // blas_error_if( incy == 0 );
-    //
-    // if (incx == 1 && incy == 1) {
-    //     // unit stride
-    //     for (int64_t i = 0; i < n; ++i) {
-    //         // TODO
-    //     }
-    // }
-    // else {
-    //     // non-unit stride
-    //     int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
-    //     int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
-    //     for (int64_t i = 0; i < n; ++i) {
-    //         // TODO
-    //         ix += incx;
-    //         iy += incy;
-    //     }
-    // }
+    // check arguments
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx == 0 );
+    blas_error_if( incy == 0 );
+
+    scalar_t zero( 0 );
+
+    // quick return
+    if (n == 0 || (c == 1 && s == zero))
+        return;
+
+    if (incx == 1 && incy == 1) {
+        // unit stride
+        for (int64_t i = 0; i < n; ++i) {
+            scalar_t stmp = c*x[i] + s*y[i];
+            y[i] = c*y[i] - conj(s)*x[i];
+            x[i] = stmp;
+        }
+    }
+    else {
+        // non-unit stride
+        int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
+        int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
+        for (int64_t i = 0; i < n; ++i) {
+            scalar_t stmp = c*x[ix] + s*y[iy];
+            y[iy] = c*y[iy] - conj(s)*x[ix];
+            x[ix] = stmp;
+            ix += incx;
+            iy += incy;
+        }
+    }
 }
 
 }  // namespace blas

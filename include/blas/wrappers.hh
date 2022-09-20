@@ -181,8 +181,6 @@ double nrm2(
     int64_t n,
     std::complex<double> const *x, int64_t incx );
 
-#endif  // BLAS_USE_TEMPLATE
-
 // -----------------------------------------------------------------------------
 /// @ingroup rot
 void rot(
@@ -280,8 +278,6 @@ void rotmg(
     double *a,
     double  b,
     double  param[5] );
-
-#ifndef BLAS_USE_TEMPLATE
 
 // -----------------------------------------------------------------------------
 /// @ingroup scal

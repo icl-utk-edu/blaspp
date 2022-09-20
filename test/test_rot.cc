@@ -49,15 +49,21 @@ void test_rot_work( Params& params, bool run )
     TX* xref = new TX[ size_x ];
     TX* y    = new TX[ size_y ];
     TX* yref = new TX[ size_y ];
-    TX s = rand() / double(RAND_MAX);    // todo: imag
-    real_t c = sqrt( 1 - real(s*conj(s)) );  // real
 
-    int64_t idist = 1;
+    // When TX is complex, TS can be real or complex.
+    TS s, data[ 2 ];
+    real_t c;  // real
+
+    int64_t idist = 2;
     int iseed[4] = { 0, 0, 0, 1 };
     lapack_larnv( idist, iseed, size_x, x );
     lapack_larnv( idist, iseed, size_y, y );
     cblas_copy( n, x, incx, xref, incx );
     cblas_copy( n, y, incy, yref, incy );
+
+    // Compute [c, s] to eliminate data[1].
+    lapack_larnv( idist, iseed, 2, data );
+    blas::rotg( &data[0], &data[0], &c, &s );
 
     // norms for error check
     real_t Xnorm = cblas_nrm2( n, x, std::abs(incx) );
@@ -71,8 +77,10 @@ void test_rot_work( Params& params, bool run )
 
     if (verbose >= 1) {
         printf( "\n"
+                "s = %.4f + %.4fi, c = %.4f, s^2 + c^2 = %.4f\n"
                 "x n=%5lld, inc=%5lld, size=%10lld\n"
                 "y n=%5lld, inc=%5lld, size=%10lld\n",
+                real( s ), imag( s ), c, real( s*conj(s) ) + c*c,
                 (lld) n, (lld) incx, (lld) size_x,
                 (lld) n, (lld) incy, (lld) size_y );
     }
@@ -153,6 +161,13 @@ void test_rot( Params& params, bool run )
             test_rot_work< double, double >( params, run );
             break;
 
+        case testsweeper::DataType::SingleComplex:
+            test_rot_work< std::complex<float>, std::complex<float> >( params, run );
+            break;
+
+        case testsweeper::DataType::DoubleComplex:
+            test_rot_work< std::complex<double>, std::complex<double> >( params, run );
+            break;
         // todo: real sine
         // todo: complex sine
 
