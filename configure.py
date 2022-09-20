@@ -65,27 +65,27 @@ def main():
     config.lapack.blas_complex_return()
     config.lapack.vendor_version()
 
-    # Must test mkl_version before cblas, to define HAVE_MKL.
+    # Must test mkl_version before cblas and lapacke, to define HAVE_MKL.
     try:
         config.lapack.cblas()
     except Error:
-        print_warn( 'BLAS++ needs CBLAS only in testers.' )
+        print_warn( 'BLAS++ needs CBLAS for testers.' )
 
     try:
         config.lapack.lapack()
     except Error:
-        print_warn( 'BLAS++ needs LAPACK only in testers.' )
+        print_warn( 'BLAS++ needs LAPACK for testers.' )
 
     config.gpu_blas()
 
     testsweeper = config.get_package(
-        'testsweeper',
+        'TestSweeper',
         ['../testsweeper', './testsweeper'],
-        'https://bitbucket.org/icl/testsweeper',
-        'https://bitbucket.org/icl/testsweeper/get/master.tar.gz',
+        'https://github.com/icl-utk-edu/testsweeper',
+        'https://github.com/icl-utk-edu/testsweeper/tarball/master',
         'testsweeper.tar.gz' )
     if (not testsweeper):
-        print_warn( 'BLAS++ needs TestSweeper only in testers.' )
+        print_warn( 'BLAS++ needs TestSweeper for testers.' )
 
     config.extract_defines_from_flags( 'CXXFLAGS', 'blaspp_header_defines' )
     config.output_files( ['make.inc', 'include/blas/defines.h'] )
