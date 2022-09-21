@@ -525,12 +525,14 @@ void device_memset(
     int value, int64_t nelements, Queue& queue)
 {
     #ifdef BLAS_HAVE_CUBLAS
+        blas::set_device( queue.device() );
         blas_dev_call(
             cudaMemsetAsync(
                 ptr, value,
                 nelements * sizeof(T), queue.stream() ) );
 
     #elif defined(BLAS_HAVE_ROCBLAS)
+        blas::set_device( queue.device() );
         blas_dev_call(
             hipMemsetAsync(
                 ptr, value,
@@ -566,12 +568,14 @@ void device_memcpy(
     blas_error_if( nelements < 0 );
 
     #ifdef BLAS_HAVE_CUBLAS
+        blas::set_device( queue.device() );
         blas_dev_call(
             cudaMemcpyAsync(
                 dst, src, sizeof(T)*nelements,
                 memcpy2cuda(kind), queue.stream() ) );
 
     #elif defined(BLAS_HAVE_ROCBLAS)
+        blas::set_device( queue.device() );
         blas_dev_call(
             hipMemcpyAsync(
                 dst, src, sizeof(T)*nelements,
@@ -639,6 +643,7 @@ void device_memcpy_2d(
     blas_error_if( src_pitch < width );
 
     #ifdef BLAS_HAVE_CUBLAS
+        blas::set_device( queue.device() );
         blas_dev_call(
             cudaMemcpy2DAsync(
                 dst, sizeof(T)*dst_pitch,
@@ -646,7 +651,8 @@ void device_memcpy_2d(
                 sizeof(T)*width, height, memcpy2cuda(kind), queue.stream() ) );
 
     #elif defined(BLAS_HAVE_ROCBLAS)
-         blas_dev_call(
+        blas::set_device( queue.device() );
+        blas_dev_call(
             hipMemcpy2DAsync(
                 dst, sizeof(T)*dst_pitch,
                 src, sizeof(T)*src_pitch,
