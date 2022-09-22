@@ -17,7 +17,7 @@ quiet() {
 print_section() {
     builtin echo "$*"
     date
-    case "$save_flags" in
+    case "${save_flags}" in
         (*x*)  set -x
     esac
 }
