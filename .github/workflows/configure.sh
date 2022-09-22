@@ -1,15 +1,25 @@
-#!/bin/bash -xe 
+#!/bin/bash -xe
 
 maker=$1
 device=$2
 
-if [ "$maker" = "cmake" ]; then
-   rm -rf build
-   mkdir -p build
+if [ "${maker}" = "cmake" ]; then
+    rm -rf build
+    mkdir -p build
 fi
 
-mydir=`dirname $0`
-source $mydir/setup_env.sh
+mydir=$(dirname $0)
+source ${mydir}/setup_env.sh
+
+section "======================================== Verify dependencies"
+quiet module list
+quiet which g++
+quiet g++ --version
+
+echo "MKLROOT=${MKLROOT}"
+
+section "======================================== Environment"
+env
 
 section "======================================== Setup build"
 export color=no

@@ -1,10 +1,10 @@
-#!/bin/bash -xe 
+#!/bin/bash -xe
 
 maker=$1
 device=$2
 
-mydir=`dirname $0`
-source $mydir/setup_env.sh
+mydir=$(dirname $0)
+source ${mydir}/setup_env.sh
 
 section "======================================== Tests"
 cd test
@@ -25,7 +25,7 @@ if [ "${maker}" = "make" ]; then
 fi
 if [ "${maker}" = "cmake" ]; then
     rm -rf build && mkdir build && cd build
-    cmake -DCMAKE_PREFIX_PATH=${top}/install/lib64/blaspp ..
+    cmake "-DCMAKE_PREFIX_PATH=${top}/install/lib64/blaspp" ..
 fi
 
 make
