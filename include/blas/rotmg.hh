@@ -104,7 +104,7 @@ void rotmg(
     T  param[5] )
 {
     using std::abs;
-    
+
     // Constants
     const T zero = 0;
     const T one = 1;

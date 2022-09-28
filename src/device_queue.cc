@@ -378,7 +378,7 @@ void Queue::join()
         handle_set_stream( handle_, *current_stream_ );
 
     #elif defined(BLAS_HAVE_ONEMKL)
-         // todo: see possible implementations for sycl
+        // todo: see possible implementations for sycl
         return;
     #endif
 }
@@ -401,7 +401,7 @@ void Queue::revolve()
         handle_set_stream( handle_, *current_stream_ );
 
     #elif defined(BLAS_HAVE_ONEMKL)
-         // todo: see possible implementations for sycl
+        // todo: see possible implementations for sycl
         return;
     #endif
 }
