@@ -8,7 +8,13 @@
 #endif
 
 #include <hip/hip_runtime.h>
-#include <rocblas.h>
+
+// Headers moved in ROCm 5.2
+#if HIP_VERSION >= 50200000
+    #include <rocblas/rocblas.h>
+#else
+    #include <rocblas.h>
+#endif
 
 #include <stdexcept>
 #include <cassert>
