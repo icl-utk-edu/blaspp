@@ -261,7 +261,7 @@ Params::Params():
     okay      ( "status",              6,    ParamType::Output,  -1,   0,   0, "success indicator" ),
     msg       ( "",       1, ParamType::Output,  "",           "error message" )
 {
-    // set header different than command line prefix 
+    // set header different than command line prefix
     pointer_mode.name("ptr", "pointer-mode");
 
     // mark standard set of output fields as used

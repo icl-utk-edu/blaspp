@@ -66,12 +66,12 @@ void rotg(
     const real_t bnorm = abs(*b);
 
     // quick return
-    if ( bnorm == zero ) {
+    if (bnorm == zero) {
         *c = one;
         *s = zero;
         *b = TB( 0.0 );
     }
-    else if ( anorm == zero ) {
+    else if (anorm == zero) {
         *c = zero;
         *s = one;
         *a = *b;
@@ -86,9 +86,9 @@ void rotg(
         *c = *a / r;
         *s = *b / r;
         *a = r;
-        if ( anorm > bnorm )
+        if (anorm > bnorm)
             *b = *s;
-        else if ( *c != zero )
+        else if (*c != zero)
             *b = one / *c;
         else
             *b = one;
@@ -137,7 +137,7 @@ void rotg(
     typedef complex_type<TA, TB> scalar_t;
     using std::abs;
 
-    #define ABSSQ(t_) real(t_)*real(t_) + imag(t_)*imag(t_)
+    #define BLAS_ABSSQ(t_) real(t_)*real(t_) + imag(t_)*imag(t_)
 
     // Constants
     const real_t r_one = 1;
@@ -153,18 +153,18 @@ void rotg(
     const real_t rtmax = root_max<real_t>();
 
     // quick return
-    if ( *b == zero_tb ) {
+    if (*b == zero_tb) {
         *c = r_one;
         *s = zero;
         return;
     }
 
-    if ( *a == zero_ta ) {
+    if (*a == zero_ta) {
         *c = r_zero;
         real_t g1 = max( abs(real(*b)), abs(imag(*b)) );
-        if ( g1 > rtmin && g1 < rtmax ) {
+        if (g1 > rtmin && g1 < rtmax) {
             // Use unscaled algorithm
-            real_t g2 = ABSSQ( *b );
+            real_t g2 = BLAS_ABSSQ( *b );
             real_t d = sqrt( g2 );
             *s = conj( *b ) / d;
             *a = d;
@@ -174,7 +174,7 @@ void rotg(
             real_t u = min( safmax, max( safmin, g1 ) );
             real_t uu = r_one / u;
             scalar_t gs = (*b)*uu;
-            real_t g2 = ABSSQ( gs );
+            real_t g2 = BLAS_ABSSQ( gs );
             real_t d = sqrt( g2 );
             *s = conj( gs ) / d;
             *a = d*u;
@@ -183,11 +183,11 @@ void rotg(
     else {
         real_t f1 = max( abs(real(*a)), abs(imag(*a)) );
         real_t g1 = max( abs(real(*b)), abs(imag(*b)) );
-        if ( f1 > rtmin && f1 < rtmax &&
-            g1 > rtmin && g1 < rtmax ) {
+        if (f1 > rtmin && f1 < rtmax
+            && g1 > rtmin && g1 < rtmax) {
             // Use unscaled algorithm
-            real_t f2 = ABSSQ( *a );
-            real_t g2 = ABSSQ( *b );
+            real_t f2 = BLAS_ABSSQ( *a );
+            real_t g2 = BLAS_ABSSQ( *b );
             real_t h2 = f2 + g2;
             real_t d = ( f2 > rtmin && h2 < rtmax )
                        ? sqrt( f2*h2 )
@@ -195,30 +195,30 @@ void rotg(
             real_t p = r_one / d;
             *c  = f2*p;
             *s  = conj( *b )*( (*a)*p );
-            *a *= h2*p ;
+            *a *= h2*p;
         }
         else {
             // Use scaled algorithm
             real_t u = min( safmax, max( safmin, f1, g1 ) );
             real_t uu = r_one / u;
             scalar_t gs = (*b)*uu;
-            real_t g2 = ABSSQ( gs );
+            real_t g2 = BLAS_ABSSQ( gs );
             real_t f2, h2, w;
             scalar_t fs;
-            if ( f1*uu < rtmin ) {
+            if (f1*uu < rtmin) {
                 // a is not well-scaled when scaled by g1.
                 real_t v = min( safmax, max( safmin, f1 ) );
                 real_t vv = r_one / v;
                 w = v * uu;
                 fs = (*a)*vv;
-                f2 = ABSSQ( fs );
+                f2 = BLAS_ABSSQ( fs );
                 h2 = f2*w*w + g2;
             }
             else {
                 // Otherwise use the same scaling for a and b.
                 w = r_one;
                 fs = (*a)*uu;
-                f2 = ABSSQ( fs );
+                f2 = BLAS_ABSSQ( fs );
                 h2 = f2 + g2;
             }
             real_t d = ( f2 > rtmin && h2 < rtmax )
@@ -231,7 +231,7 @@ void rotg(
         }
     }
 
-    #undef ABSSQ
+    #undef BLAS_ABSSQ
 }
 
 }  // namespace blas

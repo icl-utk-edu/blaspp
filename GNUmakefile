@@ -31,7 +31,7 @@ python ?= python3
 force: ;
 
 make.inc:
-	$(python) configure.py
+	${python} configure.py
 
 # Defaults if not given in make.inc. GNU make doesn't have defaults for these.
 RANLIB   ?= ranlib
@@ -206,7 +206,7 @@ test/clean:
 test/check: check
 
 check: tester
-	cd test; $(python) run_tests.py --quick
+	cd test; ${python} run_tests.py --quick
 
 #-------------------------------------------------------------------------------
 # headers
