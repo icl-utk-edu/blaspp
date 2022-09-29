@@ -28,7 +28,7 @@ alias section='{ save_flags="$-"; set +x; } 2> /dev/null; print_section'
 quiet source /etc/profile
 
 hostname && pwd
-export top=`pwd`
+export top=$(pwd)
 
 shopt -s expand_aliases
 
