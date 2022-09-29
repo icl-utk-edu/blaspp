@@ -87,8 +87,8 @@ void test_ger_work( Params& params, bool run )
                 "x Xm=%5lld, inc=%5lld,           size=%10lld, norm=%.2e\n"
                 "y Ym=%5lld, inc=%5lld,           size=%10lld, norm=%.2e\n",
                 llong( Am ), llong( An ), llong( lda ), llong( size_A ), Anorm,
-                llong( m ), llong( incx ),          llong( size_x ), Xnorm,
-                llong( n ), llong( incy ),          llong( size_y ), Ynorm );
+                llong( m ), llong( incx ), llong( size_x ), Xnorm,
+                llong( n ), llong( incy ), llong( size_y ), Ynorm );
     }
     if (verbose >= 2) {
         printf( "alpha = %.4e + %.4ei;\n",

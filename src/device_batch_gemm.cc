@@ -85,11 +85,11 @@ void gemm(
 
             // copy Aarray, Barray, and Carray to device
             device_setvector<float*>(
-                ibatch, (float**) &Aarray[ib], 1, dAarray, 1, queue);
+                ibatch, (float**) &Aarray[ib], 1, dAarray, 1, queue );
             device_setvector<float*>(
-                ibatch, (float**) &Barray[ib], 1, dBarray, 1, queue);
+                ibatch, (float**) &Barray[ib], 1, dBarray, 1, queue );
             device_setvector<float*>(
-                ibatch, (float**) &Carray[ib], 1, dCarray, 1, queue);
+                ibatch, (float**) &Carray[ib], 1, dCarray, 1, queue );
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
@@ -206,11 +206,11 @@ void gemm(
 
             // copy Aarray, Barray, and Carray to device
             device_setvector<double*>(
-                ibatch, (double**) &Aarray[ib], 1, dAarray, 1, queue);
+                ibatch, (double**) &Aarray[ib], 1, dAarray, 1, queue );
             device_setvector<double*>(
-                ibatch, (double**) &Barray[ib], 1, dBarray, 1, queue);
+                ibatch, (double**) &Barray[ib], 1, dBarray, 1, queue );
             device_setvector<double*>(
-                ibatch, (double**) &Carray[ib], 1, dCarray, 1, queue);
+                ibatch, (double**) &Carray[ib], 1, dCarray, 1, queue );
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
@@ -329,13 +329,13 @@ void gemm(
             // copy Aarray, Barray, and Carray to device
             device_setvector< std::complex<float> *>(
                 ibatch, (std::complex<float>**) &Aarray[ib], 1,
-                dAarray, 1, queue);
+                dAarray, 1, queue );
             device_setvector< std::complex<float> *>(
                 ibatch, (std::complex<float>**) &Barray[ib], 1,
-                dBarray, 1, queue);
+                dBarray, 1, queue );
             device_setvector< std::complex<float> *>(
                 ibatch, (std::complex<float>**) &Carray[ib], 1,
-                dCarray, 1, queue);
+                dCarray, 1, queue );
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A

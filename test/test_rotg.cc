@@ -37,7 +37,7 @@ void test_rotg_work( Params& params, bool run )
     std::vector<T> a( n ), aref( n ), a_in( n );
     std::vector<T> b( n ), bref( n ), b_in( n );
     std::vector<T> s( n ), sref( n );
-    std::vector< blas::real_type< T > > c( n ), cref( n );
+    std::vector<real_t> c( n ), cref( n );
 
     int64_t idist = 3;
     int iseed[4] = { 0, 0, 0, 1 };

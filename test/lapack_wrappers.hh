@@ -115,7 +115,7 @@ double lapack_lantr( char const *norm, char const *uplo, char const *diag,
                      double *work );
 
 // -----------------------------------------------------------------------------
-template <typename TA, typename TB> inline
+template <typename TA, typename TB>
 void lapack_lacpy( char const* uplo,
                      int64_t m, int64_t n,
                      TA const *A, int64_t lda,
