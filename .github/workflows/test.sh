@@ -6,7 +6,7 @@ device=$2
 mydir=$(dirname $0)
 source ${mydir}/setup_env.sh
 
-section "======================================== Tests"
+print "======================================== Tests"
 cd test
 export OMP_NUM_THREADS=8
 ./run_tests.py --blas1 --blas2 --blas3 --quick --xml ${top}/report-${maker}.xml
@@ -16,7 +16,7 @@ export OMP_NUM_THREADS=8
 ./run_tests.py --blas1-device --blas3-device --quick --xml ${top}/report-${maker}-device.xml
 ./run_tests.py --batch-blas3-device          --quick --xml ${top}/report-${maker}-batch-device.xml
 
-section "======================================== Smoke tests"
+print "======================================== Smoke tests"
 cd ${top}/example
 
 if [ "${maker}" = "make" ]; then
@@ -32,5 +32,4 @@ make
 ./example_gemm || exit 1
 ./example_util || exit 1
 
-section "======================================== Finished"
-
+print "======================================== Finished"

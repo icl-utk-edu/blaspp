@@ -11,17 +11,17 @@ fi
 mydir=$(dirname $0)
 source ${mydir}/setup_env.sh
 
-section "======================================== Verify dependencies"
+print "======================================== Verify dependencies"
 quiet module list
 quiet which g++
 quiet g++ --version
 
 echo "MKLROOT=${MKLROOT}"
 
-section "======================================== Environment"
+print "======================================== Environment"
 env
 
-section "======================================== Setup build"
+print "======================================== Setup build"
 export color=no
 rm -rf ${top}/install
 if [ "${maker}" = "make" ]; then
@@ -32,4 +32,3 @@ if [ "${maker}" = "cmake" ]; then
     cmake -Dcolor=no -DCMAKE_CXX_FLAGS="-Werror" \
           -DCMAKE_INSTALL_PREFIX=${top}/install ..
 fi
-
