@@ -15,11 +15,12 @@ if (NOT lapack_found_)
 endif()
 
 # Search for TestSweeper library, if not already included (e.g., in SLATE).
-message( STATUS "Checking for TestSweeper library" )
+message( STATUS "${bold}Checking for TestSweeper library${not_bold}" )
 if (NOT TARGET testsweeper)
     find_package( testsweeper QUIET )
     if (testsweeper_FOUND)
-        message( "   Found TestSweeper library: ${testsweeper_DIR}" )
+        message( "   ${blue}Found TestSweeper library: ${testsweeper_DIR}${plain}" )
+        message( "" )
     else()
         set( url "https://github.com/icl-utk-edu/testsweeper" )
         set( tag "2021.04.00" )
@@ -34,7 +35,7 @@ if (NOT TARGET testsweeper)
         message( "" )
     endif()
 else()
-    message( "   TestSweeper already included" )
+    message( "   ${blue}TestSweeper already included${plain}" )
 endif()
 
 #-------------------------------------------------------------------------------
