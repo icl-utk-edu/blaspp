@@ -12,16 +12,16 @@ quiet() {
     set -x
 }
 
-# `section` is like `echo`, but suppresses output of the command itself.
+# `print` is like `echo`, but suppresses output of the command itself.
 # https://superuser.com/a/1141026
-print_section() {
+echo_and_restore() {
     builtin echo "$*"
     date
     case "${save_flags}" in
         (*x*)  set -x
     esac
 }
-alias section='{ save_flags="$-"; set +x; } 2> /dev/null; print_section'
+alias print='{ save_flags="$-"; set +x; } 2> /dev/null; echo_and_restore'
 
 
 #-------------------------------------------------------------------------------
@@ -33,12 +33,12 @@ export top=$(pwd)
 shopt -s expand_aliases
 
 
-section "======================================== Load compiler"
+print "======================================== Load compiler"
 quiet module load gcc@7.3.0
 quiet module load intel-mkl
 
 if [ "${device}" = "gpu_nvidia" ]; then
-    section "======================================== Load CUDA"
+    print "======================================== Load CUDA"
     export CUDA_HOME=/usr/local/cuda/
     export PATH=${PATH}:${CUDA_HOME}/bin
     export CPATH=${CPATH}:${CUDA_HOME}/include
@@ -48,7 +48,7 @@ if [ "${device}" = "gpu_nvidia" ]; then
 fi
 
 if [ "${device}" = "gpu_amd" ]; then
-    section "======================================== Load ROCm"
+    print "======================================== Load ROCm"
     export PATH=${PATH}:/opt/rocm/bin
     export CPATH=${CPATH}:/opt/rocm/include
     export LIBRARY_PATH=${LIBRARY_PATH}:/opt/rocm/lib:/opt/rocm/lib64
@@ -58,7 +58,7 @@ if [ "${device}" = "gpu_amd" ]; then
 fi
 
 if [ "${maker}" = "cmake" ]; then
-    section "======================================== Load cmake"
+    print "======================================== Load cmake"
     quiet module load cmake
     which cmake
     cmake --version
