@@ -54,6 +54,11 @@ set_property( CACHE gpu_backend PROPERTY STRINGS
 # After color.
 include( "cmake/util.cmake" )
 
+# Recognize CTest's BUILD_TESTING flag. (Quotes required.)
+if (NOT "${BUILD_TESTING}" STREQUAL "")
+    set( build_tests "${BUILD_TESTING}" )
+endif()
+
 # Default prefix=/opt/slate
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT
     AND blaspp_is_project)
