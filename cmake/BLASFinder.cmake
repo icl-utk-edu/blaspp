@@ -56,7 +56,7 @@ set( blas_threaded_cached  ${blas_threaded}  CACHE INTERNAL "" )
 
 include( "cmake/util.cmake" )
 
-message( STATUS "Looking for BLAS libraries and options" )
+message( STATUS "${bold}Looking for BLAS libraries and options${not_bold} (blas = ${blas})" )
 
 #-------------------------------------------------------------------------------
 # Prints the BLAS_{name,libs}_lists.
@@ -441,7 +441,10 @@ foreach (blas_name IN LISTS blas_name_list)
     list( GET blas_libs_list ${i} blas_libs )
     math( EXPR i "${i}+1" )
 
-    message( "${bold}${blas_name}${not_bold}" )
+    if (i GREATER 1)
+        message( "" )
+    endif()
+    message( "${blas_name}" )
     message( "   libs:  ${blas_libs}" )
 
     # Strip to deal with default lib being space, " ".
@@ -525,7 +528,6 @@ foreach (blas_name IN LISTS blas_name_list)
             break()
         endif()
     endforeach()
-    message( "" )
 
     # Break loops as described above.
     if (BLAS_FOUND)
@@ -548,3 +550,4 @@ BLAS_FOUND          = '${BLAS_FOUND}'
 BLAS_LIBRARIES      = '${BLAS_LIBRARIES}'
 blaspp_defs_        = '${blaspp_defs_}'
 ")
+message( "" )

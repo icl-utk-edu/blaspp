@@ -51,6 +51,9 @@ set( gpu_backend "auto" CACHE STRING "GPU backend to use" )
 set_property( CACHE gpu_backend PROPERTY STRINGS
               auto cuda hip none )
 
+# After color.
+include( "cmake/util.cmake" )
+
 # Default prefix=/opt/slate
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT
     AND blaspp_is_project)
@@ -225,7 +228,7 @@ add_library(
 message( "" )
 set( blaspp_use_cuda false )  # output in blasppConfig.cmake.in
 if (gpu_backend MATCHES "^(auto|cuda)$")
-    message( STATUS "Looking for CUDA" )
+    message( STATUS "${bold}Looking for CUDA${not_bold} (gpu_backend = ${gpu_backend})" )
     if (gpu_backend STREQUAL "cuda")
         find_package( CUDAToolkit REQUIRED )
     else()
@@ -239,12 +242,12 @@ if (gpu_backend MATCHES "^(auto|cuda)$")
         # Some platforms need these to be public libraries.
         target_link_libraries(
             blaspp PUBLIC CUDA::cudart CUDA::cublas )
-        message( STATUS "Building CUDA support" )
+        message( STATUS "${blue}Building CUDA support${plain}" )
     else()
-        message( STATUS "No CUDA support: CUDA not found" )
+        message( STATUS "${red}No CUDA support: CUDA not found${plain}" )
     endif()
 else()
-    message( STATUS "No CUDA support: gpu_backend = ${gpu_backend}" )
+    message( STATUS "${red}No CUDA support: gpu_backend = ${gpu_backend}${plain}" )
 endif()
 
 #-------------------------------------------------------------------------------
@@ -254,7 +257,7 @@ set( blaspp_use_hip false )  # output in blasppConfig.cmake.in
 if (NOT CUDAToolkit_FOUND
     AND gpu_backend MATCHES "^(auto|hip)$")
 
-    message( STATUS "Looking for HIP/ROCm" )
+    message( STATUS "${bold}Looking for HIP/ROCm${not_bold} (gpu_backend = ${gpu_backend})" )
     if (gpu_backend STREQUAL "hip")
         find_package( rocblas REQUIRED )
     else()
@@ -268,12 +271,12 @@ if (NOT CUDAToolkit_FOUND
         # Some platforms need these to be public libraries.
         target_link_libraries(
             blaspp PUBLIC roc::rocblas )
-        message( STATUS "Building HIP/ROCm support" )
+        message( STATUS "${blue}Building HIP/ROCm support${plain}" )
     else()
-        message( STATUS "No HIP/ROCm support: ROCm not found" )
+        message( STATUS "${red}No HIP/ROCm support: ROCm not found${plain}" )
     endif()
 else()
-    message( STATUS "No HIP/ROCm support: gpu_backend = ${gpu_backend}" )
+    message( STATUS "${red}No HIP/ROCm support: gpu_backend = ${gpu_backend}${plain}" )
 endif()
 
 #-------------------------------------------------------------------------------
