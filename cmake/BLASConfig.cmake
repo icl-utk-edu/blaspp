@@ -29,6 +29,9 @@ if (NOT found)
         message( "${blue}   Accelerate framework${plain}" )
         list( APPEND blaspp_defs_ "-DBLAS_HAVE_ACCELERATE" )
         set( found true )
+        if (NOT DEFINED blas_return_float_f2c)
+            set( blas_return_float_f2c true )
+        endif()
     endif()
 endif()
 
@@ -47,6 +50,12 @@ if (NOT found)
         RUN_OUTPUT_VARIABLE
             run_output
     )
+    # For cross-compiling, if it links, assume the run is okay.
+    if (CMAKE_CROSSCOMPILING AND compile_result)
+        message( DEBUG "cross: mkl" )
+        set( run_result "0" CACHE STRING "" FORCE )
+        set( run_output "MKL_VERSION=unknown" CACHE STRING "" FORCE )
+    endif()
     debug_try_run( "mkl_version.cc" "${compile_result}" "${compile_output}"
                                     "${run_result}" "${run_output}" )
 
@@ -72,6 +81,12 @@ if (NOT found)
         RUN_OUTPUT_VARIABLE
             run_output
     )
+    # For cross-compiling, if it links, assume the run is okay.
+    if (CMAKE_CROSSCOMPILING AND compile_result)
+        message( DEBUG "cross: essl" )
+        set( run_result "0"  CACHE STRING "" FORCE )
+        set( run_output "ESSL_VERSION=unknown" CACHE STRING "" FORCE )
+    endif()
     debug_try_run( "essl_version.cc" "${compile_result}" "${compile_output}"
                                      "${run_result}" "${run_output}" )
 
@@ -97,6 +112,12 @@ if (NOT found)
         RUN_OUTPUT_VARIABLE
             run_output
     )
+    # For cross-compiling, if it links, assume the run is okay.
+    if (CMAKE_CROSSCOMPILING AND compile_result)
+        message( DEBUG "cross: openblas" )
+        set( run_result "0"  CACHE STRING "" FORCE )
+        set( run_output "OPENBLAS_VERSION=unknown" CACHE STRING "" FORCE )
+    endif()
     debug_try_run( "openblas_version.cc" "${compile_result}" "${compile_output}"
                                          "${run_result}" "${run_output}" )
 
@@ -122,6 +143,12 @@ if (NOT found)
         RUN_OUTPUT_VARIABLE
             run_output
     )
+    # For cross-compiling, if it links, assume the run is okay.
+    if (CMAKE_CROSSCOMPILING AND compile_result)
+        message( DEBUG "cross: acml" )
+        set( run_result "0"  CACHE STRING "" FORCE )
+        set( run_output "ACML_VERSION=unknown" CACHE STRING "" FORCE )
+    endif()
     debug_try_run( "acml_version.cc" "${compile_result}" "${compile_output}"
                                      "${run_result}" "${run_output}" )
 
@@ -151,6 +178,20 @@ try_run(
     RUN_OUTPUT_VARIABLE
         run_output
 )
+# For cross-compiling, user must provide extra info.
+if (CMAKE_CROSSCOMPILING AND compile_result)
+    message( DEBUG "cross: blas_complex_return = '${blas_complex_return}'" )
+    set( run_result "0"  CACHE STRING "" FORCE )
+    if (blas_complex_return STREQUAL "return")
+        set( run_output "ok" CACHE STRING "" FORCE )
+    elseif (blas_complex_return STREQUAL "argument")
+        set( run_output "failed" CACHE STRING "" FORCE )
+    else()
+        message( FATAL_ERROR " ${red}When cross-compiling, one must define either\n"
+                 " `blas_complex_return=return` (GNU gfortran convention) or\n"
+                 " `blas_complex_return=argument` (Intel ifort convention).${plain}" )
+    endif()
+endif()
 debug_try_run( "return_complex.cc" "${compile_result}" "${compile_output}"
                                    "${run_result}" "${run_output}" )
 
@@ -171,6 +212,13 @@ else()
         RUN_OUTPUT_VARIABLE
             run_output
     )
+    # For cross-compiling, user must provide extra info.
+    if (CMAKE_CROSSCOMPILING AND compile_result)
+        message( DEBUG "cross: blas_complex_return = '${blas_complex_return}' (2)" )
+        set( run_result "0"  CACHE STRING "" FORCE )
+        set( run_output "ok" CACHE STRING "" FORCE )
+        assert( blas_complex_return STREQUAL "argument" )  # follows from above
+    endif()
     debug_try_run( "return_complex_argument.cc"
                    "${compile_result}" "${compile_output}"
                    "${run_result}" "${run_output}" )
@@ -199,6 +247,17 @@ try_run(
     RUN_OUTPUT_VARIABLE
         run_output
 )
+# For cross-compiling, assume the run is okay unless the user provides
+# ${blas_return_float_f2c}.
+if (CMAKE_CROSSCOMPILING AND compile_result)
+    message( DEBUG "cross: not blas_return_float_f2c = '${blas_return_float_f2c}'" )
+    set( run_result "0"  CACHE STRING "" FORCE )
+    if (blas_return_float_f2c)
+        set( run_output "failed" CACHE STRING "" FORCE )
+    else()
+        set( run_output "ok" CACHE STRING "" FORCE )
+    endif()
+endif()
 debug_try_run( "return_float.cc" "${compile_result}" "${compile_output}"
                                  "${run_result}" "${run_output}" )
 
@@ -220,6 +279,13 @@ else()
         RUN_OUTPUT_VARIABLE
             run_output
     )
+    # For cross-compiling, user must provide ${blas_return_float_f2c}.
+    if (CMAKE_CROSSCOMPILING AND compile_result)
+        message( DEBUG "cross: blas_return_float_f2c = ${blas_return_float_f2c}" )
+        set( run_result "0"  CACHE STRING "" FORCE )
+        set( run_output "ok" CACHE STRING "" FORCE )
+        assert( blas_return_float_f2c )  # follows from above
+    endif()
     debug_try_run( "return_float_f2c.cc" "${compile_result}" "${compile_output}"
                                          "${run_result}" "${run_output}" )
 

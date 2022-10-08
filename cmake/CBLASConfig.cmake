@@ -53,6 +53,12 @@ foreach (lib IN LISTS lib_list)
         RUN_OUTPUT_VARIABLE
             run_output
     )
+    # For cross-compiling, assume if it links, the run is okay.
+    if (CMAKE_CROSSCOMPILING AND compile_result)
+        message( DEBUG "cross: cblas" )
+        set( run_result "0"  CACHE STRING "" FORCE )
+        set( run_output "ok" CACHE STRING "" FORCE )
+    endif()
     debug_try_run( "cblas.cc" "${compile_result}" "${compile_output}"
                               "${run_result}" "${run_output}" )
 

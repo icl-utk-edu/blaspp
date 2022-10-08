@@ -55,8 +55,10 @@ BLAS++ specific options include (all values are case insensitive):
     blas_int
         BLAS integer size to search for. One or more of:
         auto            search for both sizes (default)
-        int             32-bit int (LP64 model)
+        int32           32-bit int (LP64 model)
         int64           64-bit int (ILP64 model)
+        When cross-compiling, this cannot be auto-detected, so the user
+        must specify int32 or int64.
 
     blas_threaded
         Whether to search for multi-threaded or sequential BLAS.
@@ -305,3 +307,22 @@ To debug the build, set `VERBOSE`:
 
     # in build directory, after running cmake
     make VERBOSE=1
+
+### Cross-compiling
+
+For cross-compiling, there are several additional options that the user
+must determine and specify manually, since CMake cannot auto-detect
+them. See also `blas_int` above.
+
+    blas_complex_return
+        How zdotc, etc., returns a complex value. This is required when
+        cross-compiling -- there is no default value. One of:
+        return          As return value. This is the GNU gfortran convention.
+        argument        As a hidden complex output argument. This is the
+                        Intel ifort convention.
+
+    blas_return_float_f2c
+        Whether sdot, etc., returns float (usual convention) or double
+        (f2c convention used in CLAPACK and macOS Accelerate).
+        no              returns float. Default except for macOS Accelerate.
+        yes             returns double. Default for macOS Accelerate.

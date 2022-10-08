@@ -214,6 +214,12 @@ if ("${blas_int_}" MATCHES "auto")
     set( test_int64 true )
 endif()
 
+if (CMAKE_CROSSCOMPILING AND test_int AND test_int64)
+    message( FATAL_ERROR " ${red}When cross-compiling, one must define either\n"
+             " `blas_int=int32` (usual convention) or\n"
+             " `blas_int=int64` (ilp64 convention).${plain}" )
+endif()
+
 message( DEBUG "
 blas_int            = '${blas_int}'
 blas_int_           = '${blas_int_}'
@@ -496,17 +502,22 @@ foreach (blas_name IN LISTS blas_name_list)
                 RUN_OUTPUT_VARIABLE
                     run_output
             )
+            # For cross-compiling, if it links, assume the run is okay.
+            # User must set blas_int=int64 for ILP64, otherwise assumes int32.
+            if (CMAKE_CROSSCOMPILING AND compile_result)
+                message( DEBUG "cross: blas_int = '${blas_int}'" )
+                set( run_result "0"  CACHE STRING "" FORCE )
+                set( run_output "ok" CACHE STRING "" FORCE )
+            endif()
             debug_try_run( "blas.cc" "${compile_result}" "${compile_output}"
                                      "${run_result}" "${run_output}" )
 
-            # If int32 didn't link, int64 won't either, so break int_size loop.
             if (NOT compile_result)
+                # If int32 didn't link, int64 won't either, so break int_size loop.
                 message( "${label} ${red} no (didn't link: routine not found)${plain}" )
                 break()
-            endif()
-
-            # If it runs (exits 0), we're done, so break all 3 loops.
-            if ("${run_result}" EQUAL 0 AND "${run_output}" MATCHES "ok")
+            elseif ("${run_output}" MATCHES "ok")
+                # If it runs and prints ok, we're done, so break all 3 loops.
                 message( "${label} ${blue} yes${plain}" )
 
                 set( BLAS_FOUND true CACHE INTERNAL "" )

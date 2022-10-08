@@ -135,6 +135,12 @@ foreach (lapack_libs IN LISTS lapack_libs_list)
         RUN_OUTPUT_VARIABLE
             run_output
     )
+    # For cross-compiling, if it links, assume the run is okay.
+    if (CMAKE_CROSSCOMPILING AND compile_result)
+        message( DEBUG "cross: lapack_potrf" )
+        set( run_result "0"  CACHE STRING "" FORCE )
+        set( run_output "ok" CACHE STRING "" FORCE )
+    endif()
     debug_try_run( "lapack_potrf.cc" "${compile_result}" "${compile_output}"
                                      "${run_result}" "${run_output}" )
 
