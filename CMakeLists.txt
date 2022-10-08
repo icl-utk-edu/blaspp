@@ -83,7 +83,7 @@ set_property( CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
 
 # Provide menu of options.
 set( BLA_VENDOR "" CACHE STRING
-     "BLAS Vendor for use in CMake's FindBLAS. If empty, use BLAS++ search. Some obsolete options are omitted here." )
+     "BLAS Vendor for use in CMake's FindBLAS / FindLAPACK. If empty, use BLAS++ search. Some obsolete options are omitted here." )
 set_property(
     CACHE BLA_VENDOR PROPERTY STRINGS
     "" All Goto OpenBLAS FLAME ATLAS IBMESSL
@@ -118,6 +118,15 @@ set_property(
     CACHE blas_threaded PROPERTY STRINGS
     "auto" "true" "false" )
 
+#-----------------------------------
+# LAPACK options
+# todo: FLAME, others?
+set( lapack "auto" CACHE STRING
+     "LAPACK library to search for. Often, LAPACK is included in the BLAS library (e.g., -lopenblas contains both)." )
+set_property(
+    CACHE lapack PROPERTY STRINGS
+    "auto" "generic" )
+
 message( DEBUG "Settings:
 CMAKE_VERSION          = ${CMAKE_VERSION}
 CMAKE_INSTALL_PREFIX   = ${CMAKE_INSTALL_PREFIX}
@@ -128,6 +137,7 @@ blas                   = ${blas}
 blas_fortran           = ${blas_fortran}
 blas_int               = ${blas_int}
 blas_threaded          = ${blas_threaded}
+lapack                 = ${lapack}
 build_tests            = ${build_tests}
 color                  = ${color}
 use_cmake_find_blas    = ${use_cmake_find_blas}
@@ -361,6 +371,31 @@ include( "cmake/BLASConfig.cmake" )
 # Only tester needs cblas, but always config it so LAPACK++ tester can use it.
 include( "cmake/CBLASConfig.cmake" )
 
+# Export via blasppConfig.cmake
+# Needed for finding LAPACK.
+set( blaspp_libraries "${BLAS_LIBRARIES};${openmp_lib}" CACHE INTERNAL "" )
+message( DEBUG "blaspp_libraries = '${blaspp_libraries}'" )
+
+#-------------------------------------------------------------------------------
+# Search for LAPACK library.
+message( "" )
+if (BLA_VENDOR OR use_cmake_find_blas)
+    message( DEBUG "Using CMake's FindLAPACK" )
+    find_package( LAPACK )
+else()
+    message( DEBUG "Using LAPACKFinder" )
+    include( "cmake/LAPACKFinder.cmake" )
+endif()
+
+if (NOT LAPACK_FOUND)
+    message( "For [cz]rot, [cz]syr, and [cz]symv, BLAS++ requires a LAPACK library and none was found."
+             " Ensure that it is accessible in environment variables"
+             " $CPATH, $LIBRARY_PATH, and $LD_LIBRARY_PATH." )
+endif()
+
+# BLAS++ doesn't need LAPACKConfig.cmake, which checks version, XBLAS, LAPACKE.
+
+#-------------------------------------------------------------------------------
 # Cache blaspp_defs_ that was built in BLASFinder, BLASConfig, CBLASConfig.
 set( blaspp_defs_ "${blaspp_defs_}"
      CACHE INTERNAL "Constants defined for BLAS" )
@@ -393,9 +428,12 @@ else()
         blaspp PRIVATE ${blaspp_defines} )
 endif()
 
-# Export via blasppConfig.cmake
-set( blaspp_libraries "${BLAS_LIBRARIES};${openmp_lib}" CACHE INTERNAL "" )
-message( DEBUG "blaspp_libraries = '${blaspp_libraries}'" )
+if (LAPACK_LIBRARIES)
+    # Update BLAS libraries with LAPACK libraries.
+    # Export via blasppConfig.cmake
+    set( blaspp_libraries "${BLAS_LIBRARIES};${LAPACK_LIBRARIES};${openmp_lib}" CACHE INTERNAL "" )
+    message( DEBUG "blaspp_libraries = '${blaspp_libraries}'" )
+endif()
 
 # blaspp_libraries could be private, but then if an application directly
 # calls blas, cblas, lapack, lapacke, mkl, essl, etc., it would need to
