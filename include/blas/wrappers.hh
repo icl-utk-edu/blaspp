@@ -199,7 +199,9 @@ void rot(
     double s );
 
 /// @ingroup rot
-// real cosine, real sine
+/// real cosine, real sine
+/// Applies a real Givens rotation (e.g., in real tridiagonal eig)
+/// to a complex matrix (e.g., complex eigenvectors).
 void rot(
     int64_t n,
     std::complex<float> *x, int64_t incx,
@@ -208,13 +210,37 @@ void rot(
     float s );
 
 /// @ingroup rot
-// real cosine, real sine
+/// real cosine, real sine
+/// Applies a real Givens rotation (e.g., in real tridiagonal eig)
+/// to a complex matrix (e.g., complex eigenvectors).
 void rot(
     int64_t n,
     std::complex<double> *x, int64_t incx,
     std::complex<double> *y, int64_t incy,
     double c,
     double s );
+
+/// @ingroup rot
+/// real cosine, complex sine
+/// Applies a complex Givens rotation to a complex matrix
+/// (e.g., in complex GMRES).
+void rot(
+    int64_t n,
+    std::complex<float> *x, int64_t incx,
+    std::complex<float> *y, int64_t incy,
+    float c,
+    std::complex<float> s );
+
+/// @ingroup rot
+/// real cosine, complex sine
+/// Applies a complex Givens rotation to a complex matrix
+/// (e.g., in complex GMRES).
+void rot(
+    int64_t n,
+    std::complex<double> *x, int64_t incx,
+    std::complex<double> *y, int64_t incy,
+    double c,
+    std::complex<double> s );
 
 // -----------------------------------------------------------------------------
 /// @ingroup rotg
