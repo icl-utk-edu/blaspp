@@ -19,8 +19,13 @@ message( DEBUG "blas_threaded  '${blas_threaded}'"         )
 message( DEBUG "  cached       '${blas_threaded_cached}'"  )
 message( DEBUG "" )
 
+include( "cmake/util.cmake" )
+
+message( STATUS "${bold}Looking for BLAS libraries and options${not_bold} (blas = ${blas})" )
+
 #-----------------------------------
-# Check if this file has already been run with these settings.
+# Check if this file has already been run with these settings (see bottom).
+set( run_ true )
 if (BLAS_LIBRARIES
     AND NOT "${blas_libraries_cached}" STREQUAL "${BLAS_LIBRARIES}")
     # Ignore blas, etc. if BLAS_LIBRARIES changes.
@@ -45,18 +50,12 @@ else()
     blas_int       = ${blas_int}
     blas_threaded  = ${blas_threaded}
     BLAS_LIBRARIES = ${BLAS_LIBRARIES}" )
-    return()
+    set( run_ false )
 endif()
 
-set( blas_libraries_cached ${BLAS_LIBRARIES} CACHE INTERNAL "" )  # updated later
-set( blas_cached           ${blas}           CACHE INTERNAL "" )
-set( blas_fortran_cached   ${blas_fortran}   CACHE INTERNAL "" )
-set( blas_int_cached       ${blas_int}       CACHE INTERNAL "" )
-set( blas_threaded_cached  ${blas_threaded}  CACHE INTERNAL "" )
-
-include( "cmake/util.cmake" )
-
-message( STATUS "${bold}Looking for BLAS libraries and options${not_bold} (blas = ${blas})" )
+#===============================================================================
+# Matching endif at bottom.
+if (run_)
 
 #-------------------------------------------------------------------------------
 # Prints the BLAS_{name,libs}_lists.
@@ -546,8 +545,15 @@ foreach (blas_name IN LISTS blas_name_list)
     endif()
 endforeach()
 
-# Update to found BLAS library.
+endif() # run_
+#===============================================================================
+
+# Mark as already run (see top).
 set( blas_libraries_cached ${BLAS_LIBRARIES} CACHE INTERNAL "" )
+set( blas_cached           ${blas}           CACHE INTERNAL "" )
+set( blas_fortran_cached   ${blas_fortran}   CACHE INTERNAL "" )
+set( blas_int_cached       ${blas_int}       CACHE INTERNAL "" )
+set( blas_threaded_cached  ${blas_threaded}  CACHE INTERNAL "" )
 
 #-------------------------------------------------------------------------------
 if (BLAS_FOUND)

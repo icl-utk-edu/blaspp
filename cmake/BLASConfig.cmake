@@ -3,16 +3,20 @@
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
-# Check if this file has already been run with these settings.
+include( "cmake/util.cmake" )
+
+# Check if this file has already been run with these settings (see bottom).
+set( run_ true )
 if (DEFINED blas_config_cache
     AND "${blas_config_cache}" STREQUAL "${BLAS_LIBRARIES}")
 
     message( DEBUG "BLAS config already done for '${BLAS_LIBRARIES}'" )
-    return()
+    set( run_ false )
 endif()
-set( blas_config_cache "${BLAS_LIBRARIES}" CACHE INTERNAL "" )
 
-include( "cmake/util.cmake" )
+#===============================================================================
+# Matching endif at bottom.
+if (run_)
 
 #-------------------------------------------------------------------------------
 # Search to identify library and get version. Besides providing the
@@ -294,6 +298,12 @@ else()
         list( APPEND blaspp_defs_ "-DBLAS_HAVE_F2C" )
     endif()
 endif()
+
+endif() # run_
+#===============================================================================
+
+# Mark as already run (see top).
+set( blas_config_cache "${BLAS_LIBRARIES}" CACHE INTERNAL "" )
 
 #-------------------------------------------------------------------------------
 message( DEBUG "

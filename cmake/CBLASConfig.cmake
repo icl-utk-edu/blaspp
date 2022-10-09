@@ -3,16 +3,20 @@
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
-# Check if this file has already been run with these settings.
+include( "cmake/util.cmake" )
+
+# Check if this file has already been run with these settings (see bottom).
+set( run_ true )
 if (DEFINED cblas_config_cache
     AND "${cblas_config_cache}" STREQUAL "${BLAS_LIBRARIES}")
 
     message( DEBUG "CBLAS config already done for '${BLAS_LIBRARIES}'" )
-    return()
+    set( run_ false )
 endif()
-set( cblas_config_cache "${BLAS_LIBRARIES}" CACHE INTERNAL "" )
 
-include( "cmake/util.cmake" )
+#===============================================================================
+# Matching endif at bottom.
+if (run_)
 
 #----------------------------------------
 # Apple puts cblas.h in weird places. If we can't find it,
@@ -69,6 +73,12 @@ foreach (lib IN LISTS lib_list)
         break()
     endif()
 endforeach()
+
+endif() # run_
+#===============================================================================
+
+# Mark as already run (see top).
+set( cblas_config_cache "${BLAS_LIBRARIES}" CACHE INTERNAL "" )
 
 #-------------------------------------------------------------------------------
 if (blaspp_cblas_found)

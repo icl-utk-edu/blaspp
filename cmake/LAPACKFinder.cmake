@@ -13,8 +13,13 @@ message( DEBUG "lapack           '${lapack}'"                  )
 message( DEBUG "  cached         '${lapack_cached}'"           )
 message( DEBUG "" )
 
+include( "cmake/util.cmake" )
+
+message( STATUS "${bold}Looking for LAPACK libraries and options${not_bold} (lapack = ${lapack})" )
+
 #-----------------------------------
 # Check if this file has already been run with these settings.
+set( run_ true )
 if (LAPACK_LIBRARIES
     AND NOT "${lapack_libraries_cached}" STREQUAL "${LAPACK_LIBRARIES}")
     # Ignore lapack if LAPACK_LIBRARIES changes.
@@ -30,15 +35,12 @@ else()
     message( DEBUG "LAPACK search already done for
     lapack           = ${lapack}
     LAPACK_LIBRARIES = ${LAPACK_LIBRARIES}" )
-    return()
+    set( run_ false )
 endif()
 
-set( lapack_libraries_cached ${LAPACK_LIBRARIES} CACHE INTERNAL "" )  # updated later
-set( lapack_cached           ${lapack}           CACHE INTERNAL "" )
-
-include( "cmake/util.cmake" )
-
-message( STATUS "${bold}Looking for LAPACK libraries and options${not_bold} (lapack = ${lapack})" )
+#===============================================================================
+# Matching endif at bottom.
+if (run_)
 
 #-------------------------------------------------------------------------------
 # Parse options: LAPACK_LIBRARIES, lapack.
@@ -160,8 +162,12 @@ foreach (lapack_libs IN LISTS lapack_libs_list)
     endif()
 endforeach()
 
-# Update to found LAPACK library.
+endif() # run_
+#===============================================================================
+
+# Mark as already run (see top).
 set( lapack_libraries_cached ${LAPACK_LIBRARIES} CACHE INTERNAL "" )
+set( lapack_cached           ${lapack}           CACHE INTERNAL "" )
 
 #-------------------------------------------------------------------------------
 if (LAPACK_FOUND)
