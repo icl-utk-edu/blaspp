@@ -95,6 +95,8 @@ def file_sub( filename, search, replace, **kwargs ):
     if (txt != txt2):
         #print( 'writing', filename )
         open( filename, mode='w' ).write( txt2 )
+    else:
+        print( '##### Warning: no change in', filename, '#####' )
 # end
 
 #-------------------------------------------------------------------------------
@@ -171,8 +173,8 @@ def make( project, version_h, version_c ):
 
     print( '\n>> Updating version in: GNUmakefile' )
     file_sub( 'GNUmakefile',
-              r'VERSION:\d\d\d\d.\d\d.\d\d',
-              r'VERSION:%s' % (tag), count=1 )
+              r'(VERSION.)\d\d\d\d.\d\d.\d\d',
+              r'\g<1>%s' % (tag), count=1 )
 
     print( '\n>> Updating version in: CMakeLists.txt' )
     file_sub( 'CMakeLists.txt',
