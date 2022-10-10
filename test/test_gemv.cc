@@ -42,8 +42,9 @@ void test_gemv_work( Params& params, bool run )
     params.ref_gbytes();
 
     // adjust header to msec
-    params.time.name( "BLAS++\ntime (ms)" );
-    params.ref_time.name( "Ref.\ntime (ms)" );
+    params.time.name( "time (ms)" );
+    params.ref_time.name( "ref time (ms)" );
+    params.ref_time.width( 13 );
 
     if (! run)
         return;
@@ -129,7 +130,7 @@ void test_gemv_work( Params& params, bool run )
                     alpha, A, lda, x, incx, beta, yref, incy );
         time = get_wtime() - time;
 
-        params.ref_time()   = time * 1000;  // msec
+        params.ref_time()   = time; // * 1000;  // msec
         params.ref_gflops() = gflop / time;
         params.ref_gbytes() = gbyte / time;
 

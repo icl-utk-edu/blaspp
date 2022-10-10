@@ -21,6 +21,12 @@ using testsweeper::ansi_bold;
 using testsweeper::ansi_red;
 using testsweeper::ansi_normal;
 
+const double no_data = testsweeper::no_data_flag;
+
+const ParamType PT_Value  = ParamType::Value;
+const ParamType PT_List   = ParamType::List;
+const ParamType PT_Output = ParamType::Output;
+
 // -----------------------------------------------------------------------------
 // each section must have a corresponding entry in section_names
 enum Section {
@@ -233,35 +239,39 @@ Params::Params():
 
     // ----- output parameters
     // min, max are ignored
-    //          name,                w, p, type,              default,               min, max, help
-    error     ( "BLAS++\nerror",    11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "numerical error" ),
-    error2    ( "BLAS++\nerror2",   11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "numerical error 2" ),
-    error3    ( "BLAS++\nerror3",   11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "numerical error 3" ),
-    time      ( "BLAS++\ntime (s)", 11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "time to solution" ),
-    gflops    ( "BLAS++\nGflop/s",  11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "Gflop/s rate" ),
-    gbytes    ( "BLAS++\nGbyte/s",  11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "Gbyte/s rate" ),
+    //          name,            w, p, type,      default, min, max, help
+    // error: %8.2e allows 9.99e-99
+    error     ( "error",         8, 2, PT_Output, no_data, 0, 0, "numerical error" ),
+    error2    ( "error2",        8, 2, PT_Output, no_data, 0, 0, "numerical error 2" ),
+    error3    ( "error3",        8, 2, PT_Output, no_data, 0, 0, "numerical error 3" ),
 
-    time2     ( "time2 (s)",        11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "time to solution (2)" ),
-    gflops2   ( "Gflop2/s",         11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "Gflop/s rate (2)" ),
-    gbytes2   ( "Gbyte2/s",         11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "Gbyte/s rate (2)" ),
+    // time:    %9.3f allows 99999.999 s = 2.9 days (ref headers need %12)
+    // gflops: %12.3f allows 99999999.999 Gflop/s = 100 Pflop/s
+    time      ( "time (s)",      9, 3, PT_Output, no_data, 0, 0, "time to solution" ),
+    gflops    ( "gflop/s",      12, 3, PT_Output, no_data, 0, 0, "Gflop/s rate" ),
+    gbytes    ( "gbyte/s",      12, 3, PT_Output, no_data, 0, 0, "Gbyte/s rate" ),
 
-    time3     ( "time3 (s)",        11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "time to solution (3)" ),
-    gflops3   ( "Gflop3/s",         11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "Gflop/s rate (3)" ),
-    gbytes3   ( "Gbyte3/s",         11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "Gbyte/s rate (3)" ),
+    time2     ( "time (s)",      9, 3, PT_Output, no_data, 0, 0, "time to solution (2)" ),
+    gflops2   ( "gflop/s",      12, 3, PT_Output, no_data, 0, 0, "Gflop/s rate (2)" ),
+    gbytes2   ( "gbyte/s",      12, 3, PT_Output, no_data, 0, 0, "Gbyte/s rate (2)" ),
 
-    time4     ( "time4 (s)",        11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "time to solution (4)" ),
-    gflops4   ( "Gflop4/s",         11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "Gflop/s rate (4)" ),
-    gbytes4   ( "Gbyte4/s",         11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "Gbyte/s rate (4)" ),
+    time3     ( "time (s)",      9, 3, PT_Output, no_data, 0, 0, "time to solution (3)" ),
+    gflops3   ( "gflop/s",      12, 3, PT_Output, no_data, 0, 0, "Gflop/s rate (3)" ),
+    gbytes3   ( "gbyte/s",      12, 3, PT_Output, no_data, 0, 0, "Gbyte/s rate (3)" ),
 
-    ref_time  ( "Ref.\ntime (s)",   11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "reference time to solution" ),
-    ref_gflops( "Ref.\nGflop/s",    11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "reference Gflop/s rate" ),
-    ref_gbytes( "Ref.\nGbyte/s",    11, 4, ParamType::Output, testsweeper::no_data_flag,   0,   0, "reference Gbyte/s rate" ),
+    time4     ( "time (s)",      9, 3, PT_Output, no_data, 0, 0, "time to solution (4)" ),
+    gflops4   ( "gflop/s",      12, 3, PT_Output, no_data, 0, 0, "Gflop/s rate (4)" ),
+    gbytes4   ( "gbyte/s",      12, 3, PT_Output, no_data, 0, 0, "Gbyte/s rate (4)" ),
+
+    ref_time  ( "ref time (s)", 12, 3, PT_Output, no_data, 0, 0, "reference time to solution" ),
+    ref_gflops( "ref gflop/s",  12, 3, PT_Output, no_data, 0, 0, "reference Gflop/s rate" ),
+    ref_gbytes( "ref gbyte/s",  12, 3, PT_Output, no_data, 0, 0, "reference Gbyte/s rate" ),
 
     // default -1 means "no check"
     okay      ( "status",              6,    ParamType::Output,  -1,   0,   0, "success indicator" ),
     msg       ( "",       1, ParamType::Output,  "",           "error message" )
 {
-    // set header different than command line prefix 
+    // set header different than command line prefix
     pointer_mode.name("ptr", "pointer-mode");
 
     // mark standard set of output fields as used
