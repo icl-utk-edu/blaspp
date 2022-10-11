@@ -30,5 +30,6 @@ if [ "${maker}" = "make" ]; then
 fi
 if [ "${maker}" = "cmake" ]; then
     cmake -Dcolor=no -DCMAKE_CXX_FLAGS="-Werror" \
-          -DCMAKE_INSTALL_PREFIX=${top}/install ..
+          -DCMAKE_INSTALL_PREFIX=${top}/install \
+          -Dgpu_backend=${gpu_backend} ..
 fi

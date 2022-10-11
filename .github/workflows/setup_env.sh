@@ -37,13 +37,18 @@ print "======================================== Load compiler"
 quiet module load gcc@7.3.0
 quiet module load intel-mkl
 
+# CMake will find CUDA in /usr/local/cuda, so need to explicitly set
+# gpu_backend.
+export gpu_backend=none
+
 if [ "${device}" = "gpu_nvidia" ]; then
     print "======================================== Load CUDA"
     export CUDA_HOME=/usr/local/cuda/
     export PATH=${PATH}:${CUDA_HOME}/bin
     export CPATH=${CPATH}:${CUDA_HOME}/include
     export LIBRARY_PATH=${LIBRARY_PATH}:${CUDA_HOME}/lib64
-    which nvcc
+    export gpu_backend=cuda
+    quiet which nvcc
     nvcc --version
 fi
 
@@ -53,14 +58,15 @@ if [ "${device}" = "gpu_amd" ]; then
     export CPATH=${CPATH}:/opt/rocm/include
     export LIBRARY_PATH=${LIBRARY_PATH}:/opt/rocm/lib:/opt/rocm/lib64
     export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/opt/rocm/lib:/opt/rocm/lib64
-    which hipcc
+    export gpu_backend=hip
+    quiet which hipcc
     hipcc --version
 fi
 
 if [ "${maker}" = "cmake" ]; then
     print "======================================== Load cmake"
     quiet module load cmake
-    which cmake
+    quiet which cmake
     cmake --version
     cd build
 fi
