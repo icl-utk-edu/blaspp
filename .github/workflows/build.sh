@@ -15,7 +15,7 @@ print "======================================== Install"
 
 print "======================================== Verify build"
 # ldd_result=$(ldd test/tester)
-ldd_result="cublas"
+ldd_result="blas"
 echo "${ldd_result}"
 
 # Verify that tester linked with cublas or rocblas as intended.
