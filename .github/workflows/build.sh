@@ -26,5 +26,7 @@ elif [ "${device}" = "gpu_amd" ]; then
     echo "${ldd_result}" | grep rocblas || exit 14
 
 else
-    echo "${ldd_result}" | grep -P "cublas|rocblas" && exit 15
+    # && false catches error, so bash -e doesn't exit on non-match.
+    echo "${ldd_result}" | grep -P "cublas|rocblas" && false
+    echo $?
 fi
