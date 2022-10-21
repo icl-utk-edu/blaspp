@@ -22,13 +22,13 @@ print "======================================== Environment"
 env
 
 print "======================================== Setup build"
-export color=no
-rm -rf ${top}/install
-if [ "${maker}" = "make" ]; then
-    make distclean
-    make config CXXFLAGS="-Werror" prefix=${top}/install
-fi
-if [ "${maker}" = "cmake" ]; then
-    cmake -Dcolor=no -DCMAKE_CXX_FLAGS="-Werror" \
-          -DCMAKE_INSTALL_PREFIX=${top}/install ..
-fi
+# export color=no
+# rm -rf ${top}/install
+# if [ "${maker}" = "make" ]; then
+#     make distclean
+#     make config CXXFLAGS="-Werror" prefix=${top}/install
+# fi
+# if [ "${maker}" = "cmake" ]; then
+#     cmake -Dcolor=no -DCMAKE_CXX_FLAGS="-Werror" \
+#           -DCMAKE_INSTALL_PREFIX=${top}/install ..
+# fi
