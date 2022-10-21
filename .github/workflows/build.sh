@@ -29,4 +29,7 @@ else
     # && false catches error, so bash -e doesn't exit on non-match.
     echo "${ldd_result}" | grep -P "cublas|rocblas" && false
     echo $?
+
+    echo "${ldd_result}" | grep -P "cublas|rocblas" && exit 15
+    echo $?
 fi
