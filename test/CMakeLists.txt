@@ -9,7 +9,7 @@ if (NOT blaspp_cblas_found)
     return()
 endif()
 
-if (NOT lapack_found_)
+if (NOT LAPACK_FOUND)
     message( WARNING "LAPACK not found; tester cannot be built." )
     return()
 endif()
