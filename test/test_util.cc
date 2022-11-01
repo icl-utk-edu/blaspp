@@ -354,27 +354,6 @@ void test_device()
     int cnt = blas::get_device_count();
     printf( "    get_device_count %d\n", cnt );
     require( cnt >= 0 );
-
-    #ifndef BLAS_HAVE_ONEMKL
-    int verbose = 3; // used in assert_throw
-    blas::Device dev;
-    if (cnt > 0) {
-        blas::get_device( &dev );
-        printf( "    get_device %d\n", dev );
-        require( dev >= 0 );
-    }
-    else {
-        assert_throw( blas::get_device( &dev ), blas::Error );
-    }
-
-    if (cnt > 0) {
-        blas::set_device( cnt-1 );
-        printf( "    set_device %d\n", cnt-1 );
-        blas::get_device( &dev );
-        printf( "    get_device %d\n", dev );
-        require( dev == cnt-1 );
-    }
-    #endif
 }
 
 // -----------------------------------------------------------------------------

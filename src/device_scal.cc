@@ -33,9 +33,7 @@ void blas::scal(
     device_blas_int n_     = (device_blas_int) n;
     device_blas_int incdx_ = (device_blas_int) incdx;
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
 
     device::sscal( queue, n_, alpha, dx, incdx_ );
 }
@@ -61,9 +59,7 @@ void blas::scal(
     device_blas_int n_     = (device_blas_int) n;
     device_blas_int incdx_ = (device_blas_int) incdx;
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
 
     device::dscal( queue, n_, alpha, dx, incdx_ );
 }
@@ -89,9 +85,7 @@ void blas::scal(
     device_blas_int n_     = (device_blas_int) n;
     device_blas_int incdx_ = (device_blas_int) incdx;
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
 
     device::cscal( queue, n_, alpha, dx, incdx_ );
 }
@@ -117,9 +111,7 @@ void blas::scal(
     device_blas_int n_     = (device_blas_int) n;
     device_blas_int incdx_ = (device_blas_int) incdx;
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
 
     device::zscal( queue, n_, alpha, dx, incdx_ );
 }

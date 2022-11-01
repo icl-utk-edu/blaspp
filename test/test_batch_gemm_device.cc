@@ -120,9 +120,9 @@ void test_device_batch_gemm_work( Params& params, bool run )
     lapack_larnv( idist, iseed, batch * size_C, C );
     lapack_lacpy( "g", Cm, batch * Cn, C, ldc_, Cref, ldc_ );
 
-    blas::device_setmatrix(Am, batch * An, A, lda_, dA, lda_, queue);
-    blas::device_setmatrix(Bm, batch * Bn, B, ldb_, dB, ldb_, queue);
-    blas::device_setmatrix(Cm, batch * Cn, C, ldc_, dC, ldc_, queue);
+    blas::device_copy_matrix(Am, batch * An, A, lda_, dA, lda_, queue);
+    blas::device_copy_matrix(Bm, batch * Bn, B, ldb_, dB, ldb_, queue);
+    blas::device_copy_matrix(Cm, batch * Cn, C, ldc_, dC, ldc_, queue);
     queue.sync();
 
     // norms for error check
@@ -151,7 +151,7 @@ void test_device_batch_gemm_work( Params& params, bool run )
     double gflop = batch * blas::Gflop< scalar_t >::gemm( m_, n_, k_ );
     params.time()   = time;
     params.gflops() = gflop / time;
-    blas::device_getmatrix(Cm, batch * Cn, dC, ldc_, C, ldc_, queue);
+    blas::device_copy_matrix(Cm, batch * Cn, dC, ldc_, C, ldc_, queue);
     queue.sync();
 
     if (params.ref() == 'y' || params.check() == 'y') {

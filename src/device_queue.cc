@@ -149,7 +149,15 @@ Queue::Queue()
 {
     #if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
         // get the currently set device ID
-        get_device( &device_ );
+        device_blas_int dev = -1;
+        #ifdef BLAS_HAVE_CUBLAS
+            blas_dev_call( cudaGetDevice(&dev) );
+            device_ = (blas::Device)dev;
+        #elif defined(BLAS_HAVE_ROCBLAS)
+            blas_dev_call( hipGetDevice(&dev) );
+            device_ = (blas::Device)dev;
+         #endif
+
         batch_limit_ = DEV_QUEUE_DEFAULT_BATCH_LIMIT;
 
         // default stream
@@ -192,7 +200,7 @@ Queue::Queue( blas::Device device, int64_t batch_size )
     #if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
         device_ = device;
         batch_limit_ = batch_size;
-        set_device( device_ );
+        blas::internal_set_device( device_ );
         stream_create( &default_stream_ );
         handle_create( &handle_ );
         handle_set_stream( handle_, default_stream_ );
@@ -254,7 +262,7 @@ Queue::~Queue()
 {
     try {
         #if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
-            device_free( work_ );
+            device_free( work_, *this );
             handle_destroy( handle_ );
             stream_destroy( default_stream_ );
 

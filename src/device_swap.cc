@@ -36,9 +36,7 @@ void blas::swap(
     device_blas_int incdx_  = (device_blas_int) incdx;
     device_blas_int incdy_  = (device_blas_int) incdy;
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
 
     device::sswap(
         queue,
@@ -71,9 +69,7 @@ void blas::swap(
     device_blas_int incdx_  = (device_blas_int) incdx;
     device_blas_int incdy_  = (device_blas_int) incdy;
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
 
     device::dswap(
         queue,
@@ -106,9 +102,7 @@ void blas::swap(
     device_blas_int incdx_  = (device_blas_int) incdx;
     device_blas_int incdy_  = (device_blas_int) incdy;
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
 
     device::cswap(
         queue,
@@ -141,9 +135,7 @@ void blas::swap(
     device_blas_int incdx_  = (device_blas_int) incdx;
     device_blas_int incdy_  = (device_blas_int) incdy;
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
 
     device::zswap(
         queue,

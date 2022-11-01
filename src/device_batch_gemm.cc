@@ -60,9 +60,8 @@ void gemm(
                           Carray.size() == batch &&
                           lddc.size()   == 1 );
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
+
     if (fixed_size) {
         // call the vendor routine
         blas::Op        transA_ = transA[0];
@@ -84,11 +83,11 @@ void gemm(
             size_t ibatch = std::min( batch_limit, batch-ib );
 
             // copy Aarray, Barray, and Carray to device
-            device_setvector<float*>(
+            device_copy_vector<float*>(
                 ibatch, (float**) &Aarray[ib], 1, dAarray, 1, queue );
-            device_setvector<float*>(
+            device_copy_vector<float*>(
                 ibatch, (float**) &Barray[ib], 1, dBarray, 1, queue );
-            device_setvector<float*>(
+            device_copy_vector<float*>(
                 ibatch, (float**) &Carray[ib], 1, dCarray, 1, queue );
 
             if (layout == Layout::RowMajor) {
@@ -181,9 +180,7 @@ void gemm(
                           Carray.size() == batch &&
                           lddc.size()   == 1 );
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
     if (fixed_size) {
         // call the vendor routine
         blas::Op        transA_ = transA[0];
@@ -205,11 +202,11 @@ void gemm(
             size_t ibatch = std::min( batch_limit, batch-ib );
 
             // copy Aarray, Barray, and Carray to device
-            device_setvector<double*>(
+            device_copy_vector<double*>(
                 ibatch, (double**) &Aarray[ib], 1, dAarray, 1, queue );
-            device_setvector<double*>(
+            device_copy_vector<double*>(
                 ibatch, (double**) &Barray[ib], 1, dBarray, 1, queue );
-            device_setvector<double*>(
+            device_copy_vector<double*>(
                 ibatch, (double**) &Carray[ib], 1, dCarray, 1, queue );
 
             if (layout == Layout::RowMajor) {
@@ -303,9 +300,7 @@ void gemm(
                           Carray.size() == batch &&
                           lddc.size()   == 1 );
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
     if (fixed_size) {
         // call the vendor routine
         blas::Op        transA_ = transA[0];
@@ -327,13 +322,13 @@ void gemm(
             size_t ibatch = std::min( batch_limit, batch-ib );
 
             // copy Aarray, Barray, and Carray to device
-            device_setvector< std::complex<float> *>(
+            device_copy_vector< std::complex<float> *>(
                 ibatch, (std::complex<float>**) &Aarray[ib], 1,
                 dAarray, 1, queue );
-            device_setvector< std::complex<float> *>(
+            device_copy_vector< std::complex<float> *>(
                 ibatch, (std::complex<float>**) &Barray[ib], 1,
                 dBarray, 1, queue );
-            device_setvector< std::complex<float> *>(
+            device_copy_vector< std::complex<float> *>(
                 ibatch, (std::complex<float>**) &Carray[ib], 1,
                 dCarray, 1, queue );
 
@@ -428,9 +423,7 @@ void gemm(
                           Carray.size() == batch &&
                           lddc.size()   == 1 );
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
     if (fixed_size) {
         // call the vendor routine
         blas::Op        transA_ = transA[0];
@@ -452,11 +445,11 @@ void gemm(
             size_t ibatch = std::min( batch_limit, batch-ib );
 
             // copy Aarray, Barray, and Carray to device
-            device_setvector< std::complex<double> *>(
+            device_copy_vector< std::complex<double> *>(
                 ibatch, (std::complex<double>**) &Aarray[ib], 1, dAarray, 1, queue);
-            device_setvector< std::complex<double> *>(
+            device_copy_vector< std::complex<double> *>(
                 ibatch, (std::complex<double>**) &Barray[ib], 1, dBarray, 1, queue);
-            device_setvector< std::complex<double> *>(
+            device_copy_vector< std::complex<double> *>(
                 ibatch, (std::complex<double>**) &Carray[ib], 1, dCarray, 1, queue);
 
             if (layout == Layout::RowMajor) {
@@ -567,9 +560,7 @@ void gemm(
     }
 
     // set device
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
 
     float **dAarray, **dBarray, **dCarray;
     size_t batch_limit = queue.get_batch_limit();
@@ -600,11 +591,11 @@ void gemm(
             size_t ibatch = std::min( batch_limit, batch-ib );
 
             // copy Aarray, Barray, and Carray to device
-            device_setvector<float*>(
+            device_copy_vector<float*>(
                 ibatch, (float**) &Aarray[ processed+ib ], 1, dAarray, 1, queue);
-            device_setvector<float*>(
+            device_copy_vector<float*>(
                 ibatch, (float**) &Barray[ processed+ib ], 1, dBarray, 1, queue);
-            device_setvector<float*>(
+            device_copy_vector<float*>(
                 ibatch, (float**) &Carray[ processed+ib ], 1, dCarray, 1, queue);
 
             if (layout == Layout::RowMajor) {
@@ -697,9 +688,7 @@ void gemm(
     }
 
     // set device
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
 
     double **dAarray, **dBarray, **dCarray;
     size_t batch_limit = queue.get_batch_limit();
@@ -730,11 +719,11 @@ void gemm(
             size_t ibatch = std::min( batch_limit, batch-ib );
 
             // copy Aarray, Barray, and Carray to device
-            device_setvector<double*>(
+            device_copy_vector<double*>(
                 ibatch, (double**) &Aarray[ processed+ib ], 1, dAarray, 1, queue);
-            device_setvector<double*>(
+            device_copy_vector<double*>(
                 ibatch, (double**) &Barray[ processed+ib ], 1, dBarray, 1, queue);
-            device_setvector<double*>(
+            device_copy_vector<double*>(
                 ibatch, (double**) &Carray[ processed+ib ], 1, dCarray, 1, queue);
 
             if (layout == Layout::RowMajor) {
@@ -827,9 +816,7 @@ void gemm(
     }
 
     // set device
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
 
     std::complex<float> **dAarray, **dBarray, **dCarray;
     size_t batch_limit = queue.get_batch_limit();
@@ -860,13 +847,13 @@ void gemm(
             size_t ibatch = std::min( batch_limit, batch-ib );
 
             // copy Aarray, Barray, and Carray to device
-            device_setvector<std::complex<float>*>(
+            device_copy_vector<std::complex<float>*>(
                 ibatch, (std::complex<float>**) &Aarray[ processed+ib ], 1,
                 dAarray, 1, queue);
-            device_setvector<std::complex<float>*>(
+            device_copy_vector<std::complex<float>*>(
                 ibatch, (std::complex<float>**) &Barray[ processed+ib ], 1,
                 dBarray, 1, queue);
-            device_setvector<std::complex<float>*>(
+            device_copy_vector<std::complex<float>*>(
                 ibatch, (std::complex<float>**) &Carray[ processed+ib ], 1,
                 dCarray, 1, queue);
 
@@ -959,9 +946,7 @@ void gemm(
     }
 
     // set device
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
 
     std::complex<double> **dAarray, **dBarray, **dCarray;
     size_t batch_limit = queue.get_batch_limit();
@@ -992,13 +977,13 @@ void gemm(
             size_t ibatch = std::min( batch_limit, batch-ib );
 
             // copy Aarray, Barray, and Carray to device
-            device_setvector<std::complex<double>*>(
+            device_copy_vector<std::complex<double>*>(
                 ibatch, (std::complex<double>**) &Aarray[ processed+ib ], 1,
                 dAarray, 1, queue);
-            device_setvector<std::complex<double>*>(
+            device_copy_vector<std::complex<double>*>(
                 ibatch, (std::complex<double>**) &Barray[ processed+ib ], 1,
                 dBarray, 1, queue);
-            device_setvector<std::complex<double>*>(
+            device_copy_vector<std::complex<double>*>(
                 ibatch, (std::complex<double>**) &Carray[ processed+ib ], 1,
                 dCarray, 1, queue);
 

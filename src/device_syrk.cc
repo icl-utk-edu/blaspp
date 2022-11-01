@@ -63,9 +63,7 @@ void blas::syrk(
         trans = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
     }
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
     device::ssyrk(
             queue,
             uplo, trans,
@@ -125,9 +123,7 @@ void blas::syrk(
         trans = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
     }
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
     device::dsyrk(
             queue,
             uplo, trans,
@@ -186,9 +182,7 @@ void blas::syrk(
         trans = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
     }
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
     device::csyrk(
             queue,
             uplo, trans,
@@ -247,9 +241,7 @@ void blas::syrk(
         trans = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
     }
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
     device::zsyrk(
             queue,
             uplo, trans,
