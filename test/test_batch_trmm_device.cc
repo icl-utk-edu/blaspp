@@ -102,8 +102,8 @@ void test_batch_trmm_work_device( Params& params, bool run )
     lapack_larnv( idist, iseed, batch * size_B, B );  // TODO
     lapack_lacpy( "g", Bm, batch * Bn, B, ldb_, Bref, ldb_ );
 
-    blas::device_setmatrix(Am, batch * Am, A, lda_, dA, lda_, queue);
-    blas::device_setmatrix(Bm, batch * Bn, B, ldb_, dB, ldb_, queue);
+    blas::device_copy_matrix(Am, batch * Am, A, lda_, dA, lda_, queue);
+    blas::device_copy_matrix(Bm, batch * Bn, B, ldb_, dB, ldb_, queue);
     queue.sync();
 
     // norms for error check
@@ -131,7 +131,7 @@ void test_batch_trmm_work_device( Params& params, bool run )
     params.time()   = time;
     params.gflops() = gflop / time;
 
-    blas::device_getmatrix(Bm, batch * Bn, dB, ldb_, B, ldb_, queue);
+    blas::device_copy_matrix(Bm, batch * Bn, dB, ldb_, B, ldb_, queue);
     queue.sync();
 
     if (params.check() == 'y') {

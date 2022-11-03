@@ -68,8 +68,8 @@ void test_swap_device_work( Params& params, bool run )
     cblas_copy( n, y, incy, yref, incy );
 
     // todo: should we have different incdx and incdy
-    blas::device_setvector(n, x, std::abs(incx), dx, std::abs(incx), queue);
-    blas::device_setvector(n, y, std::abs(incy), dy, std::abs(incy), queue);
+    blas::device_copy_vector(n, x, std::abs(incx), dx, std::abs(incx), queue);
+    blas::device_copy_vector(n, y, std::abs(incy), dy, std::abs(incy), queue);
     queue.sync();
 
     // test error exits
@@ -103,8 +103,8 @@ void test_swap_device_work( Params& params, bool run )
     params.gbytes() = gbyte / time;
 
     // todo: should we have different incdx and incdy
-    blas::device_getvector(n, dx, std::abs(incx), x, std::abs(incx), queue);
-    blas::device_getvector(n, dy, std::abs(incy), y, std::abs(incy), queue);
+    blas::device_copy_vector(n, dx, std::abs(incx), x, std::abs(incx), queue);
+    blas::device_copy_vector(n, dy, std::abs(incy), y, std::abs(incy), queue);
     queue.sync();
 
     if (verbose >= 2) {

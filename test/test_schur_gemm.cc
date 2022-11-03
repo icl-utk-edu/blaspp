@@ -18,7 +18,7 @@ void copy_lapack_to_tile_format(
 {
     for (int64_t j = 0; j < nt; ++j) {
         for (int64_t i = 0; i < mt; ++i) {
-            blas::device_setmatrix(
+            blas::device_copy_matrix(
                     m, n,
                     & A[ i * m + j * n * ldA ], ldA,
                     &dA[ i * m * ld_tile + j * n * mt * ld_tile ], ld_tile,
@@ -36,7 +36,7 @@ void copy_tile_to_lapack_format(
 {
     for (int64_t j = 0; j < nt; ++j) {
         for (int64_t i = 0; i < mt; ++i) {
-            blas::device_getmatrix(
+            blas::device_copy_matrix(
                     m, n,
                     &dA[ i * m * ld_tile + j * n * mt * ld_tile ], ld_tile,
                     &A[ i * m + j * n * ldA ], ldA,
@@ -164,10 +164,10 @@ void test_schur_gemm_work( Params& params, bool run )
     if (Cref != nullptr)
         lapack_lacpy( "g", Cm, Cn, C, ldc_, Cref, ldc_ );
 
-    blas::device_setmatrix(Bm, Bn, B, ldb_, dB, ldb_, queue);
+    blas::device_copy_matrix(Bm, Bn, B, ldb_, dB, ldb_, queue);
     if (format == Format::LAPACK) {
-        blas::device_setmatrix(Am, An, A, lda_, dA, lda_, queue);
-        blas::device_setmatrix(Cm, Cn, C, ldc_, dC, ldc_, queue);
+        blas::device_copy_matrix(Am, An, A, lda_, dA, lda_, queue);
+        blas::device_copy_matrix(Cm, Cn, C, ldc_, dC, ldc_, queue);
     }
     else if (format == Format::Tile) {
         copy_lapack_to_tile_format(
@@ -221,7 +221,7 @@ void test_schur_gemm_work( Params& params, bool run )
     params.gflops() = gflop / time;
 
     if (format == Format::LAPACK) {
-        blas::device_getmatrix(Cm, Cn, dC, ldc_, C, ldc_, queue);
+        blas::device_copy_matrix(Cm, Cn, dC, ldc_, C, ldc_, queue);
     }
     else if (format == Format::Tile) {
         copy_tile_to_lapack_format(
@@ -235,9 +235,9 @@ void test_schur_gemm_work( Params& params, bool run )
         // Copy A in LAPACK format to device
         // because it was overwritten by its tile format.
         if (format == Format::Tile) {
-            blas::device_setmatrix(Am, An, A, lda_, dA, lda_, queue);
+            blas::device_copy_matrix(Am, An, A, lda_, dA, lda_, queue);
         }
-        blas::device_setmatrix(Cm, Cn, Cref, ldc_, dC, ldc_, queue);
+        blas::device_copy_matrix(Cm, Cn, Cref, ldc_, dC, ldc_, queue);
         queue.sync();
 
         double time_ref = get_wtime();
@@ -248,7 +248,7 @@ void test_schur_gemm_work( Params& params, bool run )
         params.ref_time()   = time_ref;
         params.ref_gflops() = gflop / time_ref;
 
-        blas::device_getmatrix(Cm, Cn, dC, ldc_, Cref, ldc_, queue);
+        blas::device_copy_matrix(Cm, Cn, dC, ldc_, Cref, ldc_, queue);
         queue.sync();
 
         // Error

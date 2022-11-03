@@ -75,8 +75,8 @@ void test_syrk_device_work( Params& params, bool run )
     lapack_larnv( idist, iseed, size_C, C );
     lapack_lacpy( "g", n, n, C, ldc, Cref, ldc );
 
-    blas::device_setmatrix(Am, An, A, lda, dA, lda, queue);
-    blas::device_setmatrix(n,  n,  C, ldc, dC, ldc, queue);
+    blas::device_copy_matrix(Am, An, A, lda, dA, lda, queue);
+    blas::device_copy_matrix(n,  n,  C, ldc, dC, ldc, queue);
     queue.sync();
 
     // norms for error check
@@ -129,7 +129,7 @@ void test_syrk_device_work( Params& params, bool run )
     double gflop = blas::Gflop< scalar_t >::syrk( n, k );
     params.time()   = time;
     params.gflops() = gflop / time;
-    blas::device_getmatrix(n, n, dC, ldc, C, ldc, queue);
+    blas::device_copy_matrix(n, n, dC, ldc, C, ldc, queue);
     queue.sync();
 
     if (verbose >= 2) {

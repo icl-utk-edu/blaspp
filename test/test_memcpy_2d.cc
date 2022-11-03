@@ -107,15 +107,15 @@ void test_memcpy_2d_work( Params& params, bool run )
     assert_throw( blas::device_copy_matrix(  m,  n, b_dev, m-1, c_dev, m,   queue ), blas::Error );
     assert_throw( blas::device_copy_matrix(  m,  n, b_dev, m,   c_dev, m-1, queue ), blas::Error );
 
-    assert_throw( blas::device_setmatrix( -1,  n, b_dev, m,   c_dev, m,   queue ), blas::Error );
-    assert_throw( blas::device_setmatrix(  m, -1, b_dev, m,   c_dev, m,   queue ), blas::Error );
-    assert_throw( blas::device_setmatrix(  m,  n, b_dev, m-1, c_dev, m,   queue ), blas::Error );
-    assert_throw( blas::device_setmatrix(  m,  n, b_dev, m,   c_dev, m-1, queue ), blas::Error );
+    assert_throw( blas::device_copy_matrix( -1,  n, b_dev, m,   c_dev, m,   queue ), blas::Error );
+    assert_throw( blas::device_copy_matrix(  m, -1, b_dev, m,   c_dev, m,   queue ), blas::Error );
+    assert_throw( blas::device_copy_matrix(  m,  n, b_dev, m-1, c_dev, m,   queue ), blas::Error );
+    assert_throw( blas::device_copy_matrix(  m,  n, b_dev, m,   c_dev, m-1, queue ), blas::Error );
 
-    assert_throw( blas::device_getmatrix( -1,  n, b_dev, m,   c_dev, m,   queue ), blas::Error );
-    assert_throw( blas::device_getmatrix(  m, -1, b_dev, m,   c_dev, m,   queue ), blas::Error );
-    assert_throw( blas::device_getmatrix(  m,  n, b_dev, m-1, c_dev, m,   queue ), blas::Error );
-    assert_throw( blas::device_getmatrix(  m,  n, b_dev, m,   c_dev, m-1, queue ), blas::Error );
+    assert_throw( blas::device_copy_matrix( -1,  n, b_dev, m,   c_dev, m,   queue ), blas::Error );
+    assert_throw( blas::device_copy_matrix(  m, -1, b_dev, m,   c_dev, m,   queue ), blas::Error );
+    assert_throw( blas::device_copy_matrix(  m,  n, b_dev, m-1, c_dev, m,   queue ), blas::Error );
+    assert_throw( blas::device_copy_matrix(  m,  n, b_dev, m,   c_dev, m-1, queue ), blas::Error );
 
     if (verbose >= 1) {
         printf( "\n"
@@ -139,7 +139,7 @@ void test_memcpy_2d_work( Params& params, bool run )
         blas::device_copy_matrix( m, n, a_host, ld, b_dev, ld, queue );
     }
     else if (method == Method::set_matrix) {
-        blas::device_setmatrix( m, n, a_host, ld, b_dev, ld, queue );
+        blas::device_copy_matrix( m, n, a_host, ld, b_dev, ld, queue );
     }
     time = sync_get_wtime( queue ) - time;
 
@@ -165,7 +165,7 @@ void test_memcpy_2d_work( Params& params, bool run )
         blas::device_copy_matrix( m, n, c_dev, ld, d_host, ld, queue );
     }
     else if (method == Method::set_matrix) {
-        blas::device_getmatrix( m, n, c_dev, ld, d_host, ld, queue );
+        blas::device_copy_matrix( m, n, c_dev, ld, d_host, ld, queue );
     }
     time3 = sync_get_wtime( queue ) - time3;
 

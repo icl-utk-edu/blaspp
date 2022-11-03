@@ -69,8 +69,8 @@ void test_axpy_device_work( Params& params, bool run )
     cblas_copy( n, y, incy, yref, incy );
     cblas_copy( n, y, incy,   y0, incy );
 
-    blas::device_setvector(n, x, std::abs(incx), dx, std::abs(incx), queue);
-    blas::device_setvector(n, y, std::abs(incy), dy, std::abs(incy), queue);
+    blas::device_copy_vector(n, x, std::abs(incx), dx, std::abs(incx), queue);
+    blas::device_copy_vector(n, y, std::abs(incy), dy, std::abs(incy), queue);
     queue.sync();
 
     // test error exits
@@ -102,7 +102,7 @@ void test_axpy_device_work( Params& params, bool run )
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
 
-    blas::device_getvector(n, dy, std::abs(incy), y, std::abs(incy), queue);
+    blas::device_copy_vector(n, dy, std::abs(incy), y, std::abs(incy), queue);
     queue.sync();
 
     if (verbose >= 2) {

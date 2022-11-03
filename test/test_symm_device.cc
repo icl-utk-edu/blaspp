@@ -82,9 +82,9 @@ void test_symm_device_work( Params& params, bool run )
     lapack_larnv( idist, iseed, size_C, C );
     lapack_lacpy( "g", Cm, Cn, C, ldc, Cref, ldc );
 
-    blas::device_setmatrix(An, An, A, lda, dA, lda, queue);
-    blas::device_setmatrix(Cm, Cn, B, ldb, dB, ldb, queue);
-    blas::device_setmatrix(Cm, Cn, C, ldc, dC, ldc, queue);
+    blas::device_copy_matrix(An, An, A, lda, dA, lda, queue);
+    blas::device_copy_matrix(Cm, Cn, B, ldb, dB, ldb, queue);
+    blas::device_copy_matrix(Cm, Cn, C, ldc, dC, ldc, queue);
     queue.sync();
 
     // norms for error check
@@ -140,7 +140,7 @@ void test_symm_device_work( Params& params, bool run )
     double gflop = blas::Gflop< scalar_t >::symm( side, m, n );
     params.time()   = time;
     params.gflops() = gflop / time;
-    blas::device_getmatrix(Cm, Cn, dC, ldc, C, ldc, queue);
+    blas::device_copy_matrix(Cm, Cn, dC, ldc, C, ldc, queue);
     queue.sync();
 
     if (verbose >= 2) {

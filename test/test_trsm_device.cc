@@ -115,8 +115,8 @@ void test_trsm_device_work( Params& params, bool run )
         }
     }
 
-    blas::device_setmatrix(Am, Am, A, lda, dA, lda, queue);
-    blas::device_setmatrix(Bm, Bn, B, ldb, dB, ldb, queue);
+    blas::device_copy_matrix(Am, Am, A, lda, dA, lda, queue);
+    blas::device_copy_matrix(Bm, Bn, B, ldb, dB, ldb, queue);
     queue.sync();
 
     // test error exits
@@ -156,7 +156,7 @@ void test_trsm_device_work( Params& params, bool run )
     double gflop = blas::Gflop< scalar_t >::trsm( side, m, n );
     params.time()   = time;
     params.gflops() = gflop / time;
-    blas::device_getmatrix(Bm, Bn, dB, ldb, B, ldb, queue);
+    blas::device_copy_matrix(Bm, Bn, dB, ldb, B, ldb, queue);
     queue.sync();
 
     if (verbose >= 2) {
