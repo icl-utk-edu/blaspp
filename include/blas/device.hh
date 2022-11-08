@@ -305,7 +305,7 @@ inline const char* device_error_string( rocblas_status error )
     // blaspp aborts on device errors
     #if defined(BLAS_HAVE_ONEMKL)
         #define blas_dev_call( error ) \
-            do {
+            do { \
                 try { \
                     error; \
                 } \
@@ -320,7 +320,7 @@ inline const char* device_error_string( rocblas_status error )
                 catch (...) { \
                     blas::internal::abort_if( true, __func__, \
                                               "%s", "unknown exception" ); \
-                }
+                } \
             } while(0)
 
     #else
@@ -337,7 +337,7 @@ inline const char* device_error_string( rocblas_status error )
     // blaspp throws device errors (default)
     #if defined(BLAS_HAVE_ONEMKL)
         #define blas_dev_call( error ) \
-            do {
+            do { \
                 try { \
                         error; \
                 } \
@@ -352,7 +352,7 @@ inline const char* device_error_string( rocblas_status error )
                 catch (...) { \
                     blas::internal::throw_if( true, \
                                               "unknown exception", __func__ ); \
-                }
+                } \
             } while(0)
 
     #else
