@@ -3,8 +3,8 @@
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
-#include <CL/sycl/detail/cl.h>
-#include <CL/sycl.hpp>
+#include <sycl/detail/cl.h>
+#include <sycl.hpp>
 #include <oneapi/mkl.hpp>
 
 #include <stdexcept>
@@ -23,7 +23,7 @@ int main()
     double D[] = { 40, 61, 21, 28 };
 
     // enumerate devices
-    std::vector< cl::sycl::device > devices;
+    std::vector< sycl::device > devices;
     auto platforms = sycl::platform::get_platforms();
     for (auto& platform : platforms) {
         auto all_devices = platform.get_devices();
@@ -41,9 +41,9 @@ int main()
     sycl::queue queue( devices[0] );
 
     double *dA, *dB, *dC;
-    dA = (double*) cl::sycl::malloc_shared( n*n*sizeof(double), queue );
-    dB = (double*) cl::sycl::malloc_shared( n*n*sizeof(double), queue );
-    dC = (double*) cl::sycl::malloc_shared( n*n*sizeof(double), queue );
+    dA = (double*) sycl::malloc_shared( n*n*sizeof(double), queue );
+    dB = (double*) sycl::malloc_shared( n*n*sizeof(double), queue );
+    dC = (double*) sycl::malloc_shared( n*n*sizeof(double), queue );
 
     // dA = A, dB = B, dC = c
     queue.memcpy( dA, A, n*n*sizeof(double) );

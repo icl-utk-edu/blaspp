@@ -113,7 +113,7 @@ device_blas_int get_device_count()
 // -----------------------------------------------------------------------------
 /// @return vector of SYCL GPU devices.
 #ifdef BLAS_HAVE_ONEMKL
-void enumerate_devices(std::vector<cl::sycl::device> &devices)
+void enumerate_devices(std::vector<sycl::device> &devices)
 {
     device_blas_int dev_count = get_device_count();
 

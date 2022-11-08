@@ -36,8 +36,8 @@
     #endif
 
 #elif defined(BLAS_HAVE_ONEMKL)
-    #include <CL/sycl/detail/cl.h>  // For CL version
-    #include <CL/sycl.hpp>
+    #include <sycl/detail/cl.h>  // For CL version
+    #include <sycl.hpp>
 
 #endif
 
@@ -166,8 +166,8 @@ public:
         hipStream_t    stream()        const { return *current_stream_; }
         rocblas_handle handle()        const { return handle_; }
     #elif defined(BLAS_HAVE_ONEMKL)
-        cl::sycl::device sycl_device() const { return sycl_device_; }
-        cl::sycl::queue  stream()      const { return *default_stream_; }
+        sycl::device sycl_device() const { return sycl_device_; }
+        sycl::queue  stream()      const { return *default_stream_; }
     #endif
 
 private:
@@ -224,14 +224,14 @@ private:
     #elif defined(BLAS_HAVE_ONEMKL)
         // in addition to the integer device_ member, we need
         // the sycl device id
-        cl::sycl::device  sycl_device_;
+        sycl::device  sycl_device_;
 
         // default sycl queue for this blas queue
-        cl::sycl::queue *default_stream_;
-        cl::sycl::event  default_event_;
+        sycl::queue *default_stream_;
+        sycl::event  default_event_;
 
         // pointer to current stream (default or fork mode)
-        cl::sycl::queue *current_stream_;
+        sycl::queue *current_stream_;
 
     #else
         // pointer to current stream (default or fork mode)
@@ -309,7 +309,7 @@ inline const char* device_error_string( rocblas_status error )
                 try { \
                     error; \
                 } \
-                catch (cl::sycl::exception const& e) { \
+                catch (sycl::exception const& e) { \
                     blas::internal::abort_if( true, __func__, \
                                               "%s", e.what() ); \
                 } \
@@ -341,7 +341,7 @@ inline const char* device_error_string( rocblas_status error )
                 try { \
                         error; \
                 } \
-                catch (cl::sycl::exception const& e) { \
+                catch (sycl::exception const& e) { \
                     blas::internal::throw_if( true, \
                                               e.what(), __func__ ); \
                 } \
@@ -380,7 +380,7 @@ void get_device( blas::Device *device );
 
 device_blas_int get_device_count();
 #ifdef BLAS_HAVE_ONEMKL
-void enumerate_devices(std::vector<cl::sycl::device> &devices);
+void enumerate_devices(std::vector<sycl::device> &devices);
 #endif
 
 // -----------------------------------------------------------------------------
@@ -478,7 +478,7 @@ T* device_malloc(
 
     #elif defined(BLAS_HAVE_ONEMKL)
         blas_dev_call(
-            ptr = (T*)cl::sycl::malloc_shared( nelements*sizeof(T), queue.stream() ) );
+            ptr = (T*)sycl::malloc_shared( nelements*sizeof(T), queue.stream() ) );
 
     #else
         throw blas::Error( "device BLAS not available", __func__ );
@@ -550,7 +550,7 @@ T* host_malloc_pinned(
 
     #elif defined(BLAS_HAVE_ONEMKL)
         blas_dev_call(
-            ptr = (T*)cl::sycl::malloc_host( nelements*sizeof(T), queue.stream() ) );
+            ptr = (T*)sycl::malloc_host( nelements*sizeof(T), queue.stream() ) );
 
     #else
         throw blas::Error( "device BLAS not available", __func__ );

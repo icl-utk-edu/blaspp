@@ -226,7 +226,7 @@ Queue::Queue( blas::Device device, int64_t batch_size )
         work_resize<void*>( lwork );
 
     #elif defined(BLAS_HAVE_ONEMKL)
-        std::vector<cl::sycl::device> devices;
+        std::vector<sycl::device> devices;
         enumerate_devices( devices );
         device_ = device;
         if (devices.size() <= (size_t)device) {
