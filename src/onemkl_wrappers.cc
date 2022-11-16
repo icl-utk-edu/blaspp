@@ -143,6 +143,122 @@ void zaxpy(
 }
 
 // -----------------------------------------------------------------------------
+// dot
+// -----------------------------------------------------------------------------
+// sdot
+void sdot(
+    blas::Queue& queue,
+    device_blas_int n,
+    float *dx, device_blas_int incdx,
+    float *dy, device_blas_int incdy,
+    float *result)
+{
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::dot(
+            dev_queue,
+            n,
+            dx, incdx,
+            dy, incdy,
+            result));
+}
+
+// -----------------------------------------------------------------------------
+// ddot
+void ddot(
+    blas::Queue& queue,
+    device_blas_int n,
+    double *dx, device_blas_int incdx,
+    double *dy, device_blas_int incdy,
+    double *result)
+{
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::dot(
+            dev_queue,
+            n,
+            dx, incdx,
+            dy, incdy,
+            result));
+}
+
+// -----------------------------------------------------------------------------
+// cdotu
+void cdotu(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy,
+    std::complex<float> *result)
+{
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::dotu(
+            dev_queue,
+            n,
+            dx, incdx,
+            dy, incdy,
+            result));
+}
+
+// -----------------------------------------------------------------------------
+// zdotu
+void zdotu(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy,
+    std::complex<double> *result)
+{
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::dotu(
+            dev_queue,
+            n,
+            dx, incdx,
+            dy, incdy,
+            result));
+}
+
+// -----------------------------------------------------------------------------
+// cdotc
+void cdotc(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy,
+    std::complex<float> *result)
+{
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::dotc(
+            dev_queue,
+            n,
+            dx, incdx,
+            dy, incdy,
+            result));
+}
+
+// -----------------------------------------------------------------------------
+// zdotc
+void zdotc(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy,
+    std::complex<double> *result)
+{
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::dotc(
+            dev_queue,
+            n,
+            dx, incdx,
+            dy, incdy,
+            result));
+}
+
+// -----------------------------------------------------------------------------
 // nrm2
 // -----------------------------------------------------------------------------
 // snrm2

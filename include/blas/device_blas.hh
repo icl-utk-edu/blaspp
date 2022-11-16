@@ -45,6 +45,66 @@ void axpy(
     blas::Queue& queue);
 
 // -----------------------------------------------------------------------------
+// dot
+void dot(
+    int64_t n,
+    float *dx, int64_t incdx,
+    float *dy, int64_t incdy,
+    float *result,
+    blas::Queue& queue);
+
+void dot(
+    int64_t n,
+    double *dx, int64_t incdx,
+    double *dy, int64_t incdy,
+    double *result,
+    blas::Queue& queue);
+
+void dot(
+    int64_t n,
+    std::complex<float> *dx, int64_t incdx,
+    std::complex<float> *dy, int64_t incdy,
+    std::complex<float> *result,
+    blas::Queue& queue);
+
+void dot(
+    int64_t n,
+    std::complex<double> *dx, int64_t incdx,
+    std::complex<double> *dy, int64_t incdy,
+    std::complex<double> *result,
+    blas::Queue& queue);
+
+// -----------------------------------------------------------------------------
+// dotu
+void dotu(
+    int64_t n,
+    float *dx, int64_t incdx,
+    float *dy, int64_t incdy,
+    float *result,
+    blas::Queue& queue);
+
+void dotu(
+    int64_t n,
+    double *dx, int64_t incdx,
+    double *dy, int64_t incdy,
+    double *result,
+    blas::Queue& queue);
+
+void dotu(
+    int64_t n,
+    std::complex<float> *dx, int64_t incdx,
+    std::complex<float> *dy, int64_t incdy,
+    std::complex<float> *result,
+    blas::Queue& queue);
+
+void dotu(
+    int64_t n,
+    std::complex<double> *dx, int64_t incdx,
+    std::complex<double> *dy, int64_t incdy,
+    std::complex<double> *result,
+    blas::Queue& queue);
+
+// -----------------------------------------------------------------------------
 // nrm2
 void nrm2(
     int64_t n,

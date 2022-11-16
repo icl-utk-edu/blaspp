@@ -47,6 +47,50 @@ void zaxpy(
     std::complex<double> *dy, device_blas_int incdy);
 
 // -----------------------------------------------------------------------------
+// dot
+void sdot(
+    blas::Queue& queue,
+    device_blas_int n,
+    float *dx, device_blas_int incdx,
+    float *dy, device_blas_int incdy,
+    float *result);
+
+void ddot(
+    blas::Queue& queue,
+    device_blas_int n,
+    double *dx, device_blas_int incdx,
+    double *dy, device_blas_int incdy,
+    double *result);
+
+void cdotu(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy,
+    std::complex<float> *result);
+
+void zdotu(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy,
+    std::complex<double> *result);
+
+void cdotc(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy,
+    std::complex<float> *result);
+
+void zdotc(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy,
+    std::complex<double> *result);
+
+// -----------------------------------------------------------------------------
 // nrm2
 void snrm2(
     blas::Queue& queue,

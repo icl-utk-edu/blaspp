@@ -129,6 +129,116 @@ void zaxpy(
 }
 
 // -----------------------------------------------------------------------------
+// dot
+// -----------------------------------------------------------------------------
+// sdot
+void sdot(
+    blas::Queue& queue,
+    device_blas_int n,
+    float *dx, device_blas_int incdx,
+    float *dy, device_blas_int incdy,
+    float *result)
+{
+    blas_dev_call(
+        cublasSdot(
+            queue.handle(),
+            n,
+            dx, incdx,
+            dy, incdy,
+            result));
+}
+
+// -----------------------------------------------------------------------------
+// ddot
+void ddot(
+    blas::Queue& queue,
+    device_blas_int n,
+    double *dx, device_blas_int incdx,
+    double *dy, device_blas_int incdy,
+    double *result)
+{
+    blas_dev_call(
+        cublasDdot(
+            queue.handle(),
+            n,
+            dx, incdx,
+            dy, incdy,
+            result));
+}
+
+// -----------------------------------------------------------------------------
+// cdotu
+void cdotu(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy,
+    std::complex<float> *result)
+{
+    blas_dev_call(
+        cublasCdotu(
+            queue.handle(),
+            n,
+            (const cuComplex*) dx, incdx,
+            (const cuComplex*) dy, incdy,
+            (cuComplex*) result));
+}
+
+// -----------------------------------------------------------------------------
+// zdotu
+void zdotu(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy,
+    std::complex<double> *result)
+{
+    blas_dev_call(
+        cublasZdotu(
+            queue.handle(),
+            n,
+            (const cuDoubleComplex*) dx, incdx,
+            (const cuDoubleComplex*) dy, incdy,
+            (cuDoubleComplex*) result));
+}
+
+// -----------------------------------------------------------------------------
+// cdotc
+void cdotc(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy,
+    std::complex<float> *result)
+{
+    blas_dev_call(
+        cublasCdotc(
+            queue.handle(),
+            n,
+            (const cuComplex*) dx, incdx,
+            (const cuComplex*) dy, incdy,
+            (cuComplex*) result));
+}
+
+// -----------------------------------------------------------------------------
+// zdotc
+void zdotc(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy,
+    std::complex<double> *result)
+{
+    blas_dev_call(
+        cublasZdotc(
+            queue.handle(),
+            n,
+            (const cuDoubleComplex*) dx, incdx,
+            (const cuDoubleComplex*) dy, incdy,
+            (cuDoubleComplex*) result));
+}
+
+// -----------------------------------------------------------------------------
 // nrm2
 // -----------------------------------------------------------------------------
 // snrm2

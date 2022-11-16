@@ -64,6 +64,80 @@ void zaxpy(
 }
 
 // -----------------------------------------------------------------------------
+// dot
+// -----------------------------------------------------------------------------
+// sdot
+void sdot(
+    blas::Queue& queue,
+    device_blas_int n,
+    float *dx, device_blas_int incdx,
+    float *dy, device_blas_int incdy,
+    float *result)
+{
+    throw blas::Error( "device BLAS not available", __func__ );
+}
+
+// -----------------------------------------------------------------------------
+// ddot
+void ddot(
+    blas::Queue& queue,
+    device_blas_int n,
+    double *dx, device_blas_int incdx,
+    double *dy, device_blas_int incdy,
+    double *result)
+{
+    throw blas::Error( "device BLAS not available", __func__ );
+}
+
+// -----------------------------------------------------------------------------
+// cdotu
+void cdotu(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy,
+    std::complex<float> *result)
+{
+    throw blas::Error( "device BLAS not available", __func__ );
+}
+
+// -----------------------------------------------------------------------------
+// zdotu
+void zdotu(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy,
+    std::complex<double> *result)
+{
+    throw blas::Error( "device BLAS not available", __func__ );
+}
+
+// -----------------------------------------------------------------------------
+// cdotc
+void cdotc(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<float> *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy,
+    std::complex<float> *result)
+{
+    throw blas::Error( "device BLAS not available", __func__ );
+}
+
+// -----------------------------------------------------------------------------
+// zdotc
+void zdotc(
+    blas::Queue& queue,
+    device_blas_int n,
+    std::complex<double> *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy,
+    std::complex<double> *result)
+{
+    throw blas::Error( "device BLAS not available", __func__ );
+}
+
+// -----------------------------------------------------------------------------
 // nrm2
 // -----------------------------------------------------------------------------
 // snrm2
