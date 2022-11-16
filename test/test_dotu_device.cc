@@ -11,7 +11,7 @@
 
 // -----------------------------------------------------------------------------
 template< typename Tx, typename Ty >
-void test_dot_device_work( Params& params, bool run )
+void test_dotu_device_work( Params& params, bool run )
 {
     using namespace testsweeper;
     using namespace blas;
@@ -75,9 +75,9 @@ void test_dot_device_work( Params& params, bool run )
     }
 
     // test error exits
-    assert_throw( blas::dot( -1, x, incx, y, incy, result, queue ), blas::Error );
-    assert_throw( blas::dot(  n, x,    0, y, incy, result, queue ), blas::Error );
-    assert_throw( blas::dot(  n, x, incx, y,    0, result, queue ), blas::Error );
+    assert_throw( blas::dotu( -1, x, incx, y, incy, result, queue ), blas::Error );
+    assert_throw( blas::dotu(  n, x,    0, y, incy, result, queue ), blas::Error );
+    assert_throw( blas::dotu(  n, x, incx, y,    0, result, queue ), blas::Error );
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
@@ -103,7 +103,7 @@ void test_dot_device_work( Params& params, bool run )
     // run test
     testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
-    blas::dot( n, dx, incx, dy, incy, result, queue );
+    blas::dotu( n, dx, incx, dy, incy, result, queue );
     queue.sync();
     time = get_wtime() - time;
 
@@ -130,7 +130,7 @@ void test_dot_device_work( Params& params, bool run )
         // run reference
         testsweeper::flush_cache( params.cache() );
         time = get_wtime();
-        result_cblas = cblas_dot( n, xref, incx, yref, incy );
+        result_cblas = cblas_dotu( n, xref, incx, yref, incy );
         time = get_wtime() - time;
 
         params.ref_time()   = time * 1000;  // msec
@@ -173,24 +173,24 @@ void test_dot_device_work( Params& params, bool run )
 }
 
 // -----------------------------------------------------------------------------
-void test_dot_device( Params& params, bool run )
+void test_dotu_device( Params& params, bool run )
 {
     switch (params.datatype()) {
         case testsweeper::DataType::Single:
-            test_dot_device_work< float, float >( params, run );
+            test_dotu_device_work< float, float >( params, run );
             break;
 
         case testsweeper::DataType::Double:
-            test_dot_device_work< double, double >( params, run );
+            test_dotu_device_work< double, double >( params, run );
             break;
 
         case testsweeper::DataType::SingleComplex:
-            test_dot_device_work< std::complex<float>, std::complex<float> >
+            test_dotu_device_work< std::complex<float>, std::complex<float> >
                 ( params, run );
             break;
 
         case testsweeper::DataType::DoubleComplex:
-            test_dot_device_work< std::complex<double>, std::complex<double> >
+            test_dotu_device_work< std::complex<double>, std::complex<double> >
                 ( params, run );
             break;
 
