@@ -5,116 +5,140 @@
 
 #include "blas/fortran.h"
 #include "blas.hh"
+#include "blas_internal.hh"
 
 #include <limits>
 
 namespace blas {
 
-// =============================================================================
-// Overloaded wrappers for s, d, c, z precisions.
+//==============================================================================
+namespace internal {
 
-// -----------------------------------------------------------------------------
-/// @ingroup copy
-void copy(
-    int64_t n,
-    float const *x, int64_t incx,
-    float       *y, int64_t incy )
+//------------------------------------------------------------------------------
+/// Low-level overload wrapper calls Fortran, float version.
+/// @ingroup copy_internal
+inline void copy(
+    blas_int n,
+    float const* x, blas_int incx,
+    float*       y, blas_int incy )
 {
-    // check arguments
-    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
-    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    blas_error_if( incy == 0 );
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(blas_int)) {
-        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
-        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
-    }
-
-    blas_int n_    = (blas_int) n;
-    blas_int incx_ = (blas_int) incx;
-    blas_int incy_ = (blas_int) incy;
-    BLAS_scopy( &n_, x, &incx_, y, &incy_ );
+    BLAS_scopy( &n, x, &incx, y, &incy );
 }
 
-// -----------------------------------------------------------------------------
-/// @ingroup copy
-void copy(
-    int64_t n,
-    double const *x, int64_t incx,
-    double       *y, int64_t incy )
+//------------------------------------------------------------------------------
+/// Low-level overload wrapper calls Fortran, double version.
+/// @ingroup copy_internal
+inline void copy(
+    blas_int n,
+    double const* x, blas_int incx,
+    double*       y, blas_int incy )
 {
-    // check arguments
-    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
-    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    blas_error_if( incy == 0 );
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(blas_int)) {
-        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
-        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
-    }
-
-    blas_int n_    = (blas_int) n;
-    blas_int incx_ = (blas_int) incx;
-    blas_int incy_ = (blas_int) incy;
-    BLAS_dcopy( &n_, x, &incx_, y, &incy_ );
+    BLAS_dcopy( &n, x, &incx, y, &incy );
 }
 
-// -----------------------------------------------------------------------------
-/// @ingroup copy
-void copy(
-    int64_t n,
-    std::complex<float> const *x, int64_t incx,
-    std::complex<float>       *y, int64_t incy )
+//------------------------------------------------------------------------------
+/// Low-level overload wrapper calls Fortran, complex<float> version.
+/// @ingroup copy_internal
+inline void copy(
+    blas_int n,
+    std::complex<float> const* x, blas_int incx,
+    std::complex<float>*       y, blas_int incy )
 {
-    // check arguments
-    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
-    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    blas_error_if( incy == 0 );
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(blas_int)) {
-        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
-        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
-    }
-
-    blas_int n_    = (blas_int) n;
-    blas_int incx_ = (blas_int) incx;
-    blas_int incy_ = (blas_int) incy;
-    BLAS_ccopy( &n_,
-                (blas_complex_float*) x, &incx_,
-                (blas_complex_float*) y, &incy_ );
+    BLAS_ccopy( &n,
+                (blas_complex_float*) x, &incx,
+                (blas_complex_float*) y, &incy );
 }
 
-// -----------------------------------------------------------------------------
-/// @ingroup copy
+//------------------------------------------------------------------------------
+/// Low-level overload wrapper calls Fortran, complex<double> version.
+/// @ingroup copy_internal
+inline void copy(
+    blas_int n,
+    std::complex<double> const* x, blas_int incx,
+    std::complex<double>*       y, blas_int incy )
+{
+    BLAS_zcopy( &n,
+                (blas_complex_double*) x, &incx,
+                (blas_complex_double*) y, &incy );
+}
+
+}  // namespace internal
+
+//==============================================================================
+namespace impl {
+
+//------------------------------------------------------------------------------
+/// Mid-level templated wrapper checks and converts arguments,
+/// then calls low-level wrapper.
+/// @ingroup copy_internal
+///
+template <typename scalar_t>
 void copy(
     int64_t n,
-    std::complex<double> const *x, int64_t incx,
-    std::complex<double>       *y, int64_t incy )
+    scalar_t const* x, int64_t incx,
+    scalar_t*       y, int64_t incy )
 {
     // check arguments
     blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
     blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
     blas_error_if( incy == 0 );
 
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(blas_int)) {
-        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
-        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
-    }
+    // convert arguments
+    blas_int n_    = to_blas_int( n );
+    blas_int incx_ = to_blas_int( incx );
+    blas_int incy_ = to_blas_int( incy );
 
-    blas_int n_    = (blas_int) n;
-    blas_int incx_ = (blas_int) incx;
-    blas_int incy_ = (blas_int) incy;
-    BLAS_zcopy( &n_,
-                (blas_complex_double*) x, &incx_,
-                (blas_complex_double*) y, &incy_ );
+    // call low-level wrapper
+    internal::copy( n_, x, incx_, y, incy_ );
+}
+
+}  // namespace impl
+
+//==============================================================================
+// High-level overloaded wrappers call mid-level templated wrapper.
+
+//------------------------------------------------------------------------------
+/// CPU, float version.
+/// @ingroup copy
+void copy(
+    int64_t n,
+    float const* x, int64_t incx,
+    float*       y, int64_t incy )
+{
+    impl::copy( n, x, incx, y, incy );
+}
+
+//------------------------------------------------------------------------------
+/// CPU, double version.
+/// @ingroup copy
+void copy(
+    int64_t n,
+    double const* x, int64_t incx,
+    double*       y, int64_t incy )
+{
+    impl::copy( n, x, incx, y, incy );
+}
+
+//------------------------------------------------------------------------------
+/// CPU, complex<float> version.
+/// @ingroup copy
+void copy(
+    int64_t n,
+    std::complex<float> const* x, int64_t incx,
+    std::complex<float>*       y, int64_t incy )
+{
+    impl::copy( n, x, incx, y, incy );
+}
+
+//------------------------------------------------------------------------------
+/// CPU, complex<double> version.
+/// @ingroup copy
+void copy(
+    int64_t n,
+    std::complex<double> const* x, int64_t incx,
+    std::complex<double>*       y, int64_t incy )
+{
+    impl::copy( n, x, incx, y, incy );
 }
 
 }  // namespace blas

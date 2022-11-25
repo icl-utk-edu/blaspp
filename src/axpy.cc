@@ -5,125 +5,151 @@
 
 #include "blas/fortran.h"
 #include "blas.hh"
+#include "blas_internal.hh"
 
 #include <limits>
 
 namespace blas {
 
-// =============================================================================
-// Overloaded wrappers for s, d, c, z precisions.
-// We could use a template to avoid replicating argument checking code
-// (see SLATE C++ API document), but then there are conflicts with the
-// templated generic implementation below.
+//==============================================================================
+namespace internal {
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// Low-level overload wrapper calls Fortran, float version.
+/// @ingroup axpy_internal
+inline void axpy(
+    blas_int n,
+    float alpha,
+    float const* x, blas_int incx,
+    float*       y, blas_int incy )
+{
+    BLAS_saxpy( &n, &alpha, x, &incx, y, &incy );
+}
+
+//------------------------------------------------------------------------------
+/// Low-level overload wrapper calls Fortran, double version.
+/// @ingroup axpy_internal
+inline void axpy(
+    blas_int n,
+    double alpha,
+    double const* x, blas_int incx,
+    double*       y, blas_int incy )
+{
+    BLAS_daxpy( &n, &alpha, x, &incx, y, &incy );
+}
+
+//------------------------------------------------------------------------------
+/// Low-level overload wrapper calls Fortran, complex<float> version.
+/// @ingroup axpy_internal
+inline void axpy(
+    blas_int n,
+    std::complex<float> alpha,
+    std::complex<float> const* x, blas_int incx,
+    std::complex<float>*       y, blas_int incy )
+{
+    BLAS_caxpy( &n,
+                (blas_complex_float*) &alpha,
+                (blas_complex_float*) x, &incx,
+                (blas_complex_float*) y, &incy );
+}
+
+//------------------------------------------------------------------------------
+/// Low-level overload wrapper calls Fortran, complex<double> version.
+/// @ingroup axpy_internal
+inline void axpy(
+    blas_int n,
+    std::complex<double> alpha,
+    std::complex<double> const* x, blas_int incx,
+    std::complex<double>*       y, blas_int incy )
+{
+    BLAS_zaxpy( &n,
+                (blas_complex_double*) &alpha,
+                (blas_complex_double*) x, &incx,
+                (blas_complex_double*) y, &incy );
+}
+
+}  // namespace internal
+
+//==============================================================================
+namespace impl {
+
+//------------------------------------------------------------------------------
+/// Mid-level templated wrapper checks and converts arguments,
+/// then calls low-level wrapper.
+/// @ingroup axpy_internal
+///
+template <typename scalar_t>
+void axpy(
+    int64_t n,
+    scalar_t alpha,
+    scalar_t const* x, int64_t incx,
+    scalar_t*       y, int64_t incy )
+{
+    // check arguments
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
+    blas_error_if( incy == 0 );
+
+    // convert arguments
+    blas_int n_    = to_blas_int( n );
+    blas_int incx_ = to_blas_int( incx );
+    blas_int incy_ = to_blas_int( incy );
+
+    // call low-level wrapper
+    internal::axpy( n_, alpha, x, incx_, y, incy_ );
+}
+
+}  // namespace impl
+
+//==============================================================================
+// High-level overloaded wrappers call mid-level templated wrapper.
+
+//------------------------------------------------------------------------------
+/// CPU, float version.
 /// @ingroup axpy
 void axpy(
     int64_t n,
     float alpha,
-    float const *x, int64_t incx,
-    float       *y, int64_t incy )
+    float const* x, int64_t incx,
+    float*       y, int64_t incy )
 {
-    // check arguments
-    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
-    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    blas_error_if( incy == 0 );
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(blas_int)) {
-        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
-        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
-    }
-
-    blas_int n_    = (blas_int) n;
-    blas_int incx_ = (blas_int) incx;
-    blas_int incy_ = (blas_int) incy;
-    BLAS_saxpy( &n_, &alpha, x, &incx_, y, &incy_ );
+    impl::axpy( n, alpha, x, incx, y, incy );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// CPU, double version.
 /// @ingroup axpy
 void axpy(
     int64_t n,
     double alpha,
-    double const *x, int64_t incx,
-    double       *y, int64_t incy )
+    double const* x, int64_t incx,
+    double*       y, int64_t incy )
 {
-    // check arguments
-    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
-    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    blas_error_if( incy == 0 );
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(blas_int)) {
-        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
-        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
-    }
-
-    blas_int n_    = (blas_int) n;
-    blas_int incx_ = (blas_int) incx;
-    blas_int incy_ = (blas_int) incy;
-    BLAS_daxpy( &n_, &alpha, x, &incx_, y, &incy_ );
+    impl::axpy( n, alpha, x, incx, y, incy );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// CPU, complex<float> version.
 /// @ingroup axpy
 void axpy(
     int64_t n,
     std::complex<float> alpha,
-    std::complex<float> const *x, int64_t incx,
-    std::complex<float>       *y, int64_t incy )
+    std::complex<float> const* x, int64_t incx,
+    std::complex<float>*       y, int64_t incy )
 {
-    // check arguments
-    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
-    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    blas_error_if( incy == 0 );
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(blas_int)) {
-        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
-        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
-    }
-
-    blas_int n_    = (blas_int) n;
-    blas_int incx_ = (blas_int) incx;
-    blas_int incy_ = (blas_int) incy;
-    BLAS_caxpy( &n_,
-                (blas_complex_float*) &alpha,
-                (blas_complex_float*) x, &incx_,
-                (blas_complex_float*) y, &incy_ );
+    impl::axpy( n, alpha, x, incx, y, incy );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// CPU, complex<double> version.
 /// @ingroup axpy
 void axpy(
     int64_t n,
     std::complex<double> alpha,
-    std::complex<double> const *x, int64_t incx,
-    std::complex<double>       *y, int64_t incy )
+    std::complex<double> const* x, int64_t incx,
+    std::complex<double>*       y, int64_t incy )
 {
-    // check arguments
-    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
-    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    blas_error_if( incy == 0 );
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(blas_int)) {
-        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
-        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
-    }
-
-    blas_int n_    = (blas_int) n;
-    blas_int incx_ = (blas_int) incx;
-    blas_int incy_ = (blas_int) incy;
-    BLAS_zaxpy( &n_,
-                (blas_complex_double*) &alpha,
-                (blas_complex_double*) x, &incx_,
-                (blas_complex_double*) y, &incy_ );
+    impl::axpy( n, alpha, x, incx, y, incy );
 }
 
 }  // namespace blas

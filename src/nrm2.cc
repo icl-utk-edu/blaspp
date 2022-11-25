@@ -5,98 +5,125 @@
 
 #include "blas/fortran.h"
 #include "blas.hh"
+#include "blas_internal.hh"
 
 #include <limits>
 
 namespace blas {
 
-// =============================================================================
-// Overloaded wrappers for s, d, c, z precisions.
+//==============================================================================
+namespace internal {
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// Low-level overload wrapper calls Fortran, float version.
+/// @ingroup nrm2_internal
+inline float nrm2(
+    blas_int n,
+    float const* x, blas_int incx )
+{
+    return BLAS_snrm2( &n, x, &incx );
+}
+
+//------------------------------------------------------------------------------
+/// Low-level overload wrapper calls Fortran, double version.
+/// @ingroup nrm2_internal
+inline double nrm2(
+    blas_int n,
+    double const* x, blas_int incx )
+{
+    return BLAS_dnrm2( &n, x, &incx );
+}
+
+//------------------------------------------------------------------------------
+/// Low-level overload wrapper calls Fortran, complex<float> version.
+/// @ingroup nrm2_internal
+inline float nrm2(
+    blas_int n,
+    std::complex<float> const* x, blas_int incx )
+{
+    return BLAS_scnrm2( &n, (blas_complex_float*) x, &incx );
+}
+
+//------------------------------------------------------------------------------
+/// Low-level overload wrapper calls Fortran, complex<double> version.
+/// @ingroup nrm2_internal
+inline double nrm2(
+    blas_int n,
+    std::complex<double> const* x, blas_int incx )
+{
+    return BLAS_dznrm2( &n, (blas_complex_double*) x, &incx );
+}
+
+}  // namespace internal
+
+//==============================================================================
+namespace impl {
+
+//------------------------------------------------------------------------------
+/// Mid-level templated wrapper checks and converts arguments,
+/// then calls low-level wrapper.
+/// @ingroup nrm2_internal
+///
+template <typename scalar_t>
+real_type<scalar_t> nrm2(
+    int64_t n,
+    scalar_t const* x, int64_t incx )
+{
+    // check arguments
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
+
+    // convert arguments
+    blas_int n_    = to_blas_int( n );
+    blas_int incx_ = to_blas_int( incx );
+
+    // call low-level wrapper
+    return internal::nrm2( n_, x, incx_ );
+}
+
+}  // namespace impl
+
+//==============================================================================
+// High-level overloaded wrappers call mid-level templated wrapper.
+
+//------------------------------------------------------------------------------
+/// CPU, float version.
 /// @ingroup nrm2
 float nrm2(
     int64_t n,
-    float const *x, int64_t incx )
+    float const* x, int64_t incx )
 {
-    // check arguments
-    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
-    blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(blas_int)) {
-        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
-        blas_error_if( incx > std::numeric_limits<blas_int>::max() );
-    }
-
-    blas_int n_    = (blas_int) n;
-    blas_int incx_ = (blas_int) incx;
-    return BLAS_snrm2( &n_, x, &incx_ );
+    return impl::nrm2( n, x, incx );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// CPU, double version.
 /// @ingroup nrm2
 double nrm2(
     int64_t n,
-    double const *x, int64_t incx )
+    double const* x, int64_t incx )
 {
-    // check arguments
-    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
-    blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(blas_int)) {
-        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
-        blas_error_if( incx > std::numeric_limits<blas_int>::max() );
-    }
-
-    blas_int n_    = (blas_int) n;
-    blas_int incx_ = (blas_int) incx;
-    return BLAS_dnrm2( &n_, x, &incx_ );
+    return impl::nrm2( n, x, incx );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// CPU, complex<float> version.
 /// @ingroup nrm2
 float nrm2(
     int64_t n,
-    std::complex<float> const *x, int64_t incx )
+    std::complex<float> const* x, int64_t incx )
 {
-    // check arguments
-    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
-    blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(blas_int)) {
-        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
-        blas_error_if( incx > std::numeric_limits<blas_int>::max() );
-    }
-
-    blas_int n_    = (blas_int) n;
-    blas_int incx_ = (blas_int) incx;
-    return BLAS_scnrm2( &n_,
-                        (blas_complex_float*) x, &incx_ );
+    return impl::nrm2( n, x, incx );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// CPU, complex<double> version.
 /// @ingroup nrm2
 double nrm2(
     int64_t n,
-    std::complex<double> const *x, int64_t incx )
+    std::complex<double> const* x, int64_t incx )
 {
-    // check arguments
-    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
-    blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(blas_int)) {
-        blas_error_if( n    > std::numeric_limits<blas_int>::max() );
-        blas_error_if( incx > std::numeric_limits<blas_int>::max() );
-    }
-
-    blas_int n_    = (blas_int) n;
-    blas_int incx_ = (blas_int) incx;
-    return BLAS_dznrm2( &n_,
-                        (blas_complex_double*) x, &incx_ );
+    return impl::nrm2( n, x, incx );
 }
 
 }  // namespace blas

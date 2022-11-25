@@ -5,98 +5,128 @@
 
 #include "blas/fortran.h"
 #include "blas.hh"
+#include "blas_internal.hh"
 
 #include <limits>
 
 namespace blas {
 
-// =============================================================================
-// Overloaded wrappers for s, d, c, z precisions.
+//==============================================================================
+namespace internal {
 
-// -----------------------------------------------------------------------------
-/// @ingroup iamax
-int64_t iamax(
-    int64_t n,
-    float const *x, int64_t incx )
+//------------------------------------------------------------------------------
+/// Low-level overload wrapper calls Fortran, float version.
+/// @ingroup iamax_internal
+inline blas_int iamax(
+    blas_int n,
+    float const* x, blas_int incx )
 {
-    // check arguments
-    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
-    blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(blas_int)) {
-        blas_error_if( n    > std::numeric_limits<blas_int>::max() );
-        blas_error_if( incx > std::numeric_limits<blas_int>::max() );
-    }
-
-    blas_int n_    = (blas_int) n;
-    blas_int incx_ = (blas_int) incx;
-    return BLAS_isamax( &n_, x, &incx_ ) - 1;
+    return BLAS_isamax( &n, x, &incx );
 }
 
-// -----------------------------------------------------------------------------
-/// @ingroup iamax
-int64_t iamax(
-    int64_t n,
-    double const *x, int64_t incx )
+//------------------------------------------------------------------------------
+/// Low-level overload wrapper calls Fortran, double version.
+/// Low-level overload wrapper calls Fortran, double version.
+/// @ingroup iamax_internal
+inline blas_int iamax(
+    blas_int n,
+    double const* x, blas_int incx )
 {
-    // check arguments
-    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
-    blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(blas_int)) {
-        blas_error_if( n    > std::numeric_limits<blas_int>::max() );
-        blas_error_if( incx > std::numeric_limits<blas_int>::max() );
-    }
-
-    blas_int n_    = (blas_int) n;
-    blas_int incx_ = (blas_int) incx;
-    return BLAS_idamax( &n_, x, &incx_ ) - 1;
+    return BLAS_idamax( &n, x, &incx );
 }
 
-// -----------------------------------------------------------------------------
-/// @ingroup iamax
-int64_t iamax(
-    int64_t n,
-    std::complex<float> const *x, int64_t incx )
+//------------------------------------------------------------------------------
+/// Low-level overload wrapper calls Fortran, complex<float> version.
+/// @ingroup iamax_internal
+inline blas_int iamax(
+    blas_int n,
+    std::complex<float> const* x, blas_int incx )
 {
-    // check arguments
-    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
-    blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(blas_int)) {
-        blas_error_if( n    > std::numeric_limits<blas_int>::max() );
-        blas_error_if( incx > std::numeric_limits<blas_int>::max() );
-    }
-
-    blas_int n_    = (blas_int) n;
-    blas_int incx_ = (blas_int) incx;
-    return BLAS_icamax( &n_,
-                        (blas_complex_float*) x, &incx_ ) - 1;
+    return BLAS_icamax( &n,
+                        (blas_complex_float*) x, &incx );
 }
 
-// -----------------------------------------------------------------------------
-/// @ingroup iamax
+//------------------------------------------------------------------------------
+/// Low-level overload wrapper calls Fortran, complex<double> version.
+/// @ingroup iamax_internal
+inline blas_int iamax(
+    blas_int n,
+    std::complex<double> const* x, blas_int incx )
+{
+    return BLAS_izamax( &n,
+                        (blas_complex_double*) x, &incx );
+}
+
+}  // namespace internal
+
+//==============================================================================
+namespace impl {
+
+//------------------------------------------------------------------------------
+/// Mid-level templated wrapper checks and converts arguments,
+/// then calls low-level wrapper.
+/// @ingroup iamax_internal
+///
+template <typename scalar_t>
 int64_t iamax(
     int64_t n,
-    std::complex<double> const *x, int64_t incx )
+    scalar_t const* x, int64_t incx )
 {
     // check arguments
     blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
     blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
 
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(blas_int)) {
-        blas_error_if( n    > std::numeric_limits<blas_int>::max() );
-        blas_error_if( incx > std::numeric_limits<blas_int>::max() );
-    }
+    // convert arguments
+    blas_int n_    = to_blas_int( n );
+    blas_int incx_ = to_blas_int( incx );
 
-    blas_int n_    = (blas_int) n;
-    blas_int incx_ = (blas_int) incx;
-    return BLAS_izamax( &n_,
-                        (blas_complex_double*) x, &incx_ ) - 1;
+    // call low-level wrapper
+    return internal::iamax( n_, x, incx_ ) - 1;
+}
+
+}  // namespace impl
+
+//==============================================================================
+// High-level overloaded wrappers call mid-level templated wrapper.
+
+//------------------------------------------------------------------------------
+/// CPU, float version.
+/// @ingroup iamax
+int64_t iamax(
+    int64_t n,
+    float const* x, int64_t incx )
+{
+    return impl::iamax( n, x, incx );
+}
+
+//------------------------------------------------------------------------------
+/// CPU, double version.
+/// @ingroup iamax
+int64_t iamax(
+    int64_t n,
+    double const* x, int64_t incx )
+{
+    return impl::iamax( n, x, incx );
+}
+
+//------------------------------------------------------------------------------
+/// CPU, complex<float> version.
+/// @ingroup iamax
+int64_t iamax(
+    int64_t n,
+    std::complex<float> const* x, int64_t incx )
+{
+    return impl::iamax( n, x, incx );
+}
+
+//------------------------------------------------------------------------------
+/// CPU, complex<double> version.
+/// @ingroup iamax
+int64_t iamax(
+    int64_t n,
+    std::complex<double> const* x, int64_t incx )
+{
+    return impl::iamax( n, x, incx );
 }
 
 }  // namespace blas
