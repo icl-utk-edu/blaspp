@@ -5,92 +5,119 @@
 
 #include "blas/fortran.h"
 #include "blas.hh"
+#include "blas_internal.hh"
 
 #include <limits>
 
 namespace blas {
 
-// =============================================================================
-// Overloaded wrappers for s, d, c, z precisions.
+//==============================================================================
+namespace internal {
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// Low-level overload wrapper calls Fortran, float version.
+/// @ingroup syr_internal
+inline void syr(
+    char uplo,
+    blas_int n,
+    float alpha,
+    float const* x, blas_int incx,
+    float*       A, blas_int lda )
+{
+    BLAS_ssyr( &uplo, &n, &alpha, x, &incx, A, &lda );
+}
+
+//------------------------------------------------------------------------------
+/// Low-level overload wrapper calls Fortran, double version.
+/// @ingroup syr_internal
+inline void syr(
+    char uplo,
+    blas_int n,
+    double alpha,
+    double const* x, blas_int incx,
+    double*       A, blas_int lda )
+{
+    BLAS_dsyr( &uplo, &n, &alpha, x, &incx, A, &lda );
+}
+
+}  // namespace internal
+
+//==============================================================================
+namespace impl {
+
+//------------------------------------------------------------------------------
+/// Mid-level templated wrapper checks and converts arguments,
+/// then calls low-level wrapper.
+/// @ingroup syr_internal
+///
+template <typename scalar_t>
+void syr(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    int64_t n,
+    scalar_t alpha,
+    scalar_t const* x, int64_t incx,
+    scalar_t*       A, int64_t lda )
+{
+    // check arguments
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( uplo != Uplo::Lower &&
+                   uplo != Uplo::Upper );
+    blas_error_if( n < 0 );
+    blas_error_if( lda < n );
+    blas_error_if( incx == 0 );
+
+    // convert arguments
+    blas_int n_    = to_blas_int( n );
+    blas_int lda_  = to_blas_int( lda );
+    blas_int incx_ = to_blas_int( incx );
+
+    if (layout == Layout::RowMajor) {
+        // swap lower <=> upper
+        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
+    }
+    char uplo_ = uplo2char( uplo );
+
+    // call low-level wrapper
+    internal::syr( uplo_, n_,
+                   alpha, x, incx_, A, lda_ );
+}
+
+}  // namespace impl
+
+//==============================================================================
+// [cz]syr are in LAPACK, so those wrappers are in LAPACK++.
+// todo: move [cz]syr back to BLAS++. We link with LAPACK now.
+
+//------------------------------------------------------------------------------
+/// CPU, float version.
 /// @ingroup syr
 void syr(
     blas::Layout layout,
     blas::Uplo uplo,
     int64_t n,
     float alpha,
-    float const *x, int64_t incx,
-    float       *A, int64_t lda )
+    float const* x, int64_t incx,
+    float*       A, int64_t lda )
 {
-    // check arguments
-    blas_error_if( layout != Layout::ColMajor &&
-                   layout != Layout::RowMajor );
-    blas_error_if( uplo != Uplo::Lower &&
-                   uplo != Uplo::Upper );
-    blas_error_if( n < 0 );
-    blas_error_if( lda < n );
-    blas_error_if( incx == 0 );
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(blas_int)) {
-        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
-        blas_error_if( lda            > std::numeric_limits<blas_int>::max() );
-        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-    }
-
-    blas_int n_    = (blas_int) n;
-    blas_int lda_  = (blas_int) lda;
-    blas_int incx_ = (blas_int) incx;
-
-    if (layout == Layout::RowMajor) {
-        // swap lower <=> upper
-        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
-    }
-
-    char uplo_ = uplo2char( uplo );
-    BLAS_ssyr( &uplo_, &n_, &alpha, x, &incx_, A, &lda_ );
+    impl::syr( layout, uplo, n,
+               alpha, x, incx, A, lda );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// CPU, double version.
 /// @ingroup syr
 void syr(
     blas::Layout layout,
     blas::Uplo uplo,
     int64_t n,
     double alpha,
-    double const *x, int64_t incx,
-    double       *A, int64_t lda )
+    double const* x, int64_t incx,
+    double*       A, int64_t lda )
 {
-    // check arguments
-    blas_error_if( layout != Layout::ColMajor &&
-                   layout != Layout::RowMajor );
-    blas_error_if( uplo != Uplo::Lower &&
-                   uplo != Uplo::Upper );
-    blas_error_if( n < 0 );
-    blas_error_if( lda < n );
-    blas_error_if( incx == 0 );
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(blas_int)) {
-        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
-        blas_error_if( lda            > std::numeric_limits<blas_int>::max() );
-        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-    }
-
-    blas_int n_    = (blas_int) n;
-    blas_int lda_  = (blas_int) lda;
-    blas_int incx_ = (blas_int) incx;
-
-    if (layout == Layout::RowMajor) {
-        // swap lower <=> upper
-        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
-    }
-
-    char uplo_ = uplo2char( uplo );
-    BLAS_dsyr( &uplo_, &n_, &alpha, x, &incx_, A, &lda_ );
+    impl::syr( layout, uplo, n,
+               alpha, x, incx, A, lda );
 }
-
-// [cz]syr are in LAPACK, so those wrappers are in LAPACK++
 
 }  // namespace blas

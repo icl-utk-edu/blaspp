@@ -181,7 +181,6 @@ add_library(
     src/gemm.cc
     src/gemv.cc
     src/ger.cc
-    src/geru.cc
     src/hemm.cc
     src/hemv.cc
     src/her.cc
