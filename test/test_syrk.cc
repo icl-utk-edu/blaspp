@@ -83,6 +83,11 @@ void test_syrk_work( Params& params, bool run )
 
     assert_throw( blas::syrk( layout,    uplo,    trans,  n,  k, alpha, A, lda, beta, C, n-1 ), blas::Error );
 
+    if (blas::is_complex<scalar_t>::value) {
+        // complex syrk doesn't allow ConjTrans, only Trans
+        assert_throw( blas::syrk( layout, uplo, Op::ConjTrans, n, k, alpha, A, lda, beta, C, ldc ), blas::Error );
+    }
+
     if (verbose >= 1) {
         printf( "\n"
                 "layout %c, uplo %c, trans %c\n"

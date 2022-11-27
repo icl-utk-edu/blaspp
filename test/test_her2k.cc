@@ -96,6 +96,11 @@ void test_her2k_work( Params& params, bool run )
 
     assert_throw( blas::her2k( layout,    uplo,    trans,  n,  k, alpha, A, lda, B, ldb, beta, C, n-1 ), blas::Error );
 
+    if (blas::is_complex<scalar_t>::value) {
+        // complex her2k doesn't allow Trans, only ConjTrans
+        assert_throw( blas::her2k( layout, uplo, Op::Trans, n, k, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
+    }
+
     if (verbose >= 1) {
         printf( "\n"
                 "uplo %c, trans %c\n"
