@@ -75,12 +75,12 @@ void blas::symm(
     }
 
     blas::internal_set_device( queue.device() );
-    device::ssymm(
-            queue,
+    internal::symm(
             side, uplo, m_, n_,
             alpha, dA, ldda_,
                    dB, lddb_,
-            beta,  dC, lddc_ );
+            beta,  dC, lddc_,
+            queue );
 }
 
 // -----------------------------------------------------------------------------
@@ -146,12 +146,12 @@ void blas::symm(
     }
 
     blas::internal_set_device( queue.device() );
-    device::dsymm(
-            queue,
+    internal::symm(
             side, uplo, m_, n_,
             alpha, dA, ldda_,
                    dB, lddb_,
-            beta,  dC, lddc_ );
+            beta,  dC, lddc_,
+            queue );
 }
 
 // -----------------------------------------------------------------------------
@@ -217,12 +217,12 @@ void blas::symm(
     }
 
     blas::internal_set_device( queue.device() );
-    device::csymm(
-            queue,
+    internal::symm(
             side, uplo, m_, n_,
             alpha, dA, ldda_,
                    dB, lddb_,
-            beta,  dC, lddc_ );
+            beta,  dC, lddc_,
+            queue );
 }
 
 // -----------------------------------------------------------------------------
@@ -288,10 +288,10 @@ void blas::symm(
     }
 
     blas::internal_set_device( queue.device() );
-    device::zsymm(
-            queue,
+    internal::symm(
             side, uplo, m_, n_,
             alpha, dA, ldda_,
                    dB, lddb_,
-            beta,  dC, lddc_ );
+            beta,  dC, lddc_,
+            queue );
 }

@@ -3,783 +3,726 @@
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
-#include "blas/device.hh"
+#include "device_internal.hh"
 
 #if ! defined(BLAS_HAVE_CUBLAS) && ! defined(BLAS_HAVE_ROCBLAS) && ! defined(BLAS_HAVE_ONEMKL)
 
 namespace blas {
-namespace device {
+namespace internal {
 
-// =============================================================================
+//==============================================================================
 // Level 1 BLAS - Device Interfaces
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // axpy
-// -----------------------------------------------------------------------------
-// saxpy
-void saxpy(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void axpy(
     device_blas_int n,
     float alpha,
     float *dx, device_blas_int incdx,
-    float *dy, device_blas_int incdy)
+    float *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// daxpy
-void daxpy(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void axpy(
     device_blas_int n,
     double alpha,
     double *dx, device_blas_int incdx,
-    double *dy, device_blas_int incdy)
+    double *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// caxpy
-void caxpy(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void axpy(
     device_blas_int n,
     std::complex<float> alpha,
     std::complex<float> *dx, device_blas_int incdx,
-    std::complex<float> *dy, device_blas_int incdy)
+    std::complex<float> *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// zaxpy
-void zaxpy(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void axpy(
     device_blas_int n,
     std::complex<double> alpha,
     std::complex<double> *dx, device_blas_int incdx,
-    std::complex<double> *dy, device_blas_int incdy)
+    std::complex<double> *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // dot
-// -----------------------------------------------------------------------------
-// sdot
-void sdot(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void dot(
     device_blas_int n,
     float const *dx, device_blas_int incdx,
     float const *dy, device_blas_int incdy,
-    float *result)
+    float *result,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// ddot
-void ddot(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void dot(
     device_blas_int n,
     double const *dx, device_blas_int incdx,
     double const *dy, device_blas_int incdy,
-    double *result)
+    double *result,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// cdotu
-void cdotu(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void dot(
     device_blas_int n,
     std::complex<float> const *dx, device_blas_int incdx,
     std::complex<float> const *dy, device_blas_int incdy,
-    std::complex<float> *result)
+    std::complex<float> *result,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// zdotu
-void zdotu(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void dot(
     device_blas_int n,
     std::complex<double> const *dx, device_blas_int incdx,
     std::complex<double> const *dy, device_blas_int incdy,
-    std::complex<double> *result)
+    std::complex<double> *result,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// cdotc
-void cdotc(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void dotu(
     device_blas_int n,
     std::complex<float> const *dx, device_blas_int incdx,
     std::complex<float> const *dy, device_blas_int incdy,
-    std::complex<float> *result)
+    std::complex<float> *result,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// zdotc
-void zdotc(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void dotu(
     device_blas_int n,
     std::complex<double> const *dx, device_blas_int incdx,
     std::complex<double> const *dy, device_blas_int incdy,
-    std::complex<double> *result)
+    std::complex<double> *result,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
 // -----------------------------------------------------------------------------
 // nrm2
-// -----------------------------------------------------------------------------
-// snrm2
-void snrm2(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void nrm2(
     device_blas_int n,
     float *dx, device_blas_int incdx,
-    float *result)
+    float *result,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// dnrm2
-void dnrm2(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void nrm2(
     device_blas_int n,
     double *dx, device_blas_int incdx,
-    double *result)
+    double *result,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// cnrm2
-void cnrm2(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void nrm2(
     device_blas_int n,
     std::complex<float> *dx, device_blas_int incdx,
-    float *result)
+    float *result,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// znrm2
-void znrm2(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void nrm2(
     device_blas_int n,
     std::complex<double> *dx, device_blas_int incdx,
-    double *result)
+    double *result,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // scal
-// -----------------------------------------------------------------------------
-// sscal
-void sscal(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void scal(
     device_blas_int n,
     float alpha,
-    float *dx, device_blas_int incdx)
+    float *dx, device_blas_int incdx,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// dscal
-void dscal(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void scal(
     device_blas_int n,
     double alpha,
-    double *dx, device_blas_int incdx)
+    double *dx, device_blas_int incdx,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// cscal
-void cscal(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void scal(
     device_blas_int n,
     std::complex<float> alpha,
-    std::complex<float> *dx, device_blas_int incdx)
+    std::complex<float> *dx, device_blas_int incdx,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// zscal
-void zscal(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void scal(
     device_blas_int n,
     std::complex<double> alpha,
-    std::complex<double> *dx, device_blas_int incdx)
+    std::complex<double> *dx, device_blas_int incdx,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // swap
-// -----------------------------------------------------------------------------
-// sswap
-void sswap(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void swap(
     device_blas_int n,
     float *dx, device_blas_int incdx,
-    float *dy, device_blas_int incdy)
+    float *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// dswap
-void dswap(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void swap(
     device_blas_int n,
     double *dx, device_blas_int incdx,
-    double *dy, device_blas_int incdy)
+    double *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// cswap
-void cswap(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void swap(
     device_blas_int n,
     std::complex<float> *dx, device_blas_int incdx,
-    std::complex<float> *dy, device_blas_int incdy)
+    std::complex<float> *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// zswap
-void zswap(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void swap(
     device_blas_int n,
     std::complex<double> *dx, device_blas_int incdx,
-    std::complex<double> *dy, device_blas_int incdy)
+    std::complex<double> *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // copy
-// -----------------------------------------------------------------------------
-// scopy
-void scopy(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void copy(
     device_blas_int n,
     float const *dx, device_blas_int incdx,
-    float *dy, device_blas_int incdy)
+    float *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// dcopy
-void dcopy(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void copy(
     device_blas_int n,
     double const *dx, device_blas_int incdx,
-    double *dy, device_blas_int incdy)
+    double *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// ccopy
-void ccopy(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void copy(
     device_blas_int n,
     std::complex<float> const *dx, device_blas_int incdx,
-    std::complex<float> *dy, device_blas_int incdy)
+    std::complex<float> *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// zcopy
-void zcopy(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void copy(
     device_blas_int n,
     std::complex<double> const *dx, device_blas_int incdx,
-    std::complex<double> *dy, device_blas_int incdy)
+    std::complex<double> *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
-// =============================================================================
+
+//==============================================================================
 // Level 2 BLAS - Device Interfaces
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-// =============================================================================
+//==============================================================================
 // Level 3 BLAS - Device Interfaces
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // gemm
-// -----------------------------------------------------------------------------
-// sgemm
-void sgemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void gemm(
     blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     float alpha,
     float const *dA, device_blas_int ldda,
     float const *dB, device_blas_int lddb,
     float beta,
-    float       *dC, device_blas_int lddc)
+    float       *dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// dgemm
-void dgemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void gemm(
     blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     double alpha,
     double const *dA, device_blas_int ldda,
     double const *dB, device_blas_int lddb,
     double beta,
-    double       *dC, device_blas_int lddc)
+    double       *dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// cgemm
-void cgemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void gemm(
     blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     std::complex<float> alpha,
     std::complex<float> const *dA, device_blas_int ldda,
     std::complex<float> const *dB, device_blas_int lddb,
     std::complex<float> beta,
-    std::complex<float>       *dC, device_blas_int lddc)
+    std::complex<float>       *dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// zgemm
-void zgemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void gemm(
     blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     std::complex<double> alpha,
     std::complex<double> const *dA, device_blas_int ldda,
     std::complex<double> const *dB, device_blas_int lddb,
     std::complex<double> beta,
-    std::complex<double>       *dC, device_blas_int lddc)
+    std::complex<double>       *dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // trsm
-// -----------------------------------------------------------------------------
-// strsm
-void strsm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void trsm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     float alpha,
     float const *dA, device_blas_int ldda,
-    float       *dB, device_blas_int lddb)
+    float       *dB, device_blas_int lddb,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// dtrsm
-void dtrsm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void trsm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     double alpha,
     double const *dA, device_blas_int ldda,
-    double       *dB, device_blas_int lddb)
+    double       *dB, device_blas_int lddb,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// ctrsm
-void ctrsm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void trsm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     std::complex<float>  alpha,
     std::complex<float> const *dA, device_blas_int ldda,
-    std::complex<float>       *dB, device_blas_int lddb)
+    std::complex<float>       *dB, device_blas_int lddb,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// ztrsm
-void ztrsm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void trsm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     std::complex<double>  alpha,
     std::complex<double> const *dA, device_blas_int ldda,
-    std::complex<double>       *dB, device_blas_int lddb)
+    std::complex<double>       *dB, device_blas_int lddb,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // trmm
-// -----------------------------------------------------------------------------
-// strmm
-void strmm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void trmm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     float alpha,
     float const *dA, device_blas_int ldda,
-    float       *dB, device_blas_int lddb)
+    float       *dB, device_blas_int lddb,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// dtrmm
-void dtrmm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void trmm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     double alpha,
     double const *dA, device_blas_int ldda,
-    double       *dB, device_blas_int lddb)
+    double       *dB, device_blas_int lddb,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// ctrmm
-void ctrmm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void trmm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     std::complex<float>  alpha,
     std::complex<float> const *dA, device_blas_int ldda,
-    std::complex<float>       *dB, device_blas_int lddb)
+    std::complex<float>       *dB, device_blas_int lddb,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// ztrmm
-void ztrmm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void trmm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     std::complex<double>  alpha,
     std::complex<double> const *dA, device_blas_int ldda,
-    std::complex<double>       *dB, device_blas_int lddb)
+    std::complex<double>       *dB, device_blas_int lddb,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // hemm
-// -----------------------------------------------------------------------------
-// chemm
-void chemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void hemm(
     blas::Side side, blas::Uplo uplo,
     device_blas_int m, device_blas_int n,
     std::complex<float> alpha,
     std::complex<float> const *dA, device_blas_int ldda,
     std::complex<float> const *dB, device_blas_int lddb,
     std::complex<float>  beta,
-    std::complex<float>* dC, device_blas_int lddc)
+    std::complex<float>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// zhemm
-void zhemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void hemm(
     blas::Side side, blas::Uplo uplo,
     device_blas_int m, device_blas_int n,
     std::complex<double> alpha,
     std::complex<double> const *dA, device_blas_int ldda,
     std::complex<double> const *dB, device_blas_int lddb,
     std::complex<double>  beta,
-    std::complex<double>* dC, device_blas_int lddc)
+    std::complex<double>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // symm
-// -----------------------------------------------------------------------------
-// ssymm
-void ssymm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void symm(
     blas::Side side, blas::Uplo uplo,
     device_blas_int m, device_blas_int n,
     float  alpha,
     float const *dA, device_blas_int ldda,
     float const *dB, device_blas_int lddb,
     float  beta,
-    float* dC, device_blas_int lddc)
+    float* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// dsymm
-void dsymm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void symm(
     blas::Side side, blas::Uplo uplo,
     device_blas_int m, device_blas_int n,
     double  alpha,
     double const *dA, device_blas_int ldda,
     double const *dB, device_blas_int lddb,
     double  beta,
-    double* dC, device_blas_int lddc)
+    double* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// csymm
-void csymm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void symm(
     blas::Side side, blas::Uplo uplo,
     device_blas_int m, device_blas_int n,
     std::complex<float> alpha,
     std::complex<float> const *dA, device_blas_int ldda,
     std::complex<float> const *dB, device_blas_int lddb,
     std::complex<float>  beta,
-    std::complex<float>* dC, device_blas_int lddc)
+    std::complex<float>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// zsymm
-void zsymm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void symm(
     blas::Side side, blas::Uplo uplo,
     device_blas_int m, device_blas_int n,
     std::complex<double> alpha,
     std::complex<double> const *dA, device_blas_int ldda,
     std::complex<double> const *dB, device_blas_int lddb,
     std::complex<double>  beta,
-    std::complex<double>* dC, device_blas_int lddc)
+    std::complex<double>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // herk
-// -----------------------------------------------------------------------------
-// cherk
-void cherk(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void herk(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     float alpha,
     std::complex<float> const *dA, device_blas_int ldda,
     float  beta,
-    std::complex<float>* dC, device_blas_int lddc)
+    std::complex<float>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// zherk
-void zherk(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void herk(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     double alpha,
     std::complex<double> const *dA, device_blas_int ldda,
     double  beta,
-    std::complex<double>* dC, device_blas_int lddc)
+    std::complex<double>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // syrk
-// -----------------------------------------------------------------------------
-// ssyrk
-void ssyrk(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void syrk(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     float alpha,
     float const *dA, device_blas_int ldda,
     float  beta,
-    float* dC, device_blas_int lddc)
+    float* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// dsyrk
-void dsyrk(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void syrk(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     double alpha,
     double const *dA, device_blas_int ldda,
     double  beta,
-    double* dC, device_blas_int lddc)
+    double* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// csyrk
-void csyrk(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void syrk(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     std::complex<float>  alpha,
     std::complex<float> const *dA, device_blas_int ldda,
     std::complex<float>  beta,
-    std::complex<float>* dC, device_blas_int lddc)
+    std::complex<float>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// zsyrk
-void zsyrk(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void syrk(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     std::complex<double>  alpha,
     std::complex<double> const *dA, device_blas_int ldda,
     std::complex<double>  beta,
-    std::complex<double>* dC, device_blas_int lddc)
+    std::complex<double>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // her2k
-// -----------------------------------------------------------------------------
-// cher2k
-void cher2k(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void her2k(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     std::complex<float>  alpha,
     std::complex<float> const *dA, device_blas_int ldda,
     std::complex<float> const *dB, device_blas_int lddb,
     float  beta,
-    std::complex<float>* dC, device_blas_int lddc)
+    std::complex<float>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// zher2k
-void zher2k(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void her2k(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     std::complex<double> alpha,
     std::complex<double> const *dA, device_blas_int ldda,
     std::complex<double> const *dB, device_blas_int lddb,
     double  beta,
-    std::complex<double>* dC, device_blas_int lddc)
+    std::complex<double>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // syr2k
-// -----------------------------------------------------------------------------
-// ssyr2k
-void ssyr2k(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void syr2k(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     float  alpha,
     float const *dA, device_blas_int ldda,
     float const *dB, device_blas_int lddb,
     float  beta,
-    float* dC, device_blas_int lddc)
+    float* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// dsyr2k
-void dsyr2k(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void syr2k(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     double  alpha,
     double const *dA, device_blas_int ldda,
     double const *dB, device_blas_int lddb,
     double  beta,
-    double* dC, device_blas_int lddc)
+    double* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// csyr2k
-void csyr2k(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void syr2k(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     std::complex<float>  alpha,
     std::complex<float> const *dA, device_blas_int ldda,
     std::complex<float> const *dB, device_blas_int lddb,
     std::complex<float>  beta,
-    std::complex<float>* dC, device_blas_int lddc)
+    std::complex<float>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// zsyr2k
-void zsyr2k(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void syr2k(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     std::complex<double>  alpha,
     std::complex<double> const *dA, device_blas_int ldda,
     std::complex<double> const *dB, device_blas_int lddb,
     std::complex<double>  beta,
-    std::complex<double>* dC, device_blas_int lddc)
+    std::complex<double>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // batch gemm
-// -----------------------------------------------------------------------------
-// batch sgemm
-void batch_sgemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void batch_gemm(
     blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     float alpha,
@@ -787,15 +730,14 @@ void batch_sgemm(
     float const * const * dBarray, device_blas_int lddb,
     float beta,
     float** dCarray, device_blas_int lddc,
-    device_blas_int batch_size)
+    device_blas_int batch_size,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// batch dgemm
-void batch_dgemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void batch_gemm(
     blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     double alpha,
@@ -803,15 +745,14 @@ void batch_dgemm(
     double const * const * dBarray, device_blas_int lddb,
     double beta,
     double** dCarray, device_blas_int lddc,
-    device_blas_int batch_size)
+    device_blas_int batch_size,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// batch cgemm
-void batch_cgemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void batch_gemm(
     blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     std::complex<float> alpha,
@@ -819,15 +760,14 @@ void batch_cgemm(
     std::complex<float> const * const * dBarray, device_blas_int lddb,
     std::complex<float> beta,
     std::complex<float>** dCarray, device_blas_int lddc,
-    device_blas_int batch_size)
+    device_blas_int batch_size,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// batch zgemm
-void batch_zgemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void batch_gemm(
     blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     std::complex<double> alpha,
@@ -835,69 +775,67 @@ void batch_zgemm(
     std::complex<double> const * const * dBarray, device_blas_int lddb,
     std::complex<double> beta,
     std::complex<double>** dCarray, device_blas_int lddc,
-    device_blas_int batch_size)
+    device_blas_int batch_size,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// batch strsm
-void batch_strsm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+// batch trsm
+//------------------------------------------------------------------------------
+void batch_trsm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     float alpha,
     float const * const * dAarray, device_blas_int ldda,
     float const * const * dBarray, device_blas_int lddb,
-    device_blas_int batch_size)
-
+    device_blas_int batch_size,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// batch dtrsm
-void batch_dtrsm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void batch_trsm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     double alpha,
     double const * const * dAarray, device_blas_int ldda,
     double const * const * dBarray, device_blas_int lddb,
-    device_blas_int batch_size)
+    device_blas_int batch_size,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// batch ctrsm
-void batch_ctrsm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void batch_trsm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     std::complex<float> alpha,
     std::complex<float> const * const * dAarray, device_blas_int ldda,
     std::complex<float> const * const * dBarray, device_blas_int lddb,
-    device_blas_int batch_size)
+    device_blas_int batch_size,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-// -----------------------------------------------------------------------------
-// batch ztrsm
-void batch_ztrsm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void batch_trsm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     std::complex<double> alpha,
     std::complex<double> const * const * dAarray, device_blas_int ldda,
     std::complex<double> const * const * dBarray, device_blas_int lddb,
-    device_blas_int batch_size)
+    device_blas_int batch_size,
+    blas::Queue& queue )
 {
     throw blas::Error( "device BLAS not available", __func__ );
 }
 
-}  // namespace device
+}  // namespace internal
 }  // namespace blas
 
 #endif  // ! defined(BLAS_HAVE_CUBLAS) && ! defined(BLAS_HAVE_ROCBLAS) ! defined(BLAS_HAVE_ONEMKL)

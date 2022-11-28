@@ -38,11 +38,11 @@ void blas::swap(
 
     blas::internal_set_device( queue.device() );
 
-    device::sswap(
-        queue,
+    internal::swap(
         n_,
         dx, incdx_,
-        dy, incdy_);
+        dy, incdy_,
+        queue );
 }
 
 // -----------------------------------------------------------------------------
@@ -71,11 +71,11 @@ void blas::swap(
 
     blas::internal_set_device( queue.device() );
 
-    device::dswap(
-        queue,
+    internal::swap(
         n_,
         dx, incdx_,
-        dy, incdy_);
+        dy, incdy_,
+        queue );
 }
 
 // -----------------------------------------------------------------------------
@@ -104,11 +104,11 @@ void blas::swap(
 
     blas::internal_set_device( queue.device() );
 
-    device::cswap(
-        queue,
+    internal::swap(
         n_,
         dx, incdx_,
-        dy, incdy_);
+        dy, incdy_,
+        queue );
 }
 
 // -----------------------------------------------------------------------------
@@ -137,9 +137,9 @@ void blas::swap(
 
     blas::internal_set_device( queue.device() );
 
-    device::zswap(
-        queue,
+    internal::swap(
         n_,
         dx, incdx_,
-        dy, incdy_);
+        dy, incdy_,
+        queue );
 }

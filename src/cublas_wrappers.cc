@@ -3,14 +3,14 @@
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
-#include "blas/device.hh"
+#include "device_internal.hh"
 
 #ifdef BLAS_HAVE_CUBLAS
 
 namespace blas {
-namespace device {
+namespace internal {
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /// @return the corresponding device trans constant
 cublasOperation_t op2cublas(blas::Op trans)
 {
@@ -22,7 +22,7 @@ cublasOperation_t op2cublas(blas::Op trans)
     }
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /// @return the corresponding device diag constant
 cublasDiagType_t diag2cublas(blas::Diag diag)
 {
@@ -33,7 +33,7 @@ cublasDiagType_t diag2cublas(blas::Diag diag)
     }
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /// @return the corresponding device uplo constant
 cublasFillMode_t uplo2cublas(blas::Uplo uplo)
 {
@@ -44,7 +44,7 @@ cublasFillMode_t uplo2cublas(blas::Uplo uplo)
     }
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /// @return the corresponding device side constant
 cublasSideMode_t side2cublas(blas::Side side)
 {
@@ -55,19 +55,18 @@ cublasSideMode_t side2cublas(blas::Side side)
     }
 }
 
-// =============================================================================
+//==============================================================================
 // Level 1 BLAS - Device Interfaces
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // axpy
-// -----------------------------------------------------------------------------
-// saxpy
-void saxpy(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void axpy(
     device_blas_int n,
     float alpha,
     float *dx, device_blas_int incdx,
-    float *dy, device_blas_int incdy)
+    float *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasSaxpy(
@@ -77,14 +76,13 @@ void saxpy(
             dy, incdy));
 }
 
-// -----------------------------------------------------------------------------
-// daxpy
-void daxpy(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void axpy(
     device_blas_int n,
     double alpha,
     double *dx, device_blas_int incdx,
-    double *dy, device_blas_int incdy)
+    double *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasDaxpy(
@@ -94,14 +92,13 @@ void daxpy(
             dy, incdy));
 }
 
-// -----------------------------------------------------------------------------
-// caxpy
-void caxpy(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void axpy(
     device_blas_int n,
     std::complex<float> alpha,
     std::complex<float> *dx, device_blas_int incdx,
-    std::complex<float> *dy, device_blas_int incdy)
+    std::complex<float> *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasCaxpy(
@@ -111,14 +108,13 @@ void caxpy(
             (cuComplex*) dy, incdy));
 }
 
-// -----------------------------------------------------------------------------
-// zaxpy
-void zaxpy(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void axpy(
     device_blas_int n,
     std::complex<double> alpha,
     std::complex<double> *dx, device_blas_int incdx,
-    std::complex<double> *dy, device_blas_int incdy)
+    std::complex<double> *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasZaxpy(
@@ -128,16 +124,15 @@ void zaxpy(
             (cuDoubleComplex*) dy, incdy));
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // dot
-// -----------------------------------------------------------------------------
-// sdot
-void sdot(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void dot(
     device_blas_int n,
     float const *dx, device_blas_int incdx,
     float const *dy, device_blas_int incdy,
-    float *result)
+    float *result,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasSdot(
@@ -148,14 +143,13 @@ void sdot(
             result));
 }
 
-// -----------------------------------------------------------------------------
-// ddot
-void ddot(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void dot(
     device_blas_int n,
     double const *dx, device_blas_int incdx,
     double const *dy, device_blas_int incdy,
-    double *result)
+    double *result,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasDdot(
@@ -166,14 +160,47 @@ void ddot(
             result));
 }
 
-// -----------------------------------------------------------------------------
-// cdotu
-void cdotu(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void dot(
     device_blas_int n,
     std::complex<float> const *dx, device_blas_int incdx,
     std::complex<float> const *dy, device_blas_int incdy,
-    std::complex<float> *result)
+    std::complex<float> *result,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasCdotc(
+            queue.handle(),
+            n,
+            (const cuComplex*) dx, incdx,
+            (const cuComplex*) dy, incdy,
+            (cuComplex*) result));
+}
+
+//------------------------------------------------------------------------------
+void dot(
+    device_blas_int n,
+    std::complex<double> const *dx, device_blas_int incdx,
+    std::complex<double> const *dy, device_blas_int incdy,
+    std::complex<double> *result,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasZdotc(
+            queue.handle(),
+            n,
+            (const cuDoubleComplex*) dx, incdx,
+            (const cuDoubleComplex*) dy, incdy,
+            (cuDoubleComplex*) result));
+}
+
+//------------------------------------------------------------------------------
+void dotu(
+    device_blas_int n,
+    std::complex<float> const *dx, device_blas_int incdx,
+    std::complex<float> const *dy, device_blas_int incdy,
+    std::complex<float> *result,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasCdotu(
@@ -184,14 +211,13 @@ void cdotu(
             (cuComplex*) result));
 }
 
-// -----------------------------------------------------------------------------
-// zdotu
-void zdotu(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void dotu(
     device_blas_int n,
     std::complex<double> const *dx, device_blas_int incdx,
     std::complex<double> const *dy, device_blas_int incdy,
-    std::complex<double> *result)
+    std::complex<double> *result,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasZdotu(
@@ -203,50 +229,13 @@ void zdotu(
 }
 
 // -----------------------------------------------------------------------------
-// cdotc
-void cdotc(
-    blas::Queue& queue,
-    device_blas_int n,
-    std::complex<float> const *dx, device_blas_int incdx,
-    std::complex<float> const *dy, device_blas_int incdy,
-    std::complex<float> *result)
-{
-    blas_dev_call(
-        cublasCdotc(
-            queue.handle(),
-            n,
-            (const cuComplex*) dx, incdx,
-            (const cuComplex*) dy, incdy,
-            (cuComplex*) result));
-}
-
-// -----------------------------------------------------------------------------
-// zdotc
-void zdotc(
-    blas::Queue& queue,
-    device_blas_int n,
-    std::complex<double> const *dx, device_blas_int incdx,
-    std::complex<double> const *dy, device_blas_int incdy,
-    std::complex<double> *result)
-{
-    blas_dev_call(
-        cublasZdotc(
-            queue.handle(),
-            n,
-            (const cuDoubleComplex*) dx, incdx,
-            (const cuDoubleComplex*) dy, incdy,
-            (cuDoubleComplex*) result));
-}
-
-// -----------------------------------------------------------------------------
 // nrm2
-// -----------------------------------------------------------------------------
-// snrm2
-void snrm2(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void nrm2(
     device_blas_int n,
     float *dx, device_blas_int incdx,
-    float *result)
+    float *result,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasSnrm2(
@@ -255,13 +244,12 @@ void snrm2(
             result));
 }
 
-// -----------------------------------------------------------------------------
-// dnrm2
-void dnrm2(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void nrm2(
     device_blas_int n,
     double *dx, device_blas_int incdx,
-    double *result)
+    double *result,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasDnrm2(
@@ -270,13 +258,12 @@ void dnrm2(
             result));
 }
 
-// -----------------------------------------------------------------------------
-// cnrm2
-void cnrm2(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void nrm2(
     device_blas_int n,
     std::complex<float> *dx, device_blas_int incdx,
-    float *result)
+    float *result,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasScnrm2(
@@ -285,13 +272,12 @@ void cnrm2(
             result));
 }
 
-// -----------------------------------------------------------------------------
-// znrm2
-void znrm2(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void nrm2(
     device_blas_int n,
     std::complex<double> *dx, device_blas_int incdx,
-    double *result)
+    double *result,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasDznrm2(
@@ -300,15 +286,14 @@ void znrm2(
             result));
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // scal
-// -----------------------------------------------------------------------------
-// sscal
-void sscal(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void scal(
     device_blas_int n,
     float alpha,
-    float *dx, device_blas_int incdx)
+    float *dx, device_blas_int incdx,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasSscal(
@@ -317,13 +302,12 @@ void sscal(
             dx, incdx));
 }
 
-// -----------------------------------------------------------------------------
-// dscal
-void dscal(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void scal(
     device_blas_int n,
     double alpha,
-    double *dx, device_blas_int incdx)
+    double *dx, device_blas_int incdx,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasDscal(
@@ -332,13 +316,12 @@ void dscal(
             dx, incdx));
 }
 
-// -----------------------------------------------------------------------------
-// cscal
-void cscal(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void scal(
     device_blas_int n,
     std::complex<float> alpha,
-    std::complex<float> *dx, device_blas_int incdx)
+    std::complex<float> *dx, device_blas_int incdx,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasCscal(
@@ -347,13 +330,12 @@ void cscal(
             (cuComplex*) dx, incdx));
 }
 
-// -----------------------------------------------------------------------------
-// zscal
-void zscal(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void scal(
     device_blas_int n,
     std::complex<double> alpha,
-    std::complex<double> *dx, device_blas_int incdx)
+    std::complex<double> *dx, device_blas_int incdx,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasZscal(
@@ -362,15 +344,14 @@ void zscal(
             (cuDoubleComplex*) dx, incdx));
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // swap
-// -----------------------------------------------------------------------------
-// sswap
-void sswap(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void swap(
     device_blas_int n,
     float *dx, device_blas_int incdx,
-    float *dy, device_blas_int incdy)
+    float *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasSswap(
@@ -380,13 +361,12 @@ void sswap(
             dy, incdy) );
 }
 
-// -----------------------------------------------------------------------------
-// dswap
-void dswap(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void swap(
     device_blas_int n,
     double *dx, device_blas_int incdx,
-    double *dy, device_blas_int incdy)
+    double *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasDswap(
@@ -396,13 +376,12 @@ void dswap(
             dy, incdy) );
 }
 
-// -----------------------------------------------------------------------------
-// cswap
-void cswap(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void swap(
     device_blas_int n,
     std::complex<float> *dx, device_blas_int incdx,
-    std::complex<float> *dy, device_blas_int incdy)
+    std::complex<float> *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasCswap(
@@ -412,13 +391,12 @@ void cswap(
             (cuComplex*) dy, incdy) );
 }
 
-// -----------------------------------------------------------------------------
-// zswap
-void zswap(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void swap(
     device_blas_int n,
     std::complex<double> *dx, device_blas_int incdx,
-    std::complex<double> *dy, device_blas_int incdy)
+    std::complex<double> *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasZswap(
@@ -428,15 +406,14 @@ void zswap(
             (cuDoubleComplex*) dy, incdy) );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // copy
-// -----------------------------------------------------------------------------
-// scopy
-void scopy(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void copy(
     device_blas_int n,
     float const *dx, device_blas_int incdx,
-    float *dy, device_blas_int incdy)
+    float *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasScopy(
@@ -446,13 +423,12 @@ void scopy(
             dy, incdy) );
 }
 
-// -----------------------------------------------------------------------------
-// dcopy
-void dcopy(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void copy(
     device_blas_int n,
     double const *dx, device_blas_int incdx,
-    double *dy, device_blas_int incdy)
+    double *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasDcopy(
@@ -462,13 +438,12 @@ void dcopy(
             dy, incdy) );
 }
 
-// -----------------------------------------------------------------------------
-// cswap
-void ccopy(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void copy(
     device_blas_int n,
     std::complex<float> const *dx, device_blas_int incdx,
-    std::complex<float> *dy, device_blas_int incdy)
+    std::complex<float> *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasCcopy(
@@ -478,13 +453,12 @@ void ccopy(
             (cuComplex*) dy, incdy) );
 }
 
-// -----------------------------------------------------------------------------
-// zswap
-void zcopy(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void copy(
     device_blas_int n,
     std::complex<double> const *dx, device_blas_int incdx,
-    std::complex<double> *dy, device_blas_int incdy)
+    std::complex<double> *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasZcopy(
@@ -494,27 +468,26 @@ void zcopy(
             (cuDoubleComplex*) dy, incdy) );
 }
 
-// =============================================================================
+//==============================================================================
 // Level 2 BLAS - Device Interfaces
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-// =============================================================================
+//==============================================================================
 // Level 3 BLAS - Device Interfaces
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // gemm
-// -----------------------------------------------------------------------------
-// sgemm
-void sgemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void gemm(
     blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     float alpha,
     float const *dA, device_blas_int ldda,
     float const *dB, device_blas_int lddb,
     float beta,
-    float       *dC, device_blas_int lddc)
+    float       *dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasSgemm(
@@ -526,17 +499,16 @@ void sgemm(
             &beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// dgemm
-void dgemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void gemm(
     blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     double alpha,
     double const *dA, device_blas_int ldda,
     double const *dB, device_blas_int lddb,
     double beta,
-    double       *dC, device_blas_int lddc)
+    double       *dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasDgemm(
@@ -548,22 +520,22 @@ void dgemm(
             &beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// cgemm
-void cgemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void gemm(
     blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     std::complex<float> alpha,
     std::complex<float> const *dA, device_blas_int ldda,
     std::complex<float> const *dB, device_blas_int lddb,
     std::complex<float> beta,
-    std::complex<float>       *dC, device_blas_int lddc)
+    std::complex<float>       *dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasCgemm(
             queue.handle(),
-            op2cublas(transA), op2cublas(transB), m, n, k,
+            op2cublas(transA), op2cublas(transB),
+            m, n, k,
             (cuComplex*) &alpha,
             (cuComplex*) dA, ldda,
             (cuComplex*) dB, lddb,
@@ -571,17 +543,16 @@ void cgemm(
             (cuComplex*) dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// zgemm
-void zgemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void gemm(
     blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     std::complex<double> alpha,
     std::complex<double> const *dA, device_blas_int ldda,
     std::complex<double> const *dB, device_blas_int lddb,
     std::complex<double> beta,
-    std::complex<double>       *dC, device_blas_int lddc)
+    std::complex<double>       *dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasZgemm(
@@ -595,17 +566,16 @@ void zgemm(
             (cuDoubleComplex*) dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // trsm
-// -----------------------------------------------------------------------------
-// strsm
-void strsm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void trsm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     float alpha,
     float const *dA, device_blas_int ldda,
-    float       *dB, device_blas_int lddb)
+    float       *dB, device_blas_int lddb,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasStrsm(
@@ -617,15 +587,14 @@ void strsm(
             dB, lddb ) );
 }
 
-// -----------------------------------------------------------------------------
-// dtrsm
-void dtrsm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void trsm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     double alpha,
     double const *dA, device_blas_int ldda,
-    double       *dB, device_blas_int lddb)
+    double       *dB, device_blas_int lddb,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasDtrsm(
@@ -637,15 +606,14 @@ void dtrsm(
             dB, lddb ) );
 }
 
-// -----------------------------------------------------------------------------
-// ctrsm
-void ctrsm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void trsm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     std::complex<float>  alpha,
     std::complex<float> const *dA, device_blas_int ldda,
-    std::complex<float>       *dB, device_blas_int lddb)
+    std::complex<float>       *dB, device_blas_int lddb,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasCtrsm(
@@ -657,15 +625,14 @@ void ctrsm(
             (cuComplex*) dB, lddb ) );
 }
 
-// -----------------------------------------------------------------------------
-// ztrsm
-void ztrsm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void trsm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     std::complex<double>  alpha,
     std::complex<double> const *dA, device_blas_int ldda,
-    std::complex<double>       *dB, device_blas_int lddb)
+    std::complex<double>       *dB, device_blas_int lddb,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasZtrsm(
@@ -677,17 +644,16 @@ void ztrsm(
             (cuDoubleComplex*) dB, lddb ) );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // trmm
-// -----------------------------------------------------------------------------
-// strmm
-void strmm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void trmm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     float alpha,
     float const *dA, device_blas_int ldda,
-    float       *dB, device_blas_int lddb)
+    float       *dB, device_blas_int lddb,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasStrmm(
@@ -700,15 +666,14 @@ void strmm(
             dB, lddb ) );
 }
 
-// -----------------------------------------------------------------------------
-// dtrmm
-void dtrmm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void trmm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     double alpha,
     double const *dA, device_blas_int ldda,
-    double       *dB, device_blas_int lddb)
+    double       *dB, device_blas_int lddb,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasDtrmm(
@@ -721,15 +686,14 @@ void dtrmm(
             dB, lddb ) );
 }
 
-// -----------------------------------------------------------------------------
-// ctrmm
-void ctrmm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void trmm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     std::complex<float>  alpha,
     std::complex<float> const *dA, device_blas_int ldda,
-    std::complex<float>       *dB, device_blas_int lddb)
+    std::complex<float>       *dB, device_blas_int lddb,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasCtrmm(
@@ -742,15 +706,14 @@ void ctrmm(
             (cuComplex*) dB, lddb ) );
 }
 
-// -----------------------------------------------------------------------------
-// ztrmm
-void ztrmm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void trmm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     std::complex<double>  alpha,
     std::complex<double> const *dA, device_blas_int ldda,
-    std::complex<double>       *dB, device_blas_int lddb)
+    std::complex<double>       *dB, device_blas_int lddb,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasZtrmm(
@@ -763,19 +726,18 @@ void ztrmm(
             (cuDoubleComplex*) dB, lddb ) );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // hemm
-// -----------------------------------------------------------------------------
-// chemm
-void chemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void hemm(
     blas::Side side, blas::Uplo uplo,
     device_blas_int m, device_blas_int n,
     std::complex<float> alpha,
     std::complex<float> const *dA, device_blas_int ldda,
     std::complex<float> const *dB, device_blas_int lddb,
     std::complex<float>  beta,
-    std::complex<float>* dC, device_blas_int lddc)
+    std::complex<float>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasChemm(
@@ -789,17 +751,16 @@ void chemm(
             (cuComplex*) dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// zhemm
-void zhemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void hemm(
     blas::Side side, blas::Uplo uplo,
     device_blas_int m, device_blas_int n,
     std::complex<double> alpha,
     std::complex<double> const *dA, device_blas_int ldda,
     std::complex<double> const *dB, device_blas_int lddb,
     std::complex<double>  beta,
-    std::complex<double>* dC, device_blas_int lddc)
+    std::complex<double>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasZhemm(
@@ -813,19 +774,18 @@ void zhemm(
             (cuDoubleComplex*) dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // symm
-// -----------------------------------------------------------------------------
-// ssymm
-void ssymm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void symm(
     blas::Side side, blas::Uplo uplo,
     device_blas_int m, device_blas_int n,
     float  alpha,
     float const *dA, device_blas_int ldda,
     float const *dB, device_blas_int lddb,
     float  beta,
-    float* dC, device_blas_int lddc)
+    float* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasSsymm(
@@ -837,17 +797,16 @@ void ssymm(
             &beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// dsymm
-void dsymm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void symm(
     blas::Side side, blas::Uplo uplo,
     device_blas_int m, device_blas_int n,
     double  alpha,
     double const *dA, device_blas_int ldda,
     double const *dB, device_blas_int lddb,
     double  beta,
-    double* dC, device_blas_int lddc)
+    double* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasDsymm(
@@ -859,17 +818,16 @@ void dsymm(
             &beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// csymm
-void csymm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void symm(
     blas::Side side, blas::Uplo uplo,
     device_blas_int m, device_blas_int n,
     std::complex<float> alpha,
     std::complex<float> const *dA, device_blas_int ldda,
     std::complex<float> const *dB, device_blas_int lddb,
     std::complex<float>  beta,
-    std::complex<float>* dC, device_blas_int lddc)
+    std::complex<float>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasCsymm(
@@ -883,17 +841,16 @@ void csymm(
             (cuComplex*) dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// zsymm
-void zsymm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void symm(
     blas::Side side, blas::Uplo uplo,
     device_blas_int m, device_blas_int n,
     std::complex<double> alpha,
     std::complex<double> const *dA, device_blas_int ldda,
     std::complex<double> const *dB, device_blas_int lddb,
     std::complex<double>  beta,
-    std::complex<double>* dC, device_blas_int lddc)
+    std::complex<double>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasZsymm(
@@ -907,18 +864,17 @@ void zsymm(
             (cuDoubleComplex*) dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // herk
-// -----------------------------------------------------------------------------
-// cherk
-void cherk(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void herk(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     float alpha,
     std::complex<float> const *dA, device_blas_int ldda,
     float  beta,
-    std::complex<float>* dC, device_blas_int lddc)
+    std::complex<float>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasCherk(
@@ -929,16 +885,15 @@ void cherk(
             &beta,  (cuComplex*) dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// zherk
-void zherk(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void herk(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     double alpha,
     std::complex<double> const *dA, device_blas_int ldda,
     double  beta,
-    std::complex<double>* dC, device_blas_int lddc)
+    std::complex<double>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasZherk(
@@ -949,18 +904,17 @@ void zherk(
             &beta,  (cuDoubleComplex*) dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // syrk
-// -----------------------------------------------------------------------------
-// ssyrk
-void ssyrk(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void syrk(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     float alpha,
     float const *dA, device_blas_int ldda,
     float  beta,
-    float* dC, device_blas_int lddc)
+    float* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasSsyrk(
@@ -971,16 +925,15 @@ void ssyrk(
             &beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// dsyrk
-void dsyrk(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void syrk(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     double alpha,
     double const *dA, device_blas_int ldda,
     double  beta,
-    double* dC, device_blas_int lddc)
+    double* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasDsyrk(
@@ -991,16 +944,15 @@ void dsyrk(
             &beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// csyrk
-void csyrk(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void syrk(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     std::complex<float>  alpha,
     std::complex<float> const *dA, device_blas_int ldda,
     std::complex<float>  beta,
-    std::complex<float>* dC, device_blas_int lddc)
+    std::complex<float>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasCsyrk(
@@ -1013,16 +965,15 @@ void csyrk(
             (cuComplex*) dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// zsyrk
-void zsyrk(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void syrk(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     std::complex<double>  alpha,
     std::complex<double> const *dA, device_blas_int ldda,
     std::complex<double>  beta,
-    std::complex<double>* dC, device_blas_int lddc)
+    std::complex<double>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasZsyrk(
@@ -1035,19 +986,18 @@ void zsyrk(
             (cuDoubleComplex*) dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // her2k
-// -----------------------------------------------------------------------------
-// cher2k
-void cher2k(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void her2k(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     std::complex<float>  alpha,
     std::complex<float> const *dA, device_blas_int ldda,
     std::complex<float> const *dB, device_blas_int lddb,
     float  beta,
-    std::complex<float>* dC, device_blas_int lddc)
+    std::complex<float>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasCher2k(
@@ -1061,17 +1011,16 @@ void cher2k(
             (cuComplex*) dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// zher2k
-void zher2k(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void her2k(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     std::complex<double> alpha,
     std::complex<double> const *dA, device_blas_int ldda,
     std::complex<double> const *dB, device_blas_int lddb,
     double  beta,
-    std::complex<double>* dC, device_blas_int lddc)
+    std::complex<double>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasZher2k(
@@ -1085,19 +1034,18 @@ void zher2k(
             (cuDoubleComplex*) dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // syr2k
-// -----------------------------------------------------------------------------
-// ssyr2k
-void ssyr2k(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void syr2k(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     float  alpha,
     float const *dA, device_blas_int ldda,
     float const *dB, device_blas_int lddb,
     float  beta,
-    float* dC, device_blas_int lddc)
+    float* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasSsyr2k(
@@ -1109,17 +1057,16 @@ void ssyr2k(
             &beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// dsyr2k
-void dsyr2k(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void syr2k(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     double  alpha,
     double const *dA, device_blas_int ldda,
     double const *dB, device_blas_int lddb,
     double  beta,
-    double* dC, device_blas_int lddc)
+    double* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasDsyr2k(
@@ -1131,17 +1078,16 @@ void dsyr2k(
             &beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// csyr2k
-void csyr2k(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void syr2k(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     std::complex<float>  alpha,
     std::complex<float> const *dA, device_blas_int ldda,
     std::complex<float> const *dB, device_blas_int lddb,
     std::complex<float>  beta,
-    std::complex<float>* dC, device_blas_int lddc)
+    std::complex<float>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasCsyr2k(
@@ -1155,17 +1101,16 @@ void csyr2k(
             (cuComplex*) dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// zsyr2k
-void zsyr2k(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void syr2k(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     std::complex<double>  alpha,
     std::complex<double> const *dA, device_blas_int ldda,
     std::complex<double> const *dB, device_blas_int lddb,
     std::complex<double>  beta,
-    std::complex<double>* dC, device_blas_int lddc)
+    std::complex<double>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasZsyr2k(
@@ -1179,12 +1124,10 @@ void zsyr2k(
             (cuDoubleComplex*) dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // batch gemm
-// -----------------------------------------------------------------------------
-// batch sgemm
-void batch_sgemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void batch_gemm(
     blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     float alpha,
@@ -1192,7 +1135,8 @@ void batch_sgemm(
     float const * const * dBarray, device_blas_int lddb,
     float beta,
     float** dCarray, device_blas_int lddc,
-    device_blas_int batch_size)
+    device_blas_int batch_size,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasSgemmBatched(
@@ -1207,10 +1151,8 @@ void batch_sgemm(
             batch_size ) );
 }
 
-// -----------------------------------------------------------------------------
-// batch dgemm
-void batch_dgemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void batch_gemm(
     blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     double alpha,
@@ -1218,7 +1160,8 @@ void batch_dgemm(
     double const * const * dBarray, device_blas_int lddb,
     double beta,
     double** dCarray, device_blas_int lddc,
-    device_blas_int batch_size)
+    device_blas_int batch_size,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasDgemmBatched(
@@ -1233,10 +1176,8 @@ void batch_dgemm(
             batch_size ) );
 }
 
-// -----------------------------------------------------------------------------
-// batch cgemm
-void batch_cgemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void batch_gemm(
     blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     std::complex<float> alpha,
@@ -1244,7 +1185,8 @@ void batch_cgemm(
     std::complex<float> const * const * dBarray, device_blas_int lddb,
     std::complex<float> beta,
     std::complex<float>** dCarray, device_blas_int lddc,
-    device_blas_int batch_size)
+    device_blas_int batch_size,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasCgemmBatched(
@@ -1259,10 +1201,8 @@ void batch_cgemm(
             batch_size ) );
 }
 
-// -----------------------------------------------------------------------------
-// batch zgemm
-void batch_zgemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void batch_gemm(
     blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     std::complex<double> alpha,
@@ -1270,7 +1210,8 @@ void batch_zgemm(
     std::complex<double> const * const * dBarray, device_blas_int lddb,
     std::complex<double> beta,
     std::complex<double>** dCarray, device_blas_int lddc,
-    device_blas_int batch_size)
+    device_blas_int batch_size,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasZgemmBatched(
@@ -1285,10 +1226,10 @@ void batch_zgemm(
             batch_size ) );
 }
 
-// -----------------------------------------------------------------------------
-// batch strsm
-void batch_strsm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+// batch trsm
+//------------------------------------------------------------------------------
+void batch_trsm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     float alpha,
@@ -1308,16 +1249,15 @@ void batch_strsm(
             batch_size ) );
 }
 
-// -----------------------------------------------------------------------------
-// batch dtrsm
-void batch_dtrsm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void batch_trsm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     double alpha,
     double const * const * dAarray, device_blas_int ldda,
     double const * const * dBarray, device_blas_int lddb,
-    device_blas_int batch_size)
+    device_blas_int batch_size,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasDtrsmBatched(
@@ -1330,16 +1270,15 @@ void batch_dtrsm(
             batch_size ) );
 }
 
-// -----------------------------------------------------------------------------
-// batch ctrsm
-void batch_ctrsm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void batch_trsm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     std::complex<float> alpha,
     std::complex<float> const * const * dAarray, device_blas_int ldda,
     std::complex<float> const * const * dBarray, device_blas_int lddb,
-    device_blas_int batch_size)
+    device_blas_int batch_size,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasCtrsmBatched(
@@ -1352,16 +1291,15 @@ void batch_ctrsm(
             batch_size ) );
 }
 
-// -----------------------------------------------------------------------------
-// batch ztrsm
-void batch_ztrsm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void batch_trsm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     std::complex<double> alpha,
     std::complex<double> const * const * dAarray, device_blas_int ldda,
     std::complex<double> const * const * dBarray, device_blas_int lddb,
-    device_blas_int batch_size)
+    device_blas_int batch_size,
+    blas::Queue& queue )
 {
     blas_dev_call(
         cublasZtrsmBatched(
@@ -1374,7 +1312,7 @@ void batch_ztrsm(
             batch_size ) );
 }
 
-}  // namespace device
+}  // namespace internal
 }  // namespace blas
 
 #endif  // BLAS_HAVE_CUBLAS

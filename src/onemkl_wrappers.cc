@@ -3,7 +3,7 @@
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
-#include "blas/device.hh"
+#include "device_internal.hh"
 
 #ifdef BLAS_HAVE_ONEMKL
 
@@ -14,9 +14,9 @@
 #include <oneapi/mkl.hpp>
 
 namespace blas {
-namespace device {
+namespace internal {
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /// @return the corresponding device trans constant
 oneapi::mkl::transpose op2onemkl(blas::Op trans)
 {
@@ -28,7 +28,7 @@ oneapi::mkl::transpose op2onemkl(blas::Op trans)
     }
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /// @return the corresponding device diag constant
 oneapi::mkl::diag diag2onemkl(blas::Diag diag)
 {
@@ -39,7 +39,7 @@ oneapi::mkl::diag diag2onemkl(blas::Diag diag)
     }
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /// @return the corresponding device uplo constant
 oneapi::mkl::uplo uplo2onemkl(blas::Uplo uplo)
 {
@@ -50,7 +50,7 @@ oneapi::mkl::uplo uplo2onemkl(blas::Uplo uplo)
     }
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /// @return the corresponding device side constant
 oneapi::mkl::side side2onemkl(blas::Side side)
 {
@@ -61,19 +61,18 @@ oneapi::mkl::side side2onemkl(blas::Side side)
     }
 }
 
-// =============================================================================
+//==============================================================================
 // Level 1 BLAS - Device Interfaces
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // axpy
-// -----------------------------------------------------------------------------
-// saxpy
-void saxpy(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void axpy(
     device_blas_int n,
     float alpha,
     float *dx, device_blas_int incdx,
-    float *dy, device_blas_int incdy)
+    float *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -85,14 +84,13 @@ void saxpy(
             dy, incdy));
 }
 
-// -----------------------------------------------------------------------------
-// daxpy
-void daxpy(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void axpy(
     device_blas_int n,
     double alpha,
     double *dx, device_blas_int incdx,
-    double *dy, device_blas_int incdy)
+    double *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -104,14 +102,13 @@ void daxpy(
             dy, incdy));
 }
 
-// -----------------------------------------------------------------------------
-// caxpy
-void caxpy(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void axpy(
     device_blas_int n,
     std::complex<float> alpha,
     std::complex<float> *dx, device_blas_int incdx,
-    std::complex<float> *dy, device_blas_int incdy)
+    std::complex<float> *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -123,14 +120,13 @@ void caxpy(
             dy, incdy));
 }
 
-// -----------------------------------------------------------------------------
-// zaxpy
-void zaxpy(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void axpy(
     device_blas_int n,
     std::complex<double> alpha,
     std::complex<double> *dx, device_blas_int incdx,
-    std::complex<double> *dy, device_blas_int incdy)
+    std::complex<double> *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -142,16 +138,15 @@ void zaxpy(
             dy, incdy));
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // dot
-// -----------------------------------------------------------------------------
-// sdot
-void sdot(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void dot(
     device_blas_int n,
     float const *dx, device_blas_int incdx,
     float const *dy, device_blas_int incdy,
-    float *result)
+    float *result,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -163,14 +158,13 @@ void sdot(
             result));
 }
 
-// -----------------------------------------------------------------------------
-// ddot
-void ddot(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void dot(
     device_blas_int n,
     double const *dx, device_blas_int incdx,
     double const *dy, device_blas_int incdy,
-    double *result)
+    double *result,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -182,52 +176,13 @@ void ddot(
             result));
 }
 
-// -----------------------------------------------------------------------------
-// cdotu
-void cdotu(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void dot(
     device_blas_int n,
     std::complex<float> const *dx, device_blas_int incdx,
     std::complex<float> const *dy, device_blas_int incdy,
-    std::complex<float> *result)
-{
-    sycl::queue dev_queue = queue.stream();
-    blas_dev_call(
-        oneapi::mkl::blas::dotu(
-            dev_queue,
-            n,
-            dx, incdx,
-            dy, incdy,
-            result));
-}
-
-// -----------------------------------------------------------------------------
-// zdotu
-void zdotu(
-    blas::Queue& queue,
-    device_blas_int n,
-    std::complex<double> const *dx, device_blas_int incdx,
-    std::complex<double> const *dy, device_blas_int incdy,
-    std::complex<double> *result)
-{
-    sycl::queue dev_queue = queue.stream();
-    blas_dev_call(
-        oneapi::mkl::blas::dotu(
-            dev_queue,
-            n,
-            dx, incdx,
-            dy, incdy,
-            result));
-}
-
-// -----------------------------------------------------------------------------
-// cdotc
-void cdotc(
-    blas::Queue& queue,
-    device_blas_int n,
-    std::complex<float> const *dx, device_blas_int incdx,
-    std::complex<float> const *dy, device_blas_int incdy,
-    std::complex<float> *result)
+    std::complex<float> *result,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -239,18 +194,53 @@ void cdotc(
             result));
 }
 
-// -----------------------------------------------------------------------------
-// zdotc
-void zdotc(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void dot(
     device_blas_int n,
     std::complex<double> const *dx, device_blas_int incdx,
     std::complex<double> const *dy, device_blas_int incdy,
-    std::complex<double> *result)
+    std::complex<double> *result,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::dotc(
+            dev_queue,
+            n,
+            dx, incdx,
+            dy, incdy,
+            result));
+}
+
+//------------------------------------------------------------------------------
+void dotu(
+    device_blas_int n,
+    std::complex<float> const *dx, device_blas_int incdx,
+    std::complex<float> const *dy, device_blas_int incdy,
+    std::complex<float> *result,
+    blas::Queue& queue )
+{
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::dotu(
+            dev_queue,
+            n,
+            dx, incdx,
+            dy, incdy,
+            result));
+}
+
+//------------------------------------------------------------------------------
+void dotu(
+    device_blas_int n,
+    std::complex<double> const *dx, device_blas_int incdx,
+    std::complex<double> const *dy, device_blas_int incdy,
+    std::complex<double> *result,
+    blas::Queue& queue )
+{
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::dotu(
             dev_queue,
             n,
             dx, incdx,
@@ -260,13 +250,12 @@ void zdotc(
 
 // -----------------------------------------------------------------------------
 // nrm2
-// -----------------------------------------------------------------------------
-// snrm2
-void snrm2(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void nrm2(
     device_blas_int n,
     float *dx, device_blas_int incdx,
-    float *result)
+    float *result,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -277,13 +266,12 @@ void snrm2(
             result));
 }
 
-// -----------------------------------------------------------------------------
-// dnrm2
-void dnrm2(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void nrm2(
     device_blas_int n,
     double *dx, device_blas_int incdx,
-    double *result)
+    double *result,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -294,13 +282,12 @@ void dnrm2(
             result));
 }
 
-// -----------------------------------------------------------------------------
-// cnrm2
-void cnrm2(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void nrm2(
     device_blas_int n,
     std::complex<float> *dx, device_blas_int incdx,
-    float *result)
+    float *result,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -311,13 +298,12 @@ void cnrm2(
             result));
 }
 
-// -----------------------------------------------------------------------------
-// znrm2
-void znrm2(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void nrm2(
     device_blas_int n,
     std::complex<double> *dx, device_blas_int incdx,
-    double *result)
+    double *result,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -328,15 +314,14 @@ void znrm2(
             result));
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // scal
-// -----------------------------------------------------------------------------
-// sscal
-void sscal(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void scal(
     device_blas_int n,
     float alpha,
-    float *dx, device_blas_int incdx)
+    float *dx, device_blas_int incdx,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -347,13 +332,12 @@ void sscal(
             dx, incdx));
 }
 
-// -----------------------------------------------------------------------------
-// dscal
-void dscal(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void scal(
     device_blas_int n,
     double alpha,
-    double *dx, device_blas_int incdx)
+    double *dx, device_blas_int incdx,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -364,13 +348,12 @@ void dscal(
             dx, incdx));
 }
 
-// -----------------------------------------------------------------------------
-// cscal
-void cscal(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void scal(
     device_blas_int n,
     std::complex<float> alpha,
-    std::complex<float> *dx, device_blas_int incdx)
+    std::complex<float> *dx, device_blas_int incdx,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -381,13 +364,12 @@ void cscal(
             dx, incdx));
 }
 
-// -----------------------------------------------------------------------------
-// zscal
-void zscal(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void scal(
     device_blas_int n,
     std::complex<double> alpha,
-    std::complex<double> *dx, device_blas_int incdx)
+    std::complex<double> *dx, device_blas_int incdx,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -395,19 +377,17 @@ void zscal(
             dev_queue,
             n,
             alpha,
-            dx,
-            incdx));
+            dx, incdx));
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // swap
-// -----------------------------------------------------------------------------
-// sswap
-void sswap(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void swap(
     device_blas_int n,
     float *dx, device_blas_int incdx,
-    float *dy, device_blas_int incdy)
+    float *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -417,13 +397,13 @@ void sswap(
             dx, incdx,
             dy, incdy) );
 }
-// -----------------------------------------------------------------------------
-// dswap
-void dswap(
-    blas::Queue& queue,
+
+//------------------------------------------------------------------------------
+void swap(
     device_blas_int n,
     double *dx, device_blas_int incdx,
-    double *dy, device_blas_int incdy)
+    double *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -433,13 +413,13 @@ void dswap(
             dx, incdx,
             dy, incdy) );
 }
-// -----------------------------------------------------------------------------
-// cswap
-void cswap(
-    blas::Queue& queue,
+
+//------------------------------------------------------------------------------
+void swap(
     device_blas_int n,
     std::complex<float> *dx, device_blas_int incdx,
-    std::complex<float> *dy, device_blas_int incdy)
+    std::complex<float> *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -449,13 +429,13 @@ void cswap(
             dx, incdx,
             dy, incdy) );
 }
-// -----------------------------------------------------------------------------
-// zswap
-void zswap(
-    blas::Queue& queue,
+
+//------------------------------------------------------------------------------
+void swap(
     device_blas_int n,
     std::complex<double> *dx, device_blas_int incdx,
-    std::complex<double> *dy, device_blas_int incdy)
+    std::complex<double> *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -466,15 +446,14 @@ void zswap(
             dy, incdy) );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // copy
-// -----------------------------------------------------------------------------
-// scopy
-void scopy(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void copy(
     device_blas_int n,
     float const *dx, device_blas_int incdx,
-    float *dy, device_blas_int incdy)
+    float *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -485,13 +464,12 @@ void scopy(
             dy, incdy) );
 }
 
-// -----------------------------------------------------------------------------
-// dcopy
-void dcopy(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void copy(
     device_blas_int n,
     double const *dx, device_blas_int incdx,
-    double *dy, device_blas_int incdy)
+    double *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -502,13 +480,12 @@ void dcopy(
             dy, incdy) );
 }
 
-// -----------------------------------------------------------------------------
-// ccopy
-void ccopy(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void copy(
     device_blas_int n,
     std::complex<float> const *dx, device_blas_int incdx,
-    std::complex<float> *dy, device_blas_int incdy)
+    std::complex<float> *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -519,13 +496,12 @@ void ccopy(
             dy, incdy) );
 }
 
-// -----------------------------------------------------------------------------
-// zcopy
-void zcopy(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void copy(
     device_blas_int n,
     std::complex<double> const *dx, device_blas_int incdx,
-    std::complex<double> *dy, device_blas_int incdy)
+    std::complex<double> *dy, device_blas_int incdy,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -536,27 +512,26 @@ void zcopy(
             dy, incdy) );
 }
 
-// =============================================================================
+//==============================================================================
 // Level 2 BLAS - Device Interfaces
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-// =============================================================================
+//==============================================================================
 // Level 3 BLAS - Device Interfaces
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // gemm
-// -----------------------------------------------------------------------------
-// sgemm
-void sgemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void gemm(
     blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     float alpha,
     float const *dA, device_blas_int ldda,
     float const *dB, device_blas_int lddb,
     float beta,
-    float       *dC, device_blas_int lddc)
+    float       *dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -569,17 +544,16 @@ void sgemm(
             beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// dgemm
-void dgemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void gemm(
     blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     double alpha,
     double const *dA, device_blas_int ldda,
     double const *dB, device_blas_int lddb,
     double beta,
-    double       *dC, device_blas_int lddc)
+    double       *dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -592,17 +566,16 @@ void dgemm(
             beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// cgemm
-void cgemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void gemm(
     blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     std::complex<float> alpha,
     std::complex<float> const *dA, device_blas_int ldda,
     std::complex<float> const *dB, device_blas_int lddb,
     std::complex<float> beta,
-    std::complex<float>       *dC, device_blas_int lddc)
+    std::complex<float>       *dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -615,17 +588,16 @@ void cgemm(
             beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// zgemm
-void zgemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void gemm(
     blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     std::complex<double> alpha,
     std::complex<double> const *dA, device_blas_int ldda,
     std::complex<double> const *dB, device_blas_int lddb,
     std::complex<double> beta,
-    std::complex<double>       *dC, device_blas_int lddc)
+    std::complex<double>       *dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -638,17 +610,16 @@ void zgemm(
             beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // trsm
-// -----------------------------------------------------------------------------
-// strsm
-void strsm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void trsm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     float alpha,
     float const *dA, device_blas_int ldda,
-    float       *dB, device_blas_int lddb)
+    float       *dB, device_blas_int lddb,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -662,15 +633,14 @@ void strsm(
             dB, lddb ) );
 }
 
-// -----------------------------------------------------------------------------
-// dtrsm
-void dtrsm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void trsm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     double alpha,
     double const *dA, device_blas_int ldda,
-    double       *dB, device_blas_int lddb)
+    double       *dB, device_blas_int lddb,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -684,15 +654,14 @@ void dtrsm(
             dB, lddb ) );
 }
 
-// -----------------------------------------------------------------------------
-// ctrsm
-void ctrsm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void trsm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     std::complex<float>  alpha,
     std::complex<float> const *dA, device_blas_int ldda,
-    std::complex<float>       *dB, device_blas_int lddb)
+    std::complex<float>       *dB, device_blas_int lddb,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -706,15 +675,14 @@ void ctrsm(
             dB, lddb ) );
 }
 
-// -----------------------------------------------------------------------------
-// ztrsm
-void ztrsm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void trsm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     std::complex<double>  alpha,
     std::complex<double> const *dA, device_blas_int ldda,
-    std::complex<double>       *dB, device_blas_int lddb)
+    std::complex<double>       *dB, device_blas_int lddb,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -728,17 +696,16 @@ void ztrsm(
             dB, lddb ) );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // trmm
-// -----------------------------------------------------------------------------
-// strmm
-void strmm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void trmm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     float alpha,
     float const *dA, device_blas_int ldda,
-    float       *dB, device_blas_int lddb)
+    float       *dB, device_blas_int lddb,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -752,15 +719,14 @@ void strmm(
             dB, lddb ) );
 }
 
-// -----------------------------------------------------------------------------
-// dtrmm
-void dtrmm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void trmm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     double alpha,
     double const *dA, device_blas_int ldda,
-    double       *dB, device_blas_int lddb)
+    double       *dB, device_blas_int lddb,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -774,15 +740,14 @@ void dtrmm(
             dB, lddb ) );
 }
 
-// -----------------------------------------------------------------------------
-// ctrmm
-void ctrmm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void trmm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     std::complex<float>  alpha,
     std::complex<float> const *dA, device_blas_int ldda,
-    std::complex<float>       *dB, device_blas_int lddb)
+    std::complex<float>       *dB, device_blas_int lddb,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -796,15 +761,14 @@ void ctrmm(
             dB, lddb ) );
 }
 
-// -----------------------------------------------------------------------------
-// ztrmm
-void ztrmm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void trmm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     std::complex<double>  alpha,
     std::complex<double> const *dA, device_blas_int ldda,
-    std::complex<double>       *dB, device_blas_int lddb)
+    std::complex<double>       *dB, device_blas_int lddb,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -818,19 +782,18 @@ void ztrmm(
             dB, lddb ) );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // hemm
-// -----------------------------------------------------------------------------
-// chemm
-void chemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void hemm(
     blas::Side side, blas::Uplo uplo,
     device_blas_int m, device_blas_int n,
     std::complex<float> alpha,
     std::complex<float> const *dA, device_blas_int ldda,
     std::complex<float> const *dB, device_blas_int lddb,
     std::complex<float>  beta,
-    std::complex<float>* dC, device_blas_int lddc)
+    std::complex<float>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -843,17 +806,16 @@ void chemm(
             beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// zhemm
-void zhemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void hemm(
     blas::Side side, blas::Uplo uplo,
     device_blas_int m, device_blas_int n,
     std::complex<double> alpha,
     std::complex<double> const *dA, device_blas_int ldda,
     std::complex<double> const *dB, device_blas_int lddb,
     std::complex<double>  beta,
-    std::complex<double>* dC, device_blas_int lddc)
+    std::complex<double>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -866,19 +828,18 @@ void zhemm(
             beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // symm
-// -----------------------------------------------------------------------------
-// ssymm
-void ssymm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void symm(
     blas::Side side, blas::Uplo uplo,
     device_blas_int m, device_blas_int n,
     float  alpha,
     float const *dA, device_blas_int ldda,
     float const *dB, device_blas_int lddb,
     float  beta,
-    float* dC, device_blas_int lddc)
+    float* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -891,17 +852,16 @@ void ssymm(
             beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// dsymm
-void dsymm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void symm(
     blas::Side side, blas::Uplo uplo,
     device_blas_int m, device_blas_int n,
     double  alpha,
     double const *dA, device_blas_int ldda,
     double const *dB, device_blas_int lddb,
     double  beta,
-    double* dC, device_blas_int lddc)
+    double* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -914,17 +874,16 @@ void dsymm(
             beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// csymm
-void csymm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void symm(
     blas::Side side, blas::Uplo uplo,
     device_blas_int m, device_blas_int n,
     std::complex<float> alpha,
     std::complex<float> const *dA, device_blas_int ldda,
     std::complex<float> const *dB, device_blas_int lddb,
     std::complex<float>  beta,
-    std::complex<float>* dC, device_blas_int lddc)
+    std::complex<float>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -937,17 +896,16 @@ void csymm(
             beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// zsymm
-void zsymm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void symm(
     blas::Side side, blas::Uplo uplo,
     device_blas_int m, device_blas_int n,
     std::complex<double> alpha,
     std::complex<double> const *dA, device_blas_int ldda,
     std::complex<double> const *dB, device_blas_int lddb,
     std::complex<double>  beta,
-    std::complex<double>* dC, device_blas_int lddc)
+    std::complex<double>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -960,18 +918,17 @@ void zsymm(
             beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // herk
-// -----------------------------------------------------------------------------
-// cherk
-void cherk(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void herk(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     float alpha,
     std::complex<float> const *dA, device_blas_int ldda,
     float  beta,
-    std::complex<float>* dC, device_blas_int lddc)
+    std::complex<float>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -983,16 +940,15 @@ void cherk(
             beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// zherk
-void zherk(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void herk(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     double alpha,
     std::complex<double> const *dA, device_blas_int ldda,
     double  beta,
-    std::complex<double>* dC, device_blas_int lddc)
+    std::complex<double>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -1004,18 +960,17 @@ void zherk(
             beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // syrk
-// -----------------------------------------------------------------------------
-// ssyrk
-void ssyrk(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void syrk(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     float alpha,
     float const *dA, device_blas_int ldda,
     float  beta,
-    float* dC, device_blas_int lddc)
+    float* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -1027,16 +982,15 @@ void ssyrk(
             beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// dsyrk
-void dsyrk(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void syrk(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     double alpha,
     double const *dA, device_blas_int ldda,
     double  beta,
-    double* dC, device_blas_int lddc)
+    double* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -1048,16 +1002,15 @@ void dsyrk(
             beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// csyrk
-void csyrk(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void syrk(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     std::complex<float>  alpha,
     std::complex<float> const *dA, device_blas_int ldda,
     std::complex<float>  beta,
-    std::complex<float>* dC, device_blas_int lddc)
+    std::complex<float>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -1069,16 +1022,15 @@ void csyrk(
             beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// zsyrk
-void zsyrk(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void syrk(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     std::complex<double>  alpha,
     std::complex<double> const *dA, device_blas_int ldda,
     std::complex<double>  beta,
-    std::complex<double>* dC, device_blas_int lddc)
+    std::complex<double>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -1090,19 +1042,18 @@ void zsyrk(
             beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // her2k
-// -----------------------------------------------------------------------------
-// cher2k
-void cher2k(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void her2k(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     std::complex<float>  alpha,
     std::complex<float> const *dA, device_blas_int ldda,
     std::complex<float> const *dB, device_blas_int lddb,
     float  beta,
-    std::complex<float>* dC, device_blas_int lddc)
+    std::complex<float>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -1115,17 +1066,16 @@ void cher2k(
             beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// zher2k
-void zher2k(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void her2k(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     std::complex<double> alpha,
     std::complex<double> const *dA, device_blas_int ldda,
     std::complex<double> const *dB, device_blas_int lddb,
     double  beta,
-    std::complex<double>* dC, device_blas_int lddc)
+    std::complex<double>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -1138,19 +1088,18 @@ void zher2k(
             beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // syr2k
-// -----------------------------------------------------------------------------
-// ssyr2k
-void ssyr2k(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void syr2k(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     float  alpha,
     float const *dA, device_blas_int ldda,
     float const *dB, device_blas_int lddb,
     float  beta,
-    float* dC, device_blas_int lddc)
+    float* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -1163,17 +1112,16 @@ void ssyr2k(
             beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// dsyr2k
-void dsyr2k(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void syr2k(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     double  alpha,
     double const *dA, device_blas_int ldda,
     double const *dB, device_blas_int lddb,
     double  beta,
-    double* dC, device_blas_int lddc)
+    double* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -1186,17 +1134,16 @@ void dsyr2k(
             beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// csyr2k
-void csyr2k(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void syr2k(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     std::complex<float>  alpha,
     std::complex<float> const *dA, device_blas_int ldda,
     std::complex<float> const *dB, device_blas_int lddb,
     std::complex<float>  beta,
-    std::complex<float>* dC, device_blas_int lddc)
+    std::complex<float>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -1209,17 +1156,16 @@ void csyr2k(
             beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
-// zsyr2k
-void zsyr2k(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void syr2k(
     blas::Uplo uplo, blas::Op trans,
     device_blas_int n, device_blas_int k,
     std::complex<double>  alpha,
     std::complex<double> const *dA, device_blas_int ldda,
     std::complex<double> const *dB, device_blas_int lddb,
     std::complex<double>  beta,
-    std::complex<double>* dC, device_blas_int lddc)
+    std::complex<double>* dC, device_blas_int lddc,
+    blas::Queue& queue )
 {
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
@@ -1232,12 +1178,10 @@ void zsyr2k(
             beta,  dC, lddc ) );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // batch gemm
-// -----------------------------------------------------------------------------
-// batch sgemm
-void batch_sgemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void batch_gemm(
     blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
     float alpha,
@@ -1245,7 +1189,8 @@ void batch_sgemm(
     float const * const * dBarray, device_blas_int lddb,
     float beta,
     float** dCarray, device_blas_int lddc,
-    device_blas_int batch_size)
+    device_blas_int batch_size,
+    blas::Queue& queue )
 {
     oneapi::mkl::transpose transA_ = op2onemkl( transA );
     oneapi::mkl::transpose transB_ = op2onemkl( transB );
@@ -1267,10 +1212,106 @@ void batch_sgemm(
             1, &batch_size ) );
 }
 
-// -----------------------------------------------------------------------------
-// batch sgemm - group api
-void batch_sgemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void batch_gemm(
+    blas::Op transA, blas::Op transB,
+    device_blas_int m, device_blas_int n, device_blas_int k,
+    double alpha,
+    double const * const * dAarray, device_blas_int ldda,
+    double const * const * dBarray, device_blas_int lddb,
+    double beta,
+    double** dCarray, device_blas_int lddc,
+    device_blas_int batch_size,
+    blas::Queue& queue )
+{
+    oneapi::mkl::transpose transA_ = op2onemkl( transA );
+    oneapi::mkl::transpose transB_ = op2onemkl( transB );
+
+    /// todo: This sync should not be here
+    /// however, the routine sometimes fails if removed
+    queue.sync();
+
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::gemm_batch(
+            dev_queue,
+            &transA_, &transB_,
+            &m, &n, &k, &alpha,
+            (const double**)dAarray, &ldda,
+            (const double**)dBarray, &lddb,
+            &beta,
+            dCarray, &lddc,
+            1, &batch_size ) );
+}
+
+//------------------------------------------------------------------------------
+void batch_gemm(
+    blas::Op transA, blas::Op transB,
+    device_blas_int m, device_blas_int n, device_blas_int k,
+    std::complex<float> alpha,
+    std::complex<float> const * const * dAarray, device_blas_int ldda,
+    std::complex<float> const * const * dBarray, device_blas_int lddb,
+    std::complex<float> beta,
+    std::complex<float>** dCarray, device_blas_int lddc,
+    device_blas_int batch_size,
+    blas::Queue& queue )
+{
+    oneapi::mkl::transpose transA_ = op2onemkl( transA );
+    oneapi::mkl::transpose transB_ = op2onemkl( transB );
+
+    /// todo: This sync should not be here
+    /// however, the routine sometimes fails if removed
+    queue.sync();
+
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::gemm_batch(
+            dev_queue,
+            &transA_, &transB_,
+            &m, &n, &k, &alpha,
+            (const std::complex<float>**)dAarray, &ldda,
+            (const std::complex<float>**)dBarray, &lddb,
+            &beta,
+            dCarray, &lddc,
+            1, &batch_size ) );
+}
+
+//------------------------------------------------------------------------------
+void batch_gemm(
+    blas::Op transA, blas::Op transB,
+    device_blas_int m, device_blas_int n, device_blas_int k,
+    std::complex<double> alpha,
+    std::complex<double> const * const * dAarray, device_blas_int ldda,
+    std::complex<double> const * const * dBarray, device_blas_int lddb,
+    std::complex<double> beta,
+    std::complex<double>** dCarray, device_blas_int lddc,
+    device_blas_int batch_size,
+    blas::Queue& queue )
+{
+    oneapi::mkl::transpose transA_ = op2onemkl( transA );
+    oneapi::mkl::transpose transB_ = op2onemkl( transB );
+
+    /// todo: This sync should not be here
+    /// however, the routine sometimes fails if removed
+    queue.sync();
+
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::gemm_batch(
+            dev_queue,
+            &transA_, &transB_,
+            &m, &n, &k, &alpha,
+            (const std::complex<double>**)dAarray, &ldda,
+            (const std::complex<double>**)dBarray, &lddb,
+            &beta,
+            dCarray, &lddc,
+            1, &batch_size ) );
+}
+
+//------------------------------------------------------------------------------
+// batch gemm, group API
+//------------------------------------------------------------------------------
+void batch_gemm(
     blas::Op *transA, blas::Op *transB,
     device_blas_int *m, device_blas_int *n, device_blas_int *k,
     float *alpha,
@@ -1278,7 +1319,8 @@ void batch_sgemm(
     float const * const * dBarray, device_blas_int *lddb,
     float *beta,
     float** dCarray, device_blas_int *lddc,
-    device_blas_int group_count, device_blas_int *group_size)
+    device_blas_int group_count, device_blas_int *group_size,
+    blas::Queue& queue )
 {
     // todo: probably move transA_/transB_ to blas::Queue
     std::vector<oneapi::mkl::transpose> transA_(group_count);
@@ -1305,43 +1347,8 @@ void batch_sgemm(
             group_count, group_size ) );
 }
 
-// -----------------------------------------------------------------------------
-// batch dgemm
-void batch_dgemm(
-    blas::Queue& queue,
-    blas::Op transA, blas::Op transB,
-    device_blas_int m, device_blas_int n, device_blas_int k,
-    double alpha,
-    double const * const * dAarray, device_blas_int ldda,
-    double const * const * dBarray, device_blas_int lddb,
-    double beta,
-    double** dCarray, device_blas_int lddc,
-    device_blas_int batch_size)
-{
-    oneapi::mkl::transpose transA_ = op2onemkl( transA );
-    oneapi::mkl::transpose transB_ = op2onemkl( transB );
-
-    /// todo: This sync should not be here
-    /// however, the routine sometimes fails if removed
-    queue.sync();
-
-    sycl::queue dev_queue = queue.stream();
-    blas_dev_call(
-        oneapi::mkl::blas::gemm_batch(
-            dev_queue,
-            &transA_, &transB_,
-            &m, &n, &k, &alpha,
-            (const double**)dAarray, &ldda,
-            (const double**)dBarray, &lddb,
-            &beta,
-            dCarray, &lddc,
-            1, &batch_size ) );
-}
-
-// -----------------------------------------------------------------------------
-// batch dgemm - group api
-void batch_dgemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void batch_gemm(
     blas::Op *transA, blas::Op *transB,
     device_blas_int *m, device_blas_int *n, device_blas_int *k,
     double *alpha,
@@ -1349,7 +1356,8 @@ void batch_dgemm(
     double const * const * dBarray, device_blas_int *lddb,
     double *beta,
     double** dCarray, device_blas_int *lddc,
-    device_blas_int group_count, device_blas_int *group_size)
+    device_blas_int group_count, device_blas_int *group_size,
+    blas::Queue& queue )
 {
     // todo: probably move transA_/transB_ to blas::Queue
     std::vector<oneapi::mkl::transpose> transA_(group_count);
@@ -1376,43 +1384,8 @@ void batch_dgemm(
             group_count, group_size ) );
 }
 
-// -----------------------------------------------------------------------------
-// batch cgemm
-void batch_cgemm(
-    blas::Queue& queue,
-    blas::Op transA, blas::Op transB,
-    device_blas_int m, device_blas_int n, device_blas_int k,
-    std::complex<float> alpha,
-    std::complex<float> const * const * dAarray, device_blas_int ldda,
-    std::complex<float> const * const * dBarray, device_blas_int lddb,
-    std::complex<float> beta,
-    std::complex<float>** dCarray, device_blas_int lddc,
-    device_blas_int batch_size)
-{
-    oneapi::mkl::transpose transA_ = op2onemkl( transA );
-    oneapi::mkl::transpose transB_ = op2onemkl( transB );
-
-    /// todo: This sync should not be here
-    /// however, the routine sometimes fails if removed
-    queue.sync();
-
-    sycl::queue dev_queue = queue.stream();
-    blas_dev_call(
-        oneapi::mkl::blas::gemm_batch(
-            dev_queue,
-            &transA_, &transB_,
-            &m, &n, &k, &alpha,
-            (const std::complex<float>**)dAarray, &ldda,
-            (const std::complex<float>**)dBarray, &lddb,
-            &beta,
-            dCarray, &lddc,
-            1, &batch_size ) );
-}
-
-// -----------------------------------------------------------------------------
-// batch cgemm - group api
-void batch_cgemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void batch_gemm(
     blas::Op *transA, blas::Op *transB,
     device_blas_int *m, device_blas_int *n, device_blas_int *k,
     std::complex<float> *alpha,
@@ -1420,7 +1393,8 @@ void batch_cgemm(
     std::complex<float> const * const * dBarray, device_blas_int *lddb,
     std::complex<float> *beta,
     std::complex<float>** dCarray, device_blas_int *lddc,
-    device_blas_int group_count, device_blas_int *group_size)
+    device_blas_int group_count, device_blas_int *group_size,
+    blas::Queue& queue )
 {
     // todo: probably move transA_/transB_ to blas::Queue
     std::vector<oneapi::mkl::transpose> transA_(group_count);
@@ -1447,43 +1421,8 @@ void batch_cgemm(
             group_count, group_size ) );
 }
 
-// -----------------------------------------------------------------------------
-// batch zgemm
-void batch_zgemm(
-    blas::Queue& queue,
-    blas::Op transA, blas::Op transB,
-    device_blas_int m, device_blas_int n, device_blas_int k,
-    std::complex<double> alpha,
-    std::complex<double> const * const * dAarray, device_blas_int ldda,
-    std::complex<double> const * const * dBarray, device_blas_int lddb,
-    std::complex<double> beta,
-    std::complex<double>** dCarray, device_blas_int lddc,
-    device_blas_int batch_size)
-{
-    oneapi::mkl::transpose transA_ = op2onemkl( transA );
-    oneapi::mkl::transpose transB_ = op2onemkl( transB );
-
-    /// todo: This sync should not be here
-    /// however, the routine sometimes fails if removed
-    queue.sync();
-
-    sycl::queue dev_queue = queue.stream();
-    blas_dev_call(
-        oneapi::mkl::blas::gemm_batch(
-            dev_queue,
-            &transA_, &transB_,
-            &m, &n, &k, &alpha,
-            (const std::complex<double>**)dAarray, &ldda,
-            (const std::complex<double>**)dBarray, &lddb,
-            &beta,
-            dCarray, &lddc,
-            1, &batch_size ) );
-}
-
-// -----------------------------------------------------------------------------
-// batch zgemm - group api
-void batch_zgemm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void batch_gemm(
     blas::Op *transA, blas::Op *transB,
     device_blas_int *m, device_blas_int *n, device_blas_int *k,
     std::complex<double> *alpha,
@@ -1491,7 +1430,8 @@ void batch_zgemm(
     std::complex<double> const * const * dBarray, device_blas_int *lddb,
     std::complex<double> *beta,
     std::complex<double>** dCarray, device_blas_int *lddc,
-    device_blas_int group_count, device_blas_int *group_size)
+    device_blas_int group_count, device_blas_int *group_size,
+    blas::Queue& queue )
 {
     // todo: probably move transA_/transB_ to blas::Queue
     std::vector<oneapi::mkl::transpose> transA_(group_count);
@@ -1518,17 +1458,17 @@ void batch_zgemm(
             group_count, group_size ) );
 }
 
-// -----------------------------------------------------------------------------
-// batch strsm
-void batch_strsm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+// batch trsm
+//------------------------------------------------------------------------------
+void batch_trsm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     float alpha,
     float const * const * dAarray, device_blas_int ldda,
     float const * const * dBarray, device_blas_int lddb,
-    device_blas_int batch_size)
-
+    device_blas_int batch_size,
+    blas::Queue& queue )
 {
     oneapi::mkl::side side_       = side2onemkl( side );
     oneapi::mkl::uplo uplo_       = uplo2onemkl( uplo );
@@ -1542,66 +1482,24 @@ void batch_strsm(
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::trsm_batch(
-        dev_queue,
-        &side_, &uplo_, &trans_, &diag_,
-        &m, &n,
-        &alpha,
-        (const float**)dAarray, &ldda,
-        (      float**)dBarray, &lddb,
-        1, &batch_size ) );
+            dev_queue,
+            &side_, &uplo_, &trans_, &diag_,
+            &m, &n,
+            &alpha,
+            (const float**)dAarray, &ldda,
+            (      float**)dBarray, &lddb,
+            1, &batch_size ) );
 }
 
-// -----------------------------------------------------------------------------
-// batch strsm - group api
-void batch_strsm(
-    blas::Queue& queue,
-    blas::Side *side, blas::Uplo *uplo, blas::Op *trans, blas::Diag *diag,
-    device_blas_int *m, device_blas_int *n,
-    float *alpha,
-    float const * const * dAarray, device_blas_int *ldda,
-    float const * const * dBarray, device_blas_int *lddb,
-    device_blas_int group_count, device_blas_int *group_size)
-
-{
-    // todo: probably move options to blas::Queue
-    std::vector<oneapi::mkl::side>      side_(group_count);
-    std::vector<oneapi::mkl::uplo>      uplo_(group_count);
-    std::vector<oneapi::mkl::transpose> trans_(group_count);
-    std::vector<oneapi::mkl::diag>      diag_(group_count);
-
-    for (auto i = 0; i < group_count; ++i) {
-        side_[i]  = side2onemkl( side[i] );
-        uplo_[i]  = uplo2onemkl( uplo[i] );
-        trans_[i] = op2onemkl( trans[i] );
-        diag_[i]  = diag2onemkl( diag[i] );
-    }
-
-    /// todo: This sync should not be here
-    /// however, the routine sometimes fails if removed
-    queue.sync();
-
-    sycl::queue dev_queue = queue.stream();
-    blas_dev_call(
-        oneapi::mkl::blas::trsm_batch(
-        dev_queue,
-        side_.data(), uplo_.data(), trans_.data(), diag_.data(),
-        m, n,
-        alpha,
-        (const float**)dAarray, ldda,
-        (      float**)dBarray, lddb,
-        group_count, group_size ) );
-}
-
-// -----------------------------------------------------------------------------
-// batch dtrsm
-void batch_dtrsm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void batch_trsm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     double alpha,
     double const * const * dAarray, device_blas_int ldda,
     double const * const * dBarray, device_blas_int lddb,
-    device_blas_int batch_size)
+    device_blas_int batch_size,
+    blas::Queue& queue )
 {
     oneapi::mkl::side side_       = side2onemkl( side );
     oneapi::mkl::uplo uplo_       = uplo2onemkl( uplo );
@@ -1615,66 +1513,24 @@ void batch_dtrsm(
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::trsm_batch(
-        dev_queue,
-        &side_, &uplo_, &trans_, &diag_,
-        &m, &n,
-        &alpha,
-        (const double**)dAarray, &ldda,
-        (      double**)dBarray, &lddb,
-        1, &batch_size ) );
+            dev_queue,
+            &side_, &uplo_, &trans_, &diag_,
+            &m, &n,
+            &alpha,
+            (const double**)dAarray, &ldda,
+            (      double**)dBarray, &lddb,
+            1, &batch_size ) );
 }
 
-// -----------------------------------------------------------------------------
-// batch dtrsm - group api
-void batch_dtrsm(
-    blas::Queue& queue,
-    blas::Side *side, blas::Uplo *uplo, blas::Op *trans, blas::Diag *diag,
-    device_blas_int *m, device_blas_int *n,
-    double *alpha,
-    double const * const * dAarray, device_blas_int *ldda,
-    double const * const * dBarray, device_blas_int *lddb,
-    device_blas_int group_count, device_blas_int *group_size)
-
-{
-    // todo: probably move options to blas::Queue
-    std::vector<oneapi::mkl::side>      side_(group_count);
-    std::vector<oneapi::mkl::uplo>      uplo_(group_count);
-    std::vector<oneapi::mkl::transpose> trans_(group_count);
-    std::vector<oneapi::mkl::diag>      diag_(group_count);
-
-    for (auto i = 0; i < group_count; ++i) {
-        side_[i]  = side2onemkl( side[i] );
-        uplo_[i]  = uplo2onemkl( uplo[i] );
-        trans_[i] = op2onemkl( trans[i] );
-        diag_[i]  = diag2onemkl( diag[i] );
-    }
-
-    /// todo: This sync should not be here
-    /// however, the routine sometimes fails if removed
-    queue.sync();
-
-    sycl::queue dev_queue = queue.stream();
-    blas_dev_call(
-        oneapi::mkl::blas::trsm_batch(
-        dev_queue,
-        side_.data(), uplo_.data(), trans_.data(), diag_.data(),
-        m, n,
-        alpha,
-        (const double**)dAarray, ldda,
-        (      double**)dBarray, lddb,
-        group_count, group_size ) );
-}
-
-// -----------------------------------------------------------------------------
-// batch ctrsm
-void batch_ctrsm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void batch_trsm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     std::complex<float> alpha,
     std::complex<float> const * const * dAarray, device_blas_int ldda,
     std::complex<float> const * const * dBarray, device_blas_int lddb,
-    device_blas_int batch_size)
+    device_blas_int batch_size,
+    blas::Queue& queue )
 {
     oneapi::mkl::side side_       = side2onemkl( side );
     oneapi::mkl::uplo uplo_       = uplo2onemkl( uplo );
@@ -1688,66 +1544,24 @@ void batch_ctrsm(
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::trsm_batch(
-        dev_queue,
-        &side_, &uplo_, &trans_, &diag_,
-        &m, &n,
-        &alpha,
-        (const std::complex<float>**)dAarray, &ldda,
-        (      std::complex<float>**)dBarray, &lddb,
-        1, &batch_size ) );
+            dev_queue,
+            &side_, &uplo_, &trans_, &diag_,
+            &m, &n,
+            &alpha,
+            (const std::complex<float>**)dAarray, &ldda,
+            (      std::complex<float>**)dBarray, &lddb,
+            1, &batch_size ) );
 }
 
-// -----------------------------------------------------------------------------
-// batch ctrsm - group api
-void batch_ctrsm(
-    blas::Queue& queue,
-    blas::Side *side, blas::Uplo *uplo, blas::Op *trans, blas::Diag *diag,
-    device_blas_int *m, device_blas_int *n,
-    std::complex<float> *alpha,
-    std::complex<float> const * const * dAarray, device_blas_int *ldda,
-    std::complex<float> const * const * dBarray, device_blas_int *lddb,
-    device_blas_int group_count, device_blas_int *group_size)
-
-{
-    // todo: probably move options to blas::Queue
-    std::vector<oneapi::mkl::side>      side_(group_count);
-    std::vector<oneapi::mkl::uplo>      uplo_(group_count);
-    std::vector<oneapi::mkl::transpose> trans_(group_count);
-    std::vector<oneapi::mkl::diag>      diag_(group_count);
-
-    for (auto i = 0; i < group_count; ++i) {
-        side_[i]  = side2onemkl( side[i] );
-        uplo_[i]  = uplo2onemkl( uplo[i] );
-        trans_[i] = op2onemkl( trans[i] );
-        diag_[i]  = diag2onemkl( diag[i] );
-    }
-
-    /// todo: This sync should not be here
-    /// however, the routine sometimes fails if removed
-    queue.sync();
-
-    sycl::queue dev_queue = queue.stream();
-    blas_dev_call(
-        oneapi::mkl::blas::trsm_batch(
-        dev_queue,
-        side_.data(), uplo_.data(), trans_.data(), diag_.data(),
-        m, n,
-        alpha,
-        (const std::complex<float>**)dAarray, ldda,
-        (      std::complex<float>**)dBarray, lddb,
-        group_count, group_size ) );
-}
-
-// -----------------------------------------------------------------------------
-// batch ztrsm
-void batch_ztrsm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+void batch_trsm(
     blas::Side side, blas::Uplo uplo, blas::Op trans, blas::Diag diag,
     device_blas_int m, device_blas_int n,
     std::complex<double> alpha,
     std::complex<double> const * const * dAarray, device_blas_int ldda,
     std::complex<double> const * const * dBarray, device_blas_int lddb,
-    device_blas_int batch_size)
+    device_blas_int batch_size,
+    blas::Queue& queue )
 {
     oneapi::mkl::side side_       = side2onemkl( side );
     oneapi::mkl::uplo uplo_       = uplo2onemkl( uplo );
@@ -1761,26 +1575,26 @@ void batch_ztrsm(
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::trsm_batch(
-        dev_queue,
-        &side_, &uplo_, &trans_, &diag_,
-        &m, &n,
-        &alpha,
-        (const std::complex<double>**)dAarray, &ldda,
-        (      std::complex<double>**)dBarray, &lddb,
-        1, &batch_size ) );
+            dev_queue,
+            &side_, &uplo_, &trans_, &diag_,
+            &m, &n,
+            &alpha,
+            (const std::complex<double>**)dAarray, &ldda,
+            (      std::complex<double>**)dBarray, &lddb,
+            1, &batch_size ) );
 }
 
-// -----------------------------------------------------------------------------
-// batch ztrsm - group api
-void batch_ztrsm(
-    blas::Queue& queue,
+//------------------------------------------------------------------------------
+// batch trsm, group API
+//------------------------------------------------------------------------------
+void batch_trsm(
     blas::Side *side, blas::Uplo *uplo, blas::Op *trans, blas::Diag *diag,
     device_blas_int *m, device_blas_int *n,
-    std::complex<double> *alpha,
-    std::complex<double> const * const * dAarray, device_blas_int *ldda,
-    std::complex<double> const * const * dBarray, device_blas_int *lddb,
-    device_blas_int group_count, device_blas_int *group_size)
-
+    float *alpha,
+    float const * const * dAarray, device_blas_int *ldda,
+    float const * const * dBarray, device_blas_int *lddb,
+    device_blas_int group_count, device_blas_int *group_size,
+    blas::Queue& queue )
 {
     // todo: probably move options to blas::Queue
     std::vector<oneapi::mkl::side>      side_(group_count);
@@ -1802,16 +1616,133 @@ void batch_ztrsm(
     sycl::queue dev_queue = queue.stream();
     blas_dev_call(
         oneapi::mkl::blas::trsm_batch(
-        dev_queue,
-        side_.data(), uplo_.data(), trans_.data(), diag_.data(),
-        m, n,
-        alpha,
-        (const std::complex<double>**)dAarray, ldda,
-        (      std::complex<double>**)dBarray, lddb,
-        group_count, group_size ) );
+            dev_queue,
+            side_.data(), uplo_.data(), trans_.data(), diag_.data(),
+            m, n,
+            alpha,
+            (const float**)dAarray, ldda,
+            (      float**)dBarray, lddb,
+            group_count, group_size ) );
 }
 
-}  // namespace device
+//------------------------------------------------------------------------------
+void batch_trsm(
+    blas::Side *side, blas::Uplo *uplo, blas::Op *trans, blas::Diag *diag,
+    device_blas_int *m, device_blas_int *n,
+    double *alpha,
+    double const * const * dAarray, device_blas_int *ldda,
+    double const * const * dBarray, device_blas_int *lddb,
+    device_blas_int group_count, device_blas_int *group_size,
+    blas::Queue& queue )
+{
+    // todo: probably move options to blas::Queue
+    std::vector<oneapi::mkl::side>      side_(group_count);
+    std::vector<oneapi::mkl::uplo>      uplo_(group_count);
+    std::vector<oneapi::mkl::transpose> trans_(group_count);
+    std::vector<oneapi::mkl::diag>      diag_(group_count);
+
+    for (auto i = 0; i < group_count; ++i) {
+        side_[i]  = side2onemkl( side[i] );
+        uplo_[i]  = uplo2onemkl( uplo[i] );
+        trans_[i] = op2onemkl( trans[i] );
+        diag_[i]  = diag2onemkl( diag[i] );
+    }
+
+    /// todo: This sync should not be here
+    /// however, the routine sometimes fails if removed
+    queue.sync();
+
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::trsm_batch(
+            dev_queue,
+            side_.data(), uplo_.data(), trans_.data(), diag_.data(),
+            m, n,
+            alpha,
+            (const double**)dAarray, ldda,
+            (      double**)dBarray, lddb,
+            group_count, group_size ) );
+}
+
+//------------------------------------------------------------------------------
+void batch_trsm(
+    blas::Side *side, blas::Uplo *uplo, blas::Op *trans, blas::Diag *diag,
+    device_blas_int *m, device_blas_int *n,
+    std::complex<float> *alpha,
+    std::complex<float> const * const * dAarray, device_blas_int *ldda,
+    std::complex<float> const * const * dBarray, device_blas_int *lddb,
+    device_blas_int group_count, device_blas_int *group_size,
+    blas::Queue& queue )
+{
+    // todo: probably move options to blas::Queue
+    std::vector<oneapi::mkl::side>      side_(group_count);
+    std::vector<oneapi::mkl::uplo>      uplo_(group_count);
+    std::vector<oneapi::mkl::transpose> trans_(group_count);
+    std::vector<oneapi::mkl::diag>      diag_(group_count);
+
+    for (auto i = 0; i < group_count; ++i) {
+        side_[i]  = side2onemkl( side[i] );
+        uplo_[i]  = uplo2onemkl( uplo[i] );
+        trans_[i] = op2onemkl( trans[i] );
+        diag_[i]  = diag2onemkl( diag[i] );
+    }
+
+    /// todo: This sync should not be here
+    /// however, the routine sometimes fails if removed
+    queue.sync();
+
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::trsm_batch(
+            dev_queue,
+            side_.data(), uplo_.data(), trans_.data(), diag_.data(),
+            m, n,
+            alpha,
+            (const std::complex<float>**)dAarray, ldda,
+            (      std::complex<float>**)dBarray, lddb,
+            group_count, group_size ) );
+}
+
+//------------------------------------------------------------------------------
+void batch_trsm(
+    blas::Side *side, blas::Uplo *uplo, blas::Op *trans, blas::Diag *diag,
+    device_blas_int *m, device_blas_int *n,
+    std::complex<double> *alpha,
+    std::complex<double> const * const * dAarray, device_blas_int *ldda,
+    std::complex<double> const * const * dBarray, device_blas_int *lddb,
+    device_blas_int group_count, device_blas_int *group_size,
+    blas::Queue& queue )
+{
+    // todo: probably move options to blas::Queue
+    std::vector<oneapi::mkl::side>      side_(group_count);
+    std::vector<oneapi::mkl::uplo>      uplo_(group_count);
+    std::vector<oneapi::mkl::transpose> trans_(group_count);
+    std::vector<oneapi::mkl::diag>      diag_(group_count);
+
+    for (auto i = 0; i < group_count; ++i) {
+        side_[i]  = side2onemkl( side[i] );
+        uplo_[i]  = uplo2onemkl( uplo[i] );
+        trans_[i] = op2onemkl( trans[i] );
+        diag_[i]  = diag2onemkl( diag[i] );
+    }
+
+    /// todo: This sync should not be here
+    /// however, the routine sometimes fails if removed
+    queue.sync();
+
+    sycl::queue dev_queue = queue.stream();
+    blas_dev_call(
+        oneapi::mkl::blas::trsm_batch(
+            dev_queue,
+            side_.data(), uplo_.data(), trans_.data(), diag_.data(),
+            m, n,
+            alpha,
+            (const std::complex<double>**)dAarray, ldda,
+            (      std::complex<double>**)dBarray, lddb,
+            group_count, group_size ) );
+}
+
+}  // namespace internal
 }  // namespace blas
 
 #endif  // BLAS_HAVE_ONEMKL

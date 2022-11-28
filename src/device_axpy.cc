@@ -39,7 +39,7 @@ void blas::axpy(
 
     blas::internal_set_device( queue.device() );
 
-    device::saxpy( queue, n_, alpha, dx, incdx_, dy, incdy_ );
+    internal::axpy( n_, alpha, dx, incdx_, dy, incdy_, queue );
 }
 
 // -----------------------------------------------------------------------------
@@ -69,7 +69,7 @@ void blas::axpy(
 
     blas::internal_set_device( queue.device() );
 
-    device::daxpy( queue, n_, alpha, dx, incdx_, dy, incdy_ );
+    internal::axpy( n_, alpha, dx, incdx_, dy, incdy_, queue );
 }
 
 // -----------------------------------------------------------------------------
@@ -99,7 +99,7 @@ void blas::axpy(
 
     blas::internal_set_device( queue.device() );
 
-    device::caxpy( queue, n_, alpha, dx, incdx_, dy, incdy_ );
+    internal::axpy( n_, alpha, dx, incdx_, dy, incdy_, queue );
 }
 
 // -----------------------------------------------------------------------------
@@ -129,5 +129,5 @@ void blas::axpy(
 
     blas::internal_set_device( queue.device() );
 
-    device::zaxpy( queue, n_, alpha, dx, incdx_, dy, incdy_ );
+    internal::axpy( n_, alpha, dx, incdx_, dy, incdy_, queue );
 }

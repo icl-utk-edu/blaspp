@@ -108,13 +108,15 @@ void blas::hemm(
         std::swap( m_, n_ );
     }
 
-    blas::internal_set_device( queue.device() );
-    device::chemm(
-            queue,
+    #ifndef BLAS_HAVE_ONEMKL
+    blas::set_device( queue.device() );
+    #endif
+    internal::hemm(
             side, uplo, m_, n_,
             alpha, dA, ldda_,
                    dB, lddb_,
-            beta,  dC, lddc_ );
+            beta,  dC, lddc_,
+            queue );
 }
 
 // -----------------------------------------------------------------------------
@@ -180,10 +182,10 @@ void blas::hemm(
     }
 
     blas::internal_set_device( queue.device() );
-    device::zhemm(
-            queue,
+    internal::hemm(
             side, uplo, m_, n_,
             alpha, dA, ldda_,
                    dB, lddb_,
-            beta,  dC, lddc_ );
+            beta,  dC, lddc_,
+            queue );
 }

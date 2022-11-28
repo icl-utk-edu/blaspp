@@ -64,12 +64,12 @@ void blas::syrk(
     }
 
     blas::internal_set_device( queue.device() );
-    device::ssyrk(
-            queue,
+    internal::syrk(
             uplo, trans,
             n_, k_,
             alpha, dA, ldda_,
-            beta,  dC, lddc_ );
+            beta,  dC, lddc_,
+            queue );
 }
 
 // -----------------------------------------------------------------------------
@@ -124,12 +124,12 @@ void blas::syrk(
     }
 
     blas::internal_set_device( queue.device() );
-    device::dsyrk(
-            queue,
+    internal::syrk(
             uplo, trans,
             n_, k_,
             alpha, dA, ldda_,
-            beta,  dC, lddc_ );
+            beta,  dC, lddc_,
+            queue );
 }
 
 // -----------------------------------------------------------------------------
@@ -183,12 +183,12 @@ void blas::syrk(
     }
 
     blas::internal_set_device( queue.device() );
-    device::csyrk(
-            queue,
+    internal::syrk(
             uplo, trans,
             n_, k_,
             alpha, dA, ldda_,
-            beta,  dC, lddc_ );
+            beta,  dC, lddc_,
+            queue );
 }
 
 // -----------------------------------------------------------------------------
@@ -242,10 +242,10 @@ void blas::syrk(
     }
 
     blas::internal_set_device( queue.device() );
-    device::zsyrk(
-            queue,
+    internal::syrk(
             uplo, trans,
             n_, k_,
             alpha, dA, ldda_,
-            beta,  dC, lddc_ );
+            beta,  dC, lddc_,
+            queue );
 }

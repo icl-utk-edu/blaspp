@@ -95,12 +95,12 @@ void blas::herk(
     }
 
     blas::internal_set_device( queue.device() );
-    device::cherk(
-            queue,
+    internal::herk(
             uplo, trans,
             n_, k_,
             alpha, dA, ldda_,
-            beta,  dC, lddc_ );
+            beta,  dC, lddc_,
+            queue );
 }
 
 // -----------------------------------------------------------------------------
@@ -154,10 +154,10 @@ void blas::herk(
     }
 
     blas::internal_set_device( queue.device() );
-    device::zherk(
-            queue,
+    internal::herk(
             uplo, trans,
             n_, k_,
             alpha, dA, ldda_,
-            beta,  dC, lddc_ );
+            beta,  dC, lddc_,
+            queue );
 }

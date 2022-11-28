@@ -74,18 +74,18 @@ void blas::gemm(
     blas::internal_set_device( queue.device() );
     if (layout == Layout::RowMajor) {
         // swap transA <=> transB, m <=> n, B <=> A
-        device::sgemm(
-                queue, transB, transA,
+        internal::gemm(
+                transB, transA,
                 n_, m_, k_,
                 alpha, dB, lddb_, dA, ldda_,
-                beta,  dC, lddc_);
+                beta,  dC, lddc_, queue );
     }
     else {
-        device::sgemm(
-                queue, transA, transB,
+        internal::gemm(
+                transA, transB,
                 m_, n_, k_,
                 alpha, dA, ldda_, dB, lddb_,
-                beta,  dC, lddc_);
+                beta,  dC, lddc_, queue );
     }
 }
 
@@ -164,18 +164,18 @@ void blas::gemm(
     blas::internal_set_device( queue.device() );
     if (layout == Layout::RowMajor) {
         // swap transA <=> transB, m <=> n, B <=> A
-        device::dgemm(
-                queue, transB, transA,
+        internal::gemm(
+                transB, transA,
                 n_, m_, k_,
                 alpha, dB, lddb_, dA, ldda_,
-                beta,  dC, lddc_);
+                beta,  dC, lddc_, queue );
     }
     else {
-        device::dgemm(
-                queue, transA, transB,
+        internal::gemm(
+                transA, transB,
                 m_, n_, k_,
                 alpha, dA, ldda_, dB, lddb_,
-                beta,  dC, lddc_);
+                beta,  dC, lddc_, queue );
     }
 }
 
@@ -253,18 +253,18 @@ void blas::gemm(
     blas::internal_set_device( queue.device() );
     if (layout == Layout::RowMajor) {
         // swap transA <=> transB, m <=> n, B <=> A
-        device::cgemm(
-                queue, transB, transA,
+        internal::gemm(
+                transB, transA,
                 n_, m_, k_,
                 alpha, dB, lddb_, dA, ldda_,
-                beta,  dC, lddc_);
+                beta,  dC, lddc_, queue );
     }
     else {
-        device::cgemm(
-                queue, transA, transB,
+        internal::gemm(
+                transA, transB,
                 m_, n_, k_,
                 alpha, dA, ldda_, dB, lddb_,
-                beta,  dC, lddc_);
+                beta,  dC, lddc_, queue );
     }
 }
 
@@ -342,17 +342,17 @@ void blas::gemm(
     blas::internal_set_device( queue.device() );
     if (layout == Layout::RowMajor) {
         // swap transA <=> transB, m <=> n, B <=> A
-        device::zgemm(
-                queue, transB, transA,
+        internal::gemm(
+                transB, transA,
                 n_, m_, k_,
                 alpha, dB, lddb_, dA, ldda_,
-                beta,  dC, lddc_);
+                beta,  dC, lddc_, queue );
     }
     else {
-        device::zgemm(
-                queue, transA, transB,
+        internal::gemm(
+                transA, transB,
                 m_, n_, k_,
                 alpha, dA, ldda_, dB, lddb_,
-                beta,  dC, lddc_);
+                beta,  dC, lddc_, queue );
     }
 }

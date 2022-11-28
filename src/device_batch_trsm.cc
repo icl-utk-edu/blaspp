@@ -11,7 +11,7 @@
 #include <limits>
 #include <cstring>
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /// @ingroup trsm
 void blas::batch::trsm(
     blas::Layout                   layout,
@@ -85,11 +85,11 @@ void blas::batch::trsm(
             device_copy_vector<float*>(ibatch, (float**)&Aarray[ib], 1, dAarray, 1, queue);
             device_copy_vector<float*>(ibatch, (float**)&Barray[ib], 1, dBarray, 1, queue);
 
-            device::batch_strsm( queue,
-                                side_, uplo_, trans_, diag_,
-                                m_, n_, alpha[0],
-                                dAarray, ldda_,
-                                dBarray, lddb_, ibatch);
+            internal::batch_trsm(
+                side_, uplo_, trans_, diag_,
+                m_, n_, alpha[0],
+                dAarray, ldda_,
+                dBarray, lddb_, ibatch, queue );
         }
     }
     else {
@@ -117,7 +117,7 @@ void blas::batch::trsm(
 }
 
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /// @ingroup trsm
 void blas::batch::trsm(
     blas::Layout                   layout,
@@ -191,11 +191,11 @@ void blas::batch::trsm(
             device_copy_vector<double*>(ibatch, (double**)&Aarray[ib], 1, dAarray, 1, queue);
             device_copy_vector<double*>(ibatch, (double**)&Barray[ib], 1, dBarray, 1, queue);
 
-            device::batch_dtrsm( queue,
-                                side_, uplo_, trans_, diag_,
-                                m_, n_, alpha[0],
-                                dAarray, ldda_,
-                                dBarray, lddb_, ibatch);
+            internal::batch_trsm(
+                side_, uplo_, trans_, diag_,
+                m_, n_, alpha[0],
+                dAarray, ldda_,
+                dBarray, lddb_, ibatch, queue );
         }
     }
     else {
@@ -223,7 +223,7 @@ void blas::batch::trsm(
 }
 
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /// @ingroup trsm
 void blas::batch::trsm(
     blas::Layout                   layout,
@@ -297,11 +297,11 @@ void blas::batch::trsm(
             device_copy_vector< std::complex<float>* >(ibatch, (std::complex<float>**)&Aarray[ib], 1, dAarray, 1, queue);
             device_copy_vector< std::complex<float>* >(ibatch, (std::complex<float>**)&Barray[ib], 1, dBarray, 1, queue);
 
-            device::batch_ctrsm( queue,
-                                side_, uplo_, trans_, diag_,
-                                m_, n_, alpha[0],
-                                dAarray, ldda_,
-                                dBarray, lddb_, ibatch);
+            internal::batch_trsm(
+                side_, uplo_, trans_, diag_,
+                m_, n_, alpha[0],
+                dAarray, ldda_,
+                dBarray, lddb_, ibatch, queue );
         }
     }
     else {
@@ -329,7 +329,7 @@ void blas::batch::trsm(
 }
 
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /// @ingroup trsm
 void blas::batch::trsm(
     blas::Layout                   layout,
@@ -403,11 +403,11 @@ void blas::batch::trsm(
             device_copy_vector< std::complex<double>* >(ibatch, (std::complex<double>**)&Aarray[ib], 1, dAarray, 1, queue);
             device_copy_vector< std::complex<double>* >(ibatch, (std::complex<double>**)&Barray[ib], 1, dBarray, 1, queue);
 
-            device::batch_ztrsm( queue,
-                                side_, uplo_, trans_, diag_,
-                                m_, n_, alpha[0],
-                                dAarray, ldda_,
-                                dBarray, lddb_, ibatch);
+            internal::batch_trsm(
+                side_, uplo_, trans_, diag_,
+                m_, n_, alpha[0],
+                dAarray, ldda_,
+                dBarray, lddb_, ibatch, queue );
         }
     }
     else {

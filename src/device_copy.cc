@@ -38,11 +38,11 @@ void blas::copy(
 
     blas::internal_set_device( queue.device() );
 
-    device::scopy(
-        queue,
+    internal::copy(
         n_,
         dx, incdx_,
-        dy, incdy_);
+        dy, incdy_,
+        queue );
 }
 // -----------------------------------------------------------------------------
 /// @ingroup copy
@@ -70,11 +70,11 @@ void blas::copy(
 
     blas::internal_set_device( queue.device() );
 
-    device::dcopy(
-        queue,
+    internal::copy(
         n_,
         dx, incdx_,
-        dy, incdy_);
+        dy, incdy_,
+        queue );
 }
 // -----------------------------------------------------------------------------
 /// @ingroup copy
@@ -102,11 +102,11 @@ void blas::copy(
 
     blas::internal_set_device( queue.device() );
 
-    device::ccopy(
-        queue,
+    internal::copy(
         n_,
         dx, incdx_,
-        dy, incdy_);
+        dy, incdy_,
+        queue );
 }
 // -----------------------------------------------------------------------------
 /// @ingroup copy
@@ -134,9 +134,9 @@ void blas::copy(
 
     blas::internal_set_device( queue.device() );
 
-    device::zcopy(
-        queue,
+    internal::copy(
         n_,
         dx, incdx_,
-        dy, incdy_);
+        dy, incdy_,
+        queue );
 }

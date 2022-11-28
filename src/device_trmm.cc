@@ -73,12 +73,12 @@ void blas::trmm(
     }
 
     blas::internal_set_device( queue.device() );
-    device::strmm(
-            queue,
+    internal::trmm(
             side, uplo, trans, diag,
             m_, n_, alpha,
             dA, ldda_,
-            dB, lddb_ );
+            dB, lddb_,
+            queue );
 }
 
 // -----------------------------------------------------------------------------
@@ -142,12 +142,12 @@ void blas::trmm(
     }
 
     blas::internal_set_device( queue.device() );
-    device::dtrmm(
-            queue,
+    internal::trmm(
             side, uplo, trans, diag,
             m_, n_, alpha,
             dA, ldda_,
-            dB, lddb_ );
+            dB, lddb_,
+            queue );
 }
 
 // -----------------------------------------------------------------------------
@@ -211,12 +211,12 @@ void blas::trmm(
     }
 
     blas::internal_set_device( queue.device() );
-    device::ctrmm(
-            queue,
+    internal::trmm(
             side, uplo, trans, diag,
             m_, n_, alpha,
             dA, ldda_,
-            dB, lddb_ );
+            dB, lddb_,
+            queue );
 }
 
 // -----------------------------------------------------------------------------
@@ -280,10 +280,10 @@ void blas::trmm(
     }
 
     blas::internal_set_device( queue.device() );
-    device::ztrmm(
-            queue,
+    internal::trmm(
             side, uplo, trans, diag,
             m_, n_, alpha,
             dA, ldda_,
-            dB, lddb_ );
+            dB, lddb_,
+            queue );
 }

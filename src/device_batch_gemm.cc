@@ -92,20 +92,20 @@ void gemm(
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
-                device::batch_sgemm( queue,
-                                    transB_, transA_,
-                                    n_, m_, k_,
-                                    alpha[0], dBarray, lddb_, dAarray, ldda_,
-                                    beta[0],  dCarray, lddc_,
-                                    ibatch);
+                internal::batch_gemm(
+                    transB_, transA_,
+                    n_, m_, k_,
+                    alpha[0], dBarray, lddb_, dAarray, ldda_,
+                    beta[0],  dCarray, lddc_,
+                    ibatch, queue );
             }
             else {
-                device::batch_sgemm( queue,
-                                    transA_, transB_,
-                                    m_, n_, k_,
-                                    alpha[0], dAarray, ldda_, dBarray, lddb_,
-                                    beta[0],  dCarray, lddc_,
-                                    ibatch);
+                internal::batch_gemm(
+                    transA_, transB_,
+                    m_, n_, k_,
+                    alpha[0], dAarray, ldda_, dBarray, lddb_,
+                    beta[0],  dCarray, lddc_,
+                    ibatch, queue );
             }
         }
     }
@@ -211,20 +211,20 @@ void gemm(
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
-                device::batch_dgemm( queue,
-                                    transB_, transA_,
-                                    n_, m_, k_,
-                                    alpha[0], dBarray, lddb_, dAarray, ldda_,
-                                    beta[0],  dCarray, lddc_,
-                                    ibatch);
+                internal::batch_gemm(
+                    transB_, transA_,
+                    n_, m_, k_,
+                    alpha[0], dBarray, lddb_, dAarray, ldda_,
+                    beta[0],  dCarray, lddc_,
+                    ibatch, queue );
             }
             else {
-                device::batch_dgemm( queue,
-                                    transA_, transB_,
-                                    m_, n_, k_,
-                                    alpha[0], dAarray, ldda_, dBarray, lddb_,
-                                    beta[0],  dCarray, lddc_,
-                                    ibatch);
+                internal::batch_gemm(
+                    transA_, transB_,
+                    m_, n_, k_,
+                    alpha[0], dAarray, ldda_, dBarray, lddb_,
+                    beta[0],  dCarray, lddc_,
+                    ibatch, queue );
             }
         }
     }
@@ -334,20 +334,20 @@ void gemm(
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
-                device::batch_cgemm( queue,
-                                    transB_, transA_,
-                                    n_, m_, k_,
-                                    alpha[0], dBarray, lddb_, dAarray, ldda_,
-                                    beta[0],  dCarray, lddc_,
-                                    ibatch);
+                internal::batch_gemm(
+                    transB_, transA_,
+                    n_, m_, k_,
+                    alpha[0], dBarray, lddb_, dAarray, ldda_,
+                    beta[0],  dCarray, lddc_,
+                    ibatch, queue );
             }
             else {
-                device::batch_cgemm( queue,
-                                    transA_, transB_,
-                                    m_, n_, k_,
-                                    alpha[0], dAarray, ldda_, dBarray, lddb_,
-                                    beta[0],  dCarray, lddc_,
-                                    ibatch);
+                internal::batch_gemm(
+                    transA_, transB_,
+                    m_, n_, k_,
+                    alpha[0], dAarray, ldda_, dBarray, lddb_,
+                    beta[0],  dCarray, lddc_,
+                    ibatch, queue );
             }
         }
     }
@@ -454,20 +454,20 @@ void gemm(
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
-                device::batch_zgemm( queue,
-                                    transB_, transA_,
-                                    n_, m_, k_,
-                                    alpha[0], dBarray, lddb_, dAarray, ldda_,
-                                    beta[0],  dCarray, lddc_,
-                                    ibatch);
+                internal::batch_gemm(
+                    transB_, transA_,
+                    n_, m_, k_,
+                    alpha[0], dBarray, lddb_, dAarray, ldda_,
+                    beta[0],  dCarray, lddc_,
+                    ibatch, queue );
             }
             else {
-                device::batch_zgemm( queue,
-                                    transA_, transB_,
-                                    m_, n_, k_,
-                                    alpha[0], dAarray, ldda_, dBarray, lddb_,
-                                    beta[0],  dCarray, lddc_,
-                                    ibatch);
+                internal::batch_gemm(
+                    transA_, transB_,
+                    m_, n_, k_,
+                    alpha[0], dAarray, ldda_, dBarray, lddb_,
+                    beta[0],  dCarray, lddc_,
+                    ibatch, queue );
             }
         }
     }
@@ -600,20 +600,20 @@ void gemm(
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
-                device::batch_sgemm( queue,
-                                    transB_, transA_,
-                                    n_, m_, k_,
-                                    alpha[ig], dBarray, lddb_, dAarray, ldda_,
-                                    beta[ig],  dCarray, lddc_,
-                                    ibatch);
+                internal::batch_gemm(
+                    transB_, transA_,
+                    n_, m_, k_,
+                    alpha[ig], dBarray, lddb_, dAarray, ldda_,
+                    beta[ig],  dCarray, lddc_,
+                    ibatch, queue );
             }
             else {
-                device::batch_sgemm( queue,
-                                    transA_, transB_,
-                                    m_, n_, k_,
-                                    alpha[ig], dAarray, ldda_, dBarray, lddb_,
-                                    beta[ig],  dCarray, lddc_,
-                                    ibatch);
+                internal::batch_gemm(
+                    transA_, transB_,
+                    m_, n_, k_,
+                    alpha[ig], dAarray, ldda_, dBarray, lddb_,
+                    beta[ig],  dCarray, lddc_,
+                    ibatch, queue );
             }
         }
 
@@ -728,20 +728,20 @@ void gemm(
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
-                device::batch_dgemm( queue,
-                                    transB_, transA_,
-                                    n_, m_, k_,
-                                    alpha[ig], dBarray, lddb_, dAarray, ldda_,
-                                    beta[ig],  dCarray, lddc_,
-                                    ibatch);
+                internal::batch_gemm(
+                    transB_, transA_,
+                    n_, m_, k_,
+                    alpha[ig], dBarray, lddb_, dAarray, ldda_,
+                    beta[ig],  dCarray, lddc_,
+                    ibatch, queue );
             }
             else {
-                device::batch_dgemm( queue,
-                                    transA_, transB_,
-                                    m_, n_, k_,
-                                    alpha[ig], dAarray, ldda_, dBarray, lddb_,
-                                    beta[ig],  dCarray, lddc_,
-                                    ibatch);
+                internal::batch_gemm(
+                    transA_, transB_,
+                    m_, n_, k_,
+                    alpha[ig], dAarray, ldda_, dBarray, lddb_,
+                    beta[ig],  dCarray, lddc_,
+                    ibatch, queue );
             }
         }
 
@@ -859,20 +859,20 @@ void gemm(
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
-                device::batch_cgemm( queue,
-                                    transB_, transA_,
-                                    n_, m_, k_,
-                                    alpha[ig], dBarray, lddb_, dAarray, ldda_,
-                                    beta[ig],  dCarray, lddc_,
-                                    ibatch);
+                internal::batch_gemm(
+                    transB_, transA_,
+                    n_, m_, k_,
+                    alpha[ig], dBarray, lddb_, dAarray, ldda_,
+                    beta[ig],  dCarray, lddc_,
+                    ibatch, queue );
             }
             else {
-                device::batch_cgemm( queue,
-                                    transA_, transB_,
-                                    m_, n_, k_,
-                                    alpha[ig], dAarray, ldda_, dBarray, lddb_,
-                                    beta[ig],  dCarray, lddc_,
-                                    ibatch);
+                internal::batch_gemm(
+                    transA_, transB_,
+                    m_, n_, k_,
+                    alpha[ig], dAarray, ldda_, dBarray, lddb_,
+                    beta[ig],  dCarray, lddc_,
+                    ibatch, queue );
             }
         }
 
@@ -989,20 +989,20 @@ void gemm(
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
-                device::batch_zgemm( queue,
-                                    transB_, transA_,
-                                    n_, m_, k_,
-                                    alpha[ig], dBarray, lddb_, dAarray, ldda_,
-                                    beta[ig],  dCarray, lddc_,
-                                    ibatch);
+                internal::batch_gemm(
+                    transB_, transA_,
+                    n_, m_, k_,
+                    alpha[ig], dBarray, lddb_, dAarray, ldda_,
+                    beta[ig],  dCarray, lddc_,
+                    ibatch, queue );
             }
             else {
-                device::batch_zgemm( queue,
-                                    transA_, transB_,
-                                    m_, n_, k_,
-                                    alpha[ig], dAarray, ldda_, dBarray, lddb_,
-                                    beta[ig],  dCarray, lddc_,
-                                    ibatch);
+                internal::batch_gemm(
+                    transA_, transB_,
+                    m_, n_, k_,
+                    alpha[ig], dAarray, ldda_, dBarray, lddb_,
+                    beta[ig],  dCarray, lddc_,
+                    ibatch, queue );
             }
         }
 

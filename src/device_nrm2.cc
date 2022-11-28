@@ -35,7 +35,7 @@ void blas::nrm2(
 
     blas::internal_set_device( queue.device() );
 
-    device::snrm2( queue, n_, dx, incdx_, result );
+    internal::nrm2( n_, dx, incdx_, result, queue );
 }
 
 // -----------------------------------------------------------------------------
@@ -61,7 +61,7 @@ void blas::nrm2(
 
     blas::internal_set_device( queue.device() );
 
-    device::dnrm2( queue, n_, dx, incdx_, result );
+    internal::nrm2( n_, dx, incdx_, result, queue );
 }
 
 // -----------------------------------------------------------------------------
@@ -87,7 +87,7 @@ void blas::nrm2(
 
     blas::internal_set_device( queue.device() );
 
-    device::cnrm2( queue, n_, dx, incdx_, result );
+    internal::nrm2( n_, dx, incdx_, result, queue );
 }
 
 // -----------------------------------------------------------------------------
@@ -113,5 +113,5 @@ void blas::nrm2(
 
     blas::internal_set_device( queue.device() );
 
-    device::znrm2( queue, n_, dx, incdx_, result );
+    internal::nrm2( n_, dx, incdx_, result, queue );
 }

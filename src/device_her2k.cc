@@ -103,12 +103,12 @@ void blas::her2k(
     }
 
     blas::internal_set_device( queue.device() );
-    device::cher2k(
-            queue,
+    internal::her2k(
             uplo, trans, n_, k_,
             alpha, dA, ldda_,
                    dB, lddb_,
-            beta,  dC, lddc_ );
+            beta,  dC, lddc_,
+            queue );
 }
 
 // -----------------------------------------------------------------------------
@@ -168,10 +168,10 @@ void blas::her2k(
     }
 
     blas::internal_set_device( queue.device() );
-    device::zher2k(
-            queue,
+    internal::her2k(
             uplo, trans, n_, k_,
             alpha, dA, ldda_,
                    dB, lddb_,
-            beta,  dC, lddc_ );
+            beta,  dC, lddc_,
+            queue );
 }

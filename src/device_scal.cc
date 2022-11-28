@@ -35,7 +35,7 @@ void blas::scal(
 
     blas::internal_set_device( queue.device() );
 
-    device::sscal( queue, n_, alpha, dx, incdx_ );
+    internal::scal( n_, alpha, dx, incdx_, queue );
 }
 
 // -----------------------------------------------------------------------------
@@ -61,7 +61,7 @@ void blas::scal(
 
     blas::internal_set_device( queue.device() );
 
-    device::dscal( queue, n_, alpha, dx, incdx_ );
+    internal::scal( n_, alpha, dx, incdx_, queue );
 }
 
 // -----------------------------------------------------------------------------
@@ -87,7 +87,7 @@ void blas::scal(
 
     blas::internal_set_device( queue.device() );
 
-    device::cscal( queue, n_, alpha, dx, incdx_ );
+    internal::scal( n_, alpha, dx, incdx_, queue );
 }
 
 // -----------------------------------------------------------------------------
@@ -113,5 +113,5 @@ void blas::scal(
 
     blas::internal_set_device( queue.device() );
 
-    device::zscal( queue, n_, alpha, dx, incdx_ );
+    internal::scal( n_, alpha, dx, incdx_, queue );
 }
