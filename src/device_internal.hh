@@ -11,6 +11,29 @@
 #include <complex>
 
 namespace blas {
+
+//------------------------------------------------------------------------------
+/// @see to_device_blas_int
+///
+inline device_blas_int to_device_blas_int_( int64_t x, const char* x_str )
+{
+    if (sizeof(int64_t) > sizeof(device_blas_int)) {
+        blas_error_if_msg( std::abs( x ) > std::numeric_limits<device_blas_int>::max(),
+                           x_str );
+    }
+    return device_blas_int( x );
+}
+
+//----------------------------------------
+/// Convert int64_t to device_blas_int.
+/// If device_blas_int is 64-bit, this does nothing.
+/// If device_blas_int is 32-bit, throws if x > INT_MAX, so conversion would overflow.
+///
+/// Note this is in src/device_internal.hh, so this macro won't pollute
+/// the namespace when apps #include <blas.hh>.
+///
+#define to_device_blas_int( x ) to_device_blas_int_( x, #x )
+
 namespace internal {
 
 //==============================================================================
@@ -20,28 +43,28 @@ namespace internal {
 void axpy(
     device_blas_int n,
     float alpha,
-    float *dx, device_blas_int incdx,
+    float const* dx, device_blas_int incdx,
     float *dy, device_blas_int incdy,
     blas::Queue& queue );
 
 void axpy(
     device_blas_int n,
     double alpha,
-    double *dx, device_blas_int incdx,
+    double const* dx, device_blas_int incdx,
     double *dy, device_blas_int incdy,
     blas::Queue& queue );
 
 void axpy(
     device_blas_int n,
     std::complex<float> alpha,
-    std::complex<float> *dx, device_blas_int incdx,
+    std::complex<float> const* dx, device_blas_int incdx,
     std::complex<float> *dy, device_blas_int incdy,
     blas::Queue& queue );
 
 void axpy(
     device_blas_int n,
     std::complex<double> alpha,
-    std::complex<double> *dx, device_blas_int incdx,
+    std::complex<double> const* dx, device_blas_int incdx,
     std::complex<double> *dy, device_blas_int incdy,
     blas::Queue& queue );
 
@@ -91,25 +114,25 @@ void dotu(
 //------------------------------------------------------------------------------
 void nrm2(
     device_blas_int n,
-    float *dx, device_blas_int incdx,
+    float const* dx, device_blas_int incdx,
     float *result,
     blas::Queue& queue );
 
 void nrm2(
     device_blas_int n,
-    double *dx, device_blas_int incdx,
+    double const* dx, device_blas_int incdx,
     double *result,
     blas::Queue& queue );
 
 void nrm2(
     device_blas_int n,
-    std::complex<float> *dx, device_blas_int incdx,
+    std::complex<float> const* dx, device_blas_int incdx,
     float *result,
     blas::Queue& queue );
 
 void nrm2(
     device_blas_int n,
-    std::complex<double> *dx, device_blas_int incdx,
+    std::complex<double> const* dx, device_blas_int incdx,
     double *result,
     blas::Queue& queue );
 
