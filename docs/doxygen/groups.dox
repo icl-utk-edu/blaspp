@@ -85,7 +85,7 @@
               These benefit from cache reuse, since many operations can be
               performed for every read from main memory.
     @{
-        @defgroup gemm         gemm:  General matrix multiply: C = AB + C
+        @defgroup gemm         gemm:  General matrix multiply
         @brief    $C = \alpha \;op(A) \;op(B) + \beta C$
 
         @defgroup hemm         hemm:  Hermitian matrix multiply
@@ -115,5 +115,56 @@
         @defgroup trsm         trsm:  Triangular solve matrix
         @brief    $C = op(A)^{-1} B  $
                or $C = B \;op(A)^{-1}$ where $A$ is triangular
+    @}
+
+    ------------------------------------------------------------
+    @defgroup blas1_internal            Level 1: internal routines.
+    @brief    Internal low-level and mid-level wrappers.
+    @{
+        @defgroup asum_internal         asum:   Vector 1 norm (sum)
+        @defgroup axpy_internal         axpy:   Add vectors
+        @defgroup copy_internal         copy:   Copy vector
+        @defgroup dot_internal          dot:    Dot (inner) product
+        @defgroup dotu_internal         dotu:   Dot (inner) product, unconjugated
+        @defgroup iamax_internal        iamax:  Find max element
+        @defgroup nrm2_internal         nrm2:   Vector 2 norm
+        @defgroup rot_internal          rot:    Apply Givens plane rotation
+        @defgroup rotg_internal         rotg:   Generate Givens plane rotation
+        @defgroup rotm_internal         rotm:   Apply modified (fast) Givens plane rotation
+        @defgroup rotmg_internal        rotmg:  Generate modified (fast) Givens plane rotation
+        @defgroup scal_internal         scal:   Scale vector
+        @defgroup swap_internal         swap:   Swap vectors
+    @}
+
+    ------------------------------------------------------------
+    @defgroup blas2_internal            Level 2: internal routines.
+    @brief    Internal low-level and mid-level wrappers.
+    @{
+        @defgroup gemv_internal         gemv:   General matrix-vector multiply
+        @defgroup ger_internal          ger:    General matrix rank 1 update
+        @defgroup geru_internal         geru:   General matrix rank 1 update, unconjugated
+        @defgroup hemv_internal         hemv:   Hermitian matrix-vector multiply
+        @defgroup her_internal          her:    Hermitian rank 1 update
+        @defgroup her2_internal         her2:   Hermitian rank 2 update
+        @defgroup symv_internal         symv:   Symmetric matrix-vector multiply
+        @defgroup syr_internal          syr:    Symmetric rank 1 update
+        @defgroup syr2_internal         syr2:   Symmetric rank 2 update
+        @defgroup trmv_internal         trmv:   Triangular matrix-vector multiply
+        @defgroup trsv_internal         trsv:   Triangular matrix-vector solve
+    @}
+
+    ------------------------------------------------------------
+    @defgroup blas3_internal            Level 3: internal routines.
+    @brief    Internal low-level and mid-level wrappers.
+    @{
+        @defgroup gemm_internal         gemm:   General matrix multiply
+        @defgroup hemm_internal         hemm:   Hermitian matrix multiply
+        @defgroup herk_internal         herk:   Hermitian rank k update
+        @defgroup her2k_internal        her2k:  Hermitian rank 2k update
+        @defgroup symm_internal         symm:   Symmetric matrix multiply
+        @defgroup syrk_internal         syrk:   Symmetric rank k update
+        @defgroup syr2k_internal        syr2k:  Symmetric rank 2k update
+        @defgroup trmm_internal         trmm:   Triangular matrix multiply
+        @defgroup trsm_internal         trsm:   Triangular solve matrix
     @}
 */
