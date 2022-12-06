@@ -61,7 +61,7 @@ void test_scal_device_work( Params& params, bool run )
     lapack_larnv( idist, iseed, size_x, x );
     cblas_copy( n, x, incx, xref, incx );
 
-    blas::device_setvector(n, x, std::abs(incx), dx, std::abs(incx), queue);
+    blas::device_copy_vector(n, x, std::abs(incx), dx, std::abs(incx), queue);
     queue.sync();
 
     // test error exits
@@ -93,7 +93,7 @@ void test_scal_device_work( Params& params, bool run )
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
 
-    blas::device_getvector(n, dx, std::abs(incx), x, std::abs(incx), queue);
+    blas::device_copy_vector(n, dx, std::abs(incx), x, std::abs(incx), queue);
     queue.sync();
 
     if (verbose >= 2) {

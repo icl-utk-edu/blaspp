@@ -43,9 +43,7 @@ void blas::batch::trmm(
         const bool fork = true;
     #endif
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
 
     if (fork)
         queue.fork();
@@ -108,9 +106,7 @@ void blas::batch::trmm(
         const bool fork = true;
     #endif
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
 
     if (fork)
         queue.fork();
@@ -173,9 +169,7 @@ void blas::batch::trmm(
         const bool fork = true;
     #endif
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
 
     if (fork)
         queue.fork();
@@ -237,9 +231,7 @@ void blas::batch::trmm(
         const bool fork = true;
     #endif
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
 
     if (fork)
         queue.fork();

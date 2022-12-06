@@ -109,9 +109,9 @@ void test_batch_hemm_device_work( Params& params, bool run )
     lapack_larnv( idist, iseed, batch * size_C, C );
     lapack_lacpy( "g", Cm, batch * Cn, C, ldc_, Cref, ldc_ );
 
-    blas::device_setmatrix(An, batch * An, A, lda_, dA, lda_, queue);
-    blas::device_setmatrix(Cm, batch * Cn, B, ldb_, dB, ldb_, queue);
-    blas::device_setmatrix(Cm, batch * Cn, C, ldc_, dC, ldc_, queue);
+    blas::device_copy_matrix(An, batch * An, A, lda_, dA, lda_, queue);
+    blas::device_copy_matrix(Cm, batch * Cn, B, ldb_, dB, ldb_, queue);
+    blas::device_copy_matrix(Cm, batch * Cn, C, ldc_, dC, ldc_, queue);
     queue.sync();
 
     // norms for error check
@@ -141,7 +141,7 @@ void test_batch_hemm_device_work( Params& params, bool run )
     params.time()   = time;
     params.gflops() = gflop / time;
 
-    blas::device_getmatrix(Cm, batch * Cn, dC, ldc_, C, ldc_, queue);
+    blas::device_copy_matrix(Cm, batch * Cn, dC, ldc_, C, ldc_, queue);
     queue.sync();
     if (params.ref() == 'y' || params.check() == 'y') {
         // run reference

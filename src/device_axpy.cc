@@ -37,9 +37,7 @@ void blas::axpy(
     device_blas_int incdx_ = (device_blas_int) incdx;
     device_blas_int incdy_ = (device_blas_int) incdy;
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
 
     device::saxpy( queue, n_, alpha, dx, incdx_, dy, incdy_ );
 }
@@ -69,9 +67,7 @@ void blas::axpy(
     device_blas_int incdx_ = (device_blas_int) incdx;
     device_blas_int incdy_ = (device_blas_int) incdy;
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
 
     device::daxpy( queue, n_, alpha, dx, incdx_, dy, incdy_ );
 }
@@ -101,9 +97,7 @@ void blas::axpy(
     device_blas_int incdx_ = (device_blas_int) incdx;
     device_blas_int incdy_ = (device_blas_int) incdy;
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
 
     device::caxpy( queue, n_, alpha, dx, incdx_, dy, incdy_ );
 }
@@ -133,9 +127,7 @@ void blas::axpy(
     device_blas_int incdx_ = (device_blas_int) incdx;
     device_blas_int incdy_ = (device_blas_int) incdy;
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
 
     device::zaxpy( queue, n_, alpha, dx, incdx_, dy, incdy_ );
 }

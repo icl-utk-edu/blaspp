@@ -114,13 +114,13 @@ void test_memcpy_work( Params& params, bool run )
     assert_throw( blas::device_copy_vector(  n, b_dev, 0, c_dev, 1, queue ), blas::Error );
     assert_throw( blas::device_copy_vector(  n, b_dev, 1, c_dev, 0, queue ), blas::Error );
 
-    assert_throw( blas::device_setvector( -1, b_dev, 1, c_dev, 1, queue ), blas::Error );
-    assert_throw( blas::device_setvector(  n, b_dev, 0, c_dev, 1, queue ), blas::Error );
-    assert_throw( blas::device_setvector(  n, b_dev, 1, c_dev, 0, queue ), blas::Error );
+    assert_throw( blas::device_copy_vector( -1, b_dev, 1, c_dev, 1, queue ), blas::Error );
+    assert_throw( blas::device_copy_vector(  n, b_dev, 0, c_dev, 1, queue ), blas::Error );
+    assert_throw( blas::device_copy_vector(  n, b_dev, 1, c_dev, 0, queue ), blas::Error );
 
-    assert_throw( blas::device_getvector( -1, b_dev, 1, c_dev, 1, queue ), blas::Error );
-    assert_throw( blas::device_getvector(  n, b_dev, 0, c_dev, 1, queue ), blas::Error );
-    assert_throw( blas::device_getvector(  n, b_dev, 1, c_dev, 0, queue ), blas::Error );
+    assert_throw( blas::device_copy_vector( -1, b_dev, 1, c_dev, 1, queue ), blas::Error );
+    assert_throw( blas::device_copy_vector(  n, b_dev, 0, c_dev, 1, queue ), blas::Error );
+    assert_throw( blas::device_copy_vector(  n, b_dev, 1, c_dev, 0, queue ), blas::Error );
 
     if (verbose >= 1) {
         printf( "\n"
@@ -147,7 +147,7 @@ void test_memcpy_work( Params& params, bool run )
         blas::device_copy_vector( n, a_host, inc_ac, b_dev, inc_bd, queue );
     }
     else if (method == Method::set_vector) {
-        blas::device_setvector( n, a_host, inc_ac, b_dev, inc_bd, queue );
+        blas::device_copy_vector( n, a_host, inc_ac, b_dev, inc_bd, queue );
     }
     time = sync_get_wtime( queue ) - time;
 
@@ -179,7 +179,7 @@ void test_memcpy_work( Params& params, bool run )
         blas::device_copy_vector( n, c_dev, inc_ac, d_host, inc_bd, queue );
     }
     else if (method == Method::set_vector) {
-        blas::device_getvector( n, c_dev, inc_ac, d_host, inc_bd, queue );
+        blas::device_copy_vector( n, c_dev, inc_ac, d_host, inc_bd, queue );
     }
     time3 = sync_get_wtime( queue ) - time3;
 

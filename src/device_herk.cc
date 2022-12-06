@@ -94,9 +94,7 @@ void blas::herk(
         trans = (trans == Op::NoTrans ? Op::ConjTrans : Op::NoTrans);
     }
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
     device::cherk(
             queue,
             uplo, trans,
@@ -155,9 +153,7 @@ void blas::herk(
         trans = (trans == Op::NoTrans ? Op::ConjTrans : Op::NoTrans);
     }
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
     device::zherk(
             queue,
             uplo, trans,

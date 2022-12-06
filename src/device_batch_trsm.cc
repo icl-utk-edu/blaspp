@@ -51,9 +51,8 @@ void blas::batch::trsm(
                           Barray.size() == batch &&
                           lddb.size()   == 1  );
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
+
     if (fixed_size) {
         // call the vendor routine
         device_blas_int m_      = (device_blas_int) m[0];
@@ -83,8 +82,8 @@ void blas::batch::trsm(
             size_t ibatch = std::min( batch_limit, batch-ib );
 
             // copy pointer array(s) to device
-            device_setvector<float*>(ibatch, (float**)&Aarray[ib], 1, dAarray, 1, queue);
-            device_setvector<float*>(ibatch, (float**)&Barray[ib], 1, dBarray, 1, queue);
+            device_copy_vector<float*>(ibatch, (float**)&Aarray[ib], 1, dAarray, 1, queue);
+            device_copy_vector<float*>(ibatch, (float**)&Barray[ib], 1, dBarray, 1, queue);
 
             device::batch_strsm( queue,
                                 side_, uplo_, trans_, diag_,
@@ -158,9 +157,8 @@ void blas::batch::trsm(
                           Barray.size() == batch &&
                           lddb.size()   == 1  );
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
+
     if (fixed_size) {
         // call the vendor routine
         device_blas_int m_      = (device_blas_int) m[0];
@@ -190,8 +188,8 @@ void blas::batch::trsm(
             size_t ibatch = std::min( batch_limit, batch-ib );
 
             // copy pointer array(s) to device
-            device_setvector<double*>(ibatch, (double**)&Aarray[ib], 1, dAarray, 1, queue);
-            device_setvector<double*>(ibatch, (double**)&Barray[ib], 1, dBarray, 1, queue);
+            device_copy_vector<double*>(ibatch, (double**)&Aarray[ib], 1, dAarray, 1, queue);
+            device_copy_vector<double*>(ibatch, (double**)&Barray[ib], 1, dBarray, 1, queue);
 
             device::batch_dtrsm( queue,
                                 side_, uplo_, trans_, diag_,
@@ -265,9 +263,8 @@ void blas::batch::trsm(
                           Barray.size() == batch &&
                           lddb.size()   == 1  );
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
+
     if (fixed_size) {
         // call the vendor routine
         device_blas_int m_      = (device_blas_int) m[0];
@@ -297,8 +294,8 @@ void blas::batch::trsm(
             size_t ibatch = std::min( batch_limit, batch-ib );
 
             // copy pointer array(s) to device
-            device_setvector< std::complex<float>* >(ibatch, (std::complex<float>**)&Aarray[ib], 1, dAarray, 1, queue);
-            device_setvector< std::complex<float>* >(ibatch, (std::complex<float>**)&Barray[ib], 1, dBarray, 1, queue);
+            device_copy_vector< std::complex<float>* >(ibatch, (std::complex<float>**)&Aarray[ib], 1, dAarray, 1, queue);
+            device_copy_vector< std::complex<float>* >(ibatch, (std::complex<float>**)&Barray[ib], 1, dBarray, 1, queue);
 
             device::batch_ctrsm( queue,
                                 side_, uplo_, trans_, diag_,
@@ -372,9 +369,8 @@ void blas::batch::trsm(
                           Barray.size() == batch &&
                           lddb.size()   == 1  );
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
+
     if (fixed_size) {
         // call the vendor routine
         device_blas_int m_      = (device_blas_int) m[0];
@@ -404,8 +400,8 @@ void blas::batch::trsm(
             size_t ibatch = std::min( batch_limit, batch-ib );
 
             // copy pointer array(s) to device
-            device_setvector< std::complex<double>* >(ibatch, (std::complex<double>**)&Aarray[ib], 1, dAarray, 1, queue);
-            device_setvector< std::complex<double>* >(ibatch, (std::complex<double>**)&Barray[ib], 1, dBarray, 1, queue);
+            device_copy_vector< std::complex<double>* >(ibatch, (std::complex<double>**)&Aarray[ib], 1, dAarray, 1, queue);
+            device_copy_vector< std::complex<double>* >(ibatch, (std::complex<double>**)&Barray[ib], 1, dBarray, 1, queue);
 
             device::batch_ztrsm( queue,
                                 side_, uplo_, trans_, diag_,

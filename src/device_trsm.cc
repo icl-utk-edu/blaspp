@@ -72,9 +72,7 @@ void blas::trsm(
         std::swap( m_, n_ );
     }
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
     device::strsm(
             queue,
             side, uplo, trans, diag,
@@ -143,9 +141,7 @@ void blas::trsm(
         std::swap( m_, n_ );
     }
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
     device::dtrsm(
             queue,
             side, uplo, trans, diag,
@@ -214,9 +210,7 @@ void blas::trsm(
         std::swap( m_, n_ );
     }
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
     device::ctrsm(
             queue,
             side, uplo, trans, diag,
@@ -285,9 +279,7 @@ void blas::trsm(
         std::swap( m_, n_ );
     }
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
     device::ztrsm(
             queue,
             side, uplo, trans, diag,

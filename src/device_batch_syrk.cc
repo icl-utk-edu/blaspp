@@ -36,9 +36,7 @@ void blas::batch::syrk(
                         batch, info );
     }
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
 
     queue.fork();
     for (size_t i = 0; i < batch; ++i) {
@@ -89,9 +87,7 @@ void blas::batch::syrk(
                         batch, info );
     }
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
 
     queue.fork();
     for (size_t i = 0; i < batch; ++i) {
@@ -142,9 +138,7 @@ void blas::batch::syrk(
                         batch, info );
     }
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
 
     queue.fork();
     for (size_t i = 0; i < batch; ++i) {
@@ -195,9 +189,7 @@ void blas::batch::syrk(
                         batch, info );
     }
 
-    #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
-    #endif
+    blas::internal_set_device( queue.device() );
 
     queue.fork();
     for (size_t i = 0; i < batch; ++i) {

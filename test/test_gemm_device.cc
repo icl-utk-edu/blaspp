@@ -88,9 +88,9 @@ void test_gemm_device_work( Params& params, bool run )
     lapack_larnv( idist, iseed, size_C, C );
     lapack_lacpy( "g", Cm, Cn, C, ldc, Cref, ldc );
 
-    blas::device_setmatrix(Am, An, A, lda, dA, lda, queue);
-    blas::device_setmatrix(Bm, Bn, B, ldb, dB, ldb, queue);
-    blas::device_setmatrix(Cm, Cn, C, ldc, dC, ldc, queue);
+    blas::device_copy_matrix(Am, An, A, lda, dA, lda, queue);
+    blas::device_copy_matrix(Bm, Bn, B, ldb, dB, ldb, queue);
+    blas::device_copy_matrix(Cm, Cn, C, ldc, dC, ldc, queue);
     queue.sync();
 
     // norms for error check
@@ -155,7 +155,7 @@ void test_gemm_device_work( Params& params, bool run )
     double gflop = blas::Gflop< scalar_t >::gemm( m, n, k );
     params.time()   = time;
     params.gflops() = gflop / time;
-    blas::device_getmatrix(Cm, Cn, dC, ldc, C, ldc, queue);
+    blas::device_copy_matrix(Cm, Cn, dC, ldc, C, ldc, queue);
     queue.sync();
 
     if (verbose >= 2) {

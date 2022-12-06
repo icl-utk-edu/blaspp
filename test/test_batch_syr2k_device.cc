@@ -108,9 +108,9 @@ void test_batch_syr2k_device_work( Params& params, bool run )
     lapack_larnv( idist, iseed, batch * size_C, C );
     lapack_lacpy( "g", n_, batch * n_, C, ldc_, Cref, ldc_ );
 
-    blas::device_setmatrix(Am, batch * An, A, lda_, dA, lda_, queue);
-    blas::device_setmatrix(Am, batch * An, B, ldb_, dB, ldb_, queue);
-    blas::device_setmatrix(n_, batch * n_, C, ldc_, dC, ldc_, queue);
+    blas::device_copy_matrix(Am, batch * An, A, lda_, dA, lda_, queue);
+    blas::device_copy_matrix(Am, batch * An, B, ldb_, dB, ldb_, queue);
+    blas::device_copy_matrix(n_, batch * n_, C, ldc_, dC, ldc_, queue);
     queue.sync();
 
     // norms for error check
@@ -139,7 +139,7 @@ void test_batch_syr2k_device_work( Params& params, bool run )
     double gflop = batch * blas::Gflop< scalar_t >::syr2k( n_, k_ );
     params.time()   = time;
     params.gflops() = gflop / time;
-    blas::device_getmatrix(n_, batch * n_, dC, ldc_, C, ldc_, queue);
+    blas::device_copy_matrix(n_, batch * n_, dC, ldc_, C, ldc_, queue);
     queue.sync();
 
     if (params.ref() == 'y' || params.check() == 'y') {

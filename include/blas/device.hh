@@ -36,8 +36,8 @@
     #endif
 
 #elif defined(BLAS_HAVE_ONEMKL)
-    #include <CL/sycl/detail/cl.h>  // For CL version
-    #include <CL/sycl.hpp>
+    #include <sycl/detail/cl.h>  // For CL version
+    #include <sycl.hpp>
 
 #endif
 
@@ -166,8 +166,8 @@ public:
         hipStream_t    stream()        const { return *current_stream_; }
         rocblas_handle handle()        const { return handle_; }
     #elif defined(BLAS_HAVE_ONEMKL)
-        cl::sycl::device sycl_device() const { return sycl_device_; }
-        cl::sycl::queue  stream()      const { return *default_stream_; }
+        sycl::device sycl_device() const { return sycl_device_; }
+        sycl::queue  stream()      const { return *default_stream_; }
     #endif
 
 private:
@@ -224,14 +224,14 @@ private:
     #elif defined(BLAS_HAVE_ONEMKL)
         // in addition to the integer device_ member, we need
         // the sycl device id
-        cl::sycl::device  sycl_device_;
+        sycl::device  sycl_device_;
 
         // default sycl queue for this blas queue
-        cl::sycl::queue *default_stream_;
-        cl::sycl::event  default_event_;
+        sycl::queue *default_stream_;
+        sycl::event  default_event_;
 
         // pointer to current stream (default or fork mode)
-        cl::sycl::queue *current_stream_;
+        sycl::queue *current_stream_;
 
     #else
         // pointer to current stream (default or fork mode)
@@ -305,11 +305,11 @@ inline const char* device_error_string( rocblas_status error )
     // blaspp aborts on device errors
     #if defined(BLAS_HAVE_ONEMKL)
         #define blas_dev_call( error ) \
-            do {
+            do { \
                 try { \
                     error; \
                 } \
-                catch (cl::sycl::exception const& e) { \
+                catch (sycl::exception const& e) { \
                     blas::internal::abort_if( true, __func__, \
                                               "%s", e.what() ); \
                 } \
@@ -320,7 +320,7 @@ inline const char* device_error_string( rocblas_status error )
                 catch (...) { \
                     blas::internal::abort_if( true, __func__, \
                                               "%s", "unknown exception" ); \
-                }
+                } \
             } while(0)
 
     #else
@@ -337,11 +337,11 @@ inline const char* device_error_string( rocblas_status error )
     // blaspp throws device errors (default)
     #if defined(BLAS_HAVE_ONEMKL)
         #define blas_dev_call( error ) \
-            do {
+            do { \
                 try { \
                         error; \
                 } \
-                catch (cl::sycl::exception const& e) { \
+                catch (sycl::exception const& e) { \
                     blas::internal::throw_if( true, \
                                               e.what(), __func__ ); \
                 } \
@@ -352,7 +352,7 @@ inline const char* device_error_string( rocblas_status error )
                 catch (...) { \
                     blas::internal::throw_if( true, \
                                               "unknown exception", __func__ ); \
-                }
+                } \
             } while(0)
 
     #else
@@ -369,32 +369,43 @@ inline const char* device_error_string( rocblas_status error )
 
 // -----------------------------------------------------------------------------
 // set/get device functions
+[[deprecated("use blas::Queues& with all blaspp calls")]]
 void set_device( blas::Device device );
+
+// private, internal routine; sets device for cuda, rocm; nothing for onemkl
+void internal_set_device( blas::Device device );
+
+[[deprecated("use blas::Queues& with all blaspp calls")]]
 void get_device( blas::Device *device );
+
 device_blas_int get_device_count();
 #ifdef BLAS_HAVE_ONEMKL
-void enumerate_devices(std::vector<cl::sycl::device> &devices);
+void enumerate_devices(std::vector<sycl::device> &devices);
 #endif
 
 // -----------------------------------------------------------------------------
 // memory functions
 
 /// @deprecated: use device_free( ptr, queue ).
+[[deprecated("use device_free( ptr, queue )")]]
 void device_free( void* ptr );
 
 void device_free( void* ptr, blas::Queue &queue );
 
 /// @deprecated: use host_free_pinned( ptr, queue ).
+// todo: does this really need to be deprecated
 void host_free_pinned( void* ptr );
 
 void host_free_pinned( void* ptr, blas::Queue &queue );
 
 /// @deprecated: use host_free_pinned( ptr, queue ).
+[[deprecated("use device_free_pinned( ptr, queue )")]]
 inline void device_free_pinned( void* ptr ) {
     host_free_pinned( ptr );
 }
 
 /// @deprecated: use host_free_pinned( ptr, queue ).
+[[deprecated("use host_free_pinned( ptr, queue )")]]
 inline void device_free_pinned( void* ptr, blas::Queue &queue )
 {
     host_free_pinned( ptr, queue );
@@ -412,6 +423,7 @@ inline void device_free_pinned( void* ptr, blas::Queue &queue )
 /// in SYCL, this doesn't work since there is no concept of a current device.
 ///
 template <typename T>
+[[deprecated("use device_malloc( nelements, queue )")]]
 T* device_malloc(
     int64_t nelements)
 {
@@ -455,18 +467,18 @@ T* device_malloc(
 
     T* ptr = nullptr;
     #ifdef BLAS_HAVE_CUBLAS
-        blas::set_device( queue.device() );
+        blas::internal_set_device( queue.device() );
         blas_dev_call(
                 cudaMalloc( (void**)&ptr, nelements * sizeof(T) ) );
 
     #elif defined(BLAS_HAVE_ROCBLAS)
-        blas::set_device( queue.device() );
+        blas::internal_set_device( queue.device() );
         blas_dev_call(
                 hipMalloc( (void**)&ptr, nelements * sizeof(T) ) );
 
     #elif defined(BLAS_HAVE_ONEMKL)
         blas_dev_call(
-            ptr = (T*)cl::sycl::malloc_shared( nelements*sizeof(T), queue.stream() ) );
+            ptr = (T*)sycl::malloc_shared( nelements*sizeof(T), queue.stream() ) );
 
     #else
         throw blas::Error( "device BLAS not available", __func__ );
@@ -482,6 +494,7 @@ T* device_malloc(
 /// in SYCL, this doesn't work since there is no concept of a current device.
 ///
 template <typename T>
+[[deprecated("use host_malloc_pinned( nelements, queue )")]]
 T* device_malloc_pinned(
     int64_t nelements)
 {
@@ -537,7 +550,7 @@ T* host_malloc_pinned(
 
     #elif defined(BLAS_HAVE_ONEMKL)
         blas_dev_call(
-            ptr = (T*)cl::sycl::malloc_host( nelements*sizeof(T), queue.stream() ) );
+            ptr = (T*)sycl::malloc_host( nelements*sizeof(T), queue.stream() ) );
 
     #else
         throw blas::Error( "device BLAS not available", __func__ );
@@ -549,6 +562,7 @@ T* host_malloc_pinned(
 /// @deprecated: use host_malloc_pinned( nelements, queue ).
 ///
 template <typename T>
+[[deprecated("device_malloc_pinned( nelements, queue )")]]
 T* device_malloc_pinned(
     int64_t nelements, blas::Queue &queue )
 {
@@ -579,14 +593,14 @@ void device_memset(
     blas_error_if( nelements < 0 );
 
     #ifdef BLAS_HAVE_CUBLAS
-        blas::set_device( queue.device() );
+        blas::internal_set_device( queue.device() );
         blas_dev_call(
             cudaMemsetAsync(
                 ptr, value,
                 nelements * sizeof(T), queue.stream() ) );
 
     #elif defined(BLAS_HAVE_ROCBLAS)
-        blas::set_device( queue.device() );
+        blas::internal_set_device( queue.device() );
         blas_dev_call(
             hipMemsetAsync(
                 ptr, value,
@@ -622,14 +636,14 @@ void device_memcpy(
     blas_error_if( nelements < 0 );
 
     #ifdef BLAS_HAVE_CUBLAS
-        blas::set_device( queue.device() );
+        blas::internal_set_device( queue.device() );
         blas_dev_call(
             cudaMemcpyAsync(
                 dst, src, sizeof(T)*nelements,
                 memcpy2cuda(kind), queue.stream() ) );
 
     #elif defined(BLAS_HAVE_ROCBLAS)
-        blas::set_device( queue.device() );
+        blas::internal_set_device( queue.device() );
         blas_dev_call(
             hipMemcpyAsync(
                 dst, src, sizeof(T)*nelements,
@@ -697,7 +711,7 @@ void device_memcpy_2d(
     blas_error_if( src_pitch < width );
 
     #ifdef BLAS_HAVE_CUBLAS
-        blas::set_device( queue.device() );
+        blas::internal_set_device( queue.device() );
         blas_dev_call(
             cudaMemcpy2DAsync(
                 dst, sizeof(T)*dst_pitch,
@@ -705,7 +719,7 @@ void device_memcpy_2d(
                 sizeof(T)*width, height, memcpy2cuda(kind), queue.stream() ) );
 
     #elif defined(BLAS_HAVE_ROCBLAS)
-        blas::set_device( queue.device() );
+        blas::internal_set_device( queue.device() );
         blas_dev_call(
             hipMemcpy2DAsync(
                 dst, sizeof(T)*dst_pitch,
@@ -877,6 +891,7 @@ void device_copy_matrix(
 /// @see device_copy_vector
 ///
 template <typename T>
+[[deprecated("recommend device_copy_vector( n, any_src, inc_src, any_dst, inc_dst, queue )")]]
 void device_setvector(
     int64_t n,
     T const* src_host, int64_t inc_src,
@@ -895,6 +910,7 @@ void device_setvector(
 /// @see device_copy_vector
 ///
 template <typename T>
+[[deprecated("recommend device_copy_vector( n, any_src, inc_src, any_dst, inc_dst, queue )")]]
 void device_getvector(
     int64_t n,
     T const* src_dev,  int64_t inc_src,
@@ -913,6 +929,7 @@ void device_getvector(
 /// @see device_copy_matrix
 ///
 template <typename T>
+[[deprecated("recommend device_copy_matrix( m, n, any_src, ld_src, any_dst, ld_dst, queue )")]]
 void device_setmatrix(
     int64_t m, int64_t n,
     T const* src_host, int64_t ld_src,
@@ -931,6 +948,7 @@ void device_setmatrix(
 /// @see device_copy_matrix
 ///
 template <typename T>
+[[deprecated("recommend device_copy_matrix( m, n, any_src, ld_src, any_dst, ld_dst, queue )")]]
 void device_getmatrix(
     int64_t m, int64_t n,
     T const* src_dev,  int64_t ld_src,
