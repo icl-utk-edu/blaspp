@@ -3,207 +3,162 @@
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
-#include <limits>
-#include <cstring>
 #include "blas/batch_common.hh"
 #include "blas.hh"
 
-// -----------------------------------------------------------------------------
-/// @ingroup her2k
-void blas::batch::her2k(
-    blas::Layout                layout,
-    std::vector<blas::Uplo> const &uplo,
-    std::vector<blas::Op>   const &trans,
-    std::vector<int64_t>    const &n,
-    std::vector<int64_t>    const &k,
-    std::vector<float >     const &alpha,
-    std::vector<float*>     const &Aarray, std::vector<int64_t> const &ldda,
-    std::vector<float*>     const &Barray, std::vector<int64_t> const &lddb,
-    std::vector<float >     const &beta,
-    std::vector<float*>     const &Carray, std::vector<int64_t> const &lddc,
-    const size_t batch,                    std::vector<int64_t>       &info )
+#include <limits>
+
+namespace blas {
+
+//==============================================================================
+namespace impl {
+
+//------------------------------------------------------------------------------
+/// CPU, variable-size batched version.
+/// Mid-level templated wrapper checks and converts arguments,
+/// then makes individual routine calls in parallel.
+/// @ingroup her2k_internal
+///
+template <typename scalar_t>
+void her2k(
+    blas::Layout layout,
+    std::vector<blas::Uplo> const& uplo,
+    std::vector<blas::Op>   const& trans,
+    std::vector<int64_t>    const& n,
+    std::vector<int64_t>    const& k,
+    std::vector<scalar_t >  const& alpha,
+    std::vector<scalar_t*>  const& Aarray, std::vector<int64_t> const& lda,
+    std::vector<scalar_t*>  const& Barray, std::vector<int64_t> const& ldb,
+    std::vector< real_type<scalar_t> > const& beta,
+    std::vector<scalar_t*>  const& Carray, std::vector<int64_t> const& ldc,
+    size_t batch_size,
+    std::vector<int64_t>& info )
 {
-    blas_error_if( batch < 0 );
-    blas_error_if( ! (info.size() == 0 || info.size() == 1 || info.size() == batch) );
+    using real_t = real_type<scalar_t>;
+
+    blas_error_if( batch_size < 0 );
+    blas_error_if( info.size() != 0
+                   && info.size() != 1
+                   && info.size() != batch_size );
     if (info.size() > 0) {
         // perform error checking
-        blas::batch::her2k_check<float, float>(
-                        layout, uplo, trans,
-                        n, k,
-                        alpha, Aarray, ldda,
-                               Barray, lddb,
-                        beta,  Carray, lddc,
-                        batch, info );
+        blas::batch::her2k_check(
+            layout, uplo, trans, n, k,
+            alpha, Aarray, lda, Barray, ldb, beta, Carray, ldc,
+            batch_size, info );
     }
 
-    #pragma omp parallel for schedule(dynamic)
-    for (size_t i = 0; i < batch; ++i) {
-        Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
-        Op   trans_  = blas::batch::extract<Op>(trans, i);
-        int64_t n_   = blas::batch::extract<int64_t>(n, i);
-        int64_t k_   = blas::batch::extract<int64_t>(k, i);
-        int64_t lda_ = blas::batch::extract<int64_t>(ldda, i);
-        int64_t ldb_ = blas::batch::extract<int64_t>(lddb, i);
-        int64_t ldc_ = blas::batch::extract<int64_t>(lddc, i);
-        float alpha_ = blas::batch::extract<float>(alpha, i);
-        float beta_  = blas::batch::extract<float>(beta, i);
-        float* dA_   = blas::batch::extract<float*>(Aarray, i);
-        float* dB_   = blas::batch::extract<float*>(Barray, i);
-        float* dC_   = blas::batch::extract<float*>(Carray, i);
-        blas::her2k(
-            layout, uplo_, trans_, n_, k_,
-            alpha_, dA_, lda_,
-                    dB_, ldb_,
-            beta_,  dC_, ldc_ );
+    #pragma omp parallel for schedule( dynamic )
+    for (size_t i = 0; i < batch_size; ++i) {
+        blas::Uplo uplo_   = blas::batch::extract( uplo,   i );
+        blas::Op   trans_  = blas::batch::extract( trans,  i );
+        int64_t    n_      = blas::batch::extract( n,      i );
+        int64_t    k_      = blas::batch::extract( k,      i );
+        int64_t    lda_    = blas::batch::extract( lda,    i );
+        int64_t    ldb_    = blas::batch::extract( ldb,    i );
+        int64_t    ldc_    = blas::batch::extract( ldc,    i );
+        scalar_t   alpha_  = blas::batch::extract( alpha,  i );
+        real_t     beta_   = blas::batch::extract( beta,   i );
+        scalar_t*  A_      = blas::batch::extract( Aarray, i );
+        scalar_t*  B_      = blas::batch::extract( Barray, i );
+        scalar_t*  C_      = blas::batch::extract( Carray, i );
+        blas::her2k( layout, uplo_, trans_, n_, k_,
+                     alpha_, A_, lda_, B_, ldb_, beta_, C_, ldc_ );
     }
+}
+
+}  // namespace impl
+
+//==============================================================================
+// High-level overloaded wrappers call mid-level templated wrapper.
+namespace batch {
+
+//------------------------------------------------------------------------------
+/// CPU, variable-size batched, float version.
+/// @ingroup her2k
+void her2k(
+    blas::Layout layout,
+    std::vector<blas::Uplo> const& uplo,
+    std::vector<blas::Op>   const& trans,
+    std::vector<int64_t>    const& n,
+    std::vector<int64_t>    const& k,
+    std::vector<float >     const& alpha,
+    std::vector<float*>     const& Aarray, std::vector<int64_t> const& lda,
+    std::vector<float*>     const& Barray, std::vector<int64_t> const& ldb,
+    std::vector<float >     const& beta,
+    std::vector<float*>     const& Carray, std::vector<int64_t> const& ldc,
+    size_t batch_size,
+    std::vector<int64_t>& info )
+{
+    impl::her2k( layout, uplo, trans, n, k,
+                 alpha, Aarray, lda, Barray, ldb, beta, Carray, ldc,
+                 batch_size, info );
 }
 
 // -----------------------------------------------------------------------------
 /// @ingroup her2k
-void blas::batch::her2k(
-    blas::Layout                layout,
-    std::vector<blas::Uplo>  const &uplo,
-    std::vector<blas::Op>    const &trans,
-    std::vector<int64_t>     const &n,
-    std::vector<int64_t>     const &k,
-    std::vector<double >     const &alpha,
-    std::vector<double*>     const &Aarray, std::vector<int64_t> const &ldda,
-    std::vector<double*>     const &Barray, std::vector<int64_t> const &lddb,
-    std::vector<double >     const &beta,
-    std::vector<double*>     const &Carray, std::vector<int64_t> const &lddc,
-    const size_t batch,                     std::vector<int64_t>       &info )
+void her2k(
+    blas::Layout layout,
+    std::vector<blas::Uplo> const& uplo,
+    std::vector<blas::Op>   const& trans,
+    std::vector<int64_t>    const& n,
+    std::vector<int64_t>    const& k,
+    std::vector<double >    const& alpha,
+    std::vector<double*>    const& Aarray, std::vector<int64_t> const& lda,
+    std::vector<double*>    const& Barray, std::vector<int64_t> const& ldb,
+    std::vector<double >    const& beta,
+    std::vector<double*>    const& Carray, std::vector<int64_t> const& ldc,
+    size_t batch_size,
+    std::vector<int64_t>& info )
 {
-    blas_error_if( batch < 0 );
-    blas_error_if( ! (info.size() == 0 || info.size() == 1 || info.size() == batch) );
-    if (info.size() > 0) {
-        // perform error checking
-        blas::batch::her2k_check<double, double>(
-                        layout, uplo, trans,
-                        n, k,
-                        alpha, Aarray, ldda,
-                               Barray, lddb,
-                        beta,  Carray, lddc,
-                        batch, info );
-    }
-
-    #pragma omp parallel for schedule(dynamic)
-    for (size_t i = 0; i < batch; ++i) {
-        Uplo uplo_    = blas::batch::extract<Uplo>(uplo, i);
-        Op   trans_   = blas::batch::extract<Op>(trans, i);
-        int64_t n_    = blas::batch::extract<int64_t>(n, i);
-        int64_t k_    = blas::batch::extract<int64_t>(k, i);
-        int64_t lda_  = blas::batch::extract<int64_t>(ldda, i);
-        int64_t ldb_  = blas::batch::extract<int64_t>(lddb, i);
-        int64_t ldc_  = blas::batch::extract<int64_t>(lddc, i);
-        double alpha_ = blas::batch::extract<double>(alpha, i);
-        double beta_  = blas::batch::extract<double>(beta, i);
-        double* dA_   = blas::batch::extract<double*>(Aarray, i);
-        double* dB_   = blas::batch::extract<double*>(Barray, i);
-        double* dC_   = blas::batch::extract<double*>(Carray, i);
-        blas::her2k(
-            layout, uplo_, trans_, n_, k_,
-            alpha_, dA_, lda_,
-                    dB_, ldb_,
-            beta_,  dC_, ldc_ );
-    }
+    impl::her2k( layout, uplo, trans, n, k,
+                 alpha, Aarray, lda, Barray, ldb, beta, Carray, ldc,
+                 batch_size, info );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// CPU, variable-size batched, complex<float> version.
 /// @ingroup her2k
-void blas::batch::her2k(
-    blas::Layout                layout,
-    std::vector<blas::Uplo>  const &uplo,
-    std::vector<blas::Op>    const &trans,
-    std::vector<int64_t>     const &n,
-    std::vector<int64_t>     const &k,
-    std::vector<std::complex<float>>      const &alpha,
-    std::vector<std::complex<float>*>     const &Aarray, std::vector<int64_t> const &ldda,
-    std::vector<std::complex<float>*>     const &Barray, std::vector<int64_t> const &lddb,
-    std::vector<float >                   const &beta,
-    std::vector<std::complex<float>*>     const &Carray, std::vector<int64_t> const &lddc,
-    const size_t batch,                                  std::vector<int64_t>       &info )
+void her2k(
+    blas::Layout layout,
+    std::vector<blas::Uplo> const& uplo,
+    std::vector<blas::Op>   const& trans,
+    std::vector<int64_t>    const& n,
+    std::vector<int64_t>    const& k,
+    std::vector< std::complex<float>  > const& alpha,
+    std::vector< std::complex<float>* > const& Aarray, std::vector<int64_t> const& lda,
+    std::vector< std::complex<float>* > const& Barray, std::vector<int64_t> const& ldb,
+    std::vector< float >                const& beta,
+    std::vector< std::complex<float>* > const& Carray, std::vector<int64_t> const& ldc,
+    size_t batch_size,
+    std::vector<int64_t>& info )
 {
-    blas_error_if( batch < 0 );
-    blas_error_if( ! (info.size() == 0 || info.size() == 1 || info.size() == batch) );
-    if (info.size() > 0) {
-        // perform error checking
-        blas::batch::her2k_check<std::complex<float>, float>(
-                        layout, uplo, trans,
-                        n, k,
-                        alpha, Aarray, ldda,
-                               Barray, lddb,
-                        beta,  Carray, lddc,
-                        batch, info );
-    }
-
-    #pragma omp parallel for schedule(dynamic)
-    for (size_t i = 0; i < batch; ++i) {
-        Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
-        Op   trans_  = blas::batch::extract<Op>(trans, i);
-        int64_t n_   = blas::batch::extract<int64_t>(n, i);
-        int64_t k_   = blas::batch::extract<int64_t>(k, i);
-        int64_t lda_ = blas::batch::extract<int64_t>(ldda, i);
-        int64_t ldb_ = blas::batch::extract<int64_t>(lddb, i);
-        int64_t ldc_ = blas::batch::extract<int64_t>(lddc, i);
-        std::complex<float> alpha_ = blas::batch::extract<std::complex<float>>(alpha, i);
-        float               beta_  = blas::batch::extract<float>(beta, i);
-        std::complex<float>* dA_   = blas::batch::extract<std::complex<float>*>(Aarray, i);
-        std::complex<float>* dB_   = blas::batch::extract<std::complex<float>*>(Barray, i);
-        std::complex<float>* dC_   = blas::batch::extract<std::complex<float>*>(Carray, i);
-        blas::her2k(
-            layout, uplo_, trans_, n_, k_,
-            alpha_, dA_, lda_,
-                    dB_, ldb_,
-            beta_,  dC_, ldc_ );
-    }
+    impl::her2k( layout, uplo, trans, n, k,
+                 alpha, Aarray, lda, Barray, ldb, beta, Carray, ldc,
+                 batch_size, info );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// CPU, variable-size batched, complex<double> version.
 /// @ingroup her2k
-void blas::batch::her2k(
-    blas::Layout                layout,
-    std::vector<blas::Uplo>  const &uplo,
-    std::vector<blas::Op>    const &trans,
-    std::vector<int64_t>     const &n,
-    std::vector<int64_t>     const &k,
-    std::vector<std::complex<double>>      const &alpha,
-    std::vector<std::complex<double>*>     const &Aarray, std::vector<int64_t> const &ldda,
-    std::vector<std::complex<double>*>     const &Barray, std::vector<int64_t> const &lddb,
-    std::vector<double >                   const &beta,
-    std::vector<std::complex<double>*>     const &Carray, std::vector<int64_t> const &lddc,
-    const size_t batch,                                   std::vector<int64_t>       &info )
+void her2k(
+    blas::Layout layout,
+    std::vector<blas::Uplo> const& uplo,
+    std::vector<blas::Op>   const& trans,
+    std::vector<int64_t>    const& n,
+    std::vector<int64_t>    const& k,
+    std::vector< std::complex<double>  > const& alpha,
+    std::vector< std::complex<double>* > const& Aarray, std::vector<int64_t> const& lda,
+    std::vector< std::complex<double>* > const& Barray, std::vector<int64_t> const& ldb,
+    std::vector< double >                const& beta,
+    std::vector< std::complex<double>* > const& Carray, std::vector<int64_t> const& ldc,
+    size_t batch_size,
+    std::vector<int64_t>& info )
 {
-    blas_error_if( batch < 0 );
-    blas_error_if( ! (info.size() == 0 || info.size() == 1 || info.size() == batch) );
-    if (info.size() > 0) {
-        // perform error checking
-        blas::batch::her2k_check<std::complex<double>, double>(
-                        layout, uplo, trans,
-                        n, k,
-                        alpha, Aarray, ldda,
-                               Barray, lddb,
-                        beta,  Carray, lddc,
-                        batch, info );
-    }
-
-    #pragma omp parallel for schedule(dynamic)
-    for (size_t i = 0; i < batch; ++i) {
-        Uplo uplo_   = blas::batch::extract<Uplo>(uplo, i);
-        Op   trans_  = blas::batch::extract<Op>(trans, i);
-        int64_t n_   = blas::batch::extract<int64_t>(n, i);
-        int64_t k_   = blas::batch::extract<int64_t>(k, i);
-        int64_t lda_ = blas::batch::extract<int64_t>(ldda, i);
-        int64_t ldb_ = blas::batch::extract<int64_t>(lddb, i);
-        int64_t ldc_ = blas::batch::extract<int64_t>(lddc, i);
-        std::complex<double> alpha_ = blas::batch::extract<std::complex<double>>(alpha, i);
-        double               beta_  = blas::batch::extract<double>(beta, i);
-        std::complex<double>* dA_   = blas::batch::extract<std::complex<double>*>(Aarray, i);
-        std::complex<double>* dB_   = blas::batch::extract<std::complex<double>*>(Barray, i);
-        std::complex<double>* dC_   = blas::batch::extract<std::complex<double>*>(Carray, i);
-        blas::her2k(
-            layout, uplo_, trans_, n_, k_,
-            alpha_, dA_, lda_,
-                    dB_, ldb_,
-            beta_,  dC_, ldc_ );
-    }
+    impl::her2k( layout, uplo, trans, n, k,
+                 alpha, Aarray, lda, Barray, ldb, beta, Carray, ldc,
+                 batch_size, info );
 }
+
+}  // namespace batch
+}  // namespace blas
