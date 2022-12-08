@@ -175,7 +175,7 @@ scalar_t dot(
 //------------------------------------------------------------------------------
 /// Mid-level templated wrapper checks and converts arguments,
 /// then calls low-level wrapper.
-/// Unonjugated x^T y version.
+/// Unconjugated x^T y version.
 /// @ingroup dotu_internal
 ///
 template <typename scalar_t>

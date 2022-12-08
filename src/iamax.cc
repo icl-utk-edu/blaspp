@@ -26,7 +26,6 @@ inline blas_int iamax(
 
 //------------------------------------------------------------------------------
 /// Low-level overload wrapper calls Fortran, double version.
-/// Low-level overload wrapper calls Fortran, double version.
 /// @ingroup iamax_internal
 inline blas_int iamax(
     blas_int n,

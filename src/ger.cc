@@ -15,7 +15,7 @@ namespace blas {
 namespace internal {
 
 //------------------------------------------------------------------------------
-/// Low-level overload wrapper calls Fortran, float version.
+/// Low-level overload wrapper calls Fortran, complex<float> version.
 /// @ingroup ger_internal
 inline void ger(
     blas_int m, blas_int n,
@@ -32,7 +32,7 @@ inline void ger(
 }
 
 //------------------------------------------------------------------------------
-/// Low-level overload wrapper calls Fortran, double version.
+/// Low-level overload wrapper calls Fortran, complex<double> version.
 /// @ingroup ger_internal
 inline void ger(
     blas_int m, blas_int n,
@@ -181,7 +181,7 @@ void ger(
 //------------------------------------------------------------------------------
 /// Mid-level templated wrapper checks and converts arguments,
 /// then calls low-level wrapper.
-/// Unonjugated x y^T version.
+/// Unconjugated x y^T version.
 /// @ingroup geru_internal
 ///
 template <typename scalar_t>
