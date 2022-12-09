@@ -69,7 +69,7 @@ rocblas_side side2rocblas(blas::Side side)
 void axpy(
     device_blas_int n,
     float alpha,
-    float *dx, device_blas_int incdx,
+    float const* dx, device_blas_int incdx,
     float *dy, device_blas_int incdy,
     blas::Queue& queue )
 {
@@ -85,7 +85,7 @@ void axpy(
 void axpy(
     device_blas_int n,
     double alpha,
-    double *dx, device_blas_int incdx,
+    double const* dx, device_blas_int incdx,
     double *dy, device_blas_int incdy,
     blas::Queue& queue )
 {
@@ -101,7 +101,7 @@ void axpy(
 void axpy(
     device_blas_int n,
     std::complex<float> alpha,
-    std::complex<float> *dx, device_blas_int incdx,
+    std::complex<float> const* dx, device_blas_int incdx,
     std::complex<float> *dy, device_blas_int incdy,
     blas::Queue& queue )
 {
@@ -117,7 +117,7 @@ void axpy(
 void axpy(
     device_blas_int n,
     std::complex<double> alpha,
-    std::complex<double> *dx, device_blas_int incdx,
+    std::complex<double> const* dx, device_blas_int incdx,
     std::complex<double> *dy, device_blas_int incdy,
     blas::Queue& queue )
 {
@@ -238,7 +238,7 @@ void dotu(
 //------------------------------------------------------------------------------
 void nrm2(
     device_blas_int n,
-    float *dx, device_blas_int incdx,
+    float const* dx, device_blas_int incdx,
     float *result,
     blas::Queue& queue )
 {
@@ -252,7 +252,7 @@ void nrm2(
 //------------------------------------------------------------------------------
 void nrm2(
     device_blas_int n,
-    double *dx, device_blas_int incdx,
+    double const* dx, device_blas_int incdx,
     double *result,
     blas::Queue& queue )
 {
@@ -266,7 +266,7 @@ void nrm2(
 //------------------------------------------------------------------------------
 void nrm2(
     device_blas_int n,
-    std::complex<float> *dx, device_blas_int incdx,
+    std::complex<float> const* dx, device_blas_int incdx,
     float *result,
     blas::Queue& queue )
 {
@@ -280,7 +280,7 @@ void nrm2(
 //------------------------------------------------------------------------------
 void nrm2(
     device_blas_int n,
-    std::complex<double> *dx, device_blas_int incdx,
+    std::complex<double> const* dx, device_blas_int incdx,
     double *result,
     blas::Queue& queue )
 {

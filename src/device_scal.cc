@@ -9,109 +9,88 @@
 
 #include <limits>
 
-// =============================================================================
-// Overloaded wrappers for s, d, c, z precisions.
+namespace blas {
 
-// -----------------------------------------------------------------------------
+//==============================================================================
+namespace impl {
+
+//------------------------------------------------------------------------------
+/// Mid-level templated wrapper checks and converts arguments,
+/// then calls low-level wrapper.
+/// @ingroup scal_internal
+///
+template <typename scalar_t>
+void scal(
+    int64_t n,
+    scalar_t alpha,
+    scalar_t* x, int64_t incx,
+    blas::Queue& queue )
+{
+    // check arguments
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
+
+    // convert arguments
+    device_blas_int n_    = to_device_blas_int( n );
+    device_blas_int incx_ = to_device_blas_int( incx );
+
+    blas::internal_set_device( queue.device() );
+
+    // call low-level wrapper
+    internal::scal( n_, alpha, x, incx_, queue );
+}
+
+}  // namespace impl
+
+//==============================================================================
+// High-level overloaded wrappers call mid-level templated wrapper.
+
+//------------------------------------------------------------------------------
+/// GPU device, float version.
 /// @ingroup scal
-void blas::scal(
+void scal(
     int64_t n,
     float alpha,
-    float *dx, int64_t incdx,
-    blas::Queue& queue)
+    float* x, int64_t incx,
+    blas::Queue& queue )
 {
-    // check arguments
-    blas_error_if( n < 0 );       // standard BLAS returns, doesn't fail
-    blas_error_if( incdx <= 0 );  // standard BLAS returns, doesn't fail
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( n     > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( incdx > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int n_     = (device_blas_int) n;
-    device_blas_int incdx_ = (device_blas_int) incdx;
-
-    blas::internal_set_device( queue.device() );
-
-    internal::scal( n_, alpha, dx, incdx_, queue );
+    impl::scal( n, alpha, x, incx, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// GPU device, double version.
 /// @ingroup scal
-void blas::scal(
+void scal(
     int64_t n,
     double alpha,
-    double *dx, int64_t incdx,
-    blas::Queue& queue)
+    double* x, int64_t incx,
+    blas::Queue& queue )
 {
-    // check arguments
-    blas_error_if( n < 0 );       // standard BLAS returns, doesn't fail
-    blas_error_if( incdx <= 0 );  // standard BLAS returns, doesn't fail
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( n     > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( incdx > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int n_     = (device_blas_int) n;
-    device_blas_int incdx_ = (device_blas_int) incdx;
-
-    blas::internal_set_device( queue.device() );
-
-    internal::scal( n_, alpha, dx, incdx_, queue );
+    impl::scal( n, alpha, x, incx, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// GPU device, complex<float> version.
 /// @ingroup scal
-void blas::scal(
+void scal(
     int64_t n,
     std::complex<float> alpha,
-    std::complex<float> *dx, int64_t incdx,
-    blas::Queue& queue)
+    std::complex<float>* x, int64_t incx,
+    blas::Queue& queue )
 {
-    // check arguments
-    blas_error_if( n < 0 );       // standard BLAS returns, doesn't fail
-    blas_error_if( incdx <= 0 );  // standard BLAS returns, doesn't fail
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( n     > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( incdx > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int n_     = (device_blas_int) n;
-    device_blas_int incdx_ = (device_blas_int) incdx;
-
-    blas::internal_set_device( queue.device() );
-
-    internal::scal( n_, alpha, dx, incdx_, queue );
+    impl::scal( n, alpha, x, incx, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// GPU device, complex<double> version.
 /// @ingroup scal
-void blas::scal(
+void scal(
     int64_t n,
     std::complex<double> alpha,
-    std::complex<double> *dx, int64_t incdx,
-    blas::Queue& queue)
+    std::complex<double>* x, int64_t incx,
+    blas::Queue& queue )
 {
-    // check arguments
-    blas_error_if( n < 0 );       // standard BLAS returns, doesn't fail
-    blas_error_if( incdx <= 0 );  // standard BLAS returns, doesn't fail
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( n     > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( incdx > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int n_     = (device_blas_int) n;
-    device_blas_int incdx_ = (device_blas_int) incdx;
-
-    blas::internal_set_device( queue.device() );
-
-    internal::scal( n_, alpha, dx, incdx_, queue );
+    impl::scal( n, alpha, x, incx, queue );
 }
+
+}  // namespace blas

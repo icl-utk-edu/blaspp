@@ -9,281 +9,153 @@
 
 #include <limits>
 
-// =============================================================================
-// Overloaded wrappers for s, d, c, z precisions.
+namespace blas {
 
-// -----------------------------------------------------------------------------
-/// @ingroup trmm
-void blas::trmm(
+//==============================================================================
+namespace impl {
+
+//------------------------------------------------------------------------------
+/// Mid-level templated wrapper checks and converts arguments,
+/// then calls low-level wrapper.
+/// @ingroup trmm_internal
+///
+template <typename scalar_t>
+void trmm(
     blas::Layout layout,
     blas::Side side,
     blas::Uplo uplo,
     blas::Op trans,
     blas::Diag diag,
-    int64_t m,
-    int64_t n,
+    int64_t m, int64_t n,
+    scalar_t alpha,
+    scalar_t const* A, int64_t lda,
+    scalar_t*       B, int64_t ldb,
+    blas::Queue& queue )
+{
+    // check arguments
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( side != Side::Left &&
+                   side != Side::Right );
+    blas_error_if( uplo != Uplo::Lower &&
+                   uplo != Uplo::Upper );
+    blas_error_if( trans != Op::NoTrans &&
+                   trans != Op::Trans &&
+                   trans != Op::ConjTrans );
+    blas_error_if( diag != Diag::NonUnit &&
+                   diag != Diag::Unit );
+    blas_error_if( m < 0 );
+    blas_error_if( n < 0 );
+
+    if (side == Side::Left)
+        blas_error_if( lda < m );
+    else
+        blas_error_if( lda < n );
+
+    if (layout == Layout::ColMajor)
+        blas_error_if( ldb < m );
+    else
+        blas_error_if( ldb < n );
+
+    // convert arguments
+    device_blas_int m_   = to_device_blas_int( m );
+    device_blas_int n_   = to_device_blas_int( n );
+    device_blas_int lda_ = to_device_blas_int( lda );
+    device_blas_int ldb_ = to_device_blas_int( ldb );
+
+    if (layout == Layout::RowMajor) {
+        // swap lower <=> upper, left <=> right, m <=> n
+        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
+        side = (side == Side::Left ? Side::Right : Side::Left);
+        std::swap( m_, n_ );
+    }
+
+    blas::internal_set_device( queue.device() );
+
+    // call low-level wrapper
+    internal::trmm( side, uplo, trans, diag, m_, n_,
+                    alpha, A, lda_, B, ldb_, queue );
+}
+
+}  // namespace impl
+
+//==============================================================================
+// High-level overloaded wrappers call mid-level templated wrapper.
+
+//------------------------------------------------------------------------------
+/// GPU device, float version.
+/// @ingroup trmm
+void trmm(
+    blas::Layout layout,
+    blas::Side side,
+    blas::Uplo uplo,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t m, int64_t n,
     float alpha,
-    float const *dA, int64_t ldda,
-    float       *dB, int64_t lddb,
-    blas::Queue &queue )
+    float const* A, int64_t lda,
+    float*       B, int64_t ldb,
+    blas::Queue& queue )
 {
-    // check arguments
-    blas_error_if( layout != Layout::ColMajor &&
-                   layout != Layout::RowMajor );
-    blas_error_if( side != Side::Left &&
-                   side != Side::Right );
-    blas_error_if( uplo != Uplo::Lower &&
-                   uplo != Uplo::Upper );
-    blas_error_if( trans != Op::NoTrans &&
-                   trans != Op::Trans &&
-                   trans != Op::ConjTrans );
-    blas_error_if( diag != Diag::NonUnit &&
-                   diag != Diag::Unit );
-    blas_error_if( m < 0 );
-    blas_error_if( n < 0 );
-
-    if (side == Side::Left)
-        blas_error_if( ldda < m );
-    else
-        blas_error_if( ldda < n );
-
-    if (layout == Layout::ColMajor)
-        blas_error_if( lddb < m );
-    else
-        blas_error_if( lddb < n );
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( m   > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( n   > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( ldda > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( lddb > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int m_   = (device_blas_int) m;
-    device_blas_int n_   = (device_blas_int) n;
-    device_blas_int ldda_ = (device_blas_int) ldda;
-    device_blas_int lddb_ = (device_blas_int) lddb;
-
-    if (layout == Layout::RowMajor) {
-        // swap lower <=> upper, left <=> right, m <=> n
-        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
-        side = (side == Side::Left ? Side::Right : Side::Left);
-        std::swap( m_, n_ );
-    }
-
-    blas::internal_set_device( queue.device() );
-    internal::trmm(
-            side, uplo, trans, diag,
-            m_, n_, alpha,
-            dA, ldda_,
-            dB, lddb_,
-            queue );
+    impl::trmm( layout, side, uplo, trans, diag, m, n,
+                alpha, A, lda, B, ldb, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// GPU device, double version.
 /// @ingroup trmm
-void blas::trmm(
+void trmm(
     blas::Layout layout,
     blas::Side side,
     blas::Uplo uplo,
     blas::Op trans,
     blas::Diag diag,
-    int64_t m,
-    int64_t n,
+    int64_t m, int64_t n,
     double alpha,
-    double const *dA, int64_t ldda,
-    double       *dB, int64_t lddb,
-    blas::Queue &queue )
+    double const* A, int64_t lda,
+    double*       B, int64_t ldb,
+    blas::Queue& queue )
 {
-    // check arguments
-    blas_error_if( layout != Layout::ColMajor &&
-                   layout != Layout::RowMajor );
-    blas_error_if( side != Side::Left &&
-                   side != Side::Right );
-    blas_error_if( uplo != Uplo::Lower &&
-                   uplo != Uplo::Upper );
-    blas_error_if( trans != Op::NoTrans &&
-                   trans != Op::Trans &&
-                   trans != Op::ConjTrans );
-    blas_error_if( diag != Diag::NonUnit &&
-                   diag != Diag::Unit );
-    blas_error_if( m < 0 );
-    blas_error_if( n < 0 );
-
-    if (side == Side::Left)
-        blas_error_if( ldda < m );
-    else
-        blas_error_if( ldda < n );
-
-    if (layout == Layout::ColMajor)
-        blas_error_if( lddb < m );
-    else
-        blas_error_if( lddb < n );
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( m   > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( n   > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( ldda > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( lddb > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int m_   = (device_blas_int) m;
-    device_blas_int n_   = (device_blas_int) n;
-    device_blas_int ldda_ = (device_blas_int) ldda;
-    device_blas_int lddb_ = (device_blas_int) lddb;
-
-    if (layout == Layout::RowMajor) {
-        // swap lower <=> upper, left <=> right, m <=> n
-        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
-        side = (side == Side::Left ? Side::Right : Side::Left);
-        std::swap( m_, n_ );
-    }
-
-    blas::internal_set_device( queue.device() );
-    internal::trmm(
-            side, uplo, trans, diag,
-            m_, n_, alpha,
-            dA, ldda_,
-            dB, lddb_,
-            queue );
+    impl::trmm( layout, side, uplo, trans, diag, m, n,
+                alpha, A, lda, B, ldb, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// GPU device, complex<float> version.
 /// @ingroup trmm
-void blas::trmm(
+void trmm(
     blas::Layout layout,
     blas::Side side,
     blas::Uplo uplo,
     blas::Op trans,
     blas::Diag diag,
-    int64_t m,
-    int64_t n,
+    int64_t m, int64_t n,
     std::complex<float> alpha,
-    std::complex<float> const *dA, int64_t ldda,
-    std::complex<float>       *dB, int64_t lddb,
-    blas::Queue &queue )
+    std::complex<float> const* A, int64_t lda,
+    std::complex<float>*       B, int64_t ldb,
+    blas::Queue& queue )
 {
-    // check arguments
-    blas_error_if( layout != Layout::ColMajor &&
-                   layout != Layout::RowMajor );
-    blas_error_if( side != Side::Left &&
-                   side != Side::Right );
-    blas_error_if( uplo != Uplo::Lower &&
-                   uplo != Uplo::Upper );
-    blas_error_if( trans != Op::NoTrans &&
-                   trans != Op::Trans &&
-                   trans != Op::ConjTrans );
-    blas_error_if( diag != Diag::NonUnit &&
-                   diag != Diag::Unit );
-    blas_error_if( m < 0 );
-    blas_error_if( n < 0 );
-
-    if (side == Side::Left)
-        blas_error_if( ldda < m );
-    else
-        blas_error_if( ldda < n );
-
-    if (layout == Layout::ColMajor)
-        blas_error_if( lddb < m );
-    else
-        blas_error_if( lddb < n );
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( m   > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( n   > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( ldda > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( lddb > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int m_   = (device_blas_int) m;
-    device_blas_int n_   = (device_blas_int) n;
-    device_blas_int ldda_ = (device_blas_int) ldda;
-    device_blas_int lddb_ = (device_blas_int) lddb;
-
-    if (layout == Layout::RowMajor) {
-        // swap lower <=> upper, left <=> right, m <=> n
-        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
-        side = (side == Side::Left ? Side::Right : Side::Left);
-        std::swap( m_, n_ );
-    }
-
-    blas::internal_set_device( queue.device() );
-    internal::trmm(
-            side, uplo, trans, diag,
-            m_, n_, alpha,
-            dA, ldda_,
-            dB, lddb_,
-            queue );
+    impl::trmm( layout, side, uplo, trans, diag, m, n,
+                alpha, A, lda, B, ldb, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// GPU device, complex<double> version.
 /// @ingroup trmm
-void blas::trmm(
+void trmm(
     blas::Layout layout,
     blas::Side side,
     blas::Uplo uplo,
     blas::Op trans,
     blas::Diag diag,
-    int64_t m,
-    int64_t n,
+    int64_t m, int64_t n,
     std::complex<double> alpha,
-    std::complex<double> const *dA, int64_t ldda,
-    std::complex<double>       *dB, int64_t lddb,
-    blas::Queue &queue )
+    std::complex<double> const* A, int64_t lda,
+    std::complex<double>*       B, int64_t ldb,
+    blas::Queue& queue )
 {
-    // check arguments
-    blas_error_if( layout != Layout::ColMajor &&
-                   layout != Layout::RowMajor );
-    blas_error_if( side != Side::Left &&
-                   side != Side::Right );
-    blas_error_if( uplo != Uplo::Lower &&
-                   uplo != Uplo::Upper );
-    blas_error_if( trans != Op::NoTrans &&
-                   trans != Op::Trans &&
-                   trans != Op::ConjTrans );
-    blas_error_if( diag != Diag::NonUnit &&
-                   diag != Diag::Unit );
-    blas_error_if( m < 0 );
-    blas_error_if( n < 0 );
-
-    if (side == Side::Left)
-        blas_error_if( ldda < m );
-    else
-        blas_error_if( ldda < n );
-
-    if (layout == Layout::ColMajor)
-        blas_error_if( lddb < m );
-    else
-        blas_error_if( lddb < n );
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( m   > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( n   > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( ldda > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( lddb > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int m_   = (device_blas_int) m;
-    device_blas_int n_   = (device_blas_int) n;
-    device_blas_int ldda_ = (device_blas_int) ldda;
-    device_blas_int lddb_ = (device_blas_int) lddb;
-
-    if (layout == Layout::RowMajor) {
-        // swap lower <=> upper, left <=> right, m <=> n
-        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
-        side = (side == Side::Left ? Side::Right : Side::Left);
-        std::swap( m_, n_ );
-    }
-
-    blas::internal_set_device( queue.device() );
-    internal::trmm(
-            side, uplo, trans, diag,
-            m_, n_, alpha,
-            dA, ldda_,
-            dB, lddb_,
-            queue );
+    impl::trmm( layout, side, uplo, trans, diag, m, n,
+                alpha, A, lda, B, ldb, queue );
 }
+
+}  // namespace blas

@@ -9,137 +9,90 @@
 
 #include <limits>
 
-// =============================================================================
-// Overloaded wrappers for s, d, c, z precisions.
+namespace blas {
 
-// -----------------------------------------------------------------------------
-/// @ingroup swap
-void blas::swap(
+//==============================================================================
+namespace impl {
+
+//------------------------------------------------------------------------------
+/// Mid-level templated wrapper checks and converts arguments,
+/// then calls low-level wrapper.
+/// @ingroup swap_internal
+///
+template <typename scalar_t>
+void swap(
     int64_t n,
-    float *dx, int64_t incdx,
-    float *dy, int64_t incdy,
-    blas::Queue &queue )
+    scalar_t* x, int64_t incx,
+    scalar_t* y, int64_t incy,
+    blas::Queue& queue )
 {
     // check arguments
-    blas_error_if( n < 0 );
-    blas_error_if( incdx == 0 );
-    blas_error_if( incdy == 0 );
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
+    blas_error_if( incy == 0 );
 
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( n     > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( incdx > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( incdy > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int n_      = (device_blas_int) n;
-    device_blas_int incdx_  = (device_blas_int) incdx;
-    device_blas_int incdy_  = (device_blas_int) incdy;
+    // convert arguments
+    device_blas_int n_    = to_device_blas_int( n );
+    device_blas_int incx_ = to_device_blas_int( incx );
+    device_blas_int incy_ = to_device_blas_int( incy );
 
     blas::internal_set_device( queue.device() );
 
-    internal::swap(
-        n_,
-        dx, incdx_,
-        dy, incdy_,
-        queue );
+    // call low-level wrapper
+    internal::swap( n_, x, incx_, y, incy_, queue );
 }
 
-// -----------------------------------------------------------------------------
+}  // namespace impl
+
+//==============================================================================
+// High-level overloaded wrappers call mid-level templated wrapper.
+
+//------------------------------------------------------------------------------
+/// GPU device, float version.
 /// @ingroup swap
-void blas::swap(
+void swap(
     int64_t n,
-    double *dx, int64_t incdx,
-    double *dy, int64_t incdy,
-    blas::Queue &queue )
+    float* x, int64_t incx,
+    float* y, int64_t incy,
+    blas::Queue& queue )
 {
-    // check arguments
-    blas_error_if( n < 0 );
-    blas_error_if( incdx == 0 );
-    blas_error_if( incdy == 0 );
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( n     > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( incdx > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( incdy > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int n_      = (device_blas_int) n;
-    device_blas_int incdx_  = (device_blas_int) incdx;
-    device_blas_int incdy_  = (device_blas_int) incdy;
-
-    blas::internal_set_device( queue.device() );
-
-    internal::swap(
-        n_,
-        dx, incdx_,
-        dy, incdy_,
-        queue );
+    impl::swap( n, x, incx, y, incy, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// GPU device, double version.
 /// @ingroup swap
-void blas::swap(
+void swap(
     int64_t n,
-    std::complex<float> *dx, int64_t incdx,
-    std::complex<float> *dy, int64_t incdy,
-    blas::Queue &queue )
+    double* x, int64_t incx,
+    double* y, int64_t incy,
+    blas::Queue& queue )
 {
-    // check arguments
-    blas_error_if( n < 0 );
-    blas_error_if( incdx == 0 );
-    blas_error_if( incdy == 0 );
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( n     > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( incdx > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( incdy > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int n_      = (device_blas_int) n;
-    device_blas_int incdx_  = (device_blas_int) incdx;
-    device_blas_int incdy_  = (device_blas_int) incdy;
-
-    blas::internal_set_device( queue.device() );
-
-    internal::swap(
-        n_,
-        dx, incdx_,
-        dy, incdy_,
-        queue );
+    impl::swap( n, x, incx, y, incy, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// GPU device, complex<float> version.
 /// @ingroup swap
-void blas::swap(
+void swap(
     int64_t n,
-    std::complex<double> *dx, int64_t incdx,
-    std::complex<double> *dy, int64_t incdy,
-    blas::Queue &queue )
+    std::complex<float>* x, int64_t incx,
+    std::complex<float>* y, int64_t incy,
+    blas::Queue& queue )
 {
-    // check arguments
-    blas_error_if( n < 0 );
-    blas_error_if( incdx == 0 );
-    blas_error_if( incdy == 0 );
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( n     > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( incdx > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( incdy > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int n_      = (device_blas_int) n;
-    device_blas_int incdx_  = (device_blas_int) incdx;
-    device_blas_int incdy_  = (device_blas_int) incdy;
-
-    blas::internal_set_device( queue.device() );
-
-    internal::swap(
-        n_,
-        dx, incdx_,
-        dy, incdy_,
-        queue );
+    impl::swap( n, x, incx, y, incy, queue );
 }
+
+//------------------------------------------------------------------------------
+/// GPU device, complex<double> version.
+/// @ingroup swap
+void swap(
+    int64_t n,
+    std::complex<double>* x, int64_t incx,
+    std::complex<double>* y, int64_t incy,
+    blas::Queue& queue )
+{
+    impl::swap( n, x, incx, y, incy, queue );
+}
+
+}  // namespace blas

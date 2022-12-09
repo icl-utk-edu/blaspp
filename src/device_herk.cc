@@ -9,155 +9,139 @@
 
 #include <limits>
 
-// =============================================================================
-// Overloaded wrappers for s, d, c, z precisions.
+namespace blas {
 
-// -----------------------------------------------------------------------------
+namespace impl {
+
+//------------------------------------------------------------------------------
+/// Mid-level templated wrapper checks and converts arguments,
+/// then calls low-level wrapper.
+/// @ingroup herk_internal
+///
+template <typename scalar_t>
+void herk(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    blas::Op trans,
+    int64_t n, int64_t k,
+    real_type<scalar_t> alpha,  // note: real
+    scalar_t const* A, int64_t lda,
+    real_type<scalar_t> beta,   // note: real
+    scalar_t*       C, int64_t ldc,
+    blas::Queue& queue )
+{
+    // check arguments
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( uplo != Uplo::Lower &&
+                   uplo != Uplo::Upper );
+    blas_error_if( trans != Op::NoTrans &&
+                   trans != Op::ConjTrans );
+    blas_error_if( n < 0 );
+    blas_error_if( k < 0 );
+
+    if ((trans == Op::NoTrans) ^ (layout == Layout::RowMajor))
+        blas_error_if( lda < n );
+    else
+        blas_error_if( lda < k );
+
+    blas_error_if( ldc < n );
+
+    // convert arguments
+    device_blas_int n_   = to_device_blas_int( n );
+    device_blas_int k_   = to_device_blas_int( k );
+    device_blas_int lda_ = to_device_blas_int( lda );
+    device_blas_int ldc_ = to_device_blas_int( ldc );
+
+    if (layout == Layout::RowMajor) {
+        // swap lower <=> upper
+        // A => A^H; A^T => A; A^H => A
+        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
+        trans = (trans == Op::NoTrans ? Op::ConjTrans : Op::NoTrans);
+    }
+
+    blas::internal_set_device( queue.device() );
+
+    // call low-level wrapper
+    internal::herk( uplo, trans, n_, k_,
+                    alpha, A, lda_, beta, C, ldc_, queue );
+}
+
+}  // namespace impl
+
+//==============================================================================
+// High-level overloaded wrappers call mid-level templated wrapper.
+
+//------------------------------------------------------------------------------
+/// GPU device, float version.
 /// @ingroup herk
-void blas::herk(
+void herk(
     blas::Layout layout,
     blas::Uplo uplo,
     blas::Op trans,
     int64_t n, int64_t k,
     float alpha,
-    float const *dA, int64_t ldda,
+    float const* A, int64_t lda,
     float beta,
-    float       *dC, int64_t lddc,
-    blas::Queue &queue )
+    float*       C, int64_t ldc,
+    blas::Queue& queue )
 {
-    blas::syrk( layout, uplo, trans, n, k, alpha, dA, ldda, beta, dC, lddc, queue );
+    blas::syrk( layout, uplo, trans, n, k,
+                alpha, A, lda, beta, C, ldc, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// GPU device, double version.
 /// @ingroup herk
-void blas::herk(
+void herk(
     blas::Layout layout,
     blas::Uplo uplo,
     blas::Op trans,
     int64_t n, int64_t k,
     double alpha,
-    double const *dA, int64_t ldda,
+    double const* A, int64_t lda,
     double beta,
-    double       *dC, int64_t lddc,
-    blas::Queue &queue )
+    double*       C, int64_t ldc,
+    blas::Queue& queue )
 {
-    blas::syrk( layout, uplo, trans, n, k, alpha, dA, ldda, beta, dC, lddc, queue );
+    blas::syrk( layout, uplo, trans, n, k,
+                alpha, A, lda, beta, C, ldc, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// GPU device, complex<float> version.
 /// @ingroup herk
-void blas::herk(
+void herk(
     blas::Layout layout,
     blas::Uplo uplo,
     blas::Op trans,
     int64_t n, int64_t k,
     float alpha,  // note: real
-    std::complex<float> const *dA, int64_t ldda,
+    std::complex<float> const* A, int64_t lda,
     float beta,   // note: real
-    std::complex<float>       *dC, int64_t lddc,
-    blas::Queue &queue )
+    std::complex<float>*       C, int64_t ldc,
+    blas::Queue& queue )
 {
-    // check arguments
-    blas_error_if( layout != Layout::ColMajor &&
-                   layout != Layout::RowMajor );
-    blas_error_if( uplo != Uplo::Lower &&
-                   uplo != Uplo::Upper );
-    blas_error_if( trans != Op::NoTrans &&
-                   trans != Op::ConjTrans );
-    blas_error_if( n < 0 );
-    blas_error_if( k < 0 );
-
-    if ((trans == Op::NoTrans) ^ (layout == Layout::RowMajor))
-        blas_error_if( ldda < n );
-    else
-        blas_error_if( ldda < k );
-
-    blas_error_if( lddc < n );
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( n   > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( k   > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( ldda > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( lddc > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int n_   = (device_blas_int) n;
-    device_blas_int k_   = (device_blas_int) k;
-    device_blas_int ldda_ = (device_blas_int) ldda;
-    device_blas_int lddc_ = (device_blas_int) lddc;
-
-    if (layout == Layout::RowMajor) {
-        // swap lower <=> upper
-        // dA => dA^H; dA^T => dA; dA^H => dA
-        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
-        trans = (trans == Op::NoTrans ? Op::ConjTrans : Op::NoTrans);
-    }
-
-    blas::internal_set_device( queue.device() );
-    internal::herk(
-            uplo, trans,
-            n_, k_,
-            alpha, dA, ldda_,
-            beta,  dC, lddc_,
-            queue );
+    impl::herk( layout, uplo, trans, n, k,
+                alpha, A, lda, beta, C, ldc, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// GPU device, complex<double> version.
 /// @ingroup herk
-void blas::herk(
+void herk(
     blas::Layout layout,
     blas::Uplo uplo,
     blas::Op trans,
     int64_t n, int64_t k,
     double alpha,
-    std::complex<double> const *dA, int64_t ldda,
+    std::complex<double> const* A, int64_t lda,
     double beta,
-    std::complex<double>       *dC, int64_t lddc,
-    blas::Queue &queue )
+    std::complex<double>*       C, int64_t ldc,
+    blas::Queue& queue )
 {
-    // check arguments
-    blas_error_if( layout != Layout::ColMajor &&
-                   layout != Layout::RowMajor );
-    blas_error_if( uplo != Uplo::Lower &&
-                   uplo != Uplo::Upper );
-    blas_error_if( trans != Op::NoTrans &&
-                   trans != Op::ConjTrans );
-    blas_error_if( n < 0 );
-    blas_error_if( k < 0 );
-
-    if ((trans == Op::NoTrans) ^ (layout == Layout::RowMajor))
-        blas_error_if( ldda < n );
-    else
-        blas_error_if( ldda < k );
-
-    blas_error_if( lddc < n );
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( n   > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( k   > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( ldda > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( lddc > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int n_   = (device_blas_int) n;
-    device_blas_int k_   = (device_blas_int) k;
-    device_blas_int ldda_ = (device_blas_int) ldda;
-    device_blas_int lddc_ = (device_blas_int) lddc;
-
-    if (layout == Layout::RowMajor) {
-        // swap lower <=> upper
-        // dA => dA^H; dA^T => dA; dA^H => dA
-        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
-        trans = (trans == Op::NoTrans ? Op::ConjTrans : Op::NoTrans);
-    }
-
-    blas::internal_set_device( queue.device() );
-    internal::herk(
-            uplo, trans,
-            n_, k_,
-            alpha, dA, ldda_,
-            beta,  dC, lddc_,
-            queue );
+    impl::herk( layout, uplo, trans, n, k,
+                alpha, A, lda, beta, C, ldc, queue );
 }
+
+}  // namespace blas

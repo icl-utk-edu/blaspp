@@ -9,109 +9,90 @@
 
 #include <limits>
 
-// =============================================================================
-// Overloaded wrappers for s, d, c, z precisions.
+namespace blas {
 
-// -----------------------------------------------------------------------------
-/// @ingroup nrm2
-void blas::nrm2(
+//==============================================================================
+namespace impl {
+
+//------------------------------------------------------------------------------
+/// Mid-level templated wrapper checks and converts arguments,
+/// then calls low-level wrapper.
+/// @ingroup nrm2_internal
+///
+template <typename scalar_t>
+void nrm2(
     int64_t n,
-    float *dx, int64_t incdx,
-    float *result,
-    blas::Queue& queue)
+    scalar_t const* x, int64_t incx,
+    real_type<scalar_t>* result,
+    blas::Queue& queue )
 {
     // check arguments
-    blas_error_if( n < 0 );       // standard BLAS returns, doesn't fail
-    blas_error_if( incdx <= 0 );  // standard BLAS returns, doesn't fail
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
 
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( n     > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( incdx > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int n_     = (device_blas_int) n;
-    device_blas_int incdx_ = (device_blas_int) incdx;
+    // convert arguments
+    device_blas_int n_    = to_device_blas_int( n );
+    device_blas_int incx_ = to_device_blas_int( incx );
 
     blas::internal_set_device( queue.device() );
 
-    internal::nrm2( n_, dx, incdx_, result, queue );
+    // call low-level wrapper
+    internal::nrm2( n_, x, incx_, result, queue );
 }
 
-// -----------------------------------------------------------------------------
+}  // namespace impl
+
+//==============================================================================
+// High-level overloaded wrappers call mid-level templated wrapper.
+
+//------------------------------------------------------------------------------
+/// GPU device, float version.
+/// Unlike CPU version, here `result` is an output parameter,
+/// to store the result when the asynchronous execution completes.
 /// @ingroup nrm2
-void blas::nrm2(
+void nrm2(
     int64_t n,
-    double *dx, int64_t incdx,
-    double *result,
-    blas::Queue& queue)
+    float const* x, int64_t incx,
+    float* result,
+    blas::Queue& queue )
 {
-    // check arguments
-    blas_error_if( n < 0 );       // standard BLAS returns, doesn't fail
-    blas_error_if( incdx <= 0 );  // standard BLAS returns, doesn't fail
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( n     > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( incdx > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int n_     = (device_blas_int) n;
-    device_blas_int incdx_ = (device_blas_int) incdx;
-
-    blas::internal_set_device( queue.device() );
-
-    internal::nrm2( n_, dx, incdx_, result, queue );
+    impl::nrm2( n, x, incx, result, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// GPU device, double version.
 /// @ingroup nrm2
-void blas::nrm2(
+void nrm2(
     int64_t n,
-    std::complex<float> *dx, int64_t incdx,
-    float *result,
-    blas::Queue& queue)
+    double const* x, int64_t incx,
+    double* result,
+    blas::Queue& queue )
 {
-    // check arguments
-    blas_error_if( n < 0 );       // standard BLAS returns, doesn't fail
-    blas_error_if( incdx <= 0 );  // standard BLAS returns, doesn't fail
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( n     > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( incdx > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int n_     = (device_blas_int) n;
-    device_blas_int incdx_ = (device_blas_int) incdx;
-
-    blas::internal_set_device( queue.device() );
-
-    internal::nrm2( n_, dx, incdx_, result, queue );
+    impl::nrm2( n, x, incx, result, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// GPU device, complex<float> version.
 /// @ingroup nrm2
-void blas::nrm2(
+void nrm2(
     int64_t n,
-    std::complex<double> *dx, int64_t incdx,
-    double *result,
-    blas::Queue& queue)
+    std::complex<float> const* x, int64_t incx,
+    float* result,
+    blas::Queue& queue )
 {
-    // check arguments
-    blas_error_if( n < 0 );       // standard BLAS returns, doesn't fail
-    blas_error_if( incdx <= 0 );  // standard BLAS returns, doesn't fail
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( n     > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( incdx > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int n_     = (device_blas_int) n;
-    device_blas_int incdx_ = (device_blas_int) incdx;
-
-    blas::internal_set_device( queue.device() );
-
-    internal::nrm2( n_, dx, incdx_, result, queue );
+    impl::nrm2( n, x, incx, result, queue );
 }
+
+//------------------------------------------------------------------------------
+/// GPU device, complex<double> version.
+/// @ingroup nrm2
+void nrm2(
+    int64_t n,
+    std::complex<double> const* x, int64_t incx,
+    double* result,
+    blas::Queue& queue )
+{
+    impl::nrm2( n, x, incx, result, queue );
+}
+
+}  // namespace blas

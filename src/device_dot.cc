@@ -9,216 +9,183 @@
 
 #include <limits>
 
-// -----------------------------------------------------------------------------
 namespace blas {
 
-// =============================================================================
-// Overloaded wrappers for s, d, c, z precisions.
+//==============================================================================
+namespace impl {
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// Mid-level templated wrapper checks and converts arguments,
+/// then calls low-level wrapper.
+/// Conjugated x^H y version.
+/// @ingroup dot_internal
+///
+template <typename scalar_t>
+void dot(
+    int64_t n,
+    scalar_t const* x, int64_t incx,
+    scalar_t const* y, int64_t incy,
+    scalar_t* result,
+    blas::Queue& queue )
+{
+    // check arguments
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
+    blas_error_if( incy == 0 );
+
+    // convert arguments
+    device_blas_int n_    = to_device_blas_int( n );
+    device_blas_int incx_ = to_device_blas_int( incx );
+    device_blas_int incy_ = to_device_blas_int( incy );
+
+    blas::internal_set_device( queue.device() );
+
+    // call low-level wrapper
+    internal::dot( n_, x, incx_, y, incy_, result, queue );
+}
+
+//------------------------------------------------------------------------------
+/// Mid-level templated wrapper checks and converts arguments,
+/// then calls low-level wrapper.
+/// Unconjugated x^T y version.
+/// @ingroup dotu_internal
+///
+template <typename scalar_t>
+void dotu(
+    int64_t n,
+    scalar_t const* x, int64_t incx,
+    scalar_t const* y, int64_t incy,
+    scalar_t* result,
+    blas::Queue& queue )
+{
+    // check arguments
+    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
+    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
+    blas_error_if( incy == 0 );
+
+    // convert arguments
+    device_blas_int n_    = to_device_blas_int( n );
+    device_blas_int incx_ = to_device_blas_int( incx );
+    device_blas_int incy_ = to_device_blas_int( incy );
+
+    blas::internal_set_device( queue.device() );
+
+    // call low-level wrapper
+    internal::dotu( n_, x, incx_, y, incy_, result, queue );
+}
+
+}  // namespace impl
+
+//==============================================================================
+// High-level overloaded wrappers call mid-level templated wrapper.
+
+//------------------------------------------------------------------------------
+/// GPU device, float version.
+/// Unlike CPU version, here `result` is an output parameter,
+/// to store the result when the asynchronous execution completes.
 /// @ingroup dot
 void dot(
     int64_t n,
-    float const *dx, int64_t incdx,
-    float const *dy, int64_t incdy,
-    float *result,
+    float const* x, int64_t incx,
+    float const* y, int64_t incy,
+    float* result,
     blas::Queue& queue)
 {
-    // check arguments
-    blas_error_if( n < 0 );       // standard BLAS returns, doesn't fail
-    blas_error_if( incdx == 0 );  // standard BLAS doesn't detect incdx == 0
-    blas_error_if( incdy == 0 );  // standard BLAS doesn't detect incdy == 0
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( n     > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( incdx > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( incdy > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int n_     = (device_blas_int) n;
-    device_blas_int incdx_ = (device_blas_int) incdx;
-    device_blas_int incdy_ = (device_blas_int) incdy;
-
-    blas::internal_set_device( queue.device() );
-
-    device::sdot( queue, n_, dx, incdx_, dy, incdy_, result );
+    impl::dot( n, x, incx, y, incy, result, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// GPU device, double version.
 /// @ingroup dot
 void dot(
     int64_t n,
-    double const *dx, int64_t incdx,
-    double const *dy, int64_t incdy,
-    double *result,
+    double const* x, int64_t incx,
+    double const* y, int64_t incy,
+    double* result,
     blas::Queue& queue)
 {
-    // check arguments
-    blas_error_if( n < 0 );       // standard BLAS returns, doesn't fail
-    blas_error_if( incdx == 0 );  // standard BLAS doesn't detect inc[dx] == 0
-    blas_error_if( incdy == 0 );  // standard BLAS doesn't detect inc[dy] == 0
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( n     > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( incdx > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( incdy > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int n_     = (device_blas_int) n;
-    device_blas_int incdx_ = (device_blas_int) incdx;
-    device_blas_int incdy_ = (device_blas_int) incdy;
-
-    blas::internal_set_device( queue.device() );
-
-    device::ddot( queue, n_, dx, incdx_, dy, incdy_, result );
+    impl::dot( n, x, incx, y, incy, result, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// GPU device, complex<float> version.
 /// @ingroup dot
 void dot(
     int64_t n,
-    std::complex<float> const *dx, int64_t incdx,
-    std::complex<float> const *dy, int64_t incdy,
-    std::complex<float> *result,
+    std::complex<float> const* x, int64_t incx,
+    std::complex<float> const* y, int64_t incy,
+    std::complex<float>* result,
     blas::Queue& queue)
 {
-    // check arguments
-    blas_error_if( n < 0 );       // standard BLAS returns, doesn't fail
-    blas_error_if( incdx == 0 );  // standard BLAS doesn't detect inc[dx] == 0
-    blas_error_if( incdy == 0 );  // standard BLAS doesn't detect inc[dy] == 0
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( n     > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( incdx > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( incdy > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int n_     = (device_blas_int) n;
-    device_blas_int incdx_ = (device_blas_int) incdx;
-    device_blas_int incdy_ = (device_blas_int) incdy;
-
-    blas::internal_set_device( queue.device() );
-
-    device::cdotc( queue, n_, dx, incdx_, dy, incdy_, result );
+    impl::dot( n, x, incx, y, incy, result, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// GPU device, complex<double> version.
 /// @ingroup dot
 void dot(
     int64_t n,
-    std::complex<double> const *dx, int64_t incdx,
-    std::complex<double> const *dy, int64_t incdy,
-    std::complex<double> *result,
+    std::complex<double> const* x, int64_t incx,
+    std::complex<double> const* y, int64_t incy,
+    std::complex<double>* result,
     blas::Queue& queue)
 {
-    // check arguments
-    blas_error_if( n < 0 );       // standard BLAS returns, doesn't fail
-    blas_error_if( incdx == 0 );  // standard BLAS doesn't detect inc[dx] == 0
-    blas_error_if( incdy == 0 );  // standard BLAS doesn't detect inc[dy] == 0
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( n     > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( incdx > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( incdy > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int n_     = (device_blas_int) n;
-    device_blas_int incdx_ = (device_blas_int) incdx;
-    device_blas_int incdy_ = (device_blas_int) incdy;
-
-    blas::internal_set_device( queue.device() );
-
-    device::zdotc( queue, n_, dx, incdx_, dy, incdy_, result );
+    impl::dot( n, x, incx, y, incy, result, queue );
 }
 
-// =============================================================================
-// Unconjugated version, x^T y
+//==============================================================================
+// Unconjugated x y^T versions.
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// GPU device, float, unconjugated x^T y version.
 /// @ingroup dotu
 void dotu(
     int64_t n,
-    float const *dx, int64_t incdx,
-    float const *dy, int64_t incdy,
-    float *result,
+    float const* x, int64_t incx,
+    float const* y, int64_t incy,
+    float* result,
     blas::Queue& queue)
 {
-    dot( n, dx, incdx, dy, incdy, result, queue );
+    dot( n, x, incx, y, incy, result, queue );
 }
 
 // -----------------------------------------------------------------------------
+/// GPU device, double, unconjugated x^T y version.
 /// @ingroup dotu
 void dotu(
     int64_t n,
-    double const *dx, int64_t incdx,
-    double const *dy, int64_t incdy,
-    double *result,
+    double const* x, int64_t incx,
+    double const* y, int64_t incy,
+    double* result,
     blas::Queue& queue)
 {
-    dot( n, dx, incdx, dy, incdy, result, queue );
+    dot( n, x, incx, y, incy, result, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// GPU device, complex<float>, unconjugated x^T y version.
 /// @ingroup dotu
 void dotu(
     int64_t n,
-    std::complex<float> const *dx, int64_t incdx,
-    std::complex<float> const *dy, int64_t incdy,
-    std::complex<float> *result,
+    std::complex<float> const* x, int64_t incx,
+    std::complex<float> const* y, int64_t incy,
+    std::complex<float>* result,
     blas::Queue& queue)
 {
-    // check arguments
-    blas_error_if( n < 0 );       // standard BLAS returns, doesn't fail
-    blas_error_if( incdx == 0 );  // standard BLAS doesn't detect inc[dx] == 0
-    blas_error_if( incdy == 0 );  // standard BLAS doesn't detect inc[dy] == 0
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-          blas_error_if( n     > std::numeric_limits<device_blas_int>::max() );
-          blas_error_if( incdx > std::numeric_limits<device_blas_int>::max() );
-          blas_error_if( incdy > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int n_     = (device_blas_int) n;
-    device_blas_int incdx_ = (device_blas_int) incdx;
-    device_blas_int incdy_ = (device_blas_int) incdy;
-
-    blas::internal_set_device( queue.device() );
-
-    device::cdotu( queue, n_, dx, incdx_, dy, incdy_, result );
+    impl::dotu( n, x, incx, y, incy, result, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// GPU device, complex<double>, unconjugated x^T y version.
 /// @ingroup dotu
 void dotu(
     int64_t n,
-    std::complex<double> const *dx, int64_t incdx,
-    std::complex<double> const *dy, int64_t incdy,
-    std::complex<double> *result,
+    std::complex<double> const* x, int64_t incx,
+    std::complex<double> const* y, int64_t incy,
+    std::complex<double>* result,
     blas::Queue& queue)
 {
-    // check arguments
-    blas_error_if( n < 0 );       // standard BLAS returns, doesn't fail
-    blas_error_if( incdx == 0 );  // standard BLAS doesn't detect inc[dx] == 0
-    blas_error_if( incdy == 0 );  // standard BLAS doesn't detect inc[dy] == 0
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-          blas_error_if( n     > std::numeric_limits<device_blas_int>::max() );
-          blas_error_if( incdx > std::numeric_limits<device_blas_int>::max() );
-          blas_error_if( incdy > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int n_     = (device_blas_int) n;
-    device_blas_int incdx_ = (device_blas_int) incdx;
-    device_blas_int incdy_ = (device_blas_int) incdy;
-
-    blas::internal_set_device( queue.device() );
-
-    device::zdotu( queue, n_, dx, incdx_, dy, incdy_, result );
+    impl::dotu( n, x, incx, y, incy, result, queue );
 }
+
 } // namespace blas

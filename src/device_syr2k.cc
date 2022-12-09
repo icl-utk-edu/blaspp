@@ -9,271 +9,158 @@
 
 #include <limits>
 
-// =============================================================================
-// Overloaded wrappers for s, d, c, z precisions.
+namespace blas {
 
-// -----------------------------------------------------------------------------
+//==============================================================================
+namespace impl {
+
+//------------------------------------------------------------------------------
+/// Mid-level templated wrapper checks and converts arguments,
+/// then calls low-level wrapper.
+/// @ingroup syr2k_internal
+///
+template <typename scalar_t>
+void syr2k(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    blas::Op trans,
+    int64_t n, int64_t k,
+    scalar_t alpha,
+    scalar_t const* A, int64_t lda,
+    scalar_t const* B, int64_t ldb,
+    scalar_t beta,
+    scalar_t*       C, int64_t ldc,
+    blas::Queue& queue )
+{
+    // check arguments
+    blas_error_if( layout != Layout::ColMajor &&
+                   layout != Layout::RowMajor );
+    blas_error_if( uplo != Uplo::Lower &&
+                   uplo != Uplo::Upper );
+    if constexpr (is_complex<scalar_t>::value) {
+        // [cz]syr2k do not allow ConjTrans
+        blas_error_if( trans != Op::NoTrans &&
+                       trans != Op::Trans );
+    }
+    else {
+        blas_error_if( trans != Op::NoTrans &&
+                       trans != Op::Trans &&
+                       trans != Op::ConjTrans );
+    }
+    blas_error_if( n < 0 );
+    blas_error_if( k < 0 );
+
+    if ((trans == Op::NoTrans) ^ (layout == Layout::RowMajor)) {
+        blas_error_if( lda < n );
+        blas_error_if( ldb < n );
+    }
+    else {
+        blas_error_if( lda < k );
+        blas_error_if( ldb < k );
+    }
+
+    blas_error_if( ldc < n );
+
+    // convert arguments
+    device_blas_int n_   = to_device_blas_int( n );
+    device_blas_int k_   = to_device_blas_int( k );
+    device_blas_int lda_ = to_device_blas_int( lda );
+    device_blas_int ldb_ = to_device_blas_int( ldb );
+    device_blas_int ldc_ = to_device_blas_int( ldc );
+
+    if (layout == Layout::RowMajor) {
+        // swap lower <=> upper
+        // A => A^T; A^T => A; A^H => A
+        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
+        trans = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
+    }
+
+    blas::internal_set_device( queue.device() );
+
+    // call low-level wrapper
+    internal::syr2k( uplo, trans, n_, k_,
+                     alpha, A, lda_, B, ldb_, beta, C, ldc_, queue );
+}
+
+}  // namespace impl
+
+//==============================================================================
+// High-level overloaded wrappers call mid-level templated wrapper.
+
+//------------------------------------------------------------------------------
+/// GPU device, float version.
 /// @ingroup syr2k
-void blas::syr2k(
+void syr2k(
     blas::Layout layout,
     blas::Uplo uplo,
     blas::Op trans,
     int64_t n, int64_t k,
     float alpha,
-    float const *dA, int64_t ldda,
-    float const *dB, int64_t lddb,
+    float const* A, int64_t lda,
+    float const* B, int64_t ldb,
     float beta,
-    float       *dC, int64_t lddc,
-    blas::Queue &queue )
+    float*       C, int64_t ldc,
+    blas::Queue& queue )
 {
-    // check arguments
-    blas_error_if( layout != Layout::ColMajor &&
-                   layout != Layout::RowMajor );
-    blas_error_if( uplo != Uplo::Lower &&
-                   uplo != Uplo::Upper );
-    blas_error_if( trans != Op::NoTrans &&
-                   trans != Op::Trans &&
-                   trans != Op::ConjTrans );
-    blas_error_if( n < 0 );
-    blas_error_if( k < 0 );
-
-    if ((trans == Op::NoTrans) ^ (layout == Layout::RowMajor)) {
-        blas_error_if( ldda < n );
-        blas_error_if( lddb < n );
-    }
-    else {
-        blas_error_if( ldda < k );
-        blas_error_if( lddb < k );
-    }
-
-    blas_error_if( lddc < n );
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( n   > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( k   > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( ldda > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( lddc > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int n_   = (device_blas_int) n;
-    device_blas_int k_   = (device_blas_int) k;
-    device_blas_int ldda_ = (device_blas_int) ldda;
-    device_blas_int lddb_ = (device_blas_int) lddb;
-    device_blas_int lddc_ = (device_blas_int) lddc;
-
-    if (layout == Layout::RowMajor) {
-        // swap lower <=> upper
-        // dA => dA^T; dA^T => dA; dA^H => dA
-        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
-        trans = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
-    }
-
-    blas::internal_set_device( queue.device() );
-    internal::syr2k(
-            uplo, trans,
-            n_, k_,
-            alpha, dA, ldda_,
-                   dB, lddb_,
-            beta,  dC, lddc_,
-            queue );
+    impl::syr2k( layout, uplo, trans, n, k,
+                 alpha, A, lda, B, ldb, beta, C, ldc, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// GPU device, double version.
 /// @ingroup syr2k
-void blas::syr2k(
+void syr2k(
     blas::Layout layout,
     blas::Uplo uplo,
     blas::Op trans,
     int64_t n, int64_t k,
     double alpha,
-    double const *dA, int64_t ldda,
-    double const *dB, int64_t lddb,
+    double const* A, int64_t lda,
+    double const* B, int64_t ldb,
     double beta,
-    double       *dC, int64_t lddc,
-    blas::Queue &queue )
+    double*       C, int64_t ldc,
+    blas::Queue& queue )
 {
-    // check arguments
-    blas_error_if( layout != Layout::ColMajor &&
-                   layout != Layout::RowMajor );
-    blas_error_if( uplo != Uplo::Lower &&
-                   uplo != Uplo::Upper );
-    blas_error_if( trans != Op::NoTrans &&
-                   trans != Op::Trans &&
-                   trans != Op::ConjTrans );
-    blas_error_if( n < 0 );
-    blas_error_if( k < 0 );
-
-    if ((trans == Op::NoTrans) ^ (layout == Layout::RowMajor)) {
-        blas_error_if( ldda < n );
-        blas_error_if( lddb < n );
-    }
-    else {
-        blas_error_if( ldda < k );
-        blas_error_if( lddb < k );
-    }
-
-    blas_error_if( lddc < n );
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( n   > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( k   > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( ldda > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( lddc > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int n_   = (device_blas_int) n;
-    device_blas_int k_   = (device_blas_int) k;
-    device_blas_int ldda_ = (device_blas_int) ldda;
-    device_blas_int lddb_ = (device_blas_int) lddb;
-    device_blas_int lddc_ = (device_blas_int) lddc;
-
-    if (layout == Layout::RowMajor) {
-        // swap lower <=> upper
-        // dA => dA^T; dA^T => dA; dA^H => dA
-        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
-        trans = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
-    }
-
-    blas::internal_set_device( queue.device() );
-    internal::syr2k(
-            uplo, trans,
-            n_, k_,
-            alpha, dA, ldda_,
-                   dB, lddb_,
-            beta,  dC, lddc_,
-            queue );
+    impl::syr2k( layout, uplo, trans, n, k,
+                 alpha, A, lda, B, ldb, beta, C, ldc, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// GPU device, complex<float> version.
 /// @ingroup syr2k
-void blas::syr2k(
+void syr2k(
     blas::Layout layout,
     blas::Uplo uplo,
     blas::Op trans,
     int64_t n, int64_t k,
     std::complex<float> alpha,
-    std::complex<float> const *dA, int64_t ldda,
-    std::complex<float> const *dB, int64_t lddb,
+    std::complex<float> const* A, int64_t lda,
+    std::complex<float> const* B, int64_t ldb,
     std::complex<float> beta,
-    std::complex<float>       *dC, int64_t lddc,
-    blas::Queue &queue )
+    std::complex<float>*       C, int64_t ldc,
+    blas::Queue& queue )
 {
-    // check arguments
-    blas_error_if( layout != Layout::ColMajor &&
-                   layout != Layout::RowMajor );
-    blas_error_if( uplo != Uplo::Lower &&
-                   uplo != Uplo::Upper );
-    blas_error_if( trans != Op::NoTrans &&
-                   trans != Op::Trans );
-    blas_error_if( n < 0 );
-    blas_error_if( k < 0 );
-
-    if ((trans == Op::NoTrans) ^ (layout == Layout::RowMajor)) {
-        blas_error_if( ldda < n );
-        blas_error_if( lddb < n );
-    }
-    else {
-        blas_error_if( ldda < k );
-        blas_error_if( lddb < k );
-    }
-
-    blas_error_if( lddc < n );
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( n   > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( k   > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( ldda > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( lddc > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int n_   = (device_blas_int) n;
-    device_blas_int k_   = (device_blas_int) k;
-    device_blas_int ldda_ = (device_blas_int) ldda;
-    device_blas_int lddb_ = (device_blas_int) lddb;
-    device_blas_int lddc_ = (device_blas_int) lddc;
-
-    if (layout == Layout::RowMajor) {
-        // swap lower <=> upper
-        // dA => dA^T; dA^T => dA; dA^H => dA
-        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
-        trans = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
-    }
-
-    blas::internal_set_device( queue.device() );
-    internal::syr2k(
-            uplo, trans,
-            n_, k_,
-            alpha, dA, ldda_,
-                   dB, lddb_,
-            beta,  dC, lddc_,
-            queue );
+    impl::syr2k( layout, uplo, trans, n, k,
+                 alpha, A, lda, B, ldb, beta, C, ldc, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/// GPU device, complex<double> version.
 /// @ingroup syr2k
-void blas::syr2k(
+void syr2k(
     blas::Layout layout,
     blas::Uplo uplo,
     blas::Op trans,
     int64_t n, int64_t k,
     std::complex<double> alpha,
-    std::complex<double> const *dA, int64_t ldda,
-    std::complex<double> const *dB, int64_t lddb,
+    std::complex<double> const* A, int64_t lda,
+    std::complex<double> const* B, int64_t ldb,
     std::complex<double> beta,
-    std::complex<double>       *dC, int64_t lddc,
-    blas::Queue &queue )
+    std::complex<double>*       C, int64_t ldc,
+    blas::Queue& queue )
 {
-    // check arguments
-    blas_error_if( layout != Layout::ColMajor &&
-                   layout != Layout::RowMajor );
-    blas_error_if( uplo != Uplo::Lower &&
-                   uplo != Uplo::Upper );
-    blas_error_if( trans != Op::NoTrans &&
-                   trans != Op::Trans );
-    blas_error_if( n < 0 );
-    blas_error_if( k < 0 );
-
-    if ((trans == Op::NoTrans) ^ (layout == Layout::RowMajor)) {
-        blas_error_if( ldda < n );
-        blas_error_if( lddb < n );
-    }
-    else {
-        blas_error_if( ldda < k );
-        blas_error_if( lddb < k );
-    }
-
-    blas_error_if( lddc < n );
-
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(device_blas_int)) {
-        blas_error_if( n   > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( k   > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( ldda > std::numeric_limits<device_blas_int>::max() );
-        blas_error_if( lddc > std::numeric_limits<device_blas_int>::max() );
-    }
-
-    device_blas_int n_   = (device_blas_int) n;
-    device_blas_int k_   = (device_blas_int) k;
-    device_blas_int ldda_ = (device_blas_int) ldda;
-    device_blas_int lddb_ = (device_blas_int) lddb;
-    device_blas_int lddc_ = (device_blas_int) lddc;
-
-    if (layout == Layout::RowMajor) {
-        // swap lower <=> upper
-        // dA => dA^T; dA^T => dA; dA^H => dA
-        uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
-        trans = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
-    }
-
-    blas::internal_set_device( queue.device() );
-    internal::syr2k(
-            uplo, trans,
-            n_, k_,
-            alpha, dA, ldda_,
-                   dB, lddb_,
-            beta,  dC, lddc_,
-            queue );
+    impl::syr2k( layout, uplo, trans, n, k,
+                 alpha, A, lda, B, ldb, beta, C, ldc, queue );
 }
+
+}  // namespace blas

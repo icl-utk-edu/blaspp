@@ -11,7 +11,7 @@
 #include "check_gemm.hh"
 
 // -----------------------------------------------------------------------------
-template<typename TX, typename TY>
+template <typename TX, typename TY>
 void test_dotu_device_work( Params& params, bool run )
 {
     using namespace testsweeper;

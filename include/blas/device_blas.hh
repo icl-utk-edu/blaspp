@@ -19,28 +19,28 @@ namespace blas {
 void axpy(
     int64_t n,
     float alpha,
-    float *dx, int64_t incdx,
+    float const* dx, int64_t incdx,
     float *dy, int64_t incdy,
     blas::Queue& queue);
 
 void axpy(
     int64_t n,
     double alpha,
-    double *dx, int64_t incdx,
+    double const* dx, int64_t incdx,
     double *dy, int64_t incdy,
     blas::Queue& queue);
 
 void axpy(
     int64_t n,
     std::complex<float> alpha,
-    std::complex<float> *dx, int64_t incdx,
+    std::complex<float> const* dx, int64_t incdx,
     std::complex<float> *dy, int64_t incdy,
     blas::Queue& queue);
 
 void axpy(
     int64_t n,
     std::complex<double> alpha,
-    std::complex<double> *dx, int64_t incdx,
+    std::complex<double> const* dx, int64_t incdx,
     std::complex<double> *dy, int64_t incdy,
     blas::Queue& queue);
 
@@ -108,25 +108,25 @@ void dotu(
 // nrm2
 void nrm2(
     int64_t n,
-    float *dx, int64_t incdx,
+    float const* dx, int64_t incdx,
     float *result,
     blas::Queue& queue);
 
 void nrm2(
     int64_t n,
-    double *dx, int64_t incdx,
+    double const* dx, int64_t incdx,
     double *result,
     blas::Queue& queue);
 
 void nrm2(
     int64_t n,
-    std::complex<float> *dx, int64_t incdx,
+    std::complex<float> const* dx, int64_t incdx,
     float *result,
     blas::Queue& queue);
 
 void nrm2(
     int64_t n,
-    std::complex<double> *dx, int64_t incdx,
+    std::complex<double> const* dx, int64_t incdx,
     double *result,
     blas::Queue& queue);
 
