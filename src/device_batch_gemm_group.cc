@@ -16,7 +16,7 @@ namespace blas {
 namespace impl {
 
 //------------------------------------------------------------------------------
-/// GPU device, variable-size batched version.
+/// GPU device, group batched version.
 /// Mid-level templated wrapper checks and converts arguments,
 /// then makes individual routine calls in parallel.
 /// @ingroup gemm_internal
@@ -34,104 +34,117 @@ void gemm(
     std::vector<scalar_t*>  const& Barray, std::vector<int64_t> const& ldb,
     std::vector<scalar_t >  const& beta,
     std::vector<scalar_t*>  const& Carray, std::vector<int64_t> const& ldc,
-    size_t batch_size,
+    std::vector<size_t>     const& group_size,
     std::vector<int64_t>& info,
     blas::Queue& queue )
 {
-    blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
-    blas_error_if( batch_size < 0 );
+    size_t batch_size = 0;
+    size_t group_count = group_size.size();
+    if (group_count == 0)
+        return;
+
+    blas_error_if( layout != Layout::ColMajor
+                   && layout != Layout::RowMajor );
     blas_error_if( info.size() != 0
-                   && info.size() != 1
-                   && info.size() != batch_size );
+                   && info.size() != group_count );
+
+    for (size_t ig = 0; ig < group_count; ++ig) {
+        batch_size += group_size[ ig ];
+    }
+
+    blas_error_if( transA.size() !=  group_count );
+    blas_error_if( transB.size() !=  group_count );
+    blas_error_if( m.size()      !=  group_count );
+    blas_error_if( n.size()      !=  group_count );
+    blas_error_if( k.size()      !=  group_count );
+    blas_error_if( alpha.size()  !=  group_count );
+    blas_error_if( lda.size()    !=  group_count );
+    blas_error_if( ldb.size()    !=  group_count );
+    blas_error_if( beta.size()   !=  group_count );
+    blas_error_if( ldc.size()    !=  group_count );
+
+    blas_error_if( Aarray.size() !=  batch_size );
+    blas_error_if( Barray.size() !=  batch_size );
+    blas_error_if( Carray.size() !=  batch_size );
+
+    // assume at least one operation per group
+    blas_error_if( batch_size < group_count );
+
     if (info.size() > 0) {
         // perform error checking
         blas::batch::gemm_check(
             layout, transA, transB, m, n, k,
             alpha, Aarray, lda, Barray, ldb, beta, Carray, ldc,
-            batch_size, info );
+            group_count, info );
     }
-
-    bool fixed_size = (
-           transA.size() == 1
-        && transB.size() == 1
-        && m.size()      == 1
-        && n.size()      == 1
-        && k.size()      == 1
-        && alpha.size()  == 1
-        && Aarray.size() == batch_size
-        && lda.size()    == 1
-        && Barray.size() == batch_size
-        && ldb.size()    == 1
-        && beta.size()   == 1
-        && Carray.size() == batch_size
-        && ldc.size( )   == 1);
 
     blas::internal_set_device( queue.device() );
 
-    if (fixed_size) {
-        // convert arguments
-        blas::Op transA_ = transA[0];
-        blas::Op transB_ = transB[0];
-        device_blas_int m_   = to_device_blas_int( m[0] );
-        device_blas_int n_   = to_device_blas_int( n[0] );
-        device_blas_int k_   = to_device_blas_int( k[0] );
-        device_blas_int lda_ = to_device_blas_int( lda[0] );
-        device_blas_int ldb_ = to_device_blas_int( ldb[0] );
-        device_blas_int ldc_ = to_device_blas_int( ldc[0] );
+    scalar_t **dAarray, **dBarray, **dCarray;
+    size_t batch_limit = queue.get_batch_limit();
+    size_t processed = 0;
 
-        size_t batch_limit = queue.get_batch_limit();
-        scalar_t** dAarray = (scalar_t**) queue.get_dev_ptr_array( );
-        scalar_t** dBarray = dAarray + batch_limit;
-        scalar_t** dCarray = dBarray + batch_limit;
+    // If we have only one group, no need to fork.
+    if (group_count > 1)
+        queue.fork();
+
+    for (size_t ig = 0; ig < group_count; ig++) {
+        // extract params for the current group
+        size_t          batch   = group_size[ ig ];
+        blas::Op        transA_ = transA[ ig ];
+        blas::Op        transB_ = transB[ ig ];
+        device_blas_int m_      = to_device_blas_int( m[ ig ] );
+        device_blas_int n_      = to_device_blas_int( n[ ig ] );
+        device_blas_int k_      = to_device_blas_int( k[ ig ] );
+        device_blas_int lda_    = to_device_blas_int( lda[ ig ] );
+        device_blas_int ldb_    = to_device_blas_int( ldb[ ig ] );
+        device_blas_int ldc_    = to_device_blas_int( ldc[ ig ] );
+
+        // Each group is submitted to a different stream using strides
+        // of batch_limit.
+        // First, get the device pointer array for the current stream.
+        dAarray = ( scalar_t**) queue.get_dev_ptr_array( );
+        dBarray = dAarray + batch_limit;
+        dCarray = dBarray + batch_limit;
 
         for (size_t i = 0; i < batch_size; i += batch_limit) {
             size_t ibatch_size = std::min( batch_limit, batch_size - i );
 
             // copy Aarray, Barray, and Carray to device
-            device_copy_vector( ibatch_size, &Aarray[ i ], 1, dAarray, 1, queue );
-            device_copy_vector( ibatch_size, &Barray[ i ], 1, dBarray, 1, queue );
-            device_copy_vector( ibatch_size, &Carray[ i ], 1, dCarray, 1, queue );
+            device_copy_vector(
+                ibatch_size,& Aarray[ processed+i ], 1,
+                dAarray, 1, queue );
+            device_copy_vector(
+                ibatch_size,& Barray[ processed+i ], 1,
+                dBarray, 1, queue );
+            device_copy_vector(
+                ibatch_size,& Carray[ processed+i ], 1,
+                dCarray, 1, queue );
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
                 internal::batch_gemm(
                     transB_, transA_, n_, m_, k_,
-                    alpha[0], dBarray, ldb_, dAarray, lda_,
-                    beta[0],  dCarray, ldc_,
+                    alpha[ig], dBarray, ldb_, dAarray, lda_,
+                    beta[ig],  dCarray, ldc_,
                     ibatch_size, queue );
             }
             else {
                 internal::batch_gemm(
                     transA_, transB_, m_, n_, k_,
-                    alpha[0], dAarray, lda_, dBarray, ldb_,
-                    beta[0],  dCarray, ldc_,
+                    alpha[ig], dAarray, lda_, dBarray, ldb_,
+                    beta[ig],  dCarray, ldc_,
                     ibatch_size, queue );
             }
         }
-    }
-    else {
-        queue.fork();
-        for (size_t i = 0; i < batch_size; ++i) {
-            blas::Op   transA_ = blas::batch::extract( transA, i );
-            blas::Op   transB_ = blas::batch::extract( transB, i );
-            int64_t    m_      = blas::batch::extract( m,      i );
-            int64_t    n_      = blas::batch::extract( n,      i );
-            int64_t    k_      = blas::batch::extract( k,      i );
-            int64_t    lda_    = blas::batch::extract( lda,    i );
-            int64_t    ldb_    = blas::batch::extract( ldb,    i );
-            int64_t    ldc_    = blas::batch::extract( ldc,    i );
-            scalar_t   alpha_  = blas::batch::extract( alpha,  i );
-            scalar_t   beta_   = blas::batch::extract( beta,   i );
-            scalar_t*  A_      = blas::batch::extract( Aarray, i );
-            scalar_t*  B_      = blas::batch::extract( Barray, i );
-            scalar_t*  C_      = blas::batch::extract( Carray, i );
-            blas::gemm( layout, transA_, transB_, m_, n_, k_,
-                        alpha_, A_, lda_, B_, ldb_, beta_, C_, ldc_,
-                        queue );
+
+        processed += batch;
+        if (group_count > 1)
             queue.revolve();
-        }
-        queue.join();
     }
+
+    if (group_count > 1)
+        queue.join();
 }
 
 }  // namespace impl
@@ -141,7 +154,7 @@ void gemm(
 namespace batch {
 
 //------------------------------------------------------------------------------
-/// GPU device, variable-size batched, float version.
+/// GPU device, group batched, float version.
 /// @ingroup gemm
 void gemm(
     blas::Layout layout,
@@ -155,17 +168,17 @@ void gemm(
     std::vector<float*>     const& Barray, std::vector<int64_t> const& ldb,
     std::vector<float >     const& beta,
     std::vector<float*>     const& Carray, std::vector<int64_t> const& ldc,
-    size_t batch_size,
+    std::vector<size_t>     const& group_size,
     std::vector<int64_t>& info,
     blas::Queue& queue )
 {
     impl::gemm( layout, transA, transB, m, n, k,
                 alpha, Aarray, lda, Barray, ldb, beta, Carray, ldc,
-                batch_size, info, queue );
+                group_size, info, queue );
 }
 
 //------------------------------------------------------------------------------
-/// GPU device, variable-size batched, double version.
+/// GPU device, group batched, double version.
 /// @ingroup gemm
 void gemm(
     blas::Layout layout,
@@ -179,17 +192,17 @@ void gemm(
     std::vector<double*>    const& Barray, std::vector<int64_t> const& ldb,
     std::vector<double >    const& beta,
     std::vector<double*>    const& Carray, std::vector<int64_t> const& ldc,
-    size_t batch_size,
+    std::vector<size_t>     const& group_size,
     std::vector<int64_t>& info,
     blas::Queue& queue )
 {
     impl::gemm( layout, transA, transB, m, n, k,
                 alpha, Aarray, lda, Barray, ldb, beta, Carray, ldc,
-                batch_size, info, queue );
+                group_size, info, queue );
 }
 
 //------------------------------------------------------------------------------
-/// GPU device, variable-size batched, complex<float> version.
+/// GPU device, group batched, complex<float> version.
 /// @ingroup gemm
 void gemm(
     blas::Layout layout,
@@ -203,17 +216,17 @@ void gemm(
     std::vector< std::complex<float>* > const& Barray, std::vector<int64_t> const& ldb,
     std::vector< std::complex<float>  > const& beta,
     std::vector< std::complex<float>* > const& Carray, std::vector<int64_t> const& ldc,
-    size_t batch_size,
+    std::vector<size_t>     const& group_size,
     std::vector<int64_t>& info,
     blas::Queue& queue )
 {
     impl::gemm( layout, transA, transB, m, n, k,
                 alpha, Aarray, lda, Barray, ldb, beta, Carray, ldc,
-                batch_size, info, queue );
+                group_size, info, queue );
 }
 
 //------------------------------------------------------------------------------
-/// GPU device, variable-size batched, complex<double> version.
+/// GPU device, group batched, complex<double> version.
 /// @ingroup gemm
 void gemm(
     blas::Layout layout,
@@ -227,13 +240,13 @@ void gemm(
     std::vector< std::complex<double>* > const& Barray, std::vector<int64_t> const& ldb,
     std::vector< std::complex<double>  > const& beta,
     std::vector< std::complex<double>* > const& Carray, std::vector<int64_t> const& ldc,
-    size_t batch_size,
+    std::vector<size_t>     const& group_size,
     std::vector<int64_t>& info,
     blas::Queue& queue )
 {
     impl::gemm( layout, transA, transB, m, n, k,
                 alpha, Aarray, lda, Barray, ldb, beta, Carray, ldc,
-                batch_size, info, queue );
+                group_size, info, queue );
 }
 
 }  // namespace batch
