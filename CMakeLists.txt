@@ -207,6 +207,7 @@ add_library(
     src/trsv.cc
     src/version.cc
     src/device_batch_gemm.cc
+    src/device_batch_gemm_group.cc
     src/device_batch_hemm.cc
     src/device_batch_her2k.cc
     src/device_batch_herk.cc
