@@ -10,14 +10,13 @@
 #include "print_matrix.hh"
 
 // -----------------------------------------------------------------------------
-template< typename Tx, typename Ty >
+template< typename TX, typename TY >
 void test_dotu_device_work( Params& params, bool run )
 {
     using namespace testsweeper;
     using namespace blas;
-    typedef scalar_type<Tx, Ty> scalar_t;
+    typedef scalar_type<TX, TY> scalar_t;
     typedef real_type<scalar_t> real_t;
-    typedef long long lld;
 
     // get & mark input values
     char mode       = params.pointer_mode();
@@ -39,8 +38,8 @@ void test_dotu_device_work( Params& params, bool run )
     params.ref_gbytes();
 
     // adjust header to msec
-    params.time.name( "BLAS++\ntime (ms)" );
-    params.ref_time.name( "Ref.\ntime (ms)" );
+    params.time.name( "BLAS++ time (ms)" );
+    params.ref_time.name( "Ref. time (ms)" );
 
     if (! run)
         return;
@@ -51,24 +50,24 @@ void test_dotu_device_work( Params& params, bool run )
     }
 
     // setup
-    size_t size_x = (n - 1) * std::abs(incx) + 1;
-    size_t size_y = (n - 1) * std::abs(incy) + 1;
-    Tx* x    = new Tx[ size_x ];
-    Tx* xref = new Tx[ size_x ];
-    Ty* y    = new Ty[ size_y ];
+    size_t size_x = (n - 1) * std::abs( incx ) + 1;
+    size_t size_y = (n - 1) * std::abs( incy ) + 1;
+    TX* x    = new TX[ size_x ];
+    TX* xref = new TX[ size_x ];
+    TY* y    = new TY[ size_y ];
     Ty* yref = new Ty[ size_y ];
 
     // device specifics
-    blas::Queue queue(device, 0);
-    Tx* dx;
-    Ty* dy;
+    blas::Queue queue( device, 0 );
+    TX* dx;
+    TY* dy;
 
-    dx = blas::device_malloc<Tx>(size_x, queue);
-    dy = blas::device_malloc<Ty>(size_y, queue);
+    dx = blas::device_malloc<TX>( size_x, queue );
+    dy = blas::device_malloc<TY>( size_y, queue );
     if (mode == 'd') {
-        result = blas::device_malloc<scalar_t>(1, queue);
+        result = blas::device_malloc<scalar_t>( 1, queue );
         #if defined( BLAS_HAVE_CUBLAS )
-        cublasSetPointerMode(queue.handle(), CUBLAS_POINTER_MODE_DEVICE);
+        cublasSetPointerMode( queue.handle(), CUBLAS_POINTER_MODE_DEVICE );
         #elif defined( BLAS_HAVE_ROCBLAS )
         rocblas_set_pointer_mode( queue.handle(), rocblas_pointer_mode_device );
         #endif
@@ -86,14 +85,14 @@ void test_dotu_device_work( Params& params, bool run )
     cblas_copy( n, x, incx, xref, incx );
     cblas_copy( n, y, incy, yref, incy );
 
-    blas::device_setvector(n, x, std::abs(incx), dx, std::abs(incx), queue);
-    blas::device_setvector(n, y, std::abs(incy), dy, std::abs(incy), queue);
+    blas::device_setvector( n, x, std::abs(incx), dx, std::abs(incx), queue );
+    blas::device_setvector( n, y, std::abs(incy), dy, std::abs(incy), queue );
     queue.sync();
 
     if (verbose >= 1) {
         printf( "\n"
                 "n=%5lld, incx=%5lld, sizex=%10lld, incy=%5lld, sizey=%10lld\n",
-                (lld) n, (lld) incx, (lld) size_x, (lld) incy, (lld) size_y );
+                llong( n ), llong( incx ), llong( size_x ), llong( incy ), llong( size_y ) );
     }
     if (verbose >= 2) {
         printf( "x    = " ); print_vector( n, x, incx );
@@ -117,8 +116,8 @@ void test_dotu_device_work( Params& params, bool run )
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
 
-    blas::device_getvector(n, dx, std::abs(incx), x, std::abs(incx), queue);
-    blas::device_getvector(n, dy, std::abs(incy), y, std::abs(incy), queue);
+    blas::device_getvector( n, dx, std::abs( incx ), x, std::abs( incx ), queue );
+    blas::device_getvector( n, dy, std::abs( incy ), y, std::abs( incy ), queue );
     queue.sync();
 
     if (verbose >= 2) {
@@ -138,12 +137,12 @@ void test_dotu_device_work( Params& params, bool run )
         params.ref_gbytes() = gbyte / time;
 
         if (verbose >= 2) {
-            printf( "result0 = %3.2lld\n",(lld) std::abs(result_cblas));
+            printf( "result0 = %3.2lld\n",llong( std::abs( result_cblas ) ) );
         }
 
         // relative forward error:
         real_t error = std::abs( (result_cblas - result_host ) )
-                           / (sqrt(n+1) * std::abs( result_cblas ) );
+                           / ( sqrt(n+1) * std::abs( result_cblas ) );
         params.error() = error;
 
 
