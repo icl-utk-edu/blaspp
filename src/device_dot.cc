@@ -23,8 +23,8 @@ void blas::dot(
 {
     // check arguments
     blas_error_if( n < 0 );       // standard BLAS returns, doesn't fail
-    blas_error_if( incdx == 0 );  // standard BLAS doesn't detect inc[dx] == 0
-    blas_error_if( incdy == 0 );  // standard BLAS doesn't detect inc[dy] == 0
+    blas_error_if( incdx == 0 );  // standard BLAS doesn't detect incdx == 0
+    blas_error_if( incdy == 0 );  // standard BLAS doesn't detect incdy == 0
 
     // check for overflow in native BLAS integer type, if smaller than int64_t
     if (sizeof(int64_t) > sizeof(device_blas_int)) {
@@ -38,7 +38,7 @@ void blas::dot(
     device_blas_int incdy_ = (device_blas_int) incdy;
 
     #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
+    blas::internal_set_device( queue.device() );
     #endif
 
     device::sdot( queue, n_, dx, incdx_, dy, incdy_, result );
@@ -70,7 +70,7 @@ void blas::dot(
     device_blas_int incdy_ = (device_blas_int) incdy;
 
     #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
+    blas::internal_set_device( queue.device() );
     #endif
 
     device::ddot( queue, n_, dx, incdx_, dy, incdy_, result );
@@ -102,7 +102,7 @@ void blas::dot(
     device_blas_int incdy_ = (device_blas_int) incdy;
 
     #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
+    blas::internal_set_device( queue.device() );
     #endif
 
     device::cdotc( queue, n_, dx, incdx_, dy, incdy_, result );
@@ -134,7 +134,7 @@ void blas::dot(
     device_blas_int incdy_ = (device_blas_int) incdy;
 
     #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
+    blas::internal_set_device( queue.device() );
     #endif
 
     device::zdotc( queue, n_, dx, incdx_, dy, incdy_, result );
@@ -193,7 +193,7 @@ void blas::dotu(
     device_blas_int incdy_ = (device_blas_int) incdy;
 
     #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
+    blas::internal_set_device( queue.device() );
     #endif
 
     device::cdotu( queue, n_, dx, incdx_, dy, incdy_, result );
@@ -225,7 +225,7 @@ void blas::dotu(
     device_blas_int incdy_ = (device_blas_int) incdy;
 
     #ifndef BLAS_HAVE_ONEMKL
-    blas::set_device( queue.device() );
+    blas::internal_set_device( queue.device() );
     #endif
 
     device::zdotu( queue, n_, dx, incdx_, dy, incdy_, result );

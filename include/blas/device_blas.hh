@@ -48,29 +48,29 @@ void axpy(
 // dot
 void dot(
     int64_t n,
-    float *dx, int64_t incdx,
-    float *dy, int64_t incdy,
+    float const *x, int64_t incx,
+    float const *y, int64_t incy,
     float *result,
     blas::Queue& queue);
 
 void dot(
     int64_t n,
-    double *dx, int64_t incdx,
-    double *dy, int64_t incdy,
+    double const *x, int64_t incx,
+    double const *y, int64_t incy,
     double *result,
     blas::Queue& queue);
 
 void dot(
     int64_t n,
-    std::complex<float> *dx, int64_t incdx,
-    std::complex<float> *dy, int64_t incdy,
+    std::complex<float> const *x, int64_t incx,
+    std::complex<float> const *y, int64_t incy,
     std::complex<float> *result,
     blas::Queue& queue);
 
 void dot(
     int64_t n,
-    std::complex<double> *dx, int64_t incdx,
-    std::complex<double> *dy, int64_t incdy,
+    std::complex<double> const *x, int64_t incx,
+    std::complex<double> const *y, int64_t incy,
     std::complex<double> *result,
     blas::Queue& queue);
 
@@ -78,29 +78,29 @@ void dot(
 // dotu
 void dotu(
     int64_t n,
-    float *dx, int64_t incdx,
-    float *dy, int64_t incdy,
+    float const *x, int64_t incx,
+    float const *y, int64_t incy,
     float *result,
     blas::Queue& queue);
 
 void dotu(
     int64_t n,
-    double *dx, int64_t incdx,
-    double *dy, int64_t incdy,
+    double const *x, int64_t incx,
+    double const *y, int64_t incy,
     double *result,
     blas::Queue& queue);
 
 void dotu(
     int64_t n,
-    std::complex<float> *dx, int64_t incdx,
-    std::complex<float> *dy, int64_t incdy,
+    std::complex<float> const *x, int64_t incx,
+    std::complex<float> const *y, int64_t incy,
     std::complex<float> *result,
     blas::Queue& queue);
 
 void dotu(
     int64_t n,
-    std::complex<double> *dx, int64_t incdx,
-    std::complex<double> *dy, int64_t incdy,
+    std::complex<double> const *x, int64_t incx,
+    std::complex<double> const *y, int64_t incy,
     std::complex<double> *result,
     blas::Queue& queue);
 
