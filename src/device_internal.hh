@@ -51,43 +51,43 @@ void zaxpy(
 void sdot(
     blas::Queue& queue,
     device_blas_int n,
-    float *dx, device_blas_int incdx,
-    float *dy, device_blas_int incdy,
+    float const *dx, device_blas_int incdx,
+    float const *dy, device_blas_int incdy,
     float *result);
 
 void ddot(
     blas::Queue& queue,
     device_blas_int n,
-    double *dx, device_blas_int incdx,
-    double *dy, device_blas_int incdy,
+    double const *dx, device_blas_int incdx,
+    double const *dy, device_blas_int incdy,
     double *result);
 
 void cdotu(
     blas::Queue& queue,
     device_blas_int n,
-    std::complex<float> *dx, device_blas_int incdx,
-    std::complex<float> *dy, device_blas_int incdy,
+    std::complex<float> const *dx, device_blas_int incdx,
+    std::complex<float> const *dy, device_blas_int incdy,
     std::complex<float> *result);
 
 void zdotu(
     blas::Queue& queue,
     device_blas_int n,
-    std::complex<double> *dx, device_blas_int incdx,
-    std::complex<double> *dy, device_blas_int incdy,
+    std::complex<double> const *dx, device_blas_int incdx,
+    std::complex<double> const *dy, device_blas_int incdy,
     std::complex<double> *result);
 
 void cdotc(
     blas::Queue& queue,
     device_blas_int n,
-    std::complex<float> *dx, device_blas_int incdx,
-    std::complex<float> *dy, device_blas_int incdy,
+    std::complex<float> const *dx, device_blas_int incdx,
+    std::complex<float> const *dy, device_blas_int incdy,
     std::complex<float> *result);
 
 void zdotc(
     blas::Queue& queue,
     device_blas_int n,
-    std::complex<double> *dx, device_blas_int incdx,
-    std::complex<double> *dy, device_blas_int incdy,
+    std::complex<double> const *dx, device_blas_int incdx,
+    std::complex<double> const *dy, device_blas_int incdy,
     std::complex<double> *result);
 
 // -----------------------------------------------------------------------------

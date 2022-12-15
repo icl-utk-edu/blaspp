@@ -9,15 +9,18 @@
 
 #include <limits>
 
+// -----------------------------------------------------------------------------
+namespace blas {
+
 // =============================================================================
 // Overloaded wrappers for s, d, c, z precisions.
 
 // -----------------------------------------------------------------------------
 /// @ingroup dot
-void blas::dot(
+void dot(
     int64_t n,
-    float *dx, int64_t incdx,
-    float *dy, int64_t incdy,
+    float const *dx, int64_t incdx,
+    float const *dy, int64_t incdy,
     float *result,
     blas::Queue& queue)
 {
@@ -37,19 +40,17 @@ void blas::dot(
     device_blas_int incdx_ = (device_blas_int) incdx;
     device_blas_int incdy_ = (device_blas_int) incdy;
 
-    #ifndef BLAS_HAVE_ONEMKL
     blas::internal_set_device( queue.device() );
-    #endif
 
     device::sdot( queue, n_, dx, incdx_, dy, incdy_, result );
 }
 
 // -----------------------------------------------------------------------------
 /// @ingroup dot
-void blas::dot(
+void dot(
     int64_t n,
-    double *dx, int64_t incdx,
-    double *dy, int64_t incdy,
+    double const *dx, int64_t incdx,
+    double const *dy, int64_t incdy,
     double *result,
     blas::Queue& queue)
 {
@@ -69,19 +70,17 @@ void blas::dot(
     device_blas_int incdx_ = (device_blas_int) incdx;
     device_blas_int incdy_ = (device_blas_int) incdy;
 
-    #ifndef BLAS_HAVE_ONEMKL
     blas::internal_set_device( queue.device() );
-    #endif
 
     device::ddot( queue, n_, dx, incdx_, dy, incdy_, result );
 }
 
 // -----------------------------------------------------------------------------
 /// @ingroup dot
-void blas::dot(
+void dot(
     int64_t n,
-    std::complex<float> *dx, int64_t incdx,
-    std::complex<float> *dy, int64_t incdy,
+    std::complex<float> const *dx, int64_t incdx,
+    std::complex<float> const *dy, int64_t incdy,
     std::complex<float> *result,
     blas::Queue& queue)
 {
@@ -101,19 +100,17 @@ void blas::dot(
     device_blas_int incdx_ = (device_blas_int) incdx;
     device_blas_int incdy_ = (device_blas_int) incdy;
 
-    #ifndef BLAS_HAVE_ONEMKL
     blas::internal_set_device( queue.device() );
-    #endif
 
     device::cdotc( queue, n_, dx, incdx_, dy, incdy_, result );
 }
 
 // -----------------------------------------------------------------------------
 /// @ingroup dot
-void blas::dot(
+void dot(
     int64_t n,
-    std::complex<double> *dx, int64_t incdx,
-    std::complex<double> *dy, int64_t incdy,
+    std::complex<double> const *dx, int64_t incdx,
+    std::complex<double> const *dy, int64_t incdy,
     std::complex<double> *result,
     blas::Queue& queue)
 {
@@ -133,9 +130,7 @@ void blas::dot(
     device_blas_int incdx_ = (device_blas_int) incdx;
     device_blas_int incdy_ = (device_blas_int) incdy;
 
-    #ifndef BLAS_HAVE_ONEMKL
     blas::internal_set_device( queue.device() );
-    #endif
 
     device::zdotc( queue, n_, dx, incdx_, dy, incdy_, result );
 }
@@ -145,10 +140,10 @@ void blas::dot(
 
 // -----------------------------------------------------------------------------
 /// @ingroup dotu
-void blas::dotu(
+void dotu(
     int64_t n,
-    float *dx, int64_t incdx,
-    float *dy, int64_t incdy,
+    float const *dx, int64_t incdx,
+    float const *dy, int64_t incdy,
     float *result,
     blas::Queue& queue)
 {
@@ -157,10 +152,10 @@ void blas::dotu(
 
 // -----------------------------------------------------------------------------
 /// @ingroup dotu
-void blas::dotu(
+void dotu(
     int64_t n,
-    double *dx, int64_t incdx,
-    double *dy, int64_t incdy,
+    double const *dx, int64_t incdx,
+    double const *dy, int64_t incdy,
     double *result,
     blas::Queue& queue)
 {
@@ -169,10 +164,10 @@ void blas::dotu(
 
 // -----------------------------------------------------------------------------
 /// @ingroup dotu
-void blas::dotu(
+void dotu(
     int64_t n,
-    std::complex<float> *dx, int64_t incdx,
-    std::complex<float> *dy, int64_t incdy,
+    std::complex<float> const *dx, int64_t incdx,
+    std::complex<float> const *dy, int64_t incdy,
     std::complex<float> *result,
     blas::Queue& queue)
 {
@@ -192,19 +187,17 @@ void blas::dotu(
     device_blas_int incdx_ = (device_blas_int) incdx;
     device_blas_int incdy_ = (device_blas_int) incdy;
 
-    #ifndef BLAS_HAVE_ONEMKL
     blas::internal_set_device( queue.device() );
-    #endif
 
     device::cdotu( queue, n_, dx, incdx_, dy, incdy_, result );
 }
 
 // -----------------------------------------------------------------------------
 /// @ingroup dotu
-void blas::dotu(
+void dotu(
     int64_t n,
-    std::complex<double> *dx, int64_t incdx,
-    std::complex<double> *dy, int64_t incdy,
+    std::complex<double> const *dx, int64_t incdx,
+    std::complex<double> const *dy, int64_t incdy,
     std::complex<double> *result,
     blas::Queue& queue)
 {
@@ -224,9 +217,8 @@ void blas::dotu(
     device_blas_int incdx_ = (device_blas_int) incdx;
     device_blas_int incdy_ = (device_blas_int) incdy;
 
-    #ifndef BLAS_HAVE_ONEMKL
     blas::internal_set_device( queue.device() );
-    #endif
 
     device::zdotu( queue, n_, dx, incdx_, dy, incdy_, result );
 }
+} // namespace blas

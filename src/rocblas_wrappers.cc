@@ -141,17 +141,17 @@ void zaxpy(
 void sdot(
     blas::Queue& queue,
     device_blas_int n,
-    float *dx, device_blas_int incdx,
-    float *dy, device_blas_int incdy,
+    float const *dx, device_blas_int incdx,
+    float const *dy, device_blas_int incdy,
     float *result)
 {
-blas_dev_call(                                                              
-    rocblas_sdot(                                                          
-         queue.handle(),                                                     
-         n, 
-         dx, incdx,                                                       
-         dy, incdy,                                                       
-         result)); 
+blas_dev_call(
+    rocblas_sdot(
+         queue.handle(),
+         n,
+         dx, incdx,
+         dy, incdy,
+         result));
 }
 
 // -----------------------------------------------------------------------------
@@ -159,17 +159,17 @@ blas_dev_call(
 void ddot(
     blas::Queue& queue,
     device_blas_int n,
-    double *dx, device_blas_int incdx,
-    double *dy, device_blas_int incdy,
+    double const *dx, device_blas_int incdx,
+    double const *dy, device_blas_int incdy,
     double *result)
 {
-blas_dev_call(                                                              
-    rocblas_ddot(                                                          
-         queue.handle(),                                                     
-         n, 
-         dx, incdx,                                                       
-         dy, incdy,                                                       
-         result)); 
+blas_dev_call(
+    rocblas_ddot(
+         queue.handle(),
+         n,
+         dx, incdx,
+         dy, incdy,
+         result));
 }
 
 // -----------------------------------------------------------------------------
@@ -177,17 +177,17 @@ blas_dev_call(
 void cdotu(
     blas::Queue& queue,
     device_blas_int n,
-    std::complex<float> *dx, device_blas_int incdx,
-    std::complex<float> *dy, device_blas_int incdy,
+    std::complex<float> const *dx, device_blas_int incdx,
+    std::complex<float> const *dy, device_blas_int incdy,
     std::complex<float> *result)
 {
-blas_dev_call(                                                              
-    rocblas_cdotu(                                                          
-         queue.handle(),                                                     
-         n, 
-         (const rocblas_float_complex*) dx, incdx,                                                       
-         (const rocblas_float_complex*) dy, incdy,                                                       
-         (rocblas_float_complex*) result)); 
+blas_dev_call(
+    rocblas_cdotu(
+         queue.handle(),
+         n,
+         (const rocblas_float_complex*) dx, incdx,
+         (const rocblas_float_complex*) dy, incdy,
+         (rocblas_float_complex*) result));
 }
 
 // -----------------------------------------------------------------------------
@@ -195,17 +195,17 @@ blas_dev_call(
 void zdotu(
     blas::Queue& queue,
     device_blas_int n,
-    std::complex<double> *dx, device_blas_int incdx,
-    std::complex<double> *dy, device_blas_int incdy,
+    std::complex<double> const *dx, device_blas_int incdx,
+    std::complex<double> const *dy, device_blas_int incdy,
     std::complex<double> *result)
 {
-blas_dev_call(                                                              
-    rocblas_zdotu(                                                          
-         queue.handle(),                                                     
-         n, 
-         (const rocblas_double_complex*) dx, incdx,                                                       
-         (const rocblas_double_complex*) dy, incdy,                                                       
-         (rocblas_double_complex*) result)); 
+blas_dev_call(
+    rocblas_zdotu(
+         queue.handle(),
+         n,
+         (const rocblas_double_complex*) dx, incdx,
+         (const rocblas_double_complex*) dy, incdy,
+         (rocblas_double_complex*) result));
 }
 
 // -----------------------------------------------------------------------------
@@ -213,17 +213,17 @@ blas_dev_call(
 void cdotc(
     blas::Queue& queue,
     device_blas_int n,
-    std::complex<float> *dx, device_blas_int incdx,
-    std::complex<float> *dy, device_blas_int incdy,
+    std::complex<float> const *dx, device_blas_int incdx,
+    std::complex<float> const *dy, device_blas_int incdy,
     std::complex<float> *result)
 {
-blas_dev_call(                                                              
-    rocblas_cdotc(                                                          
-         queue.handle(),                                                     
-         n, 
-         (const rocblas_float_complex*) dx, incdx,                                                       
-         (const rocblas_float_complex*) dy, incdy,                                                       
-         (rocblas_float_complex*) result)); 
+blas_dev_call(
+    rocblas_cdotc(
+         queue.handle(),
+         n,
+         (const rocblas_float_complex*) dx, incdx,
+         (const rocblas_float_complex*) dy, incdy,
+         (rocblas_float_complex*) result));
 }
 
 // -----------------------------------------------------------------------------
@@ -231,17 +231,17 @@ blas_dev_call(
 void zdotc(
     blas::Queue& queue,
     device_blas_int n,
-    std::complex<double> *dx, device_blas_int incdx,
-    std::complex<double> *dy, device_blas_int incdy,
+    std::complex<double> const *dx, device_blas_int incdx,
+    std::complex<double> const *dy, device_blas_int incdy,
     std::complex<double> *result)
 {
-blas_dev_call(                                                              
-    rocblas_zdotc(                                                          
-         queue.handle(),                                                     
-         n, 
-         (const rocblas_double_complex*) dx, incdx,                                                       
-         (const rocblas_double_complex*) dy, incdy,                                                       
-         (rocblas_double_complex*) result)); 
+blas_dev_call(
+    rocblas_zdotc(
+         queue.handle(),
+         n,
+         (const rocblas_double_complex*) dx, incdx,
+         (const rocblas_double_complex*) dy, incdy,
+         (rocblas_double_complex*) result));
 }
 
 // -----------------------------------------------------------------------------

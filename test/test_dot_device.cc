@@ -14,9 +14,8 @@ template< typename TX, typename TY >
 void test_dot_device_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using namespace blas;
-    typedef scalar_type<TX, TY> scalar_t;
-    typedef real_type<scalar_t> real_t;
+    using scalar_t = blas::scalar_type< TX, TY >;
+    using real_t   = blas::real_type< scalar_t >;
 
     // get & mark input values
     char mode       = params.pointer_mode();
@@ -85,8 +84,8 @@ void test_dot_device_work( Params& params, bool run )
     cblas_copy( n, x, incx, xref, incx );
     cblas_copy( n, y, incy, yref, incy );
 
-    blas::device_setvector( n, x, std::abs(incx), dx, std::abs(incx), queue );
-    blas::device_setvector( n, y, std::abs(incy), dy, std::abs(incy), queue );
+    blas::device_copy_vector( n, x, std::abs(incx), dx, std::abs(incx), queue );
+    blas::device_copy_vector( n, y, std::abs(incy), dy, std::abs(incy), queue );
     queue.sync();
 
     if (verbose >= 1) {
@@ -110,14 +109,14 @@ void test_dot_device_work( Params& params, bool run )
         device_memcpy( &result_host, result, 1, queue );
     }
 
-    double gflop = Gflop<scalar_t>::dot( n );
-    double gbyte = Gbyte<scalar_t>::dot( n );
+    double gflop = blas::Gflop<scalar_t>::dot( n );
+    double gbyte = blas::Gbyte<scalar_t>::dot( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
 
-    blas::device_getvector( n, dx, std::abs(incx), x, std::abs(incx), queue );
-    blas::device_getvector( n, dy, std::abs(incy), y, std::abs(incy), queue );
+    blas::device_copy_vector( n, dx, std::abs(incx), x, std::abs(incx), queue );
+    blas::device_copy_vector( n, dy, std::abs(incy), y, std::abs(incy), queue );
     queue.sync();
 
     if (verbose >= 2) {
