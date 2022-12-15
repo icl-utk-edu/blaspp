@@ -34,6 +34,9 @@ void herk(
     std::vector<int64_t>& info,
     blas::Queue& queue )
 {
+#ifndef BLAS_HAVE_DEVICE
+    throw blas::Error( "device BLAS not available", __func__ );
+#else
     using real_t = real_type<scalar_t>;
 
     blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
@@ -69,6 +72,7 @@ void herk(
         queue.revolve();
     }
     queue.join();
+#endif
 }
 
 }  // namespace impl

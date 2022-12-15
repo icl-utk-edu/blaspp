@@ -34,6 +34,9 @@ void syr2k(
     std::vector<int64_t>& info,
     blas::Queue& queue )
 {
+#ifndef BLAS_HAVE_DEVICE
+    throw blas::Error( "device BLAS not available", __func__ );
+#else
     blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch_size < 0 );
     blas_error_if( info.size() != 0
@@ -69,6 +72,7 @@ void syr2k(
         queue.revolve();
     }
     queue.join();
+#endif
 }
 
 }  // namespace impl

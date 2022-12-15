@@ -38,6 +38,9 @@ void gemm(
     std::vector<int64_t>& info,
     blas::Queue& queue )
 {
+#ifndef BLAS_HAVE_DEVICE
+    throw blas::Error( "device BLAS not available", __func__ );
+#else
     size_t batch_size = 0;
     size_t group_count = group_size.size();
     if (group_count == 0)
@@ -145,6 +148,7 @@ void gemm(
 
     if (group_count > 1)
         queue.join();
+#endif
 }
 
 }  // namespace impl

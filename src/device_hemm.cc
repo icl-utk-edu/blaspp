@@ -32,6 +32,9 @@ void hemm(
     scalar_t*       C, int64_t ldc,
     blas::Queue& queue )
 {
+#ifndef BLAS_HAVE_DEVICE
+    throw blas::Error( "device BLAS not available", __func__ );
+#else
     // check arguments
     blas_error_if( layout != Layout::ColMajor &&
                    layout != Layout::RowMajor );
@@ -77,6 +80,7 @@ void hemm(
     // call low-level wrapper
     internal::hemm( side, uplo, m_, n_,
                     alpha, A, lda_, B, ldb_, beta, C, ldc_, queue );
+#endif
 }
 
 }  // namespace impl

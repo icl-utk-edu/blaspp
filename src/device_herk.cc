@@ -30,6 +30,9 @@ void herk(
     scalar_t*       C, int64_t ldc,
     blas::Queue& queue )
 {
+#ifndef BLAS_HAVE_DEVICE
+    throw blas::Error( "device BLAS not available", __func__ );
+#else
     // check arguments
     blas_error_if( layout != Layout::ColMajor &&
                    layout != Layout::RowMajor );
@@ -65,6 +68,7 @@ void herk(
     // call low-level wrapper
     internal::herk( uplo, trans, n_, k_,
                     alpha, A, lda_, beta, C, ldc_, queue );
+#endif
 }
 
 }  // namespace impl

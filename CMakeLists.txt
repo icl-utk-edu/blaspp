@@ -236,7 +236,6 @@ add_library(
     src/device_utils.cc
     src/cublas_wrappers.cc
     src/rocblas_wrappers.cc
-    src/stub_wrappers.cc
 )
 
 #-------------------------------------------------------------------------------

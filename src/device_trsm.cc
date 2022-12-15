@@ -32,6 +32,9 @@ void trsm(
     scalar_t*       B, int64_t ldb,
     blas::Queue&  queue )
 {
+#ifndef BLAS_HAVE_DEVICE
+    throw blas::Error( "device BLAS not available", __func__ );
+#else
     // check arguments
     blas_error_if( layout != Layout::ColMajor &&
                    layout != Layout::RowMajor );
@@ -75,6 +78,7 @@ void trsm(
     // call low-level wrapper
     internal::trsm( side, uplo, trans, diag, m_, n_,
                     alpha, A, lda_, B, ldb_, queue );
+#endif
 }
 
 }  // namespace impl

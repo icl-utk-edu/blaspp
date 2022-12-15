@@ -27,6 +27,9 @@ void axpy(
     scalar_t*       y, int64_t incy,
     blas::Queue& queue)
 {
+#ifndef BLAS_HAVE_DEVICE
+    throw blas::Error( "device BLAS not available", __func__ );
+#else
     // check arguments
     blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
     blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
@@ -41,6 +44,7 @@ void axpy(
 
     // call low-level wrapper
     internal::axpy( n_, alpha, x, incx_, y, incy_, queue );
+#endif
 }
 
 }  // namespace impl

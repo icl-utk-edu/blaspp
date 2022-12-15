@@ -26,6 +26,9 @@ void scal(
     scalar_t* x, int64_t incx,
     blas::Queue& queue )
 {
+#ifndef BLAS_HAVE_DEVICE
+    throw blas::Error( "device BLAS not available", __func__ );
+#else
     // check arguments
     blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
     blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
@@ -38,6 +41,7 @@ void scal(
 
     // call low-level wrapper
     internal::scal( n_, alpha, x, incx_, queue );
+#endif
 }
 
 }  // namespace impl

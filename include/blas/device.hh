@@ -9,6 +9,12 @@
 #include "blas/util.hh"
 #include "blas/defines.h"
 
+#if defined( BLAS_HAVE_CUBLAS ) \
+    || defined( BLAS_HAVE_ROCBLAS ) \
+    || defined( BLAS_HAVE_ONEMKL )
+    #define BLAS_HAVE_DEVICE
+#endif
+
 #ifdef BLAS_HAVE_CUBLAS
     #include <cuda_runtime.h>
     #include <cublas_v2.h>

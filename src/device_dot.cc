@@ -28,6 +28,9 @@ void dot(
     scalar_t* result,
     blas::Queue& queue )
 {
+#ifndef BLAS_HAVE_DEVICE
+    throw blas::Error( "device BLAS not available", __func__ );
+#else
     // check arguments
     blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
     blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
@@ -42,6 +45,7 @@ void dot(
 
     // call low-level wrapper
     internal::dot( n_, x, incx_, y, incy_, result, queue );
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -58,6 +62,9 @@ void dotu(
     scalar_t* result,
     blas::Queue& queue )
 {
+#ifndef BLAS_HAVE_DEVICE
+    throw blas::Error( "device BLAS not available", __func__ );
+#else
     // check arguments
     blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
     blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
@@ -72,6 +79,7 @@ void dotu(
 
     // call low-level wrapper
     internal::dotu( n_, x, incx_, y, incy_, result, queue );
+#endif
 }
 
 }  // namespace impl

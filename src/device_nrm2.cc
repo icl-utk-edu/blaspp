@@ -26,6 +26,9 @@ void nrm2(
     real_type<scalar_t>* result,
     blas::Queue& queue )
 {
+#ifndef BLAS_HAVE_DEVICE
+    throw blas::Error( "device BLAS not available", __func__ );
+#else
     // check arguments
     blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
     blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
@@ -38,6 +41,7 @@ void nrm2(
 
     // call low-level wrapper
     internal::nrm2( n_, x, incx_, result, queue );
+#endif
 }
 
 }  // namespace impl
