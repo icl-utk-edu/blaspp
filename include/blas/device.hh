@@ -51,6 +51,7 @@ namespace blas {
 
 // -----------------------------------------------------------------------------
 // types
+[[deprecated("use int. Remove 2023-12.")]]
 typedef int Device;
 
 #ifdef BLAS_HAVE_CUBLAS
@@ -135,16 +136,16 @@ class Queue
 {
 public:
     Queue();
-    Queue( blas::Device device, int64_t batch_size );
+    Queue( int device, int64_t batch_size );
     // Disable copying; must construct anew.
     Queue( Queue const& ) = delete;
     Queue& operator=( Queue const& ) = delete;
     ~Queue();
 
-    blas::Device           device() const { return device_; }
-    void                   sync();
-    size_t                 get_batch_limit() { return batch_limit_; }
-    void**                 get_dev_ptr_array();
+    int    device() const { return device_; }
+    void   sync();
+    size_t get_batch_limit() { return batch_limit_; }
+    void** get_dev_ptr_array();
 
     /// @return device workspace.
     void* work() { return (void*) work_; }
@@ -178,7 +179,7 @@ public:
 
 private:
     // associated device ID
-    blas::Device device_;
+    int device_;
 
     // max workspace allocated for a batch argument in a single call
     // (e.g. a pointer array)
@@ -376,13 +377,13 @@ inline const char* device_error_string( rocblas_status error )
 // -----------------------------------------------------------------------------
 // set/get device functions
 [[deprecated("use blas::Queues& with all blaspp calls")]]
-void set_device( blas::Device device );
+void set_device( int device );
 
 // private, internal routine; sets device for cuda, rocm; nothing for onemkl
-void internal_set_device( blas::Device device );
+void internal_set_device( int device );
 
 [[deprecated("use blas::Queues& with all blaspp calls")]]
-void get_device( blas::Device *device );
+void get_device( int *device );
 
 device_blas_int get_device_count();
 #ifdef BLAS_HAVE_ONEMKL

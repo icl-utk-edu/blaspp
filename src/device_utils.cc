@@ -13,7 +13,7 @@ namespace blas {
 /// @deprecated
 /// Set current GPU device.
 /// (CUDA, ROCm only; doesn't work with SYCL.)
-void set_device( blas::Device device )
+void set_device( int device )
 {
     #ifdef BLAS_HAVE_CUBLAS
         blas_dev_call(
@@ -34,7 +34,7 @@ void set_device( blas::Device device )
 // -----------------------------------------------------------------------------
 /// Set the current GPU device as needed by the accelerator/gpu.
 /// (CUDA, ROCm only; no-op for SYCL.)
-void internal_set_device( blas::Device device )
+void internal_set_device( int device )
 {
     #ifdef BLAS_HAVE_CUBLAS
         blas_dev_call(
@@ -56,19 +56,19 @@ void internal_set_device( blas::Device device )
 /// @deprecated
 /// Get current GPU device.
 /// (CUDA, ROCm only; doesn't work with SYCL.)
-void get_device( blas::Device *device )
+void get_device( int *device )
 {
     #ifdef BLAS_HAVE_CUBLAS
         device_blas_int dev = -1;
         blas_dev_call(
             cudaGetDevice(&dev) );
-        (*device) = (blas::Device)dev;
+        (*device) = dev;
 
     #elif defined(BLAS_HAVE_ROCBLAS)
         device_blas_int dev = -1;
         blas_dev_call(
             hipGetDevice(&dev) );
-        (*device) = (blas::Device)dev;
+        (*device) = dev;
 
     #elif defined(BLAS_HAVE_ONEMKL)
         throw blas::Error( "unsupported function for sycl backend", __func__ );

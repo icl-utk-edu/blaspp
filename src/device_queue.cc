@@ -152,11 +152,11 @@ Queue::Queue()
         device_blas_int dev = -1;
         #ifdef BLAS_HAVE_CUBLAS
             blas_dev_call( cudaGetDevice(&dev) );
-            device_ = (blas::Device)dev;
+            device_ = dev;
         #elif defined(BLAS_HAVE_ROCBLAS)
             blas_dev_call( hipGetDevice(&dev) );
-            device_ = (blas::Device)dev;
-         #endif
+            device_ = dev;
+        #endif
 
         batch_limit_ = DEV_QUEUE_DEFAULT_BATCH_LIMIT;
 
@@ -193,7 +193,7 @@ Queue::Queue()
 // -----------------------------------------------------------------------------
 /// Constructor with device and batch init.
 // todo: merge with default constructor.
-Queue::Queue( blas::Device device, int64_t batch_size )
+Queue::Queue( int device, int64_t batch_size )
   : work_( nullptr ),
     lwork_( 0 )
 {
