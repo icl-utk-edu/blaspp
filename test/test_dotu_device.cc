@@ -8,26 +8,28 @@
 #include "lapack_wrappers.hh"
 #include "blas/flops.hh"
 #include "print_matrix.hh"
+#include "check_gemm.hh"
 
 // -----------------------------------------------------------------------------
-template< typename TX, typename TY >
+template<typename TX, typename TY>
 void test_dotu_device_work( Params& params, bool run )
 {
     using namespace testsweeper;
+    using std::real;
+    using std::imag;
     using scalar_t = blas::scalar_type< TX, TY >;
     using real_t   = blas::real_type< scalar_t >;
 
     // get & mark input values
-    char mode       = params.pointer_mode();
     int64_t n       = params.dim.n();
     int64_t incx    = params.incx();
     int64_t incy    = params.incy();
-    int64_t device  = params.device();
     int64_t verbose = params.verbose();
+    int64_t device  = params.device();
+    char mode       = params.pointer_mode();
 
     scalar_t  result_host;
     scalar_t* result = &result_host;
-    scalar_t  result_cblas;
 
     // mark non-standard output values
     params.gflops();
@@ -37,8 +39,9 @@ void test_dotu_device_work( Params& params, bool run )
     params.ref_gbytes();
 
     // adjust header to msec
-    params.time.name( "BLAS++ time (ms)" );
-    params.ref_time.name( "Ref. time (ms)" );
+    params.time.name( "time (ms)" );
+    params.ref_time.name( "ref time (ms)" );
+    params.ref_time.width( 13 );
 
     if (! run)
         return;
@@ -49,12 +52,19 @@ void test_dotu_device_work( Params& params, bool run )
     }
 
     // setup
-    size_t size_x = (n - 1) * std::abs( incx ) + 1;
-    size_t size_y = (n - 1) * std::abs( incy ) + 1;
-    TX* x    = new TX[ size_x ];
-    TX* xref = new TX[ size_x ];
-    TY* y    = new TY[ size_y ];
-    TY* yref = new TY[ size_y ];
+    size_t size_x = (n - 1) * std::abs(incx) + 1;
+    size_t size_y = (n - 1) * std::abs(incy) + 1;
+    TX* x = new TX[ size_x ];
+    TY* y = new TY[ size_y ];
+
+    int64_t idist = 1;
+    int iseed[4] = { 0, 0, 0, 1 };
+    lapack_larnv( idist, iseed, size_x, x );
+    lapack_larnv( idist, iseed, size_y, y );
+
+    // norms for error check
+    real_t Xnorm = cblas_nrm2( n, x, std::abs(incx) );
+    real_t Ynorm = cblas_nrm2( n, y, std::abs(incy) );
 
     // device specifics
     blas::Queue queue( device, 0 );
@@ -63,6 +73,11 @@ void test_dotu_device_work( Params& params, bool run )
 
     dx = blas::device_malloc<TX>( size_x, queue );
     dy = blas::device_malloc<TY>( size_y, queue );
+
+    blas::device_copy_vector( n, x, std::abs(incx), dx, std::abs(incx), queue );
+    blas::device_copy_vector( n, y, std::abs(incy), dy, std::abs(incy), queue );
+    queue.sync();
+
     if (mode == 'd') {
         result = blas::device_malloc<scalar_t>( 1, queue );
         #if defined( BLAS_HAVE_CUBLAS )
@@ -77,25 +92,16 @@ void test_dotu_device_work( Params& params, bool run )
     assert_throw( blas::dotu(  n, x,    0, y, incy, result, queue ), blas::Error );
     assert_throw( blas::dotu(  n, x, incx, y,    0, result, queue ), blas::Error );
 
-    int64_t idist = 1;
-    int iseed[4] = { 0, 0, 0, 1 };
-    lapack_larnv( idist, iseed, size_x, x );
-    lapack_larnv( idist, iseed, size_y, y );
-    cblas_copy( n, x, incx, xref, incx );
-    cblas_copy( n, y, incy, yref, incy );
-
-    blas::device_copy_vector( n, x, std::abs(incx), dx, std::abs(incx), queue );
-    blas::device_copy_vector( n, y, std::abs(incy), dy, std::abs(incy), queue );
-    queue.sync();
-
     if (verbose >= 1) {
         printf( "\n"
-                "n=%5lld, incx=%5lld, sizex=%10lld, incy=%5lld, sizey=%10lld\n",
-                llong( n ), llong( incx ), llong( size_x ), llong( incy ), llong( size_y ) );
+                "x n=%5lld, inc=%5lld, size=%10lld, norm %.2e\n"
+                "y n=%5lld, inc=%5lld, size=%10lld, norm %.2e\n",
+                llong( n ), llong( incx ), llong( size_x ), Xnorm,
+                llong( n ), llong( incy ), llong( size_y ), Ynorm );
     }
     if (verbose >= 2) {
-        printf( "x    = " ); print_vector( n, x, incx );
-        printf( "y    = " ); print_vector( n, y, incy );
+        printf( "x = " ); print_vector( n, x, incx );
+        printf( "y = " ); print_vector( n, y, incy );
     }
 
     // run test
@@ -115,54 +121,38 @@ void test_dotu_device_work( Params& params, bool run )
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
 
-    blas::device_copy_vector( n, dx, std::abs( incx ), x, std::abs( incx ), queue );
-    blas::device_copy_vector( n, dy, std::abs( incy ), y, std::abs( incy ), queue );
-    queue.sync();
-
-    if (verbose >= 2) {
-        printf( "x2   = " ); print_vector( n, x, incx );
-        printf( "y2   = " ); print_vector( n, y, incy );
+    if (verbose >= 1) {
+        printf( "dotu = %.4e + %.4ei\n", real(result_host), imag(result_host) );
     }
 
     if (params.check() == 'y') {
         // run reference
         testsweeper::flush_cache( params.cache() );
         time = get_wtime();
-        result_cblas = cblas_dotu( n, xref, incx, yref, incy );
+        scalar_t ref = cblas_dotu( n, x, incx, y, incy );
         time = get_wtime() - time;
 
         params.ref_time()   = time * 1000;  // msec
         params.ref_gflops() = gflop / time;
         params.ref_gbytes() = gbyte / time;
 
-        if (verbose >= 2) {
-            printf( "result0 = %3.2lld\n",llong( std::abs( result_cblas ) ) );
+        if (verbose >= 1) {
+            printf( "ref = %.4e + %.4ei\n", real(ref), imag(ref) );
         }
 
-        // relative forward error:
-        real_t error = std::abs( (result_cblas - result_host ) )
-                           / ( sqrt(n+1) * std::abs( result_cblas ) );
+        // check error compared to reference
+        // treat result as 1 x 1 matrix; k = n is reduction dimension
+        // alpha=1, beta=0, Cnorm=0
+        real_t error;
+        bool okay;
+        check_gemm( 1, 1, n, scalar_t(1), scalar_t(0), Xnorm, Ynorm, real_t(0),
+                    &ref, 1, &result_host, 1, verbose, &error, &okay );
         params.error() = error;
-
-
-        if (verbose >= 2) {
-            printf( "err  = " ); print_vector( n, x, incx, "%9.2e" );
-        }
-
-        // complex needs extra factor; see Higham, 2002, sec. 3.6.
-        if (blas::is_complex<scalar_t>::value) {
-            error /= 2*sqrt(2);
-        }
-
-        real_t u = 0.5 * std::numeric_limits< real_t >::epsilon();
-        params.error() = error;
-        params.okay() = (error < u);
+        params.okay() = okay;
     }
 
     delete[] x;
-    delete[] xref;
     delete[] y;
-    delete[] yref;
 
     blas::device_free( dx, queue );
     blas::device_free( dy, queue );
