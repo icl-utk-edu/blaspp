@@ -7,7 +7,11 @@
 
 // get BLAS_FORTRAN_NAME and blas_int
 #include "blas/fortran.h"
-#include "cblas_wrappers.hh"
+
+// Including a variant of <cblas.h> can cause conflicts in BLAS_*rot[g]
+// Fortran prototypes, e.g., on macOS Ventura. So we define these without
+// including their prototypes.
+//#include "cblas_wrappers.hh"
 
 #include <complex>
 
