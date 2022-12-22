@@ -990,9 +990,9 @@ def init( namespace, prefix='/usr/local' ):
         txt += '''
 MacOS System Integrity Protection (SIP) prevents configure.py from inheriting
 $DYLD_LIBRARY_PATH. Using
-    python configure.py
-directly (not via make), with a 3rd party python from python.org, Homebrew, etc.
-(i.e., not /usr/bin/python), will allow $DYLD_LIBRARY_PATH to be inherited.
+    python3 configure.py
+directly (not via make), with a 3rd party python3 from python.org, Homebrew, etc.
+(i.e., not /usr/bin/python3), will allow $DYLD_LIBRARY_PATH to be inherited.
 '''
         txt = font.red( txt )
         txt += '-'*80

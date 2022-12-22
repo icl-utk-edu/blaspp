@@ -149,7 +149,7 @@ if (blaspp_is_project)
     add_custom_target(
         "check"
         COMMAND
-            python run_tests.py --quick
+            python3 run_tests.py --quick
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
     )
 endif()
