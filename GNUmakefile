@@ -37,6 +37,8 @@ make.inc:
 RANLIB   ?= ranlib
 prefix   ?= /opt/slate
 
+abs_prefix := ${abspath ${prefix}}
+
 # Default LD=ld won't work; use CXX. Can override in make.inc or environment.
 ifeq ($(origin LD),default)
     LD = $(CXX)
@@ -141,20 +143,20 @@ all: lib tester hooks
 pkg = lib/pkgconfig/blaspp.pc
 
 install: lib $(pkg)
-	mkdir -p $(DESTDIR)$(prefix)/include/blas
-	mkdir -p $(DESTDIR)$(prefix)/lib$(LIB_SUFFIX)
-	mkdir -p $(DESTDIR)$(prefix)/lib$(LIB_SUFFIX)/pkgconfig
-	cp include/*.hh $(DESTDIR)$(prefix)/include/
-	cp include/blas/*.h  $(DESTDIR)$(prefix)/include/blas/
-	cp include/blas/*.hh $(DESTDIR)$(prefix)/include/blas/
-	cp -R lib/lib* $(DESTDIR)$(prefix)/lib$(LIB_SUFFIX)/
-	cp $(pkg) $(DESTDIR)$(prefix)/lib$(LIB_SUFFIX)/pkgconfig/
+	mkdir -p $(DESTDIR)$(abs_prefix)/include/blas
+	mkdir -p $(DESTDIR)$(abs_prefix)/lib$(LIB_SUFFIX)
+	mkdir -p $(DESTDIR)$(abs_prefix)/lib$(LIB_SUFFIX)/pkgconfig
+	cp include/*.hh $(DESTDIR)$(abs_prefix)/include/
+	cp include/blas/*.h  $(DESTDIR)$(abs_prefix)/include/blas/
+	cp include/blas/*.hh $(DESTDIR)$(abs_prefix)/include/blas/
+	cp -R lib/lib* $(DESTDIR)$(abs_prefix)/lib$(LIB_SUFFIX)/
+	cp $(pkg) $(DESTDIR)$(abs_prefix)/lib$(LIB_SUFFIX)/pkgconfig/
 
 uninstall:
-	$(RM)    $(DESTDIR)$(prefix)/include/blas.hh
-	$(RM) -r $(DESTDIR)$(prefix)/include/blas
-	$(RM) $(DESTDIR)$(prefix)/lib$(LIB_SUFFIX)/libblaspp.*
-	$(RM) $(DESTDIR)$(prefix)/lib$(LIB_SUFFIX)/pkgconfig/blaspp.pc
+	$(RM)    $(DESTDIR)$(abs_prefix)/include/blas.hh
+	$(RM) -r $(DESTDIR)$(abs_prefix)/include/blas
+	$(RM) $(DESTDIR)$(abs_prefix)/lib$(LIB_SUFFIX)/libblaspp.*
+	$(RM) $(DESTDIR)$(abs_prefix)/lib$(LIB_SUFFIX)/pkgconfig/blaspp.pc
 
 #-------------------------------------------------------------------------------
 # if re-configured, recompile everything
@@ -234,7 +236,7 @@ LDFLAGS_clean  = $(filter-out -fPIC, $(LDFLAGS))
 .PHONY: $(pkg)
 $(pkg):
 	perl -pe "s'#VERSION'2021.04.01'; \
-	          s'#PREFIX'${prefix}'; \
+	          s'#PREFIX'${abs_prefix}'; \
 	          s'#CXX\b'${CXX}'; \
 	          s'#CXXFLAGS'${CXXFLAGS_clean}'; \
 	          s'#CPPFLAGS'${CPPFLAGS_clean}'; \
