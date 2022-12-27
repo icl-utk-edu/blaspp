@@ -55,35 +55,38 @@ void test_device_gemm( int m, int n, int k )
         int batch_size = 1000;  // todo: use default batch_size
         blas::Queue queue( device, batch_size );
 
-        // todo: future update to pass queue into malloc
-        blas::set_device( device );
         T *dA = blas::device_malloc<T>( lda*k, queue );  // m-by-k
         T *dB = blas::device_malloc<T>( ldb*n, queue );  // k-by-n
         T *dC = blas::device_malloc<T>( ldc*n, queue );  // m-by-n
 
-        blas::device_setmatrix( m, k,
-                                A.data(), lda,      // src
-                                dA, lda, queue );   // dst
+        blas::device_copy_matrix(
+            m, k,
+            A.data(), lda,      // src
+            dA, lda, queue );   // dst
 
-        blas::device_setmatrix( k, n,
-                                B.data(), ldb,      // src
-                                dB, ldb, queue );   // dst
+        blas::device_copy_matrix(
+            k, n,
+            B.data(), ldb,      // src
+            dB, ldb, queue );   // dst
 
-        blas::device_setmatrix( m, n,
-                                C.data(), ldc,      // src
-                                dC, ldc, queue );   // dst
+        blas::device_copy_matrix(
+            m, n,
+            C.data(), ldc,      // src
+            dC, ldc, queue );   // dst
 
         // C = -1.0*A*B + 1.0*C
-        blas::gemm( blas::Layout::ColMajor, blas::Op::NoTrans, blas::Op::NoTrans,
-                    m, n, k,
-                    -1.0, dA, lda,
-                          dB, ldb,
-                     1.0, dC, ldc,
-                    queue );
+        blas::gemm(
+            blas::Layout::ColMajor, blas::Op::NoTrans, blas::Op::NoTrans,
+            m, n, k,
+            -1.0, dA, lda,
+                  dB, ldb,
+             1.0, dC, ldc,
+            queue );
 
-        blas::device_getmatrix( m, n,
-                                dC, ldc,                 // src
-                                C.data(), ldc, queue );  // dst
+        blas::device_copy_matrix(
+            m, n,
+            dC, ldc,                 // src
+            C.data(), ldc, queue );  // dst
 
         queue.sync();
 
