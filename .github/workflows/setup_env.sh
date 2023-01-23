@@ -35,7 +35,14 @@ shopt -s expand_aliases
 
 print "======================================== Load compiler"
 quiet module load gcc@7.3.0
+quiet which g++
+g++ --version
+
 quiet module load intel-mkl
+echo "MKLROOT=${MKLROOT}"
+
+quiet module load pkgconf
+quiet which pkg-config
 
 # CMake will find CUDA in /usr/local/cuda, so need to explicitly set
 # gpu_backend.
@@ -70,3 +77,5 @@ if [ "${maker}" = "cmake" ]; then
     cmake --version
     cd build
 fi
+
+quiet module list

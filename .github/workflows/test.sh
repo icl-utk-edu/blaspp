@@ -36,7 +36,10 @@ if [ "${maker}" = "make" ]; then
 fi
 if [ "${maker}" = "cmake" ]; then
     rm -rf build && mkdir build && cd build
-    cmake "-DCMAKE_PREFIX_PATH=${top}/install/lib64/blaspp" ..
+    # On some systems, CMake GNUInstallDirs uses lib, on others lib64.
+    lib="${top}/install/lib/blaspp;${top}/install/lib/lapackpp"
+    lib64="${top}/install/lib64/blaspp;${top}/install/lib64/lapackpp"
+    cmake "-DCMAKE_PREFIX_PATH=${lib};${lib64}" ..
 fi
 
 make
