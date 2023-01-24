@@ -75,6 +75,7 @@ if [ "${device}" = "gpu_intel" ]; then
     export gpu_backend=onemkl
     module unload intel-mkl
     module load intel-oneapi-compilers
+    module load intel-oneapi-mkl
 fi
 
 
