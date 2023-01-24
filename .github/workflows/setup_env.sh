@@ -71,7 +71,7 @@ if [ "${device}" = "gpu_amd" ]; then
 fi
 
 if [ "${device}" = "gpu_intel" ]; then
-    print "======================================== Load ROCm"
+    print "======================================== Load Intel oneAPI"
     export gpu_backend=onemkl
     module unload intel-mkl
     module load intel-oneapi-compilers
