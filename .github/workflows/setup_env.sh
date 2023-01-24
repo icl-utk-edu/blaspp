@@ -70,6 +70,14 @@ if [ "${device}" = "gpu_amd" ]; then
     hipcc --version
 fi
 
+if [ "${device}" = "gpu_intel" ]; then
+    print "======================================== Load ROCm"
+    export gpu_backend=onemkl
+    module unload intel-mkl
+    module load intel-oneapi-mkl
+fi
+
+
 if [ "${maker}" = "cmake" ]; then
     print "======================================== Load cmake"
     quiet module load cmake
