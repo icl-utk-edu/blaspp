@@ -18,9 +18,6 @@ jobs:
   icl_blaspp:
     strategy:
       matrix:
-        maker: [make, cmake]
-        device: [cpu, gpu_nvidia, gpu_amd]
-      matrix:
         maker: [make]
         device: [gpu_intel]
       fail-fast: false
