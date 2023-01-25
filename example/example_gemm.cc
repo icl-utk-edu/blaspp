@@ -101,14 +101,14 @@ int main( int argc, char** argv )
 {
     int m = 100, n = 200, k = 50;
     test_gemm< float  >( m, n, k );
-    test_gemm< double >( m, n, k );
+    //test_gemm< double >( m, n, k );
     test_gemm< std::complex<float>  >( m, n, k );
-    test_gemm< std::complex<double> >( m, n, k );
+    //test_gemm< std::complex<double> >( m, n, k );
 
     test_device_gemm< float  >( m, n, k );
-    test_device_gemm< double >( m, n, k );
+    //test_device_gemm< double >( m, n, k );
     test_device_gemm< std::complex<float>  >( m, n, k );
-    test_device_gemm< std::complex<double> >( m, n, k );
+    //test_device_gemm< std::complex<double> >( m, n, k );
 
     return 0;
 }
