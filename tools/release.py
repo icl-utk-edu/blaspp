@@ -146,7 +146,7 @@ def make( project, version_h, version_c ):
     # Search for latest tag this month and increment release if found.
     tags = myrun( 'git tag', stdout=PIPE, text=True ).rstrip().split( '\n' )
     tags.sort( reverse=True )
-    pattern = r'%04d\.%02d\.(\d+)' % (year, month)
+    pattern = r'v%04d\.%02d\.(\d+)' % (year, month)
     for tag in tags:
         s = re.search( pattern, tag )
         if (s):
@@ -154,6 +154,7 @@ def make( project, version_h, version_c ):
             break
 
     tag = '%04d.%02d.%02d' % (year, month, release)
+    vtag = 'v' + tag
     version = '%04d%02d%02d' % (year, month, release)
     print( '\n>> Tag '+ tag +', Version '+ version )
 
@@ -195,7 +196,7 @@ def make( project, version_h, version_c ):
         exit(1)
 
     myrun( ['git', 'commit', '-m', 'Version '+ tag, '.'] )
-    myrun( ['git', 'tag', tag, '-a', '-m', 'Version '+ tag] )
+    myrun( ['git', 'tag', vtag, '-a', '-m', 'Version '+ tag] )
 
     #--------------------
     # Prepare tar file.
@@ -213,7 +214,7 @@ def make( project, version_h, version_c ):
     # end
 
     os.mkdir( dir )
-    subprocess.run( 'git archive ' + tag + ' | tar -x -C ' + dir, shell=True )
+    subprocess.run( 'git archive ' + vtag + ' | tar -x -C ' + dir, shell=True )
     os.chdir( dir )
 
     # Update hash ID in version_c.
