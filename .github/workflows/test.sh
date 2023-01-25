@@ -14,20 +14,20 @@ err=0
 
 cd test
 export OMP_NUM_THREADS=8
-TESTER="./run_tests.py --quick --xml"
+TESTER="./run_tests.py --quick"
 [ "${device}" = "gpu_intel" ] && TESTER+=" --type s,c"
 
-$TESTER --blas1 --blas2 --blas3 ${top}/report-${maker}.xml
+$TESTER --blas1 --blas2 --blas3 --xml ${top}/report-${maker}.xml
 (( err += $? ))
 
-$TESTER --batch-blas3 ${top}/report-${maker}-batch.xml
+$TESTER --batch-blas3 --xml ${top}/report-${maker}-batch.xml
 (( err += $? ))
 
 # CUDA or HIP
-$TESTER --blas1-device --blas3-device ${top}/report-${maker}-device.xml
+$TESTER --blas1-device --blas3-device --xml ${top}/report-${maker}-device.xml
 (( err += $? ))
 
-$TESTER --batch-blas3-device ${top}/report-${maker}-batch-device.xml
+$TESTER --batch-blas3-device --xml ${top}/report-${maker}-batch-device.xml
 (( err += $? ))
 
 print "======================================== Smoke tests"
