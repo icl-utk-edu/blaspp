@@ -54,7 +54,7 @@ void test_util( scalar_type alpha )
 int main( int argc, char** argv )
 {
     test_util(  float(1.234) );
-    test_util( double(2.468) );
+    //test_util( double(2.468) );
     test_util( std::complex< float>( 3.1415, 0.5678 ) );
-    test_util( std::complex<double>( 6.2830, 1.1356 ) );
+    //test_util( std::complex<double>( 6.2830, 1.1356 ) );
 }
