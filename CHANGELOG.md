@@ -1,3 +1,16 @@
+2023.01.00
+  - Added oneAPI port (currently Makefile only)
+      - Added queue argument to `device_malloc, device_free`, etc.;
+        deprecated old versions
+      - Deprecated `set_device, get_device`
+      - Renamed `device_malloc_pinned` to `host_malloc_pinned`
+      - Added `device_copy_{matrix,vector}`;
+        deprecated `device_{set,get}{matrix,vector}`
+  - Added more Level 1 BLAS on GPU device: axpy, dot, nrm2
+  - Moved main repo to https://github.com/icl-utk-edu/blaspp/
+  - Refactored routines for better maintainability
+  - Use python3
+
 2022.07.00
   - Added workspace in queue; used in LAPACK++
   - Set device in memcpy, etc.
@@ -11,7 +24,7 @@
   - Fixed CMake when BLAS_LIBRARIES is empty
 
 2021.04.01
-  - Fixed bug in test_trsm_device for row-major
+  - Fixed bug in `test_trsm_device` for row-major
 
 2021.04.00
   - Added HIP/ROCm support
