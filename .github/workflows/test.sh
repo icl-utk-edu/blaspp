@@ -15,7 +15,7 @@ err=0
 cd test
 export OMP_NUM_THREADS=8
 TESTER="./run_tests.py --quick --xml"
-[ "${device}" = "gpu_intel" ] && TESTER+="--type s,c"
+[ "${device}" = "gpu_intel" ] && TESTER+=" --type s,c"
 
 $TESTER --blas1 --blas2 --blas3 ${top}/report-${maker}.xml
 (( err += $? ))
