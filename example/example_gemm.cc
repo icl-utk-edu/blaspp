@@ -99,16 +99,34 @@ void test_device_gemm( int m, int n, int k )
 //------------------------------------------------------------------------------
 int main( int argc, char** argv )
 {
-    int m = 100, n = 200, k = 50;
-    test_gemm< float  >( m, n, k );
-    test_gemm< double >( m, n, k );
-    test_gemm< std::complex<float>  >( m, n, k );
-    test_gemm< std::complex<double> >( m, n, k );
+    try {
+        // Parse command line to set types for s, d, c, z precisions.
+        bool types[ 4 ];
+        parse_args( argc, argv, types );
 
-    test_device_gemm< float  >( m, n, k );
-    test_device_gemm< double >( m, n, k );
-    test_device_gemm< std::complex<float>  >( m, n, k );
-    test_device_gemm< std::complex<double> >( m, n, k );
+        // Run tests.
+        int m = 100, n = 200, k = 50;
+        if (types[ 0 ])
+            test_gemm< float  >( m, n, k );
+        if (types[ 1 ])
+            test_gemm< double >( m, n, k );
+        if (types[ 2 ])
+            test_gemm< std::complex<float>  >( m, n, k );
+        if (types[ 3 ])
+            test_gemm< std::complex<double> >( m, n, k );
 
+        if (types[ 0 ])
+            test_device_gemm< float  >( m, n, k );
+        if (types[ 1 ])
+            test_device_gemm< double >( m, n, k );
+        if (types[ 2 ])
+            test_device_gemm< std::complex<float>  >( m, n, k );
+        if (types[ 3 ])
+            test_device_gemm< std::complex<double> >( m, n, k );
+    }
+    catch (std::exception const& ex) {
+        fprintf( stderr, "%s", ex.what() );
+        return 1;
+    }
     return 0;
 }
