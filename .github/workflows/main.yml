@@ -6,7 +6,7 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ master, gragghia ]
+    branches: [ master ]
   pull_request:
     branches: [ master ]
 
@@ -18,8 +18,8 @@ jobs:
   icl_blaspp:
     strategy:
       matrix:
-        maker: [make]
-        device: [gpu_intel]
+        maker: [make, cmake]
+        device: [cpu, gpu_nvidia, gpu_amd, gpu_intel]
       fail-fast: false
     runs-on: ${{ matrix.device }}
     steps:
