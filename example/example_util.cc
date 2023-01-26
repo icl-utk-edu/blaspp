@@ -53,8 +53,25 @@ void test_util( scalar_type alpha )
 //------------------------------------------------------------------------------
 int main( int argc, char** argv )
 {
-    test_util(  float(1.234) );
-    test_util( double(2.468) );
-    test_util( std::complex< float>( 3.1415, 0.5678 ) );
-    test_util( std::complex<double>( 6.2830, 1.1356 ) );
+    try {
+        // Parse command line to set types for s, d, c, z precisions.
+        bool types[ 4 ];
+        parse_args( argc, argv, types );
+
+        // Run tests.
+        int m = 100, n = 200, k = 50;
+        if (types[ 0 ])
+            test_util(  float(1.234) );
+        if (types[ 1 ])
+            test_util( double(2.468) );
+        if (types[ 2 ])
+            test_util( std::complex< float>( 3.1415, 0.5678 ) );
+        if (types[ 3 ])
+            test_util( std::complex<double>( 6.2830, 1.1356 ) );
+    }
+    catch (std::exception const& ex) {
+        fprintf( stderr, "%s", ex.what() );
+        return 1;
+    }
+    return 0;
 }
