@@ -20,6 +20,9 @@ jobs:
       matrix:
         maker: [make, cmake]
         device: [cpu, gpu_nvidia, gpu_amd, gpu_intel]
+        exclude: # cmake config net yet implemented for gpu_intel
+          - maker: cmake
+            device: gpu_intel
       fail-fast: false
     runs-on: ${{ matrix.device }}
     steps:
