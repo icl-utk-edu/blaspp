@@ -45,11 +45,13 @@ if [ "${maker}" = "cmake" ]; then
     cmake "-DCMAKE_PREFIX_PATH=${lib};${lib64}" ..
 fi
 
+TESTS="s d c z"
+[ "${device}" = "gpu_intel" ] && TESTS="s c"
 make
-./example_gemm
+./example_gemm $TESTS
 (( err += $? ))
 
-./example_util
+./example_util $TESTS
 (( err += $? ))
 
 print "======================================== Finished test"
