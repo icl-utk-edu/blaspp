@@ -38,7 +38,7 @@ quiet module load gcc@7.3.0
 quiet which g++
 g++ --version
 
-quiet module load intel-mkl
+quiet module load intel-oneapi-mkl
 echo "MKLROOT=${MKLROOT}"
 
 quiet module load pkgconf
@@ -73,9 +73,7 @@ fi
 if [ "${device}" = "gpu_intel" ]; then
     print "======================================== Load Intel oneAPI"
     export gpu_backend=onemkl
-    module unload intel-mkl
-    module load intel-oneapi-compilers
-    module load intel-oneapi-mkl
+    quiet module load intel-oneapi-compilers
 fi
 
 
