@@ -19,8 +19,7 @@ export color=no
 rm -rf ${top}/install
 if [ "${maker}" = "make" ]; then
     make distclean
-    # removing CXXFLAGS="-Werror" because it causes errors with icpx
-    make config prefix=${top}/install \
+    make config CXXFLAGS="-Werror -Wno-unused-command-line-argument" prefix=${top}/install \
          || exit 10
 fi
 if [ "${maker}" = "cmake" ]; then
