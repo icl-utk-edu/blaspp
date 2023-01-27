@@ -15,7 +15,9 @@ err=0
 cd test
 export OMP_NUM_THREADS=8
 TESTER="./run_tests.py --quick"
-[ "${device}" = "gpu_intel" ] && TESTER+=" --type s,c"
+if [ "${device}" = "gpu_intel" ]; then
+    TESTER+=" --type s,c"
+fi
 
 $TESTER --blas1 --blas2 --blas3 --xml ${top}/report-${maker}.xml
 (( err += $? ))
@@ -45,8 +47,12 @@ if [ "${maker}" = "cmake" ]; then
     cmake "-DCMAKE_PREFIX_PATH=${lib};${lib64}" ..
 fi
 
-TESTS="s d c z"
-[ "${device}" = "gpu_intel" ] && TESTS="s c"
+if [ "${device}" = "gpu_intel" ]; then
+    TESTS="s c"
+else
+    TESTS="s d c z"
+fi
+
 make
 ./example_gemm $TESTS
 (( err += $? ))
