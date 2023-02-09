@@ -6,14 +6,15 @@ device=$2
 mydir=$(dirname $0)
 source ${mydir}/setup_env.sh
 
-print "======================================== Tests"
-
 # Instead of exiting on the first failed test (bash -e),
 # run all the tests and accumulate failures into $err.
 err=0
 
-cd test
 export OMP_NUM_THREADS=8
+
+print "======================================== Tests"
+cd test
+
 ./run_tests.py --blas1 --blas2 --blas3 --quick --xml ${top}/report-${maker}.xml
 (( err += $? ))
 
@@ -36,10 +37,7 @@ if [ "${maker}" = "make" ]; then
 fi
 if [ "${maker}" = "cmake" ]; then
     rm -rf build && mkdir build && cd build
-    # On some systems, CMake GNUInstallDirs uses lib, on others lib64.
-    lib="${top}/install/lib/blaspp;${top}/install/lib/lapackpp"
-    lib64="${top}/install/lib64/blaspp;${top}/install/lib64/lapackpp"
-    cmake "-DCMAKE_PREFIX_PATH=${lib};${lib64}" ..
+    cmake "-DCMAKE_PREFIX_PATH=${top}/install" ..
 fi
 
 make
