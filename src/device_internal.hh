@@ -19,7 +19,7 @@ inline device_blas_int to_device_blas_int_( int64_t x, const char* x_str )
 {
     if (sizeof(int64_t) > sizeof(device_blas_int)) {
         blas_error_if_msg( std::abs( x ) > std::numeric_limits<device_blas_int>::max(),
-                           x_str );
+                           "%s", x_str );
     }
     return device_blas_int( x );
 }
