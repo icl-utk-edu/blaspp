@@ -40,7 +40,21 @@ void nrm2(
     blas::internal_set_device( queue.device() );
 
     // call low-level wrapper
+    #if defined( BLAS_HAVE_ONEMKL )
+    sycl::queue syclq = queue.stream();
+    // check how the result scalar was allocated
+    auto result_ptr_type = sycl::get_pointer_type( result, syclq.get_context() );
+    if ( result_ptr_type == sycl::usm::alloc::unknown ) {
+        // if result was outside SYCL/USM memory allocation
+        real_type<scalar_t>* result_dev = blas::device_malloc< real_type<scalar_t> >( 1, queue );
+        internal::nrm2( n_, x, incx_, result_dev, queue );
+        blas::device_memcpy( result, result_dev, 1, queue );
+    } else {
+        internal::nrm2( n_, x, incx_, result, queue );
+    }
+    #else // other devices (CUDA/HIP)
     internal::nrm2( n_, x, incx_, result, queue );
+    #endif
 #endif
 }
 
