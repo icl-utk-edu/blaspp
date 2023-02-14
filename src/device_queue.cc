@@ -4,6 +4,7 @@
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
 #include "blas/device.hh"
+#include "device_internal.hh"
 
 namespace blas {
 
@@ -15,226 +16,167 @@ namespace blas {
 Queue::Queue()
   : work_( nullptr ),
     lwork_( 0 )
-{
-    #if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
-        // get the currently set device ID
-        device_blas_int dev = -1;
-        #ifdef BLAS_HAVE_CUBLAS
-            blas_dev_call( cudaGetDevice(&dev) );
-            device_ = dev;
-        #elif defined(BLAS_HAVE_ROCBLAS)
-            blas_dev_call( hipGetDevice(&dev) );
-            device_ = dev;
-        #endif
-
-        batch_limit_ = DEV_QUEUE_DEFAULT_BATCH_LIMIT;
-
-        // default stream
-        stream_create( &default_stream_ );
-        handle_create( &handle_ );
-        handle_set_stream( handle_, default_stream_ );
-        current_stream_       = &default_stream_;
-        num_active_streams_   = 1;
-        current_stream_index_ = 0;
-
-        // create parallel streams
-        for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
-            stream_create( &parallel_streams_[ i ] );
-        }
-
-        // create default and parallel events
-        event_create( &default_event_ );
-        for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
-            event_create(&parallel_events_[ i ]);
-        }
-
-        // compute workspace for pointer arrays in the queue
-        // fork size + 1 (def. stream), each need 3 pointer arrays
-        // Must be after creating streams since work_resize syncs.
-        size_t lwork = 3 * batch_limit_ * ( DEV_QUEUE_FORK_SIZE + 1 );
-        work_resize<void*>( lwork );
-
-    #elif defined(BLAS_HAVE_ONEMKL)
-        throw blas::Error( "a sycl queue is required to create a blas::Queue object ", __func__ );
+    #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
+        ,
+        streams_ { stream_create() },  // remaining streams are null
+        handle_( handle_create( streams_[ 0 ] ) ),
+        events_  { nullptr },          // all events are null
+        num_active_streams_( 1 ),
+        current_stream_index_( 0 ),
+        own_handle_        ( true ),
+        own_default_stream_( true )
+        // todo device_( get_device() )
     #endif
-}
-
-// -----------------------------------------------------------------------------
-/// Constructor with device and batch init.
-// todo: merge with default constructor.
-Queue::Queue( int device, int64_t batch_size )
-  : work_( nullptr ),
-    lwork_( 0 )
 {
     #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
-        device_ = device;
-        batch_limit_ = batch_size;
-        blas::internal_set_device( device_ );
-        stream_create( &default_stream_ );
-        handle_create( &handle_ );
-        handle_set_stream( handle_, default_stream_ );
-        own_handle_         = true;
-        own_default_stream_ = true;
+        // get the currently set device ID
+        #if defined( BLAS_HAVE_CUBLAS )
+            blas_dev_call( cudaGetDevice( &device_ ) );
+        #elif defined( BLAS_HAVE_ROCBLAS )
+            blas_dev_call( hipGetDevice( &device_ ) );
+        #endif
 
-        current_stream_       = &default_stream_;
-        num_active_streams_   = 1;
-        current_stream_index_ = 0;
-
-        // create parallel streams
-        for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
-            stream_create(&parallel_streams_[ i ]);
-        }
-
-        // create default and parallel events
-        event_create( &default_event_ );
-        for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
-            event_create( &parallel_events_[ i ] );
-        }
-
-        // compute workspace for pointer arrays in the queue
-        // fork size + 1 (def. stream), each need 3 pointer arrays
-        // Must be after creating streams since work_resize syncs.
-        size_t lwork = 3 * batch_limit_ * ( DEV_QUEUE_FORK_SIZE + 1 );
-        work_resize<void*>( lwork );
-
-    #elif defined(BLAS_HAVE_ONEMKL)
-        std::vector<sycl::device> devices;
-        enumerate_devices( devices );
-        device_ = device;
-        if (devices.size() <= (size_t)device) {
-            throw blas::Error( " invalid device id ", __func__ );
-        }
-
-        sycl_device_    = devices[ device ];
-        batch_limit_    = batch_size;
-
-        // Optionally: make sycl::queue be in-order (otherwise default is out-of-order)
-        sycl::property_list q_prop{sycl::property::queue::in_order()};
-        default_stream_ = new sycl::queue( sycl_device_, q_prop );
-
-        // make new sycl:queue (by default out-of-order execution)
-        // default_stream_ = new sycl::queue( sycl_device_ );
-        // current_stream_       = default_stream_;
-
-        /// Compute workspace for pointer arrays in the queue
-        /// fork_size + 1 (def. stream), each need 3 pointer arrays
-        /// fork_size is currently zero for onemkl (fork-join is disabled)
-        size_t fork_size = 0;   // fork-join disabled
-        size_t lwork = 3 * batch_limit_ * ( fork_size + 1 );
-        work_resize<void*>( lwork );
-
-        num_active_streams_   = 1;
-        current_stream_index_ = 0;
+    #elif defined( BLAS_HAVE_ONEMKL )
+        throw blas::Error( "SYCL requires a device; use Queue( device )",
+                           __func__ );
     #endif
 }
 
+//------------------------------------------------------------------------------
+// SYCL needs this property in Queue constructor.
+#if defined( BLAS_HAVE_ONEMKL )
+
+    static const sycl::property_list s_property_in_order
+        { sycl::property::queue::in_order() };
+
+#endif
+
+// -----------------------------------------------------------------------------
+/// Constructor with device.
+Queue::Queue( int device )
+  : work_( nullptr ),
+    lwork_( 0 ),
+    #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
+        streams_ { stream_create( device ) },  // remaining streams are null
+        handle_( handle_create( streams_[ 0 ] ) ),
+        events_  { nullptr },                  // all events are null
+        num_active_streams_( 1 ),
+        current_stream_index_( 0 ),
+        own_handle_        ( true ),
+        own_default_stream_( true ),
+
+    #elif defined( BLAS_HAVE_ONEMKL )
+        streams_{ sycl::queue( DeviceList::at( device ), s_property_in_order ) },
+
+    #else
+        // No GPU
+        streams_{ nullptr },
+    #endif
+    device_( device )
+{}
+
 #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
-    // -----------------------------------------------------------------------------
-    /// Constructor taking cublasHandle_t or rocblas_handle.
+    // -------------------------------------------------------------------------
+    /// Constructor taking a cuBLAS or rocBLAS handle.
     /// This gets the stream from the given handle.
     /// The user retains ownership of the stream and handle,
     /// which must exist whenever this queue is used.
-    Queue::Queue( blas::Device device, blas_handle_t handle, int64_t batch_size )
+    Queue::Queue( int device, handle_t handle )
       : work_( nullptr ),
-        lwork_( 0 )
-    {
-        device_ = device;
-        batch_limit_ = batch_size;
-        set_device( device_ );
+        lwork_( 0 ),
+        streams_ { handle_get_stream( handle ) },  // remaining streams are null
+        handle_( handle ),
+        events_  { nullptr },  // all events  are null
+        num_active_streams_( 1 ),
+        current_stream_index_( 0 ),
+        own_handle_        ( false ),
+        own_default_stream_( false ),
+        device_( device )
+    {}
 
-        handle_ = handle;
-        default_stream_ = handle_get_stream( handle );
-        own_handle_         = false;
-        own_default_stream_ = false;
-
-        current_stream_       = &default_stream_;
-        num_active_streams_   = 1;
-        current_stream_index_ = 0;
-
-        // For now, don't create parallel streams.
-        for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
-            parallel_streams_[ i ] = nullptr;
-            //stream_create( &parallel_streams_[ i ] );
-        }
-
-        // For now, don't create default and parallel events.
-        default_event_ = nullptr;
-        //event_create( &default_event_ );
-        for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
-            parallel_events_[ i ] = nullptr;
-            //event_create( &parallel_events_[ i ] );
-        }
-
-        // For now, don't create workspace.
-        // // compute workspace for pointer arrays in the queue
-        // // fork size + 1 (def. stream), each need 3 pointer arrays
-        // // Must be after creating streams since work_resize syncs.
-        // size_t lwork = 3 * batch_limit_ * ( DEV_QUEUE_FORK_SIZE + 1 );
-        // work_resize<void*>( lwork );
-    }
-
-    // -----------------------------------------------------------------------------
-    /// Constructor taking cudaStream_t or hipStream_t.
+    // -------------------------------------------------------------------------
+    /// Constructor taking a CUDA or HIP stream.
     /// This allocates a cublasHandle_t or rocblas_handle,
     /// and associates the given stream with it.
     /// The user retains ownership of the stream,
     /// which must exist whenever this queue is used.
-    Queue::Queue( blas::Device device, stream_t stream, int64_t batch_size )
+    Queue::Queue( int device, stream_t& stream )
       : work_( nullptr ),
-        lwork_( 0 )
+        lwork_( 0 ),
+        streams_ { nullptr },      // remaining streams are null
+        handle_( nullptr ),  // created below due to set_device
+        events_  { nullptr },     // all events  are null
+        num_active_streams_( 1 ),
+        current_stream_index_( 0 ),
+        own_handle_        ( true  ),
+        own_default_stream_( false ),
+        device_( device )
     {
-        device_ = device;
-        batch_limit_ = batch_size;
-        set_device( device_ );
-
-        default_stream_ = stream;
-        handle_create( &handle_ );
-        handle_set_stream( handle_, default_stream_ );
-        own_handle_         = true;
-        own_default_stream_ = false;
-
-        current_stream_       = &default_stream_;
-        num_active_streams_   = 1;
-        current_stream_index_ = 0;
-
-        // For now, don't create parallel streams.
-        for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
-            parallel_streams_[ i ] = nullptr;
-            //stream_create( &parallel_streams_[ i ] );
-        }
-
-        // For now, don't create default and parallel events.
-        default_event_ = nullptr;
-        //event_create( &default_event_ );
-        for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
-            parallel_events_[ i ] = nullptr;
-            //event_create( &parallel_events_[ i ] );
-        }
-
-        // For now, don't create workspace.
-        // // compute workspace for pointer arrays in the queue
-        // // fork size + 1 (def. stream), each need 3 pointer arrays
-        // // Must be after creating streams since work_resize syncs.
-        // size_t lwork = 3 * batch_limit_ * ( DEV_QUEUE_FORK_SIZE + 1 );
-        // work_resize<void*>( lwork );
+        internal_set_device( device_ );
+        streams_[ 0 ] = stream;
+        handle_ = handle_create( stream );
     }
 
-    // -----------------------------------------------------------------------------
-    /// Change the stream used in the queue.
+    // -------------------------------------------------------------------------
+    /// Change the CUDA or HIP stream used in the BLAS++ queue.
     /// Kernels executing on the current stream will continue.
-    /// todo: what to do if we're in multi-stream state?
-    void Queue::set_stream( stream_t in_stream )
+    /// Throws an error if in fork mode.
+    void Queue::set_stream( stream_t& stream )
     {
-        if (current_stream_ == &default_stream_) {
-            if (own_default_stream_) {
-                stream_destroy( default_stream_ );
-                own_default_stream_ = false;
-            }
-            default_stream_ = in_stream;
-            current_stream_ = &default_stream_;
-            handle_set_stream( handle_, default_stream_ );
+        if (current_stream_index_ != 0)
+            throw blas::Error( "can't set stream in fork mode", __func__ );
+
+        if (own_default_stream_) {
+            stream_destroy( streams_[ 0 ] );
+            own_default_stream_ = false;
         }
+        streams_[ 0 ] = stream;
+        handle_set_stream( handle_, streams_[ 0 ] );
     }
+
+    // -------------------------------------------------------------------------
+    /// Change the cuBLAS or rocBLAS handle used in the BLAS++ queue.
+    /// Gets the stream from the handle.
+    /// Throws an error if in fork mode.
+    void Queue::set_handle( handle_t& handle )
+    {
+        if (current_stream_index_ != 0)
+            throw blas::Error( "can't set stream in fork mode", __func__ );
+
+        if (own_default_stream_) {
+            stream_destroy( streams_[ 0 ] );
+            own_default_stream_ = false;
+        }
+        if (own_handle_) {
+            handle_destroy( handle_ );
+            own_handle_ = false;
+        }
+        handle_ = handle;
+        streams_[ 0 ] = handle_get_stream( handle_ );
+    }
+
+#elif defined( BLAS_HAVE_ONEMKL )
+    // -------------------------------------------------------------------------
+    /// Constructor taking a SYCL queue (stream).
+    /// Unlike in CUDA/ROCm, this copies the SYCL queue.
+    /// Note BLAS++ generally assumes streams are in-order, which SYCL
+    /// queues are not by default. See sycl::property::queue::in_order.
+    // todo: check that stream is in-order?
+    Queue::Queue( int device, stream_t& stream )
+      : work_( nullptr ),
+        lwork_( 0 ),
+        streams_{ stream },
+        device_( device )
+    {}
+
+    // -------------------------------------------------------------------------
+    /// Change the SYCL queue (stream) used in the BLAS++ queue.
+    /// Kernels executing on the current stream will continue.
+    void Queue::set_stream( stream_t& stream )
+    {
+        streams_[ 0 ] = stream;
+    }
+
 #endif // HAVE_CUBLAS or HAVE_ROCBLAS
 
 // -----------------------------------------------------------------------------
@@ -242,59 +184,38 @@ Queue::Queue( int device, int64_t batch_size )
 Queue::~Queue()
 {
     try {
-        #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
-            device_free( work_, *this );
+        internal_set_device( device_ );
+        device_free( work_, *this );
 
+        #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
             if (own_handle_) {
-                //printf( "handle_destroy\n" );
                 handle_destroy( handle_ );
-            }
-            else {
-                //printf( "skip handle_destroy\n" );
             }
             handle_ = nullptr;
 
             if (own_default_stream_) {
-                //printf( "stream_destroy\n" );
-                stream_destroy( default_stream_ );
+                stream_destroy( streams_[ 0 ] );
             }
-            else {
-                //printf( "skip stream_destroy default\n" );
-            }
-            default_stream_ = nullptr;
+            streams_[ 0 ] = nullptr;
 
-            // destroy parallel streams
-            for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
-                if (parallel_streams_[ i ] != nullptr) {
-                    //printf( "stream_destroy( %p )\n", parallel_streams_[ i ] );
-                    stream_destroy( parallel_streams_[ i ] );
-                }
-                else {
-                    //printf( "skip stream_destroy %ld\n", i );
+            // Destroy streams (after default stream 0, handled above).
+            for (int i = 1; i < MaxForkSize; ++i) {
+                if (streams_[ i ] != nullptr) {
+                    stream_destroy( streams_[ i ] );
+                    streams_[ i ] = nullptr;
                 }
             }
 
-            // destroy events
-            if (default_event_ != nullptr) {
-                //printf( "event_destroy default %p\n", default_event_ );
-                event_destroy( default_event_ );
-            }
-            else {
-                //printf( "skip event_destroy default\n" );
-            }
-            for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
-                if (parallel_events_[ i ] != nullptr) {
-                    //printf( "event_destroy( %p )\n", parallel_events_[ i ] );
-                    event_destroy( parallel_events_[ i ] );
-                }
-                else {
-                    //printf( "skip event_destroy %ld\n", i );
+            // Destroy events (including 0).
+            for (int i = 0; i < MaxForkSize; ++i) {
+                if (events_[ i ] != nullptr) {
+                    event_destroy( events_[ i ] );
+                    events_[ i ] = nullptr;
                 }
             }
 
-        #elif defined(BLAS_HAVE_ONEMKL)
-            device_free( work_, *this );
-            delete default_stream_;
+        #elif defined( BLAS_HAVE_ONEMKL )
+            //delete streams_[ 0 ];
         #endif
     }
     catch (...) {
@@ -307,70 +228,54 @@ Queue::~Queue()
 /// Synchronize with queue.
 void Queue::sync()
 {
-    #if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
-        // in default mode, sync with default stream
-        // otherwise, sync against the parallel streams
-        if (current_stream_ == &default_stream_) {
-            stream_synchronize( default_stream_ );
-        }
-        else {
-            for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
-                stream_synchronize( parallel_streams_[ i ] );
-            }
+    #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
+        for (int i = 0; i < num_active_streams_; ++i) {
+            stream_synchronize( streams_[ i ] );
         }
 
-    #elif defined(BLAS_HAVE_ONEMKL)
+    #elif defined( BLAS_HAVE_ONEMKL )
         // todo: see wait_and_throw()
-        default_stream_->wait();
-    #endif
-}
-
-// -----------------------------------------------------------------------------
-/// Get device array pointer for the current stream.
-void**  Queue::get_dev_ptr_array()
-{
-    #if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
-        void** dev_ptr_array_ = (void**) work_;
-
-        // in default (join) mode, return dev_ptr_array with no offset
-        if (current_stream_ == &default_stream_)
-            return dev_ptr_array_;
-
-        // in fork mode, return dev_ptr_array_ + offset
-        size_t offset = (current_stream_index_ + 1) * 3 * batch_limit_;
-        return (dev_ptr_array_ + offset);
-
-    #else // includes BLAS_HAVE_ONEMKL
-        void** dev_ptr_array_ = (void**) work_;
-        return dev_ptr_array_;
+        streams_[ 0 ].wait();
     #endif
 }
 
 // -----------------------------------------------------------------------------
 /// Forks the kernel launches assigned to this queue to parallel streams.
+/// Limits the actual number of streams to <= MaxForkSize.
 /// This function is not nested (you must join after each fork).
-void Queue::fork()
+void Queue::fork( int num_streams )
 {
-    #if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
-        // check if queue is already in fork mode
-        if (current_stream_ != &default_stream_)
-            return;
+    #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
+        if (num_active_streams_ > 1)
+            throw blas::Error( "can't nest fork regions", __func__ );
 
-        // make sure dependencies are respected
-        event_record(default_event_, default_stream_);
-        for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
-            stream_wait_event( parallel_streams_[i], default_event_, 0 );
+        assert( current_stream_index_ == 0 );
+
+        // Create streams and events on first call with >= num_active_streams_.
+        // streams_[ 0 ] already exists.
+        num_active_streams_ = min( num_streams, MaxForkSize );
+        if (streams_[ num_active_streams_ - 1 ] == nullptr) {
+            for (int i = 1; i < num_active_streams_; ++i) {
+                if (streams_[ i ] == nullptr) {
+                    streams_[ i ] = stream_create();
+                    events_[ i ]  = event_create();
+                }
+            }
         }
 
-        // assign current stream
-        current_stream_index_ = 0;
-        num_active_streams_   = DEV_QUEUE_FORK_SIZE;
-        current_stream_       = &parallel_streams_[ current_stream_index_ ];
+        // Create default event on first call.
+        if (events_[ 0 ] == nullptr) {
+            events_[ 0 ] = event_create();
+        }
 
-        // assign cublas handle to current stream
-        handle_set_stream( handle_, *current_stream_ );
+        // Make sure dependencies are respected:
+        // all other streams wait for streams_[ 0 ].
+        event_record( events_[ 0 ], streams_[ 0 ] );
+        for (int i = 1; i < num_active_streams_; ++i) {
+            stream_wait_event( streams_[ i ], events_[ 0 ], 0 );
+        }
 
-    #elif defined(BLAS_HAVE_ONEMKL)
+    #elif defined( BLAS_HAVE_ONEMKL )
         // todo: see possible implementations for sycl
         return;
     #endif
@@ -381,26 +286,22 @@ void Queue::fork()
 /// stream. This function is not nested (you must join after each fork).
 void Queue::join()
 {
-    #if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
-        // check if queue is already joined
-        if (current_stream_ == &default_stream_)
-            return;
-
-        // make sure dependencies are respected
-        for (size_t i = 0; i < DEV_QUEUE_FORK_SIZE; ++i) {
-            event_record( parallel_events_[i], parallel_streams_[i] );
-            stream_wait_event( default_stream_, parallel_events_[i], 0 );
+    #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
+        // Make sure dependencies are respected:
+        // streams_[ 0 ] waits for all other streams.
+        for (int i = 1; i < num_active_streams_; ++i) {
+            event_record( events_[ i ], streams_[ i ] );
+            stream_wait_event( streams_[ 0 ], events_[ i ], 0 );
         }
 
-        // assign current stream
+        // Assign current stream.
         current_stream_index_ = 0;
         num_active_streams_   = 1;
-        current_stream_       = &default_stream_;
 
-        // assign current stream to blas handle
-        handle_set_stream( handle_, *current_stream_ );
+        // Assign current stream to BLAS handle.
+        handle_set_stream( handle_, streams_[ current_stream_index_ ] );
 
-    #elif defined(BLAS_HAVE_ONEMKL)
+    #elif defined( BLAS_HAVE_ONEMKL )
         // todo: see possible implementations for sycl
         return;
     #endif
@@ -411,19 +312,14 @@ void Queue::join()
 /// In join mode, no effect.
 void Queue::revolve()
 {
-    #if defined(BLAS_HAVE_CUBLAS) || defined(BLAS_HAVE_ROCBLAS)
-        // return if not in fork mode
-        if (current_stream_ == &default_stream_)
-            return;
-
-        // choose the next-in-line stream
+    #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
+        // Choose the next-in-line stream.
         current_stream_index_ = (current_stream_index_ + 1) % num_active_streams_;
-        current_stream_       = &parallel_streams_[ current_stream_index_ ];
 
-        // assign current stream to blas handle
-        handle_set_stream( handle_, *current_stream_ );
+        // Assign current stream to BLAS handle.
+        handle_set_stream( handle_, streams_[ current_stream_index_ ] );
 
-    #elif defined(BLAS_HAVE_ONEMKL)
+    #elif defined( BLAS_HAVE_ONEMKL )
         // todo: see possible implementations for sycl
         return;
     #endif

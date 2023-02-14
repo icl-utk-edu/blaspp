@@ -9,6 +9,7 @@
 #include "blas/device.hh"
 
 #include <complex>
+#include <omp.h>
 
 namespace blas {
 
@@ -34,7 +35,77 @@ inline device_blas_int to_device_blas_int_( int64_t x, const char* x_str )
 ///
 #define to_device_blas_int( x ) to_device_blas_int_( x, #x )
 
-namespace internal {
+
+#if defined( BLAS_HAVE_ONEMKL )
+
+//==============================================================================
+/// Thread-safe Scott Meyers' Singleton to enumerate devices on first call.
+///
+class DeviceList
+{
+public:
+    //----------------------------------------
+    /// @return DeviceList singleton, which will create it on the first call.
+    ///
+    static DeviceList& get()
+    {
+        static DeviceList s_list;
+        return s_list;
+    }
+
+    //----------------------------------------
+    /// @return SYCL GPU device at index `device`.
+    /// Queries SYCL GPU devices on first call.
+    ///
+    /// @param[in] device
+    ///     Index of device to fetch.
+    ///
+    static sycl::device const& at( int device )
+    {
+        DeviceList& s_list = get();
+        return s_list.devices_.at( device );
+    }
+
+    //----------------------------------------
+    /// @return Number of SYCL GPU devices.
+    /// Queries SYCL GPU devices on first call.
+    ///
+    static int size()
+    {
+        DeviceList& s_list = get();
+        return int( s_list.devices_.size() );
+    }
+
+private:
+    //----------------------------------------
+    /// Construct DeviceList, which queries SYCL for GPU devices on all
+    /// platforms.
+    ///
+    DeviceList()
+    {
+        auto platforms = sycl::platform::get_platforms();
+        for (auto &platform : platforms) {
+            auto all_devices = platform.get_devices();
+            for (auto &device : all_devices) {
+                if (device.is_gpu()) {
+                    devices_.push_back( device );
+                }
+            }
+        }
+    }
+
+    /// Copy of singleton prohibited.
+    DeviceList( DeviceList const& ) = delete;
+
+    /// Assignment of singleton prohibited.
+    DeviceList& operator = ( DeviceList const& ) = delete;
+
+    /// Vector of SYCL GPU devices.
+    std::vector< sycl::device > devices_;
+};
+
+#endif // oneMKL
+
 
 //==============================================================================
 // Light wrappers around CUDA and cuBLAS functions.
@@ -221,6 +292,8 @@ inline void stream_wait_event(
 }
 
 #endif  // BLAS_HAVE_ROCBLAS
+
+namespace internal {
 
 //==============================================================================
 // Level 1 BLAS - Device Interfaces

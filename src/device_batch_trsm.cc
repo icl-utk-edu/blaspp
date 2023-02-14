@@ -84,12 +84,17 @@ void trsm(
             std::swap( m_, n_ );
         }
 
-        size_t batch_limit = queue.get_batch_limit();
-        scalar_t** dAarray = (scalar_t**) queue.get_dev_ptr_array( );
-        scalar_t** dBarray = dAarray + batch_limit;
+        // trsm needs only 2 ptr arrays (A and B). Allocate usual
+        // 3*max_chunk used by gemm, but then split in 2 instead of 3.
+        size_t max_chunk = MaxBatchChunk;
+        queue.work_resize<void*>( 3*max_chunk );
+        max_chunk = 3*max_chunk / 2;
 
-        for (size_t i = 0; i < batch_size; i += batch_limit) {
-            size_t ibatch_size = std::min( batch_limit, batch_size - i );
+        scalar_t** dAarray = (scalar_t**) queue.work();
+        scalar_t** dBarray = dAarray + max_chunk;
+
+        for (size_t i = 0; i < batch_size; i += max_chunk) {
+            size_t ibatch_size = std::min( max_chunk, batch_size - i );
 
             // copy pointer array(s) to device
             device_copy_vector( ibatch_size, &Aarray[ i ], 1, dAarray, 1, queue );

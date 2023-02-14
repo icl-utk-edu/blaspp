@@ -74,7 +74,7 @@ void test_memcpy_2d_work( Params& params, bool run )
     }
 
     // setup
-    blas::Queue queue( device, 0 );
+    blas::Queue queue( device );
 
     // Allocate extra to verify copy doesn't overrun buffer.
     int64_t ld = roundup( m, align );

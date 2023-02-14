@@ -60,7 +60,7 @@ void test_batch_herk_device_work( Params& params, bool run )
     TC* Cref = new TC[ batch * size_C ];
 
     // device specifics
-    blas::Queue queue( device, batch );
+    blas::Queue queue( device );
     TA* dA = blas::device_malloc<TA>( batch * size_A, queue );
     TC* dC = blas::device_malloc<TC>( batch * size_C, queue );
 

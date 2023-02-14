@@ -4,8 +4,11 @@
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
 #include "test.hh"
+#include "../src/device_internal.hh"
 
 #include <string>
+
+using testsweeper::get_wtime;
 
 // -----------------------------------------------------------------------------
 void test_enums()
@@ -346,14 +349,486 @@ void test_make_scalar()
     require( zx == std::complex<double>( dxr, dxi ) );
 }
 
-// -----------------------------------------------------------------------------
-void test_device()
+//------------------------------------------------------------------------------
+/// Tests low-level wrappers around cuBLAS / rocBLAS functions, and
+/// tests oneMKL SYCL functions.
+///
+void test_device_routines()
 {
     printf( "%s\n", __func__ );
 
-    int cnt = blas::get_device_count();
-    printf( "    get_device_count %d\n", cnt );
-    require( cnt >= 0 );
+    int repeat = 4;
+    double t;
+    int device_cnt;
+
+    // Count GPU devices. Usually 1st call is expensive.
+    for (int i = 0; i < repeat; ++i) {
+        t = get_wtime();
+        device_cnt = blas::get_device_count();
+        t = get_wtime() - t;
+        printf( "get_device_count = %d   %11.3f usec\n", device_cnt, t * 1e6 );
+        require( device_cnt >= 0 );
+    }
+    printf( "\n" );
+
+    const int MAX_DEVICES = 10;
+    device_cnt = std::min( device_cnt, MAX_DEVICES );
+
+    //----------------------------------------
+    // CUDA and ROCm code. These have a BLAS handle that oneMKL doesn't.
+    #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
+
+        blas::Queue::stream_t streams[ MAX_DEVICES * repeat ];
+        blas::Queue::handle_t handles[ MAX_DEVICES * repeat ];
+        blas::Queue::event_t   events[ MAX_DEVICES * repeat ];
+
+        // Set device.
+        for (int i = 0; i < repeat; ++i) {
+            for (int dev = 0; dev < device_cnt; ++dev) {
+                t = get_wtime();
+                blas::internal_set_device( dev );
+                t = get_wtime() - t;
+                printf( "set_device( %d )        %11.3f usec\n", dev, t * 1e6 );
+            }
+        }
+        printf( "\n" );
+
+        // Create streams.
+        for (int dev = 0; dev < device_cnt; ++dev) {
+            blas::internal_set_device( dev );
+            for (int i = 0; i < repeat; ++i) {
+                t = get_wtime();
+                streams[ dev * repeat + i ] = blas::stream_create();
+                t = get_wtime() - t;
+                printf( "stream_create( %d )     %11.3f usec\n", dev, t * 1e6 );
+            }
+        }
+        printf( "\n" );
+
+        // Create handles
+        for (int dev = 0; dev < device_cnt; ++dev) {
+            blas::internal_set_device( dev );
+            for (int i = 0; i < repeat; ++i) {
+                t = get_wtime();
+                handles[ dev * repeat + i ]
+                    = blas::handle_create( streams[ dev * repeat + i ] );
+                t = get_wtime() - t;
+                printf( "handle_create( %d )     %11.3f usec\n", dev, t * 1e6 );
+            }
+        }
+        printf( "\n" );
+
+        // Set stream on handle.
+        for (int dev = 0; dev < device_cnt; ++dev) {
+            blas::internal_set_device( dev );
+            for (int i = 0; i < repeat; ++i) {
+                t = get_wtime();
+                blas::handle_set_stream( handles[ dev * repeat + i ],
+                                         streams[ dev * repeat + i ] );
+                t = get_wtime() - t;
+                printf( "handle_set_stream( %d ) %11.3f usec\n", dev, t * 1e6 );
+            }
+        }
+        printf( "\n" );
+
+        // Create events.
+        for (int dev = 0; dev < device_cnt; ++dev) {
+            blas::internal_set_device( dev );
+            for (int i = 0; i < repeat; ++i) {
+                t = get_wtime();
+                events[ dev * repeat + i ] = blas::event_create();
+                t = get_wtime() - t;
+                printf( "event_create( %d )      %11.3f usec\n", dev, t * 1e6 );
+            }
+        }
+        printf( "\n" );
+
+        // Record events.
+        for (int dev = 0; dev < device_cnt; ++dev) {
+            blas::internal_set_device( dev );
+            for (int i = 0; i < repeat; ++i) {
+                t = get_wtime();
+                blas::event_record( events[ dev * repeat + i ],
+                                    streams[ dev * repeat + i ] );
+                t = get_wtime() - t;
+                printf( "event_record( %d )      %11.3f usec\n", dev, t * 1e6 );
+            }
+        }
+        printf( "\n" );
+
+        // Sync events.
+        for (int dev = 0; dev < device_cnt; ++dev) {
+            blas::internal_set_device( dev );
+            for (int i = 0; i < repeat; ++i) {
+                t = get_wtime();
+                blas::stream_wait_event( streams[ dev * repeat + i ],
+                                         events[ dev * repeat + i ], 0 );
+                t = get_wtime() - t;
+                printf( "stream_wait_event( %d ) %11.3f usec\n", dev, t * 1e6 );
+            }
+        }
+        printf( "\n" );
+
+        // Sync events again (already sync'd).
+        for (int dev = 0; dev < device_cnt; ++dev) {
+            blas::internal_set_device( dev );
+            for (int i = 0; i < repeat; ++i) {
+                t = get_wtime();
+                blas::stream_wait_event( streams[ dev * repeat + i ],
+                                         events[ dev * repeat + i ], 0 );
+                t = get_wtime() - t;
+                printf( "stream_wait_event( %d ) %11.3f usec\n", dev, t * 1e6 );
+            }
+        }
+        printf( "\n" );
+
+        // Destroy events.
+        for (int dev = 0; dev < device_cnt; ++dev) {
+            blas::internal_set_device( dev );
+            for (int i = 0; i < repeat; ++i) {
+                t = get_wtime();
+                blas::event_destroy( events[ dev * repeat + i ] );
+                t = get_wtime() - t;
+                printf( "event_destroy( %d )     %11.3f usec\n", dev, t * 1e6 );
+            }
+        }
+        printf( "\n" );
+
+        // Destroy handles.
+        for (int dev = 0; dev < device_cnt; ++dev) {
+            blas::internal_set_device( dev );
+            for (int i = 0; i < repeat; ++i) {
+                t = get_wtime();
+                blas::handle_destroy( handles[ dev * repeat + i ] );
+                t = get_wtime() - t;
+                printf( "handle_destroy( %d )    %11.3f usec\n", dev, t * 1e6 );
+            }
+        }
+        printf( "\n" );
+
+        // Destroy streams.
+        for (int dev = 0; dev < device_cnt; ++dev) {
+            blas::internal_set_device( dev );
+            for (int i = 0; i < repeat; ++i) {
+                t = get_wtime();
+                blas::stream_destroy( streams[ dev * repeat + i ] );
+                t = get_wtime() - t;
+                printf( "stream_destroy( %d )    %11.3f usec\n", dev, t * 1e6 );
+            }
+        }
+        printf( "\n" );
+
+    //----------------------------------------
+    #elif defined( BLAS_HAVE_ONEMKL )
+
+        // stream_t === sycl::queue
+        // Use pointer so we can time destructor.
+        blas::Queue::stream_t* stream_ptrs[ MAX_DEVICES * repeat ];
+
+        // Array of sycl::queues as destination for copy.
+        // Default constructs the queues.
+        t = get_wtime();
+        blas::Queue::stream_t stream_copies[ MAX_DEVICES * repeat ];
+        t = get_wtime() - t;
+        printf( "sycl::queue()           %11.3f usec\n", t * 1e6 );
+
+        // No have set_device.
+
+        // Create streams (sycl::queues).
+        for (int dev = 0; dev < device_cnt; ++dev) {
+            for (int i = 0; i < repeat; ++i) {
+                t = get_wtime();
+                stream_ptrs[ dev * repeat + i ]
+                    = new sycl::queue( blas::DeviceList::at( dev ) );
+                t = get_wtime() - t;
+                printf( "sycl::queue( %d )       %11.3f usec\n", dev, t * 1e6 );
+            }
+        }
+        printf( "\n" );
+
+        // SYCL has events, but with different API.
+        // No handle_create, handle_set_stream, event_create, event_record,
+        // stream_wait_event, event_destroy.
+
+        // Copy streams (sycl::queues).
+        for (int dev = 0; dev < device_cnt; ++dev) {
+            for (int i = 0; i < repeat; ++i) {
+                t = get_wtime();
+                stream_copies[ dev * repeat + i ]
+                    = *stream_ptrs[ dev * repeat + i ];
+                t = get_wtime() - t;
+                printf( "sycl::operator = ( %d ) %11.3f usec\n", dev, t * 1e6 );
+            }
+        }
+        printf( "\n" );
+
+        // Destroy streams (sycl::queues).
+        for (int dev = 0; dev < device_cnt; ++dev) {
+            for (int i = 0; i < repeat; ++i) {
+                t = get_wtime();
+                delete stream_ptrs[ dev * repeat + i ];
+                stream_ptrs[ dev * repeat + i ] = nullptr;
+                t = get_wtime() - t;
+                printf( "sycl::~queue( %d )      %11.3f usec\n", dev, t * 1e6 );
+            }
+        }
+        printf( "\n" );
+    #endif // oneMKL
+}
+
+//------------------------------------------------------------------------------
+/// Tests Queue constructor.
+///
+void test_queue()
+{
+    printf( "%s\n", __func__ );
+
+    int repeat = 4;
+    int device_cnt = blas::get_device_count();
+    double t;
+
+    printf( "sizeof( Queue ) %ld bytes\n", sizeof( blas::Queue ) );
+
+    // Create and destroy several queues on each device.
+    std::vector< blas::Queue* > queues( device_cnt * repeat );
+    for (int dev = 0; dev < device_cnt; ++dev) {
+        for (int i = 0; i < repeat; ++i) {
+            t = get_wtime();
+            queues[ dev * repeat + i ] = new blas::Queue( dev );
+            t = get_wtime() - t;
+            printf( "blas::Queue( %d )       %11.3f usec\n", dev, t * 1e6 );
+        }
+    }
+    printf( "\n" );
+
+    // Destroy queues.
+    for (int dev = 0; dev < device_cnt; ++dev) {
+        for (int i = 0; i < repeat; ++i) {
+            t = get_wtime();
+            delete queues[ dev * repeat + i ];
+            t = get_wtime() - t;
+            printf( "delete queues[ %d ]     %11.3f usec\n", dev, t * 1e6 );
+        }
+    }
+    printf( "\n" );
+}
+
+// -----------------------------------------------------------------------------
+void test_queue_from_stream()
+{
+    printf( "%s\n", __func__ );
+
+    #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS ) || defined( BLAS_HAVE_ONEMKL )
+        int repeat = 4;
+        int device_cnt = blas::get_device_count();
+        double t;
+
+        const int MAX_DEVICES = 10;
+        device_cnt = std::min( device_cnt, MAX_DEVICES );
+        blas::Queue::stream_t streams[ MAX_DEVICES ];
+    #endif
+
+    // CUDA and ROCm code. These have a BLAS HANDLE that oneMKL doesn't.
+    #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
+
+        blas::Queue::handle_t handles[ MAX_DEVICES ];
+
+        // Create streams and handles.
+        for (int dev = 0; dev < device_cnt; ++dev) {
+            blas::internal_set_device( dev );
+            streams[ dev ] = blas::stream_create();
+            handles[ dev ] = blas::handle_create( streams[ dev ] );
+        }
+
+        std::vector< blas::Queue* > queues( device_cnt * repeat );
+
+        // Create Queues from streams.
+        for (int dev = 0; dev < device_cnt; ++dev) {
+            for (int i = 0; i < repeat; ++i) {
+                t = get_wtime();
+                queues[ dev * repeat + i ] = new blas::Queue( dev, streams[ dev ] );
+                t = get_wtime() - t;
+                printf( "blas::Queue( %d, stream )  %11.3f usec\n",
+                        dev, t * 1e6 );
+            }
+        }
+        printf( "\n" );
+
+        for (int dev = 0; dev < device_cnt; ++dev) {
+            for (int i = 0; i < repeat; ++i) {
+                t = get_wtime();
+                delete queues[ dev * repeat + i ];
+                t = get_wtime() - t;
+                printf( "delete queues[ %d ]        %11.3f usec\n", dev, t * 1e6 );
+            }
+        }
+        printf( "\n" );
+
+        // Create Queues from handles.
+        for (int dev = 0; dev < device_cnt; ++dev) {
+            for (int i = 0; i < repeat; ++i) {
+                t = get_wtime();
+                queues[ dev * repeat + i ] = new blas::Queue( dev, handles[ dev ] );
+                t = get_wtime() - t;
+                printf( "blas::Queue( %d, handle )  %11.3f usec\n",
+                        dev, t * 1e6 );
+            }
+        }
+        printf( "\n" );
+
+        for (int dev = 0; dev < device_cnt; ++dev) {
+            for (int i = 0; i < repeat; ++i) {
+                t = get_wtime();
+                delete queues[ dev * repeat + i ];
+                t = get_wtime() - t;
+                printf( "delete queues[ %d ]        %11.3f usec\n", dev, t * 1e6 );
+            }
+        }
+        printf( "\n" );
+
+        // Destroy streams and handles.
+        for (int dev = 0; dev < device_cnt; ++dev) {
+            blas::internal_set_device( dev );
+            blas::handle_destroy( handles[ dev ] );
+            blas::stream_destroy( streams[ dev ] );
+        }
+
+    #elif defined( BLAS_HAVE_ONEMKL )
+
+        // Create streams (sycl::queues)
+        for (int dev = 0; dev < device_cnt; ++dev) {
+            streams[ dev ] = sycl::queue( blas::DeviceList::at( dev ) );
+        }
+
+        std::vector< blas::Queue* > queues( device_cnt * repeat );
+
+        // Create Queues from streams.
+        for (int dev = 0; dev < device_cnt; ++dev) {
+            for (int i = 0; i < repeat; ++i) {
+                t = get_wtime();
+                queues[ dev * repeat + i ] = new blas::Queue( dev, streams[ dev ] );
+                t = get_wtime() - t;
+                printf( "blas::Queue( %d, stream )  %11.3f usec\n",
+                        dev, t * 1e6 );
+            }
+        }
+        printf( "\n" );
+
+        for (int dev = 0; dev < device_cnt; ++dev) {
+            for (int i = 0; i < repeat; ++i) {
+                t = get_wtime();
+                delete queues[ dev * repeat + i ];
+                t = get_wtime() - t;
+                printf( "delete queues[ %d ]        %11.3f usec\n", dev, t * 1e6 );
+            }
+        }
+        printf( "\n" );
+
+        // sycl::queues destroyed implicitly.
+
+    #endif  // BLAS_HAVE_ONEMKL
+}
+
+// -----------------------------------------------------------------------------
+void test_queue_fork()
+{
+    using blas::MaxForkSize;
+
+    printf( "%s\n", __func__ );
+
+    int device_cnt = blas::get_device_count();
+    if (device_cnt == 0)
+        return;
+
+    int dev = 0;
+
+    float alpha = 3.1415;
+    int n = 1000;
+    int cnt = 30;
+
+    std::vector<int> num_streams_test { 1, 3, MaxForkSize };
+    for (int num_streams : num_streams_test) {
+        printf( "queue( dev %d )\n", dev );
+        blas::Queue queue( dev );
+
+        float* x = blas::device_malloc<float>( n, queue );
+
+        auto orig_stream = queue.stream();
+        #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
+            auto handle = queue.handle();
+        #endif
+
+        std::vector< blas::Queue::stream_t > streams( num_streams );  //, nullptr );
+
+        for (int iter = 0; iter < 3; ++iter) {
+            //-----
+            // Fork with num_streams; MaxForkSize is default.
+            //printf( "fork( %d )\n", num_streams );
+            double time_fork = get_wtime();
+            if (num_streams == MaxForkSize)
+                queue.fork();
+            else
+                queue.fork( num_streams );
+            time_fork = get_wtime() - time_fork;
+
+            // Get streams after the first fork.
+            if (iter == 0) {
+                for (int i = 0; i < num_streams; ++i) {
+                    streams[ i ] = queue.stream();
+                    queue.revolve();
+                }
+            }
+
+            // Launch kernel on streams that cycle every num_streams times.
+            for (int i = 0; i < cnt; ++i) {
+                //printf( "i %2d, stream %p\n", i, (void*) queue.stream() );
+                require( queue.stream() == streams[ i % num_streams ] );
+                #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
+                    require( queue.handle() == handle );
+                    require( blas::handle_get_stream( handle ) == queue.stream() );
+                #endif
+                blas::scal( n, alpha, x, 1, queue );
+                queue.revolve();
+            }
+
+            // This join time includes time to execute blas::scal.
+            double time_join = get_wtime();
+            queue.join();
+            time_join = get_wtime() - time_join;
+
+            // Join should restore original stream.
+            require( queue.stream() == orig_stream );
+            #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
+                require( blas::handle_get_stream( handle ) == orig_stream );
+            #endif
+
+            // Fork again, then immediately join.
+            double time_fork2 = get_wtime();
+            if (num_streams == MaxForkSize)
+                queue.fork();
+            else
+                queue.fork( num_streams );
+            time_fork2 = get_wtime() - time_fork2;
+
+            double time_join2 = get_wtime();
+            queue.join();
+            time_join2 = get_wtime() - time_join2;
+
+            printf( "fork( %d ) %11.3f usec, join %11.3f usec (calls blas::scal)\n",
+                    num_streams, time_fork * 1e6, time_join * 1e6 );
+            printf( "fork( %d ) %11.3f usec, join %11.3f usec (no call)\n",
+                    num_streams, time_fork2 * 1e6, time_join2 * 1e6 );
+        }
+        printf( "After first one, fork should be faster.\n" );
+
+        queue.sync();
+
+        blas::device_free( x, queue );
+        x = nullptr;
+
+        // queue is destroyed here.
+        printf( "    ~queue\n" );
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -368,6 +843,7 @@ void test_util( Params& params, bool run )
     static bool first = true;
     if (first) {
         first = false;
+
         test_enums();
         test_exceptions();
         test_abs1();
@@ -378,7 +854,13 @@ void test_util( Params& params, bool run )
         test_scalar_type();
         test_scalar_type();
         test_make_scalar();
-        test_device();
+
+        // GPU routines
+        test_device_routines();
+        test_queue();
+        test_queue_from_stream();
+        test_queue_fork();
+        printf( "\n" );
     }
 
     params.okay() = true;

@@ -83,71 +83,116 @@ void gemm(
 
     blas::internal_set_device( queue.device() );
 
-    scalar_t **dAarray, **dBarray, **dCarray;
-    size_t batch_limit = queue.get_batch_limit();
-    size_t processed = 0;
+    // gemm needs 3 arrays (A, B, and C).
+    size_t max_chunk = MaxBatchChunk;
+    queue.work_resize<void*>( 3*max_chunk );
+
+    scalar_t** dAarray = (scalar_t**) queue.work();
+    scalar_t** dBarray = dAarray + max_chunk;
+    scalar_t** dCarray = dBarray + max_chunk;
 
     // If we have only one group, no need to fork.
-    if (group_count > 1)
+    bool do_fork = group_count > 1;
+    if (do_fork)
         queue.fork();
 
-    for (size_t ig = 0; ig < group_count; ig++) {
-        // extract params for the current group
-        size_t          batch   = group_size[ ig ];
-        blas::Op        transA_ = transA[ ig ];
-        blas::Op        transB_ = transB[ ig ];
-        device_blas_int m_      = to_device_blas_int( m[ ig ] );
-        device_blas_int n_      = to_device_blas_int( n[ ig ] );
-        device_blas_int k_      = to_device_blas_int( k[ ig ] );
-        device_blas_int lda_    = to_device_blas_int( lda[ ig ] );
-        device_blas_int ldb_    = to_device_blas_int( ldb[ ig ] );
-        device_blas_int ldc_    = to_device_blas_int( ldc[ ig ] );
+    size_t grp_begin = 0;  // First group in this chunk.
+    size_t ptr_begin = 0;  // First [ABC]array pointer in this chunk.
+    size_t part_done = 0;  // gemms already done in current grp_begin.
+    while (grp_begin < group_count) {
+        // Find groups that fit into this chunk.
+        size_t grp_end = grp_begin;
+        size_t chunk_size = 0;
+        while (grp_end < group_count) {
+            if (grp_begin == grp_end) {
+                // Part or whole of first group.
+                chunk_size = min( group_size[ grp_end ] - part_done, max_chunk );
+                grp_end += 1;
+            }
+            else if (chunk_size + group_size[ grp_end ] < max_chunk) {
+                // Next group fits.
+                chunk_size += group_size[ grp_end ];
+                grp_end += 1;
+            }
+            else {
+                // Next group doesn't fit.
+                break;
+            }
+        }
 
-        // Each group is submitted to a different stream using strides
-        // of batch_limit.
-        // First, get the device pointer array for the current stream.
-        dAarray = ( scalar_t**) queue.get_dev_ptr_array( );
-        dBarray = dAarray + batch_limit;
-        dCarray = dBarray + batch_limit;
+        // Copy Aarray, Barray, and Carray to device.
+        device_copy_vector(
+            chunk_size, &Aarray[ ptr_begin ], 1, dAarray, 1, queue );
+        device_copy_vector(
+            chunk_size, &Barray[ ptr_begin ], 1, dBarray, 1, queue );
+        device_copy_vector(
+            chunk_size, &Carray[ ptr_begin ], 1, dCarray, 1, queue );
 
-        for (size_t i = 0; i < batch_size; i += batch_limit) {
-            size_t ibatch_size = std::min( batch_limit, batch_size - i );
+        // Launch kernels in this chunk.
+        if (do_fork)
+            queue.fork();
+        size_t dev_ptr = 0;
+        for (size_t ig = grp_begin; ig < grp_end; ++ig) {
+            size_t ibatch_size;
+            if (ig == grp_begin) {
+                if (group_size[ ig ] - part_done > max_chunk) {
+                    // Do first max_chunk part of first (and only) group.
+                    ibatch_size = max_chunk;
+                    part_done += ibatch_size;
+                    assert( grp_end == grp_begin+1 );
+                }
+                else {
+                    // Remainder of first group fits.
+                    // Reset part_done since grp_begin will be updated.
+                    ibatch_size = group_size[ ig ] - part_done;
+                    part_done = 0;
+                }
+            }
+            else {
+                ibatch_size = group_size[ ig ];
+            }
 
-            // copy Aarray, Barray, and Carray to device
-            device_copy_vector(
-                ibatch_size,& Aarray[ processed+i ], 1,
-                dAarray, 1, queue );
-            device_copy_vector(
-                ibatch_size,& Barray[ processed+i ], 1,
-                dBarray, 1, queue );
-            device_copy_vector(
-                ibatch_size,& Carray[ processed+i ], 1,
-                dCarray, 1, queue );
+            // Extract params for the current group.
+            blas::Op        transA_ = transA[ ig ];
+            blas::Op        transB_ = transB[ ig ];
+            device_blas_int m_      = to_device_blas_int( m[ ig ] );
+            device_blas_int n_      = to_device_blas_int( n[ ig ] );
+            device_blas_int k_      = to_device_blas_int( k[ ig ] );
+            device_blas_int lda_    = to_device_blas_int( lda[ ig ] );
+            device_blas_int ldb_    = to_device_blas_int( ldb[ ig ] );
+            device_blas_int ldc_    = to_device_blas_int( ldc[ ig ] );
 
             if (layout == Layout::RowMajor) {
                 // swap transA <=> transB, m <=> n, B <=> A
                 internal::batch_gemm(
                     transB_, transA_, n_, m_, k_,
-                    alpha[ig], dBarray, ldb_, dAarray, lda_,
-                    beta[ig],  dCarray, ldc_,
+                    alpha[ig], &dBarray[ dev_ptr ], ldb_,
+                               &dAarray[ dev_ptr ], lda_,
+                    beta[ig],  &dCarray[ dev_ptr ], ldc_,
                     ibatch_size, queue );
             }
             else {
                 internal::batch_gemm(
                     transA_, transB_, m_, n_, k_,
-                    alpha[ig], dAarray, lda_, dBarray, ldb_,
-                    beta[ig],  dCarray, ldc_,
+                    alpha[ig], &dAarray[ dev_ptr ], lda_,
+                               &dBarray[ dev_ptr ], ldb_,
+                    beta[ig],  &dCarray[ dev_ptr ], ldc_,
                     ibatch_size, queue );
             }
+            dev_ptr += ibatch_size;
+
+            if (do_fork)
+                queue.revolve();
         }
+        if (do_fork)
+            queue.join();
 
-        processed += batch;
-        if (group_count > 1)
-            queue.revolve();
+        // If part_done, grp_begin isn't done, so don't update it;
+        // otherwise, update grp_begin.
+        if (part_done == 0)
+            grp_begin = grp_end;
+        ptr_begin += chunk_size;
     }
-
-    if (group_count > 1)
-        queue.join();
 #endif
 }
 

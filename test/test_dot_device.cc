@@ -67,7 +67,7 @@ void test_dot_device_work( Params& params, bool run )
     real_t Ynorm = cblas_nrm2( n, y, std::abs(incy) );
 
     // device specifics
-    blas::Queue queue( device, 0 );
+    blas::Queue queue( device );
     TX* dx;
     TY* dy;
 

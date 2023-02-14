@@ -51,7 +51,7 @@ void test_scal_device_work( Params& params, bool run )
     T* xref = new T[ size_x ];
 
     // device specifics
-    blas::Queue queue(device, 0);
+    blas::Queue queue( device );
     T* dx;
 
     dx = blas::device_malloc<T>(size_x, queue);

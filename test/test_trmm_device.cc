@@ -65,7 +65,7 @@ void test_trmm_device_work( Params& params, bool run )
     TB* Bref = new TB[ size_B ];
 
     // device specifics
-    blas::Queue queue( device, 0 );
+    blas::Queue queue( device );
     TA* dA;
     TB* dB;
 

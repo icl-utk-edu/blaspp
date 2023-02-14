@@ -67,7 +67,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
     TB* Bref      = new TB[ batch * size_B ];
 
     // device specifics
-    blas::Queue queue( device, batch );
+    blas::Queue queue( device );
     TA* dA;
     TB* dB;
 

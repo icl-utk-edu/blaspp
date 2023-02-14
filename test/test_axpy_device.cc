@@ -56,7 +56,7 @@ void test_axpy_device_work( Params& params, bool run )
     Ty* y0   = new Ty[ size_y ];
 
     // device specifics
-    blas::Queue queue(device, 0);
+    blas::Queue queue( device );
     Tx* dx;
     Ty* dy;
 

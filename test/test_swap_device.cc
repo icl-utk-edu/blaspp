@@ -53,7 +53,7 @@ void test_swap_device_work( Params& params, bool run )
     TY* yref = new TY[ size_y ];
 
     // device specifics
-    blas::Queue queue( device, 0 );
+    blas::Queue queue( device );
     TX* dx;
     TY* dy;
 

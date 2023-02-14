@@ -138,7 +138,7 @@ void test_schur_gemm_work( Params& params, bool run )
         Cref = new TC[ size_C ];
 
     // device specifics
-    blas::Queue queue( device, batch );
+    blas::Queue queue( device );
     TA* dA = blas::device_malloc<TA>( size_A, queue );
     TB* dB = blas::device_malloc<TB>( size_B, queue );
     TC* dC = blas::device_malloc<TC>( size_C, queue );
