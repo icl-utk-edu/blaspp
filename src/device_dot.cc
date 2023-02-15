@@ -44,7 +44,24 @@ void dot(
     blas::internal_set_device( queue.device() );
 
     // call low-level wrapper
-    internal::dot( n_, x, incx_, y, incy_, result, queue );
+    #if defined( BLAS_HAVE_ONEMKL )
+        sycl::queue syclq = queue.stream();
+        // check how the result scalar was allocated
+        auto result_ptr_type = sycl::get_pointer_type( result, syclq.get_context() );
+        // if result was outside SYCL/USM memory allocation, use device workspace
+        if (result_ptr_type == sycl::usm::alloc::unknown) {
+            // use preallocated device workspace (resizing if needed)
+            queue.work_resize< char >( sizeof(scalar_t) );  // syncs if needed
+            scalar_t* dev_work = (scalar_t*)queue.work();
+            internal::dot( n_, x, incx_, y, incy_, dev_work, queue );
+            blas::device_memcpy( result, dev_work, 1, queue );
+        }
+        else {
+            internal::dot( n_, x, incx_, y, incy_, result, queue );
+        }
+    #else // other devices (CUDA/HIP)
+        internal::dot( n_, x, incx_, y, incy_, result, queue );
+    #endif
 #endif
 }
 
@@ -78,7 +95,24 @@ void dotu(
     blas::internal_set_device( queue.device() );
 
     // call low-level wrapper
-    internal::dotu( n_, x, incx_, y, incy_, result, queue );
+    #if defined( BLAS_HAVE_ONEMKL )
+        sycl::queue syclq = queue.stream();
+        // check how the result scalar was allocated
+        auto result_ptr_type = sycl::get_pointer_type( result, syclq.get_context() );
+        // if result was outside SYCL/USM memory allocation, use device workspace
+        if (result_ptr_type == sycl::usm::alloc::unknown) {
+            // use preallocated device workspace (resizing if needed)
+            queue.work_resize< char >( sizeof(scalar_t) );  // syncs if needed
+            scalar_t* dev_work = (scalar_t*)queue.work();
+            internal::dotu( n_, x, incx_, y, incy_, dev_work, queue );
+            blas::device_memcpy( result, dev_work, 1, queue );
+        }
+        else {
+            internal::dotu( n_, x, incx_, y, incy_, result, queue );
+        }
+    #else // other devices (CUDA/HIP)
+        internal::dotu( n_, x, incx_, y, incy_, result, queue );
+    #endif
 #endif
 }
 
