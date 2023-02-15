@@ -37,6 +37,192 @@ inline device_blas_int to_device_blas_int_( int64_t x, const char* x_str )
 namespace internal {
 
 //==============================================================================
+// Light wrappers around CUDA and cuBLAS functions.
+// These are used in src/device_queue.cc and test/test_util.cc
+// to access vendor-specific implementations.
+
+#if defined( BLAS_HAVE_CUBLAS )
+
+//------------------------------------------------------------------------------
+inline cudaStream_t stream_create()
+{
+    cudaStream_t stream;
+    blas_dev_call( cudaStreamCreate( &stream ) );
+    return stream;
+}
+
+//------------------------------------------------------------------------------
+inline cudaStream_t stream_create( int device )
+{
+    internal_set_device( device );
+    cudaStream_t stream;
+    blas_dev_call( cudaStreamCreate( &stream ) );
+    return stream;
+}
+
+//------------------------------------------------------------------------------
+inline void stream_destroy( cudaStream_t stream )
+{
+    blas_dev_call( cudaStreamDestroy( stream ) );
+}
+
+//------------------------------------------------------------------------------
+inline void stream_synchronize( cudaStream_t stream )
+{
+    blas_dev_call( cudaStreamSynchronize( stream ) );
+}
+
+//------------------------------------------------------------------------------
+inline cublasHandle_t handle_create( cudaStream_t stream )
+{
+    cublasHandle_t handle;
+    blas_dev_call( cublasCreate( &handle ) );
+    blas_dev_call( cublasSetStream( handle, stream ) );
+    return handle;
+}
+
+//------------------------------------------------------------------------------
+inline void handle_destroy( cublasHandle_t handle )
+{
+    blas_dev_call( cublasDestroy( handle ) );
+}
+
+//------------------------------------------------------------------------------
+inline void handle_set_stream( cublasHandle_t handle, cudaStream_t stream )
+{
+    blas_dev_call( cublasSetStream( handle, stream ) );
+}
+
+//------------------------------------------------------------------------------
+inline cudaStream_t handle_get_stream( cublasHandle_t handle )
+{
+    cudaStream_t stream;
+    blas_dev_call( cublasGetStream( handle, &stream ) );
+    return stream;
+}
+
+//------------------------------------------------------------------------------
+inline cudaEvent_t event_create()
+{
+    cudaEvent_t event;
+    blas_dev_call( cudaEventCreate( &event ) );
+    return event;
+}
+
+//------------------------------------------------------------------------------
+inline void event_destroy( cudaEvent_t event )
+{
+    blas_dev_call( cudaEventDestroy( event ) );
+}
+
+//------------------------------------------------------------------------------
+inline void event_record( cudaEvent_t event, cudaStream_t stream )
+{
+    blas_dev_call( cudaEventRecord( event, stream ) );
+}
+
+//------------------------------------------------------------------------------
+inline void stream_wait_event(
+    cudaStream_t stream, cudaEvent_t event, unsigned int flags )
+{
+    blas_dev_call( cudaStreamWaitEvent( stream, event, flags ) );
+}
+
+//==============================================================================
+// Light wrappers around HIP and rocBLAS functions.
+
+#elif defined( BLAS_HAVE_ROCBLAS )
+
+//------------------------------------------------------------------------------
+/// Creates stream on current device. [[deprecated]]
+inline hipStream_t stream_create()
+{
+    hipStream_t stream;
+    blas_dev_call( hipStreamCreate( &stream ) );
+    return stream;
+}
+
+//------------------------------------------------------------------------------
+/// Creates stream on given device.
+inline hipStream_t stream_create( int device )
+{
+    internal_set_device( device );
+    hipStream_t stream;
+    blas_dev_call( hipStreamCreate( &stream ) );
+    return stream;
+}
+
+//------------------------------------------------------------------------------
+inline void stream_destroy( hipStream_t stream )
+{
+    blas_dev_call( hipStreamDestroy( stream ) );
+}
+
+//------------------------------------------------------------------------------
+inline void stream_synchronize( hipStream_t stream )
+{
+    blas_dev_call( hipStreamSynchronize( stream ) );
+}
+
+//------------------------------------------------------------------------------
+inline rocblas_handle handle_create( hipStream_t stream )
+{
+    rocblas_handle handle;
+    blas_dev_call( rocblas_create_handle( &handle ) );
+    blas_dev_call( rocblas_set_stream( handle, stream ) );
+    return handle;
+}
+
+//------------------------------------------------------------------------------
+inline void handle_destroy( rocblas_handle handle )
+{
+    blas_dev_call( rocblas_destroy_handle( handle ) );
+}
+
+//------------------------------------------------------------------------------
+inline void handle_set_stream( rocblas_handle handle, hipStream_t stream )
+{
+    blas_dev_call( rocblas_set_stream( handle, stream ) );
+}
+
+//------------------------------------------------------------------------------
+inline hipStream_t handle_get_stream( rocblas_handle handle )
+{
+    hipStream_t stream;
+    blas_dev_call( rocblas_get_stream( handle, &stream ) );
+    return stream;
+}
+
+//------------------------------------------------------------------------------
+inline hipEvent_t event_create()
+{
+    hipEvent_t event;
+    blas_dev_call( hipEventCreate( &event ) );
+    return event;
+}
+
+//------------------------------------------------------------------------------
+inline void event_destroy( hipEvent_t event )
+{
+    blas_dev_call( hipEventDestroy( event ) );
+}
+
+//------------------------------------------------------------------------------
+inline void event_record( hipEvent_t event, hipStream_t stream )
+{
+    blas_dev_call( hipEventRecord( event, stream ) );
+}
+
+//------------------------------------------------------------------------------
+inline void stream_wait_event(
+    hipStream_t stream, hipEvent_t event, unsigned int flags )
+{
+    blas_dev_call( hipStreamWaitEvent( stream, event, flags ) );
+}
+
+#endif  // BLAS_HAVE_ROCBLAS
+
+//==============================================================================
 // Level 1 BLAS - Device Interfaces
 // Alphabetical order
 
