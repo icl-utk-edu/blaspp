@@ -238,7 +238,7 @@ private:
         sycl::event  default_event_;
 
         // pointer to current stream (default or fork mode)
-        sycl::queue *current_stream_;
+        // sycl::queue *current_stream_; // not currently used
 
     #else
         // pointer to current stream (default or fork mode)
