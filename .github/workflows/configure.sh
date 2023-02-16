@@ -16,10 +16,12 @@ env
 
 print "======================================== Setup build"
 export color=no
+export CXXFLAGS="-Werror -Wno-unused-command-line-argument"
+
 rm -rf ${top}/install
 if [ "${maker}" = "make" ]; then
     make distclean
-    make config CXXFLAGS="-Werror -Wno-unused-command-line-argument" prefix=${top}/install \
+    make config prefix=${top}/install \
          || exit 10
 fi
 if [ "${maker}" = "cmake" ]; then
