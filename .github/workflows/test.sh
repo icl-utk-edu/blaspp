@@ -15,17 +15,22 @@ export OMP_NUM_THREADS=8
 print "======================================== Tests"
 cd test
 
-./run_tests.py --blas1 --blas2 --blas3 --quick --xml ${top}/report-${maker}.xml
+TESTER="./run_tests.py --quick"
+if [ "${device}" = "gpu_intel" ]; then
+    TESTER+=" --type s,c"
+fi
+
+${TESTER} --blas1 --blas2 --blas3 --xml ${top}/report-${maker}.xml
 (( err += $? ))
 
-./run_tests.py --batch-blas3           --quick --xml ${top}/report-${maker}-batch.xml
+${TESTER} --batch-blas3           --xml ${top}/report-${maker}-batch.xml
 (( err += $? ))
 
 # CUDA or HIP
-./run_tests.py --blas1-device --blas3-device --quick --xml ${top}/report-${maker}-device.xml
+${TESTER} --blas1-device --blas3-device --xml ${top}/report-${maker}-device.xml
 (( err += $? ))
 
-./run_tests.py --batch-blas3-device          --quick --xml ${top}/report-${maker}-batch-device.xml
+${TESTER} --batch-blas3-device          --xml ${top}/report-${maker}-batch-device.xml
 (( err += $? ))
 
 print "======================================== Smoke tests"
@@ -40,11 +45,17 @@ if [ "${maker}" = "cmake" ]; then
     cmake "-DCMAKE_PREFIX_PATH=${top}/install" ..
 fi
 
+if [ "${device}" = "gpu_intel" ]; then
+    TESTS="s c"
+else
+    TESTS="s d c z"
+fi
+
 make
-./example_gemm
+./example_gemm $TESTS
 (( err += $? ))
 
-./example_util
+./example_util $TESTS
 (( err += $? ))
 
 print "======================================== Finished test"
