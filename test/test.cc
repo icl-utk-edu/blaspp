@@ -23,8 +23,6 @@ using testsweeper::ansi_normal;
 
 const double no_data = testsweeper::no_data_flag;
 
-const ParamType PT_Value  = ParamType::Value;
-const ParamType PT_List   = ParamType::List;
 const ParamType PT_Output = ParamType::Output;
 
 // -----------------------------------------------------------------------------
