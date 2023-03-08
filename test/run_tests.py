@@ -40,6 +40,7 @@ group_test.add_argument( '-t', '--test', action='store',
     help='test command to run, e.g., --test "mpirun -np 4 ./test"; default "%(default)s"',
     default='./tester' )
 group_test.add_argument( '--xml', help='generate report.xml for jenkins' )
+group_test.add_argument( '--start',   action='store', help='routine to start with, helpful for restarting', default='' )
 
 group_size = parser.add_argument_group( 'matrix dimensions (default is medium)' )
 group_size.add_argument(       '--quick',  action='store_true', help='run quick "sanity check" of few, small tests' )
@@ -131,6 +132,8 @@ if (opts.device):
     for c in categories:
         if (c.endswith('_device')):
             opts.__dict__[ c ] = True
+
+start_routine = opts.start
 
 # ------------------------------------------------------------------------------
 # parameters
@@ -460,6 +463,11 @@ run_all = (ntests == 0)
 seen = set()
 for cmd in cmds:
     if (run_all or cmd[0] in opts.tests):
+        if (start_routine and cmd[0] != start_routine):
+            print_tee( 'skipping', cmd[0] )
+            continue
+        start_routine = None
+
         seen.add( cmd[0] )
         (err, output) = run_test( cmd )
         if (err):
