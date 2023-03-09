@@ -42,18 +42,19 @@ group_test.add_argument( '-t', '--test', action='store',
 group_test.add_argument( '--xml', help='generate report.xml for jenkins' )
 group_test.add_argument( '--dry-run', action='store_true', help='print commands, but do not execute them' )
 group_test.add_argument( '--start',   action='store', help='routine to start with, helpful for restarting', default='' )
+group_test.add_argument( '-x', '--exclude', action='append', help='routines to exclude; repeatable', default=[] )
 
 group_size = parser.add_argument_group( 'matrix dimensions (default is medium)' )
-group_size.add_argument(       '--quick',  action='store_true', help='run quick "sanity check" of few, small tests' )
-group_size.add_argument( '-x', '--xsmall', action='store_true', help='run x-small tests' )
-group_size.add_argument( '-s', '--small',  action='store_true', help='run small tests' )
-group_size.add_argument( '-m', '--medium', action='store_true', help='run medium tests' )
-group_size.add_argument( '-l', '--large',  action='store_true', help='run large tests' )
-group_size.add_argument(       '--square', action='store_true', help='run square (m = n = k) tests', default=False )
-group_size.add_argument(       '--tall',   action='store_true', help='run tall (m > n) tests', default=False )
-group_size.add_argument(       '--wide',   action='store_true', help='run wide (m < n) tests', default=False )
-group_size.add_argument(       '--mnk',    action='store_true', help='run tests with m, n, k all different', default=False )
-group_size.add_argument(       '--dim',    action='store',      help='explicitly specify size', default='' )
+group_size.add_argument( '--quick',  action='store_true', help='run quick "sanity check" of few, small tests' )
+group_size.add_argument( '--xsmall', action='store_true', help='run x-small tests' )
+group_size.add_argument( '--small',  action='store_true', help='run small tests' )
+group_size.add_argument( '--medium', action='store_true', help='run medium tests' )
+group_size.add_argument( '--large',  action='store_true', help='run large tests' )
+group_size.add_argument( '--square', action='store_true', help='run square (m = n = k) tests', default=False )
+group_size.add_argument( '--tall',   action='store_true', help='run tall (m > n) tests', default=False )
+group_size.add_argument( '--wide',   action='store_true', help='run wide (m < n) tests', default=False )
+group_size.add_argument( '--mnk',    action='store_true', help='run tests with m, n, k all different', default=False )
+group_size.add_argument( '--dim',    action='store',      help='explicitly specify size', default='' )
 
 group_cat = parser.add_argument_group( 'category (default is all)' )
 categories = [
@@ -467,7 +468,7 @@ run_all = (ntests == 0)
 
 seen = set()
 for cmd in cmds:
-    if (run_all or cmd[0] in opts.tests):
+    if ((run_all or cmd[0] in opts.tests) and cmd[0] not in opts.exclude):
         if (start_routine and cmd[0] != start_routine):
             print_tee( 'skipping', cmd[0] )
             continue
@@ -479,8 +480,8 @@ for cmd in cmds:
             failed_tests.append( (cmd[0], err, output) )
         else:
             passed_tests.append( cmd[0] )
-not_seen = list( filter( lambda x: x not in seen, opts.tests ) )
 
+not_seen = list( filter( lambda x: x not in seen, opts.tests ) )
 if (not_seen):
     print_tee( 'Warning: unknown routines:', ' '.join( not_seen ))
 
