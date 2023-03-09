@@ -392,9 +392,10 @@ if (opts.aux):
     ]
 
 # ------------------------------------------------------------------------------
-# when output is redirected to file instead of TTY console,
-# print extra messages to stderr on TTY console.
-output_redirected = not sys.stdout.isatty()
+# When stdout is redirected to file instead of TTY console,
+# and  stderr is still going to a TTY console,
+# print extra summary messages to stderr.
+output_redirected = sys.stderr.isatty() and not sys.stdout.isatty()
 
 # ------------------------------------------------------------------------------
 # if output is redirected, prints to both stderr and stdout;
