@@ -40,6 +40,7 @@ group_test.add_argument( '-t', '--test', action='store',
     help='test command to run, e.g., --test "mpirun -np 4 ./test"; default "%(default)s"',
     default='./tester' )
 group_test.add_argument( '--xml', help='generate report.xml for jenkins' )
+group_test.add_argument( '--dry-run', action='store_true', help='print commands, but do not execute them' )
 group_test.add_argument( '--start',   action='store', help='routine to start with, helpful for restarting', default='' )
 
 group_size = parser.add_argument_group( 'matrix dimensions (default is medium)' )
@@ -411,6 +412,9 @@ def print_tee( *args ):
 def run_test( cmd ):
     cmd = opts.test +' '+ cmd[1] +' '+ cmd[0]
     print_tee( cmd )
+    if (opts.dry_run):
+        return (None, None)
+
     output = ''
     p = subprocess.Popen( cmd.split(), stdout=subprocess.PIPE,
                                        stderr=subprocess.STDOUT )
