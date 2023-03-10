@@ -277,6 +277,7 @@ Params::Params():
 
     // mark framework parameters as used, so they will be accepted on the command line
     check();
+    ref();
     repeat();
     verbose();
     cache();
