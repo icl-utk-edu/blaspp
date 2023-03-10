@@ -12,17 +12,17 @@
 // Copy A from LAPACK format on host to tile format on device.
 template <typename T>
 void copy_lapack_to_tile_format(
-        int64_t m, int64_t n, int64_t mt, int64_t nt,
-        T const*  A, int64_t ldA,
-        T* dA, int64_t ld_tile, blas::Queue& queue)
+    int64_t m, int64_t n, int64_t mt, int64_t nt,
+    T const*  A, int64_t ldA,
+    T* dA, int64_t ld_tile, blas::Queue& queue )
 {
     for (int64_t j = 0; j < nt; ++j) {
         for (int64_t i = 0; i < mt; ++i) {
             blas::device_copy_matrix(
-                    m, n,
-                    & A[ i * m + j * n * ldA ], ldA,
-                    &dA[ i * m * ld_tile + j * n * mt * ld_tile ], ld_tile,
-                    queue);
+                m, n,
+                & A[ i * m + j * n * ldA ], ldA,
+                &dA[ i * m * ld_tile + j * n * mt * ld_tile ], ld_tile,
+                queue );
         }
     }
 }
@@ -30,17 +30,17 @@ void copy_lapack_to_tile_format(
 // Copy A from tile format on device to LAPACK format on host.
 template <typename T>
 void copy_tile_to_lapack_format(
-        int64_t m, int64_t n, int64_t mt, int64_t nt,
-        T const* dA, int64_t ld_tile,
-        T*  A, int64_t ldA, blas::Queue& queue)
+    int64_t m, int64_t n, int64_t mt, int64_t nt,
+    T const* dA, int64_t ld_tile,
+    T*  A, int64_t ldA, blas::Queue& queue )
 {
     for (int64_t j = 0; j < nt; ++j) {
         for (int64_t i = 0; i < mt; ++i) {
             blas::device_copy_matrix(
-                    m, n,
-                    &dA[ i * m * ld_tile + j * n * mt * ld_tile ], ld_tile,
-                    &A[ i * m + j * n * ldA ], ldA,
-                    queue);
+                m, n,
+                &dA[ i * m * ld_tile + j * n * mt * ld_tile ], ld_tile,
+                &A[ i * m + j * n * ldA ], ldA,
+                queue );
         }
     }
 }
@@ -66,7 +66,7 @@ void test_schur_gemm_work( Params& params, bool run )
     scalar_t beta_      = params.beta();
     int64_t m_          = params.dim.m();
     int64_t n_          = params.dim.n();
-    int64_t k_          = params.dim.k(); //Used as the tile size nb.
+    int64_t k_          = params.dim.k(); // Used as the tile size nb.
     int64_t device  = params.device();
     int64_t align   = params.align();
     int64_t verbose = params.verbose();
@@ -131,14 +131,14 @@ void test_schur_gemm_work( Params& params, bool run )
     TC* dC = blas::device_malloc<TC>( size_C, queue );
 
     // pointer arrays
-    std::vector<TA*>   dAarray;
-    std::vector<TB*>   dBarray;
-    std::vector<TC*>   dCarray;
+    std::vector<TA*> dAarray;
+    std::vector<TB*> dBarray;
+    std::vector<TC*> dCarray;
 
     // wrap scalar arguments in std::vector
-    std::vector<blas::Op> transA(1, transA_);
-    std::vector<blas::Op> transB(1, transB_);
-    std::vector<int64_t>  k(1, k_);
+    std::vector<blas::Op> transA( 1, transA_ );
+    std::vector<blas::Op> transB( 1, transB_ );
+    std::vector<int64_t>  k( 1, k_ );
     int64_t lda_batch_default;
     int64_t ldc_batch_default;
     if (format == Format::LAPACK) {
@@ -150,11 +150,11 @@ void test_schur_gemm_work( Params& params, bool run )
         ldc_batch_default = ld_tile;
     }
 
-    std::vector<int64_t>  ldda(1, lda_batch_default);
-    std::vector<int64_t>  lddb(1, ldb_);
-    std::vector<int64_t>  lddc(1, ldc_batch_default);
-    std::vector<scalar_t> alpha(1, alpha_);
-    std::vector<scalar_t> beta(1, beta_);
+    std::vector<int64_t>  ldda( 1, lda_batch_default );
+    std::vector<int64_t>  lddb( 1, ldb_ );
+    std::vector<int64_t>  lddc( 1, ldc_batch_default );
+    std::vector<scalar_t> alpha( 1, alpha_ );
+    std::vector<scalar_t> beta( 1, beta_ );
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
@@ -164,16 +164,16 @@ void test_schur_gemm_work( Params& params, bool run )
     if (Cref != nullptr)
         lapack_lacpy( "g", Cm, Cn, C, ldc_, Cref, ldc_ );
 
-    blas::device_copy_matrix(Bm, Bn, B, ldb_, dB, ldb_, queue);
+    blas::device_copy_matrix( Bm, Bn, B, ldb_, dB, ldb_, queue );
     if (format == Format::LAPACK) {
-        blas::device_copy_matrix(Am, An, A, lda_, dA, lda_, queue);
-        blas::device_copy_matrix(Cm, Cn, C, ldc_, dC, ldc_, queue);
+        blas::device_copy_matrix( Am, An, A, lda_, dA, lda_, queue );
+        blas::device_copy_matrix( Cm, Cn, C, ldc_, dC, ldc_, queue );
     }
     else if (format == Format::Tile) {
         copy_lapack_to_tile_format(
-                k_, k_, mt,  1, A, lda_, dA, ld_tile, queue);
+                k_, k_, mt,  1, A, lda_, dA, ld_tile, queue );
         copy_lapack_to_tile_format(
-                k_, k_, mt, nt, C, ldc_, dC, ld_tile, queue);
+                k_, k_, mt, nt, C, ldc_, dC, ld_tile, queue );
     }
     queue.sync();
 
@@ -189,7 +189,7 @@ void test_schur_gemm_work( Params& params, bool run )
     if (format == Format::LAPACK) {
         for (int64_t j = 0; j < nt; ++j) {
             for (int64_t i = 0; i < mt; ++i) {
-                dAarray.push_back( &dA[ i * k_ ] );  // i-th block row
+                dAarray.push_back( &dA[ i * k_ ] );         // i-th block row
                 dBarray.push_back( &dB[ j * k_ * ldb_ ] );  // j-th block col
                 dCarray.push_back( &dC[ i * k_ + j * k_ * ldc_ ] );  // (i, j)-th block
             }
@@ -199,7 +199,7 @@ void test_schur_gemm_work( Params& params, bool run )
         for (int64_t j = 0; j < nt; ++j) {
             for (int64_t i = 0; i < mt; ++i) {
                 dAarray.push_back( &dA[ i * k_ * ld_tile ] );  // i-th block row
-                dBarray.push_back( &dB[ j * k_ * ldb_ ] );  // j-th block col
+                dBarray.push_back( &dB[ j * k_ * ldb_ ] );     // j-th block col
                 dCarray.push_back( &dC[ i * k_ * ld_tile + j * k_ * mt * ld_tile ] );  // (i, j)-th block
             }
         }
@@ -221,11 +221,11 @@ void test_schur_gemm_work( Params& params, bool run )
     params.gflops() = gflop / time;
 
     if (format == Format::LAPACK) {
-        blas::device_copy_matrix(Cm, Cn, dC, ldc_, C, ldc_, queue);
+        blas::device_copy_matrix( Cm, Cn, dC, ldc_, C, ldc_, queue );
     }
     else if (format == Format::Tile) {
         copy_tile_to_lapack_format(
-                k_, k_, mt, nt, dC, ld_tile, C, ldc_, queue);
+            k_, k_, mt, nt, dC, ld_tile, C, ldc_, queue );
     }
     queue.sync();
 
@@ -235,9 +235,9 @@ void test_schur_gemm_work( Params& params, bool run )
         // Copy A in LAPACK format to device
         // because it was overwritten by its tile format.
         if (format == Format::Tile) {
-            blas::device_copy_matrix(Am, An, A, lda_, dA, lda_, queue);
+            blas::device_copy_matrix( Am, An, A, lda_, dA, lda_, queue );
         }
-        blas::device_copy_matrix(Cm, Cn, Cref, ldc_, dC, ldc_, queue);
+        blas::device_copy_matrix( Cm, Cn, Cref, ldc_, dC, ldc_, queue );
         queue.sync();
 
         double time_ref = get_wtime();
@@ -248,7 +248,7 @@ void test_schur_gemm_work( Params& params, bool run )
         params.ref_time()   = time_ref;
         params.ref_gflops() = gflop / time_ref;
 
-        blas::device_copy_matrix(Cm, Cn, dC, ldc_, Cref, ldc_, queue);
+        blas::device_copy_matrix( Cm, Cn, dC, ldc_, Cref, ldc_, queue );
         queue.sync();
 
         // Error
