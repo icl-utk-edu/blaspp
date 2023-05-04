@@ -49,7 +49,7 @@ option( use_openmp "Use OpenMP, if available" true )
 
 set( gpu_backend "auto" CACHE STRING "GPU backend to use" )
 set_property( CACHE gpu_backend PROPERTY STRINGS
-              auto cuda hip none )
+              auto cuda hip onemkl none )
 
 # After color.
 include( "cmake/util.cmake" )
@@ -236,6 +236,7 @@ add_library(
     src/device_utils.cc
     src/cublas_wrappers.cc
     src/rocblas_wrappers.cc
+    src/onemkl_wrappers.cc
 )
 
 #-------------------------------------------------------------------------------
@@ -292,6 +293,42 @@ if (NOT CUDAToolkit_FOUND
     endif()
 else()
     message( STATUS "${red}No HIP/ROCm support: gpu_backend = ${gpu_backend}${plain}" )
+endif()
+
+#-------------------------------------------------------------------------------
+# OneMKL/SYCL support.
+message( "" )
+set( blaspp_use_onemkl false )  # output in blasppConfig.cmake.in
+if (NOT gpu_backend MATCHES "^(cuda|hip)$"
+    AND gpu_backend MATCHES "^(onemkl|auto)$" )
+
+    message( STATUS "${bold}Looking for OneMKL${not_bold} (gpu_backend = ${gpu_backend})" )
+    if (gpu_backend STREQUAL "onemkl")
+        find_package( MKL CONFIG REQUIRED HINTS "$ENV{MKL_ROOT}")
+    else()
+        find_package( MKL CONFIG QUIET HINTS "$ENV{MKL_ROOT}")
+    endif()
+    # message(STATUS "Available targets: ${MKL_IMPORTED_TARGETS}")
+
+    if (MKL_FOUND)
+        set( gpu_backend "onemkl" )
+        set( blaspp_defs_onemkl_ "-DBLAS_HAVE_ONEMKL" )
+        set( blaspp_use_onemkl true )
+        # CMake FindBLAS works, SLATE internal BLAS finder may cause problems
+        if (NOT BLA_VENDOR)
+           set( BLA_VENDOR Intel10_64lp )
+        endif()
+        target_compile_options( blaspp PUBLIC -std=c++17 -fsycl )
+        target_link_options( blaspp PUBLIC -fsycl )
+        # MKL libs added later by the CMake FindBLAS using BLA_VENDOR
+        ## (-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core)
+        target_link_libraries( blaspp PUBLIC -lmkl_sycl -lsycl -lOpenCL )
+        message( STATUS "${blue}Building OneMKL support${plain}" )
+    else()
+        message( STATUS "${red}No OneMKL support: OneMKL not found${plain}" )
+    endif()
+else()
+    message( STATUS "${red}No OneMKL support: gpu_backend = ${gpu_backend}${plain}" )
 endif()
 
 #-------------------------------------------------------------------------------
@@ -376,12 +413,14 @@ include( "cmake/CBLASConfig.cmake" )
 
 # Export via blasppConfig.cmake
 # Needed for finding LAPACK.
+list( REMOVE_DUPLICATES BLAS_LIBRARIES )
 set( blaspp_libraries "${BLAS_LIBRARIES};${openmp_lib}" CACHE INTERNAL "" )
 message( DEBUG "blaspp_libraries = '${blaspp_libraries}'" )
 
 #-------------------------------------------------------------------------------
 # Search for LAPACK library.
 message( "" )
+
 if (BLA_VENDOR OR use_cmake_find_blas)
     message( DEBUG "Using CMake's FindLAPACK" )
     find_package( LAPACK )
@@ -389,6 +428,7 @@ else()
     message( DEBUG "Using LAPACKFinder" )
     include( "cmake/LAPACKFinder.cmake" )
 endif()
+list( REMOVE_DUPLICATES LAPACK_LIBRARIES )
 
 if (NOT LAPACK_FOUND)
     message( "For [cz]rot, [cz]syr, and [cz]symv, BLAS++ requires a LAPACK library and none was found."
@@ -404,7 +444,8 @@ set( blaspp_defs_ "${blaspp_defs_}"
      CACHE INTERNAL "Constants defined for BLAS" )
 
 # Concat defines.
-set( blaspp_defines ${blaspp_defs_} ${blaspp_defs_cuda_} ${blaspp_defs_hip_}
+set( blaspp_defines ${blaspp_defs_} ${blaspp_defs_cuda_}
+     ${blaspp_defs_hip_} ${blaspp_defs_onemkl_}
      CACHE INTERNAL "")
 
 if (true)
@@ -433,8 +474,10 @@ endif()
 
 if (LAPACK_LIBRARIES)
     # Update BLAS libraries with LAPACK libraries.
+    set( BLAS_LAPACK_LIBRARIES "${BLAS_LIBRARIES};${LAPACK_LIBRARIES}" )
+    list( REMOVE_DUPLICATES BLAS_LAPACK_LIBRARIES )
     # Export via blasppConfig.cmake
-    set( blaspp_libraries "${BLAS_LIBRARIES};${LAPACK_LIBRARIES};${openmp_lib}" CACHE INTERNAL "" )
+    set( blaspp_libraries "${BLAS_LAPACK_LIBRARIES};${openmp_lib}" CACHE INTERNAL "" )
     message( DEBUG "blaspp_libraries = '${blaspp_libraries}'" )
 endif()
 
