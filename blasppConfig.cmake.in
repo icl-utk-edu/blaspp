@@ -18,10 +18,6 @@ if (blaspp_use_hip)
     find_dependency( rocblas )
 endif()
 
-if (blaspp_use_hip)
-    find_dependency( MKL )
-endif()
-
 # Export private variables used in LAPACK++.
 set( blaspp_defines         "@blaspp_defines@" )
 set( blaspp_libraries       "@blaspp_libraries@" )
