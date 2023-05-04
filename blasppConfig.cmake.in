@@ -3,6 +3,7 @@ cmake_minimum_required( VERSION 3.15 )
 set( blaspp_use_openmp "@blaspp_use_openmp@" )
 set( blaspp_use_cuda   "@blaspp_use_cuda@" )
 set( blaspp_use_hip    "@blaspp_use_hip@" )
+set( blaspp_use_onemkl "@blaspp_use_onemkl@" )
 
 include( CMakeFindDependencyMacro )
 if (blaspp_use_openmp)
@@ -15,6 +16,10 @@ endif()
 
 if (blaspp_use_hip)
     find_dependency( rocblas )
+endif()
+
+if (blaspp_use_hip)
+    find_dependency( MKL )
 endif()
 
 # Export private variables used in LAPACK++.
