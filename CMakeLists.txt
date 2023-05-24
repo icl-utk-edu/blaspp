@@ -463,7 +463,7 @@ include( GNUInstallDirs )
 if (WIN32)
     set( install_configdir "blaspp" )
 else()
-    set( install_configdir "${CMAKE_INSTALL_LIBDIR}/blaspp" )
+    set( install_configdir "${CMAKE_INSTALL_LIBDIR}/cmake/blaspp" )
 endif()
 
 # Install library and add to <package>Targets.cmake
