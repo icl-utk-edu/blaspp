@@ -758,7 +758,7 @@ void test_queue_fork()
             auto handle = queue.handle();
         #endif
 
-        std::vector< blas::Queue::stream_t > streams( num_streams );  //, nullptr );
+        std::vector< blas::Queue::stream_t > streams( num_streams );
 
         for (int iter = 0; iter < 3; ++iter) {
             //-----

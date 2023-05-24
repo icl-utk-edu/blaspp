@@ -45,7 +45,7 @@ class DeviceList
 {
 public:
     //----------------------------------------
-    /// @return DeviceList singleton, which will create it on the first call.
+    /// @return DeviceList singleton, which will be created on the first call.
     ///
     static DeviceList& get()
     {

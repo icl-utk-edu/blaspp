@@ -13,6 +13,9 @@ namespace blas {
 
 // -----------------------------------------------------------------------------
 /// Default constructor.
+/// For CUDA and ROCm, creates a Queue on the current device.
+/// For SYCL, throws an error.
+/// todo: SYCL has a default device, how to use it?
 Queue::Queue()
   : work_( nullptr ),
     lwork_( 0 )
@@ -20,7 +23,7 @@ Queue::Queue()
         ,
         streams_ { stream_create() },  // remaining streams are null
         handle_( handle_create( streams_[ 0 ] ) ),
-        events_  { nullptr },          // all events are null
+        events_  { nullptr },  // all events are null
         num_active_streams_( 1 ),
         current_stream_index_( 0 ),
         own_handle_        ( true ),
@@ -59,7 +62,7 @@ Queue::Queue( int device )
     #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
         streams_ { stream_create( device ) },  // remaining streams are null
         handle_( handle_create( streams_[ 0 ] ) ),
-        events_  { nullptr },                  // all events are null
+        events_  { nullptr },  // all events are null
         num_active_streams_( 1 ),
         current_stream_index_( 0 ),
         own_handle_        ( true ),
@@ -103,9 +106,9 @@ Queue::Queue( int device )
     Queue::Queue( int device, stream_t& stream )
       : work_( nullptr ),
         lwork_( 0 ),
-        streams_ { nullptr },      // remaining streams are null
-        handle_( nullptr ),  // created below due to set_device
-        events_  { nullptr },     // all events  are null
+        streams_ { stream },   // remaining streams are null
+        handle_( nullptr ),    // created below due to set_device
+        events_  { nullptr },  // all events  are null
         num_active_streams_( 1 ),
         current_stream_index_( 0 ),
         own_handle_        ( true  ),
@@ -113,7 +116,6 @@ Queue::Queue( int device )
         device_( device )
     {
         internal_set_device( device_ );
-        streams_[ 0 ] = stream;
         handle_ = handle_create( stream );
     }
 
@@ -123,7 +125,7 @@ Queue::Queue( int device )
     /// Throws an error if in fork mode.
     void Queue::set_stream( stream_t& stream )
     {
-        if (current_stream_index_ != 0)
+        if (num_active_streams_ > 1)
             throw blas::Error( "can't set stream in fork mode", __func__ );
 
         if (own_default_stream_) {
@@ -140,7 +142,7 @@ Queue::Queue( int device )
     /// Throws an error if in fork mode.
     void Queue::set_handle( handle_t& handle )
     {
-        if (current_stream_index_ != 0)
+        if (num_active_streams_ > 1)
             throw blas::Error( "can't set stream in fork mode", __func__ );
 
         if (own_default_stream_) {
@@ -172,6 +174,9 @@ Queue::Queue( int device )
     // -------------------------------------------------------------------------
     /// Change the SYCL queue (stream) used in the BLAS++ queue.
     /// Kernels executing on the current stream will continue.
+    /// Note BLAS++ generally assumes streams are in-order, which SYCL
+    /// queues are not by default. See sycl::property::queue::in_order.
+    // todo: check that stream is in-order?
     void Queue::set_stream( stream_t& stream )
     {
         streams_[ 0 ] = stream;
@@ -215,7 +220,7 @@ Queue::~Queue()
             }
 
         #elif defined( BLAS_HAVE_ONEMKL )
-            //delete streams_[ 0 ];
+            // sycl::queue implicitly destructed.
         #endif
     }
     catch (...) {

@@ -378,13 +378,13 @@ inline const char* device_error_string( rocblas_status error )
 
 // -----------------------------------------------------------------------------
 // set/get device functions
-[[deprecated("use blas::Queues& with all BLAS++ calls")]]
+[[deprecated("use blas::Queues& with all BLAS++ calls. To be removed 2024-05.")]]
 void set_device( int device );
 
 // private, internal routine; sets device for cuda, rocm; nothing for onemkl
 void internal_set_device( int device );
 
-[[deprecated("use blas::Queues& with all BLAS++ calls")]]
+[[deprecated("use blas::Queues& with all BLAS++ calls. To be removed 2024-05.")]]
 void get_device( int *device );
 
 int get_device_count();
