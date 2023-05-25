@@ -88,6 +88,10 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     set( gnu_compiler true )
 endif()
 
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "IntelLLVM")
+    set( intelllvm_compiler true )
+endif()
+
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
     set( intel_compiler true )
 endif()
@@ -150,6 +154,10 @@ endif()
 
 if ("${blas_}" MATCHES "ibm|essl")
     set( test_essl true )
+endif()
+
+if ("${blas_}" MATCHES "onemkl")
+    set( test_onemkl true )
 endif()
 
 if ("${blas_}" MATCHES "intel|mkl")
@@ -271,6 +279,20 @@ if (test_all OR test_default)
     list( APPEND blas_libs_list " " )  # Use space so APPEND works later.
     debug_print_list( "default" )
 endif()
+
+#---------------------------------------- Intel OneMKL
+if (test_all OR test_onemkl)
+    # IntelLLVM compiler + OpenMP: require intel_thread library.
+    if (test_int)
+        list( APPEND blas_name_list "Intel OneMKL lp64,  Intel threads (iomp5), ifort")
+        list( APPEND blas_libs_list "-lmkl_intel_lp64  -lmkl_intel_thread -lmkl_core" )
+    elseif (test_int64)
+        list( APPEND blas_name_list "Intel OneMKL ilp64, Intel threads (iomp5), ifort")
+        list( APPEND blas_libs_list "-lmkl_intel_ilp64 -lmkl_intel_thread -lmkl_core" )
+    else ()
+        message( "Skipping OneMKL for non-threaded, non-IntelLLVM compiler, upsupported" )
+    endif()
+endif()  # OneMKL
 
 #---------------------------------------- Intel MKL
 if (test_all OR test_mkl)
