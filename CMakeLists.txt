@@ -299,8 +299,8 @@ endif()
 # OneMKL/SYCL support.
 message( "" )
 set( blaspp_use_onemkl false )  # output in blasppConfig.cmake.in
-if (NOT gpu_backend MATCHES "^(cuda|hip)$"
-    AND gpu_backend MATCHES "^(onemkl|auto)$" )
+# if cuda or hip were found gpu_backend was set appropriately
+if (gpu_backend MATCHES "^(onemkl|auto)$")
 
     message( STATUS "${bold}Looking for OneMKL${not_bold} (gpu_backend = ${gpu_backend})" )
     if (gpu_backend STREQUAL "onemkl")
@@ -312,16 +312,16 @@ if (NOT gpu_backend MATCHES "^(cuda|hip)$"
 
     if (MKL_FOUND)
         set( gpu_backend "onemkl" )
-        set( blaspp_defs_onemkl_ "-DBLAS_HAVE_ONEMKL" )
+        set( blaspp_defs_onemkl_ "-DBLAS_HAVE_ONEMKL;-DBLAS_FORTRAN_ADD_" )
         set( blaspp_use_onemkl true )
-        # CMake FindBLAS works, SLATE internal BLAS finder may cause problems
-        if (NOT BLA_VENDOR)
-           set( BLA_VENDOR Intel10_64lp )
-        endif()
+
+        # Uncomment to use CMake FindBLAS using BLA_VENDOR
+        # if (NOT BLA_VENDOR)
+        #    set( BLA_VENDOR Intel10_64lp )
+        # endif()
+
         target_compile_options( blaspp PUBLIC -std=c++17 -fsycl )
         target_link_options( blaspp PUBLIC -fsycl )
-        # MKL libs added later by the CMake FindBLAS using BLA_VENDOR
-        ## (-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core)
         target_link_libraries( blaspp PUBLIC -lmkl_sycl -lsycl -lOpenCL )
         message( STATUS "${blue}Building OneMKL support${plain}" )
     else()
