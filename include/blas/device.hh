@@ -191,7 +191,11 @@ public:
     size_t work_size() const { return lwork_ / sizeof(scalar_t); }
 
     template <typename scalar_t>
-    void work_resize( size_t lwork );
+    void work_ensure_size( size_t lwork );
+
+    template <typename scalar_t>
+    [[deprecated("Use work_ensure_size(). To be removed 2024-05.")]]
+    void work_resize( size_t lwork ) { work_ensure_size<scalar_t>( lwork ); }
 
     // switch from default stream to parallel streams
     void fork( int num_streams=MaxForkSize );
@@ -973,7 +977,7 @@ void device_getmatrix(
 ///     Minimum size of workspace.
 ///
 template <typename scalar_t>
-void Queue::work_resize( size_t lwork )
+void Queue::work_ensure_size( size_t lwork )
 {
     lwork *= sizeof(scalar_t);
     if (lwork > lwork_) {

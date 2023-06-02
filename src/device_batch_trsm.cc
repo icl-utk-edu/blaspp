@@ -87,7 +87,7 @@ void trsm(
         // trsm needs only 2 ptr arrays (A and B). Allocate usual
         // 3*max_chunk used by gemm, but then split in 2 instead of 3.
         size_t max_chunk = MaxBatchChunk;
-        queue.work_resize<void*>( 3*max_chunk );
+        queue.work_ensure_size<void*>( 3*max_chunk );
         max_chunk = 3*max_chunk / 2;
 
         scalar_t** dAarray = (scalar_t**) queue.work();

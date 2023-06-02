@@ -85,7 +85,7 @@ void gemm(
 
     // gemm needs 3 arrays (A, B, and C).
     size_t max_chunk = MaxBatchChunk;
-    queue.work_resize<void*>( 3*max_chunk );
+    queue.work_ensure_size<void*>( 3*max_chunk );
 
     scalar_t** dAarray = (scalar_t**) queue.work();
     scalar_t** dBarray = dAarray + max_chunk;
