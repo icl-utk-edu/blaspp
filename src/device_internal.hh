@@ -9,7 +9,6 @@
 #include "blas/device.hh"
 
 #include <complex>
-#include <omp.h>
 
 namespace blas {
 
