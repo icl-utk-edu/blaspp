@@ -1,3 +1,10 @@
+2023.06.00
+  - Revised Queue class to allow creating Queue from an existing
+    CUDA/HIP stream, cuBLAS/rocBLAS handle, or SYCL queue. Also
+    allocates streams and workspace on demand, to make Queue creation
+    much lighter weight.
+  - Improved oneAPI support.
+
 2023.01.00
   - Added oneAPI port (currently Makefile only)
       - Added queue argument to `device_malloc, device_free`, etc.;
