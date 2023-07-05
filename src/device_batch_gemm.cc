@@ -82,13 +82,16 @@ void gemm(
         device_blas_int ldb_ = to_device_blas_int( ldb[0] );
         device_blas_int ldc_ = to_device_blas_int( ldc[0] );
 
-        size_t batch_limit = queue.get_batch_limit();
-        scalar_t** dAarray = (scalar_t**) queue.get_dev_ptr_array( );
-        scalar_t** dBarray = dAarray + batch_limit;
-        scalar_t** dCarray = dBarray + batch_limit;
+        // gemm needs 3 arrays (A, B, and C).
+        size_t max_chunk = MaxBatchChunk;
+        queue.work_ensure_size<void*>( 3*max_chunk );
 
-        for (size_t i = 0; i < batch_size; i += batch_limit) {
-            size_t ibatch_size = std::min( batch_limit, batch_size - i );
+        scalar_t** dAarray = (scalar_t**) queue.work();
+        scalar_t** dBarray = dAarray + max_chunk;
+        scalar_t** dCarray = dBarray + max_chunk;
+
+        for (size_t i = 0; i < batch_size; i += max_chunk) {
+            size_t ibatch_size = std::min( max_chunk, batch_size - i );
 
             // copy Aarray, Barray, and Carray to device
             device_copy_vector( ibatch_size, &Aarray[ i ], 1, dAarray, 1, queue );

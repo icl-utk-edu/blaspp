@@ -51,7 +51,7 @@ void dot(
         // if result was outside SYCL/USM memory allocation, use device workspace
         if (result_ptr_type == sycl::usm::alloc::unknown) {
             // use preallocated device workspace (resizing if needed)
-            queue.work_resize< char >( sizeof(scalar_t) );  // syncs if needed
+            queue.work_ensure_size< char >( sizeof(scalar_t) );  // syncs if needed
             scalar_t* dev_work = (scalar_t*)queue.work();
             internal::dot( n_, x, incx_, y, incy_, dev_work, queue );
             blas::device_memcpy( result, dev_work, 1, queue );
@@ -102,7 +102,7 @@ void dotu(
         // if result was outside SYCL/USM memory allocation, use device workspace
         if (result_ptr_type == sycl::usm::alloc::unknown) {
             // use preallocated device workspace (resizing if needed)
-            queue.work_resize< char >( sizeof(scalar_t) );  // syncs if needed
+            queue.work_ensure_size< char >( sizeof(scalar_t) );  // syncs if needed
             scalar_t* dev_work = (scalar_t*)queue.work();
             internal::dotu( n_, x, incx_, y, incy_, dev_work, queue );
             blas::device_memcpy( result, dev_work, 1, queue );

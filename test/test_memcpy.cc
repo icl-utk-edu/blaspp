@@ -79,7 +79,7 @@ void test_memcpy_work( Params& params, bool run )
     if (verbose >= 1)
         printf( "setup\n" );
 
-    blas::Queue queue( device, 0 );
+    blas::Queue queue( device );
 
     // Allocate extra to verify copy doesn't overrun buffer.
     // When routine is copy/set/get_vector,

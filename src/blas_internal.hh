@@ -24,7 +24,7 @@ inline blas_int to_blas_int_( int64_t x, const char* x_str )
 //----------------------------------------
 /// Convert int64_t to blas_int.
 /// If blas_int is 64-bit, this does nothing.
-/// If blas_int is 32-bit, throws if abs( x ) > INT_MAX, so conversion would overflow.
+/// If blas_int is 32-bit, throws if x > INT_MAX, so conversion would overflow.
 ///
 /// Note this is in src/blas_internal.hh, so this macro won't pollute
 /// the namespace when apps #include <blas.hh>.

@@ -17,11 +17,11 @@ void set_device( int device )
 {
     #ifdef BLAS_HAVE_CUBLAS
         blas_dev_call(
-            cudaSetDevice((device_blas_int)device) );
+            cudaSetDevice( device ) );
 
     #elif defined(BLAS_HAVE_ROCBLAS)
         blas_dev_call(
-            hipSetDevice((device_blas_int)device) );
+            hipSetDevice( device ) );
 
     #elif defined(BLAS_HAVE_ONEMKL)
         throw blas::Error( "unsupported function for sycl backend", __func__ );
@@ -38,11 +38,11 @@ void internal_set_device( int device )
 {
     #ifdef BLAS_HAVE_CUBLAS
         blas_dev_call(
-            cudaSetDevice((device_blas_int)device) );
+            cudaSetDevice( device ) );
 
     #elif defined(BLAS_HAVE_ROCBLAS)
         blas_dev_call(
-            hipSetDevice((device_blas_int)device) );
+            hipSetDevice( device ) );
 
     #elif defined(BLAS_HAVE_ONEMKL)
         // skip, no need to throw error since this is an internal function
@@ -80,7 +80,7 @@ void get_device( int *device )
 
 // -----------------------------------------------------------------------------
 /// @return number of GPU devices.
-device_blas_int get_device_count()
+int get_device_count()
 {
     device_blas_int dev_count = 0;
 
@@ -95,50 +95,11 @@ device_blas_int get_device_count()
             blas_dev_call( err );
 
     #elif defined(BLAS_HAVE_ONEMKL)
-        auto platforms = sycl::platform::get_platforms();
-        for (auto &platform : platforms) {
-            auto devices = platform.get_devices();
-            for (auto &device : devices) {
-                dev_count += device.is_gpu();
-            }
-        }
-
-    #else
-        // return dev_count = 0
+        dev_count = DeviceList::size();
     #endif
 
     return dev_count;
 }
-
-// -----------------------------------------------------------------------------
-#ifdef BLAS_HAVE_ONEMKL
-void enumerate_devices(std::vector<sycl::device> &devices)
-{
-    device_blas_int dev_count = get_device_count();
-
-    if (devices.size() != (size_t)dev_count) {
-        devices.clear();
-        devices.reserve( dev_count );
-    }
-
-    auto platforms = sycl::platform::get_platforms();
-    for (auto &platform : platforms) {
-        auto all_devices = platform.get_devices();
-        for (auto &idevice : all_devices) {
-            if (idevice.is_gpu()) {
-                devices.push_back( idevice );
-            }
-        }
-    }
-
-    // // must remove the if statement below in production mode
-    // if (devices.size() == 0) {
-    //     sycl::device default_device;
-    //     devices.push_back( default_device );
-    //     dev_count = 1;
-    // }
-}
-#endif
 
 // -----------------------------------------------------------------------------
 /// @deprecated: use device_free( ptr, queue ).

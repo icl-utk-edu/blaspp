@@ -54,7 +54,7 @@ void test_nrm2_device_work( Params& params, bool run )
     Tx* xref = new Tx[ size_x ];
 
     // device specifics
-    blas::Queue queue(device, 0);
+    blas::Queue queue( device );
     Tx* dx;
 
     dx = blas::device_malloc<Tx>(size_x, queue);

@@ -123,8 +123,14 @@ enum class MemcpyKind : device_blas_int {
 
 // -----------------------------------------------------------------------------
 // constants
-const int DEV_QUEUE_DEFAULT_BATCH_LIMIT = 50000;
-const int DEV_QUEUE_FORK_SIZE           = 10;
+const int MaxBatchChunk = 50000;
+
+#if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
+    const int MaxForkSize = 10;
+#else
+    // SYCL and no GPU code doesn't support fork mode.
+    const int MaxForkSize = 1;
+#endif
 
 //==============================================================================
 /// Queue for executing GPU device routines.
@@ -135,17 +141,47 @@ const int DEV_QUEUE_FORK_SIZE           = 10;
 class Queue
 {
 public:
+    // Define generic names for vendor types.
+    #if defined( BLAS_HAVE_CUBLAS )
+        using stream_t = cudaStream_t;
+        using event_t  = cudaEvent_t;
+        using handle_t = cublasHandle_t;
+
+    #elif defined( BLAS_HAVE_ROCBLAS )
+        using stream_t = hipStream_t;
+        using event_t  = hipEvent_t;
+        using handle_t = rocblas_handle;
+
+    #elif defined( BLAS_HAVE_ONEMKL )
+        using stream_t = sycl::queue;
+
+    #else
+        // No GPU code.
+        using stream_t = void*;  // unused
+    #endif
+
     Queue();
-    Queue( int device, int64_t batch_size );
+    Queue( int device );
+
+    [[deprecated("use Queue( device ). Batch size is handled automatically. To be removed 2024-05.")]]
+    Queue( int device, int64_t batch_chunk )
+        : Queue( device )
+    {}
+
+    Queue( int device, stream_t& stream );
+
+    #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
+        Queue( int device, handle_t handle );
+    #endif
+
     // Disable copying; must construct anew.
     Queue( Queue const& ) = delete;
     Queue& operator=( Queue const& ) = delete;
+
     ~Queue();
 
-    int    device() const { return device_; }
-    void   sync();
-    size_t get_batch_limit() { return batch_limit_; }
-    void** get_dev_ptr_array();
+    int  device() const { return device_; }
+    void sync();
 
     /// @return device workspace.
     void* work() { return (void*) work_; }
@@ -155,10 +191,14 @@ public:
     size_t work_size() const { return lwork_ / sizeof(scalar_t); }
 
     template <typename scalar_t>
-    void work_resize( size_t lwork );
+    void work_ensure_size( size_t lwork );
+
+    template <typename scalar_t>
+    [[deprecated("Use work_ensure_size(). To be removed 2024-05.")]]
+    void work_resize( size_t lwork ) { work_ensure_size<scalar_t>( lwork ); }
 
     // switch from default stream to parallel streams
-    void fork();
+    void fork( int num_streams=MaxForkSize );
 
     // switch back to the default stream
     void join();
@@ -166,87 +206,53 @@ public:
     // return the next-in-line stream (for both default and fork modes)
     void revolve();
 
-    #ifdef BLAS_HAVE_CUBLAS
-        cudaStream_t   stream()        const { return *current_stream_; }
-        cublasHandle_t handle()        const { return handle_; }
-    #elif defined(BLAS_HAVE_ROCBLAS)
-        hipStream_t    stream()        const { return *current_stream_; }
-        rocblas_handle handle()        const { return handle_; }
-    #elif defined(BLAS_HAVE_ONEMKL)
-        sycl::device sycl_device() const { return sycl_device_; }
-        sycl::queue  stream()      const { return *default_stream_; }
+    #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
+        // Common for CUDA, ROCm.
+        void set_handle( handle_t& in_handle );
+        handle_t handle() const { return handle_; }
     #endif
 
+    // Common for all: CUDA, ROCm, SYCL, no GPU.
+    void set_stream( stream_t& in_stream );
+
+    stream_t& stream()
+    {
+        #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
+            return streams_[ current_stream_index_ ];
+        #else
+            return streams_[ 0 ];
+        #endif
+    }
+
 private:
-    // associated device ID
-    int device_;
-
-    // max workspace allocated for a batch argument in a single call
-    // (e.g. a pointer array)
-    size_t batch_limit_;
-
     // Workspace for pointer arrays of batch routines or other purposes.
     char* work_;
     size_t lwork_;
 
-    // the number of streams the queue is currently using for
-    // launching kernels (1 by default)
-    size_t num_active_streams_;
+    // streams_[ 0 ] is default stream; rest are parallel streams in fork mode.
+    stream_t streams_[ MaxForkSize ];
 
-    // an index to the current stream in use
-    size_t current_stream_index_;
+    #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
+        // Associated device BLAS handle.
+        handle_t handle_;
 
-    #ifdef BLAS_HAVE_CUBLAS
-        // associated device blas handle
-        cublasHandle_t handle_;
+        event_t events_[ MaxForkSize ];
 
-        // pointer to current stream (default or fork mode)
-        cudaStream_t *current_stream_;
+        // The number of streams the queue is currently using for
+        // launching kernels (1 by default).
+        int num_active_streams_;
 
-        // default CUDA stream for this queue; may be NULL
-        cudaStream_t default_stream_;
+        // Index to the current stream in use.
+        int current_stream_index_;
 
-        // parallel streams in fork mode
-        cudaStream_t parallel_streams_[DEV_QUEUE_FORK_SIZE];
-
-        cudaEvent_t  default_event_;
-        cudaEvent_t  parallel_events_[DEV_QUEUE_FORK_SIZE];
-
-    #elif defined(BLAS_HAVE_ROCBLAS)
-        // associated device blas handle
-        rocblas_handle handle_;
-
-        // pointer to current stream (default or fork mode)
-        hipStream_t  *current_stream_;
-
-        // default CUDA stream for this queue; may be NULL
-        hipStream_t  default_stream_;
-
-        // parallel streams in fork mode
-        hipStream_t  parallel_streams_[DEV_QUEUE_FORK_SIZE];
-
-        hipEvent_t   default_event_;
-        hipEvent_t   parallel_events_[DEV_QUEUE_FORK_SIZE];
-
-    #elif defined(BLAS_HAVE_ONEMKL)
-        // in addition to the integer device_ member, we need
-        // the sycl device id
-        sycl::device  sycl_device_;
-
-        // default sycl queue for this blas queue
-        sycl::queue *default_stream_;
-        sycl::event  default_event_;
-
-        // pointer to current stream (default or fork mode)
-        // sycl::queue *current_stream_; // not currently used
-
-    #else
-        // pointer to current stream (default or fork mode)
-        void** current_stream_;
-
-        // default CUDA stream for this queue; may be NULL
-        void*  default_stream_;
+        // Whether the queue owns the BLAS handle and default stream,
+        // or the user provided them.
+        bool own_handle_;
+        bool own_default_stream_;
     #endif
+
+    // Associated device ID.
+    int device_;
 };
 
 // -----------------------------------------------------------------------------
@@ -303,13 +309,13 @@ inline const char* device_error_string( rocblas_status error )
 // device errors
 #if defined(BLAS_ERROR_NDEBUG) || (defined(BLAS_ERROR_ASSERT) && defined(NDEBUG))
 
-    // blaspp does no error checking on device errors;
+    // BLAS++ does no error checking on device errors;
     #define blas_dev_call( error ) \
         error
 
 #elif defined(BLAS_ERROR_ASSERT)
 
-    // blaspp aborts on device errors
+    // BLAS++ aborts on device errors
     #if defined(BLAS_HAVE_ONEMKL)
         #define blas_dev_call( error ) \
             do { \
@@ -341,7 +347,7 @@ inline const char* device_error_string( rocblas_status error )
 
 #else
 
-    // blaspp throws device errors (default)
+    // BLAS++ throws device errors (default)
     #if defined(BLAS_HAVE_ONEMKL)
         #define blas_dev_call( error ) \
             do { \
@@ -376,19 +382,16 @@ inline const char* device_error_string( rocblas_status error )
 
 // -----------------------------------------------------------------------------
 // set/get device functions
-[[deprecated("use blas::Queues& with all blaspp calls")]]
+[[deprecated("use blas::Queues& with all BLAS++ calls. To be removed 2024-05.")]]
 void set_device( int device );
 
 // private, internal routine; sets device for cuda, rocm; nothing for onemkl
 void internal_set_device( int device );
 
-[[deprecated("use blas::Queues& with all blaspp calls")]]
+[[deprecated("use blas::Queues& with all BLAS++ calls. To be removed 2024-05.")]]
 void get_device( int *device );
 
-device_blas_int get_device_count();
-#ifdef BLAS_HAVE_ONEMKL
-void enumerate_devices(std::vector<sycl::device> &devices);
-#endif
+int get_device_count();
 
 // -----------------------------------------------------------------------------
 // memory functions
@@ -967,12 +970,14 @@ void device_getmatrix(
 //------------------------------------------------------------------------------
 /// Ensures GPU device workspace is of size at least lwork elements of
 /// scalar_t, synchronizing and reallocating if needed.
+/// Allocates at least 3 * MaxBatchChunk * sizeof(void*), needed for
+/// batch gemm.
 ///
 /// @param[in] lwork
 ///     Minimum size of workspace.
 ///
 template <typename scalar_t>
-void Queue::work_resize( size_t lwork )
+void Queue::work_ensure_size( size_t lwork )
 {
     lwork *= sizeof(scalar_t);
     if (lwork > lwork_) {
@@ -980,7 +985,7 @@ void Queue::work_resize( size_t lwork )
         if (work_) {
             device_free( work_, *this );
         }
-        lwork_ = lwork;
+        lwork_ = max( lwork, 3*MaxBatchChunk*sizeof(void*) );
         work_ = device_malloc<char>( lwork, *this );
     }
 }

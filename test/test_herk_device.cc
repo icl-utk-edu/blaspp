@@ -60,7 +60,7 @@ void test_herk_device_work( Params& params, bool run )
     TC* Cref = new TC[ size_C ];
 
     // device specifics
-    blas::Queue queue( device, 0 );
+    blas::Queue queue( device );
     TA* dA;
     TC* dC;
 
