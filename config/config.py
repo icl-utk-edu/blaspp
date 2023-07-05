@@ -15,6 +15,7 @@ import time
 import re
 import tarfile
 import argparse
+import shutil
 
 # This relative import syntax works in both python2 and 3.
 from .ansicodes import font
@@ -621,10 +622,36 @@ def cublas_library():
     Does not actually run the resulting exe, to allow compiling with CUDA on a
     machine without GPUs.
     '''
-    libs = '-lcublas -lcudart'
+    # Find CUDA to add -I, -L, -rpath flags.
+    # CUDA_PATH is used in NVIDIA Getting Started documentation;
+    # CUDA_HOME is used in Spack CUDA package;
+    # else infer from `which nvcc`.
+    cuda_path = environ['CUDA_PATH']
+    if (not cuda_path):
+        cuda_path = environ['CUDA_HOME']
+    if (not cuda_path):
+        nvcc_path = shutil.which( 'nvcc' )
+        if (nvcc_path):
+            (bin_path, nvcc) = os.path.split( nvcc_path )
+            (cuda_path, bin_) = os.path.split( bin_path )
+
+    cxxflags = define('HAVE_CUBLAS')
+    ldflags  = ''
+    libs     = '-lcublas -lcudart'
+
+    if (cuda_path):
+        incdir = os.path.join( cuda_path, 'include' )
+        cxxflags += ' -I' + incdir
+
+        libdir = os.path.join( cuda_path, 'lib64' )
+        if (not os.path.exists( libdir )):
+            libdir = os.path.join( cuda_path, 'lib' )
+        ldflags += '-L' + libdir + ' -Wl,-rpath,' + libdir
+    # end
+
     print_subhead( 'CUDA and cuBLAS libraries' )
-    print_test( '    ' + libs )
-    env = {'LIBS': libs, 'CXXFLAGS': define('HAVE_CUBLAS')}
+    print_test( '    ' + cxxflags + ' ' + ldflags + ' ' + libs )
+    env = {'CXXFLAGS': cxxflags, 'LDFLAGS': ldflags, 'LIBS': libs}
     (rc, out, err) = compile_exe( 'config/cublas.cc', env )
     print_result( libs, rc )
     if (rc == 0):
@@ -640,11 +667,35 @@ def rocblas_library():
     Does not actually run the resulting exe, to allow compiling with ROCm on a
     machine without GPUs.
     '''
-    libs = '-lrocblas -lamdhip64'
+    # Find ROCm to add -I, -L, -rpath flags.
+    # ROCM_PATH is used in hipcc and Spack ROCm package;
+    # else infer from `which hipcc`.
+    rocm_path = environ['ROCM_PATH']
+    if (not rocm_path):
+        hipcc_path = shutil.which( 'hipcc' )
+        if (hipcc_path):
+            (bin_path, hipcc) = os.path.split( hipcc_path )
+            (rocm_path, bin_) = os.path.split( bin_path )
+
+    cxxflags = define('HAVE_ROCBLAS')
+    ldflags  = ''
+    libs     = '-lrocblas -lamdhip64'
+
+    if (rocm_path):
+        incdir = os.path.join( rocm_path, 'include' )
+        cxxflags += ' -I' + incdir
+
+        # Some versions of ROCm (5.1.3) have both lib and lib64 directories;
+        # we need the lib directory.
+        libdir = os.path.join( rocm_path, 'lib' )
+        if (not os.path.exists( libdir )):
+            libdir = os.path.join( rocm_path, 'lib64' )
+        ldflags += ' -L' + libdir + ' -Wl,-rpath,' + libdir
+    # end
+
     print_subhead( 'HIP/ROCm and rocBLAS libraries' )
-    print_test( '    ' + libs )
-    env = {'LIBS': libs,
-           'CXXFLAGS': define('HAVE_ROCBLAS')}
+    print_test( '    ' + cxxflags + ' ' + ldflags + ' ' + libs )
+    env = {'CXXFLAGS': cxxflags, 'LDFLAGS': ldflags, 'LIBS': libs}
     (rc, out, err) = compile_exe( 'config/rocblas.cc', env )
     print_result( libs, rc )
     if (rc == 0):
