@@ -35,6 +35,7 @@ ${TESTER} --batch-blas3-device          --xml ${top}/report-${maker}-batch-devic
 
 print "======================================== Smoke tests"
 cd ${top}/example
+export CXXFLAGS="-Werror"
 
 if [ "${maker}" = "make" ]; then
     export PKG_CONFIG_PATH=${top}/install/lib/pkgconfig

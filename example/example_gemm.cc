@@ -52,8 +52,7 @@ void test_device_gemm( int m, int n, int k )
         // ... fill in application data into A, B, C ...
 
         int device = 0;
-        int batch_size = 1000;  // todo: use default batch_size
-        blas::Queue queue( device, batch_size );
+        blas::Queue queue( device );
 
         T *dA = blas::device_malloc<T>( lda*k, queue );  // m-by-k
         T *dB = blas::device_malloc<T>( ldb*n, queue );  // k-by-n
