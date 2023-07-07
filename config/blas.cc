@@ -8,6 +8,7 @@
 
 #include "config.h"
 
+//------------------------------------------------------------------------------
 #define BLAS_ddot FORTRAN_NAME( ddot, DDOT )
 
 // result return directly
@@ -19,6 +20,7 @@ double BLAS_ddot(
     const double* x, const blas_int* incx,
     const double* y, const blas_int* incy );
 
+//------------------------------------------------------------------------------
 int main()
 {
     // If blas_int is 32-bit, but BLAS actually interprets it as 64-bit,
@@ -28,7 +30,15 @@ int main()
     blas_int n[] = { 5, 5 }, ione = 1;
     double x[] = { 1, 2, 3, 4, 5 };
     double y[] = { 5, 4, 3, 2, 1 };
+    for (int i = 0; i < n[0]; ++i) {
+        printf( "x[ %d ] = %.1f; y[ %d ] = %.1f\n",
+                i, x[ i ],
+                i, y[ i ] );
+    }
+
     double result = BLAS_ddot( n, x, &ione, y, &ione );
+    printf( "result = %.1f; should be 35.0\n", result );
+
     bool okay = (result == 35);
     printf( "%s\n", okay ? "ok" : "failed" );
     return ! okay;

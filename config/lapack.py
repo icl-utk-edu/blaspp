@@ -559,7 +559,7 @@ def blas_float_return():
     if (rc == 0):
         config.environ.append( 'CXXFLAGS', define('HAVE_F2C') )
     else:
-        print_warn( 'unexpected error!' )
+        raise Error( "Could not determine return type of sdot; check log." )
 # end
 
 #-------------------------------------------------------------------------------
@@ -580,7 +580,7 @@ def blas_complex_return():
     if (rc == 0):
         config.environ.append( 'CXXFLAGS', define('COMPLEX_RETURN_ARGUMENT') )
     else:
-        print_warn( 'unexpected error!' )
+        raise Error( "Could not determine how zdot returns complex result; check log." )
 # end
 
 #-------------------------------------------------------------------------------
