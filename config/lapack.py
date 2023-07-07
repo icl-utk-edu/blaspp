@@ -22,14 +22,6 @@ def get_fortran_manglings():
     Ex: get_fortran_manglings()
     returns ['-D<name>_FORTRAN_ADD_', '-D<name>_FORTRAN_LOWER', '-D<name>_FORTRAN_UPPER']
     '''
-    # Warn about obsolete settings.
-    if (config.environ['fortran_add_']):
-        print_warn('Variable `fortran_add_`  is obsolete; use fortran_mangling=add_')
-    if (config.environ['fortran_lower']):
-        print_warn('Variable `fortran_lower` is obsolete; use fortran_mangling=lower')
-    if (config.environ['fortran_upper']):
-        print_warn('Variable `fortran_upper` is obsolete; use fortran_mangling=upper')
-
     # FORTRAN_ADD_, FORTRAN_LOWER, DFORTRAN_UPPER are BLAS++/LAPACK++.
     manglings = []
     fortran_mangling = config.environ['fortran_mangling'].lower()
@@ -151,22 +143,6 @@ def blas():
     '''
     print_header( 'BLAS library' )
     print_msg( 'Also detects Fortran name mangling and BLAS integer size.' )
-
-    # Warn about obsolete settings.
-    if (config.environ['mkl']):
-        print_warn('Variable `mkl`  is obsolete; use blas=mkl')
-    if (config.environ['acml']):
-        print_warn('Variable `acml` is obsolete; use blas=acml')
-    if (config.environ['essl']):
-        print_warn('Variable `essl` is obsolete; use blas=essl')
-    if (config.environ['openblas']):
-        print_warn('Variable `openblas` is obsolete; use blas=openblas')
-    if (config.environ['accelerate']):
-        print_warn('Variable `accelerate` is obsolete; use blas=accelerate')
-    if (config.environ['lp64']):
-        print_warn('Variable `lp64` is obsolete; use blas_int=int')
-    if (config.environ['ilp64']):
-        print_warn('Variable `ilp64` is obsolete; use blas_int=int64')
 
     #----------------------------------------
     # Parse options.
