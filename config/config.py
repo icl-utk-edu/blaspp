@@ -641,12 +641,14 @@ def cublas_library():
 
     if (cuda_path):
         incdir = os.path.join( cuda_path, 'include' )
-        cxxflags += ' -I' + incdir
+        if (os.path.exists( incdir )):
+            cxxflags += ' -I' + incdir
 
         libdir = os.path.join( cuda_path, 'lib64' )
         if (not os.path.exists( libdir )):
             libdir = os.path.join( cuda_path, 'lib' )
-        ldflags += '-L' + libdir + ' -Wl,-rpath,' + libdir
+        if (os.path.exists( libdir )):
+            ldflags += '-L' + libdir + ' -Wl,-rpath,' + libdir
     # end
 
     print_subhead( 'CUDA and cuBLAS libraries' )
@@ -683,14 +685,16 @@ def rocblas_library():
 
     if (rocm_path):
         incdir = os.path.join( rocm_path, 'include' )
-        cxxflags += ' -I' + incdir
+        if (os.path.exists( incdir )):
+            cxxflags += ' -I' + incdir
 
         # Some versions of ROCm (5.1.3) have both lib and lib64 directories;
         # we need the lib directory.
         libdir = os.path.join( rocm_path, 'lib' )
         if (not os.path.exists( libdir )):
             libdir = os.path.join( rocm_path, 'lib64' )
-        ldflags += ' -L' + libdir + ' -Wl,-rpath,' + libdir
+        if (os.path.exists( libdir )):
+            ldflags += ' -L' + libdir + ' -Wl,-rpath,' + libdir
     # end
 
     print_subhead( 'HIP/ROCm and rocBLAS libraries' )

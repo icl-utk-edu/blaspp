@@ -52,8 +52,6 @@ if [ "${device}" = "gpu_nvidia" ]; then
     print "======================================== Load CUDA"
     export CUDA_HOME=/usr/local/cuda/
     export PATH=${PATH}:${CUDA_HOME}/bin
-    #export CPATH=${CPATH}:${CUDA_HOME}/include
-    #export LIBRARY_PATH=${LIBRARY_PATH}:${CUDA_HOME}/lib64
     export gpu_backend=cuda
     quiet which nvcc
     nvcc --version
@@ -62,9 +60,6 @@ fi
 if [ "${device}" = "gpu_amd" ]; then
     print "======================================== Load ROCm"
     export PATH=${PATH}:/opt/rocm/bin
-    #export CPATH=${CPATH}:/opt/rocm/include
-    #export LIBRARY_PATH=${LIBRARY_PATH}:/opt/rocm/lib:/opt/rocm/lib64
-    #export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/opt/rocm/lib:/opt/rocm/lib64
     export gpu_backend=hip
     quiet which hipcc
     hipcc --version
