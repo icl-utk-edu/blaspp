@@ -296,13 +296,13 @@ else()
 endif()
 
 #-------------------------------------------------------------------------------
-# OneMKL/SYCL support.
+# oneMKL/SYCL support.
 message( "" )
 set( blaspp_use_onemkl false )  # output in blasppConfig.cmake.in
 # if cuda or hip were found gpu_backend was set appropriately
 if (gpu_backend MATCHES "^(onemkl|auto)$")
 
-    message( STATUS "${bold}Looking for OneMKL${not_bold} (gpu_backend = ${gpu_backend})" )
+    message( STATUS "${bold}Looking for oneMKL${not_bold} (gpu_backend = ${gpu_backend})" )
     if ( TARGET MKL::MKL_DPCPP ) # Search for MKL only if not already been found
         set( MKL_FOUND true )
     endif()
@@ -328,12 +328,12 @@ if (gpu_backend MATCHES "^(onemkl|auto)$")
         target_compile_options( blaspp PUBLIC -fsycl )
         target_link_options( blaspp PUBLIC -fsycl )
         target_link_libraries( blaspp PUBLIC -lmkl_sycl -lsycl -lOpenCL )
-        message( STATUS "${blue}Building OneMKL support${plain}" )
+        message( STATUS "${blue}Building oneMKL support${plain}" )
     else()
-        message( STATUS "${red}No OneMKL support: OneMKL not found${plain}" )
+        message( STATUS "${red}No oneMKL support: oneMKL not found${plain}" )
     endif()
 else()
-    message( STATUS "${red}No OneMKL support: gpu_backend = ${gpu_backend}${plain}" )
+    message( STATUS "${red}No oneMKL support: gpu_backend = ${gpu_backend}${plain}" )
 endif()
 
 #-------------------------------------------------------------------------------
