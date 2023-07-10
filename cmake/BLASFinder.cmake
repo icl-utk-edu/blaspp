@@ -280,20 +280,6 @@ if (test_all OR test_default)
     debug_print_list( "default" )
 endif()
 
-#---------------------------------------- Intel OneMKL
-if (test_all OR test_onemkl)
-    # IntelLLVM compiler + OpenMP: require intel_thread library.
-    if (test_int)
-        list( APPEND blas_name_list "Intel OneMKL lp64,  Intel threads (iomp5), ifort")
-        list( APPEND blas_libs_list "-lmkl_intel_lp64  -lmkl_intel_thread -lmkl_core" )
-    elseif (test_int64)
-        list( APPEND blas_name_list "Intel OneMKL ilp64, Intel threads (iomp5), ifort")
-        list( APPEND blas_libs_list "-lmkl_intel_ilp64 -lmkl_intel_thread -lmkl_core" )
-    else ()
-        message( "Skipping OneMKL for non-threaded, non-IntelLLVM compiler, upsupported" )
-    endif()
-endif()  # OneMKL
-
 #---------------------------------------- Intel MKL
 if (test_all OR test_mkl)
     # todo: MKL_?(ROOT|DIR)
@@ -308,6 +294,16 @@ if (test_all OR test_mkl)
             if (test_int64)
                 list( APPEND blas_name_list "Intel MKL ilp64, GNU threads (gomp), gfortran")
                 list( APPEND blas_libs_list "-lmkl_gf_ilp64 -lmkl_gnu_thread -lmkl_core" )
+            endif()
+
+        elseif (test_ifort AND intelllvm_compiler)
+            # IntelLLVM compiler + OpenMP: require intel_thread library.
+            if (test_int)
+                list( APPEND blas_name_list "Intel MKL lp64,  Intel threads (iomp5), ifort")
+                list( APPEND blas_libs_list "-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core" )
+            elseif (test_int64)
+                list( APPEND blas_name_list "Intel MKL ilp64, Intel threads (iomp5), ifort")
+                list( APPEND blas_libs_list "-lmkl_intel_ilp64 -lmkl_intel_thread -lmkl_core" )
             endif()
 
         elseif (test_ifort AND intel_compiler)
