@@ -189,10 +189,10 @@ Queue::Queue( int device )
 Queue::~Queue()
 {
     try {
-        internal_set_device( device_ );
-        device_free( work_, *this );
-
         #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
+            internal_set_device( device_ );
+            device_free( work_, *this );
+
             if (own_handle_) {
                 handle_destroy( handle_ );
             }
@@ -220,6 +220,10 @@ Queue::~Queue()
             }
 
         #elif defined( BLAS_HAVE_ONEMKL )
+            // wait for any completions
+            streams_[ 0 ].wait();
+            // free any work allocation
+            device_free( work_, *this );
             // sycl::queue implicitly destructed.
         #endif
     }
