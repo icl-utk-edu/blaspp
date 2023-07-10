@@ -156,11 +156,7 @@ if ("${blas_}" MATCHES "ibm|essl")
     set( test_essl true )
 endif()
 
-if ("${blas_}" MATCHES "onemkl")
-    set( test_onemkl true )
-endif()
-
-if ("${blas_}" MATCHES "intel|mkl")
+if ("${blas_}" MATCHES "intel|mkl|onemkl")
     set( test_mkl true )
 endif()
 
