@@ -9,6 +9,9 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "blas/counter.hh"
+
+#include "papi.h"
 #include "test.hh"
 
 // -----------------------------------------------------------------------------
@@ -286,6 +289,19 @@ Params::Params():
 }
 
 // -----------------------------------------------------------------------------
+void setup_PAPI( int *event_set )
+{
+    blas::counter::get();
+
+    require( PAPI_library_init( PAPI_VER_CURRENT ) == PAPI_VER_CURRENT );
+
+    require( PAPI_create_eventset( event_set ) == PAPI_OK );
+
+    require( PAPI_add_named_event(
+        *event_set, "sde:::blas::counter" ) == PAPI_OK );
+}
+
+// -----------------------------------------------------------------------------
 int main( int argc, char** argv )
 {
     using testsweeper::QuitException;
@@ -350,6 +366,15 @@ int main( int argc, char** argv )
             params.align.width( 5 );
         }
 
+        // initialize papi
+        // TODO: add if for params.papi when added
+        int event_set = PAPI_NULL;
+        long long counter_values[1];
+
+        setup_PAPI( &event_set );
+
+        require( PAPI_start( event_set ) == PAPI_OK );
+
         // run tests
         int repeat = params.repeat();
         testsweeper::DataType last = params.datatype();
@@ -378,6 +403,13 @@ int main( int argc, char** argv )
                 printf( "\n" );
             }
         } while(params.next());
+
+        // stop papi
+        require( PAPI_stop( event_set, counter_values ) == PAPI_OK );
+
+        // print papi instrumentation
+        blas::counter::print( (cset_list_object_t *)counter_values[0] );
+        printf( "\n" );
 
         if (status) {
             printf( "%d tests FAILED for %s.\n", status, routine );

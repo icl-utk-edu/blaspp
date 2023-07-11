@@ -7,6 +7,7 @@
 #define BLAS_COUNTER_HH
 
 #include "blas/defines.h"
+#include "blas/util.hh"
 
 #ifdef BLAS_HAVE_PAPI
     #include "sde_lib.h"
@@ -26,6 +27,7 @@ public:
         typedef papi_sde::PapiSde::CountingSet CountingSet;
     #else
         typedef void CountingSet;
+        typedef void cset_list_object_t;
     #endif
 
 public:
@@ -87,11 +89,21 @@ public:
     /// TODO
     /// Prints out all elements in the BLAS++ counting set.
     /// Without PAPI, does nothing.
-    static void dump()
+    static void print( cset_list_object_t* list )
     {
         #ifdef BLAS_HAVE_PAPI
-            CountingSet* set = get();
-            blas_unused( set );  // silence compiler warning for now.
+            for (auto iter = list; iter != nullptr; iter = iter->next) {
+                Id type_id = static_cast<Id>( iter->type_id );
+                switch (type_id) {
+                    case Id::gemm:
+                        auto *ptr = static_cast<gemm_type *>( iter->ptr );
+                        printf( "gemm( %c, %c, %lld, %lld, %lld ) count %d\n",
+                                op2char( ptr->transA ), op2char( ptr->transB ),
+                                llong( ptr->m ), llong( ptr->n ), llong( ptr->k ),
+                                iter->count );
+                        break;
+                }
+            }
         #endif
     }
 
@@ -102,8 +114,8 @@ private:
         set_( nullptr )
     {
         #ifdef BLAS_HAVE_PAPI
-            papi_sde::PapiSde sde( "BLAS++" );
-            set_ = sde.create_counting_set( "BLAS++ counter" );
+            papi_sde::PapiSde sde( "blas" );
+            set_ = sde.create_counting_set( "counter" );
         #endif
     }
 
