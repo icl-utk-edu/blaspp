@@ -297,8 +297,9 @@ void setup_PAPI( int *event_set )
 
     require( PAPI_create_eventset( event_set ) == PAPI_OK );
 
-    require( PAPI_add_named_event(
-        *event_set, "sde:::blas::counter" ) == PAPI_OK );
+    // int ret = PAPI_add_named_event( *event_set, "sde:::blas::counter" );
+    // printf( "%d\n", ret );
+    require( PAPI_add_named_event( *event_set, "sde:::blas::counter" ) == PAPI_OK );
 }
 
 // -----------------------------------------------------------------------------

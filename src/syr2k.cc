@@ -6,6 +6,7 @@
 #include "blas/fortran.h"
 #include "blas.hh"
 #include "blas_internal.hh"
+#include "blas/counter.hh"
 
 #include <limits>
 
@@ -140,6 +141,10 @@ void syr2k(
     }
 
     blas_error_if( ldc < n );
+
+    // PAPI instrumentation
+    counter::herk_type element = { uplo, trans, n, k };
+    counter::insert( element, counter::Id::syr2k );
 
     // convert arguments
     blas_int n_   = to_blas_int( n );

@@ -6,6 +6,7 @@
 #include "blas/fortran.h"
 #include "blas.hh"
 #include "blas_internal.hh"
+#include "blas/counter.hh"
 
 #include <limits>
 
@@ -132,6 +133,10 @@ void trmm(
         blas_error_if( ldb < m );
     else
         blas_error_if( ldb < n );
+
+    // PAPI instrumentation
+    counter::trmm_type element = { side, uplo, trans, diag, m, n };
+    counter::insert( element, counter::Id::trmm );
 
     // convert arguments
     blas_int m_   = to_blas_int( m );
