@@ -135,7 +135,7 @@ void trsm(
         blas_error_if( ldb < n );
 
     // PAPI instrumentation
-    counter::trmm_type element = { side, uplo, trans, diag, m, n };
+    counter::trsm_type element = { side, uplo, trans, diag, m, n };
     counter::insert( element, counter::Id::trsm );
 
     // convert arguments

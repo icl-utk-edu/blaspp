@@ -101,7 +101,7 @@ void her2k(
     blas_error_if( ldc < n );
 
     // PAPI instrumentation
-    counter::herk_type element = { uplo, trans, n, k };
+    counter::her2k_type element = { uplo, trans, n, k };
     counter::insert( element, counter::Id::her2k );
 
     // convert arguments

@@ -140,7 +140,7 @@ void symm(
     }
 
     // PAPI instrumentation
-    counter::hemm_type element = { side, uplo, m, n };
+    counter::symm_type element = { side, uplo, m, n };
     counter::insert( element, counter::Id::symm );
 
     // convert arguments

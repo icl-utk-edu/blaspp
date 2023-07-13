@@ -132,7 +132,7 @@ void syrk(
     blas_error_if( ldc < n );
 
     // PAPI instrumentation
-    counter::herk_type element = { uplo, trans, n, k };
+    counter::syrk_type element = { uplo, trans, n, k };
     counter::insert( element, counter::Id::syrk );
 
     // convert arguments
