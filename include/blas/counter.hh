@@ -130,91 +130,91 @@ public:
                 switch (type_id) {
                     case Id::gemm: {
                         auto *ptr = static_cast<gemm_type *>( iter->ptr );
-                        double gflop = Gflop<double>::gemm( ptr->m, ptr->n, ptr->k );
-                        printf( "gemm( %c, %c, %lld, %lld, %lld ) count %d, flop count %f\n",
+                        double flop = Gflop<double>::gemm( ptr->m, ptr->n, ptr->k ) * 1e9;
+                        printf( "gemm( %c, %c, %lld, %lld, %lld ) count %d, flop count %.2e\n",
                                 op2char( ptr->transA ), op2char( ptr->transB ),
                                 llong( ptr->m ), llong( ptr->n ), llong( ptr->k ),
-                                iter->count, gflop );
-                        totalflops += gflop;
+                                iter->count, flop );
+                        totalflops += flop;
                         break;
                     }
                     case Id::hemm: {
                         auto *ptr = static_cast<hemm_type *>( iter->ptr );
-                        double gflop = Gflop<double>::hemm( ptr->side, ptr->m, ptr->n );
-                        printf( "hemm( %c, %c, %lld, %lld ) count %d, flop count %f\n",
+                        double flop = Gflop<double>::hemm( ptr->side, ptr->m, ptr->n ) * 1e9;
+                        printf( "hemm( %c, %c, %lld, %lld ) count %d, flop count %.2e\n",
                                 side2char( ptr->side ), uplo2char( ptr->uplo ),
-                                llong( ptr->m ), llong( ptr->n ), iter->count, gflop );
-                        totalflops += gflop;
+                                llong( ptr->m ), llong( ptr->n ), iter->count, flop );
+                        totalflops += flop;
                         break;
                     }
                     case Id::her2k: {
                         auto *ptr = static_cast<her2k_type *>( iter->ptr );
-                        double gflop = Gflop<double>::her2k( ptr->n, ptr->k );
-                        printf( "her2k( %c, %c, %lld, %lld ) count %d, flop count %f\n",
+                        double flop = Gflop<double>::her2k( ptr->n, ptr->k ) * 1e9;
+                        printf( "her2k( %c, %c, %lld, %lld ) count %d, flop count %.2e\n",
                                 uplo2char( ptr->uplo ), op2char( ptr->trans ),
-                                llong( ptr->n ), llong( ptr->k ), iter->count, gflop );
-                        totalflops += gflop;
+                                llong( ptr->n ), llong( ptr->k ), iter->count, flop );
+                        totalflops += flop;
                         break;
                     }
                     case Id::herk: {
                         auto *ptr = static_cast<herk_type *>( iter->ptr );
-                        double gflop = Gflop<double>::herk( ptr->n, ptr->k );
-                        printf( "herk( %c, %c, %lld, %lld ) count %d, flop count %f\n",
+                        double flop = Gflop<double>::herk( ptr->n, ptr->k ) * 1e9;
+                        printf( "herk( %c, %c, %lld, %lld ) count %d, flop count %.2e\n",
                                 uplo2char( ptr->uplo ), op2char( ptr->trans ),
-                                llong( ptr->n ), llong( ptr->k ), iter->count, gflop );
-                        totalflops += gflop;
+                                llong( ptr->n ), llong( ptr->k ), iter->count, flop );
+                        totalflops += flop;
                         break;
                     }
                     case Id::symm: {
                         auto *ptr = static_cast<symm_type *>( iter->ptr );
-                        double gflop = Gflop<double>::symm( ptr->side, ptr->m, ptr->n );
-                        printf( "symm( %c, %c, %lld, %lld ) count %d, flop count %f\n",
+                        double flop = Gflop<double>::symm( ptr->side, ptr->m, ptr->n ) * 1e9;
+                        printf( "symm( %c, %c, %lld, %lld ) count %d, flop count %.2e\n",
                                 side2char( ptr->side ), uplo2char( ptr->uplo ),
-                                llong( ptr->m ), llong( ptr->n ), iter->count, gflop );
-                        totalflops += gflop;
+                                llong( ptr->m ), llong( ptr->n ), iter->count, flop );
+                        totalflops += flop;
                         break;
                     }
                     case Id::syr2k: {
                         auto *ptr = static_cast<syr2k_type *>( iter->ptr );
-                        double gflop = Gflop<double>::syr2k( ptr->n, ptr->k );
-                        printf( "syr2k( %c, %c, %lld, %lld ) count %d, flop count %f\n",
+                        double flop = Gflop<double>::syr2k( ptr->n, ptr->k ) * 1e9;
+                        printf( "syr2k( %c, %c, %lld, %lld ) count %d, flop count %.2e\n",
                                 uplo2char( ptr->uplo ), op2char( ptr->trans ),
-                                llong( ptr->n ), llong( ptr->k ), iter->count, gflop );
-                        totalflops += gflop;
+                                llong( ptr->n ), llong( ptr->k ), iter->count, flop );
+                        totalflops += flop;
                         break;
                     }
                     case Id::syrk: {
                         auto *ptr = static_cast<syrk_type *>( iter->ptr );
-                        double gflop = Gflop<double>::syrk( ptr->n, ptr->k );
-                        printf( "syrk( %c, %c, %lld, %lld ) count %d, flop count %f\n",
+                        double flop = Gflop<double>::syrk( ptr->n, ptr->k ) * 1e9;
+                        printf( "syrk( %c, %c, %lld, %lld ) count %d, flop count %.2e\n",
                                 uplo2char( ptr->uplo ), op2char( ptr->trans ),
-                                llong( ptr->n ), llong( ptr->k ), iter->count, gflop );
-                        totalflops += gflop;
+                                llong( ptr->n ), llong( ptr->k ), iter->count, flop );
+                        totalflops += flop;
                         break;
                     }
                     case Id::trmm: {
                         auto *ptr = static_cast<trmm_type *>( iter->ptr );
-                        double gflop = Gflop<double>::trmm( ptr->side, ptr->m, ptr->n );
-                        printf( "trmm( %c, %c, %c, %c, %lld, %lld ) count %d, flop count %f\n",
+                        double flop = Gflop<double>::trmm( ptr->side, ptr->m, ptr->n ) * 1e9;
+                        printf( "trmm( %c, %c, %c, %c, %lld, %lld ) count %d, flop count %.2e\n",
                                 side2char( ptr->side ), uplo2char( ptr->uplo ),
                                 op2char( ptr->transA ), diag2char( ptr->diag ),
-                                llong( ptr->m ), llong( ptr->n ), iter->count, gflop );
-                        totalflops += gflop;
+                                llong( ptr->m ), llong( ptr->n ), iter->count, flop );
+                        totalflops += flop;
                         break;
                     }
                     case Id::trsm: {
                         auto *ptr = static_cast<trsm_type *>( iter->ptr );
-                        double gflop = Gflop<double>::trsm( ptr->side, ptr->m, ptr->n );
-                        printf( "trsm( %c, %c, %c, %c, %lld, %lld ) count %d\n",
+                        double flop = Gflop<double>::trsm( ptr->side, ptr->m, ptr->n ) * 1e9;
+                        printf( "trsm( %c, %c, %c, %c, %lld, %lld ) count %d, flop count %.2e\n",
                                 side2char( ptr->side ), uplo2char( ptr->uplo ),
                                 op2char( ptr->transA ), diag2char( ptr->diag ),
-                                llong( ptr->m ), llong( ptr->n ), iter->count );
-                        totalflops += gflop;
+                                llong( ptr->m ), llong( ptr->n ), iter->count, flop );
+                        totalflops += flop;
                         break;
                     }
                 }
             }
-            printf( "total BLAS flop count %f\n", totalflops );
+            printf( "total BLAS flop count %.2e\n", totalflops );
         #endif
     }
 
