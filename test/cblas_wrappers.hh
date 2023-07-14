@@ -8,7 +8,7 @@
 
 #include "blas/defines.h"
 
-#if defined(BLAS_HAVE_MKL) || defined(BLAS_HAVE_ONEMKL)
+#if defined(BLAS_HAVE_MKL) || defined(BLAS_HAVE_SYCL)
     #if defined(BLAS_ILP64) && ! defined(MKL_ILP64)
         #define MKL_ILP64
     #endif

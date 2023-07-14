@@ -35,7 +35,7 @@ inline device_blas_int to_device_blas_int_( int64_t x, const char* x_str )
 #define to_device_blas_int( x ) to_device_blas_int_( x, #x )
 
 
-#if defined( BLAS_HAVE_ONEMKL )
+#if defined( BLAS_HAVE_SYCL )
 
 //==============================================================================
 /// Thread-safe Scott Meyers' Singleton to enumerate devices on first call.
@@ -103,7 +103,7 @@ private:
     std::vector< sycl::device > devices_;
 };
 
-#endif // oneMKL
+#endif // SYCL
 
 
 //==============================================================================

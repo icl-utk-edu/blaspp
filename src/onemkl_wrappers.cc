@@ -5,7 +5,7 @@
 
 #include "device_internal.hh"
 
-#ifdef BLAS_HAVE_ONEMKL
+#ifdef BLAS_HAVE_SYCL
 
 // see https://software.intel.com/content/www/us/en/develop/articles/use-of-intel-mkl-data-types-in-cc-applications.html
 #include "blas/config.h"
@@ -1673,4 +1673,4 @@ void batch_trsm(
 }  // namespace internal
 }  // namespace blas
 
-#endif  // BLAS_HAVE_ONEMKL
+#endif  // BLAS_HAVE_SYCL

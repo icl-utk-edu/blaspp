@@ -709,9 +709,9 @@ def rocblas_library():
 # end
 
 #-------------------------------------------------------------------------------
-def onemkl_library():
+def sycl_onemkl_library():
     '''
-    Tests for linking oneMKL library.
+    Tests for linking SYCL and oneMKL library.
     Does not actually run the resulting exe, to allow compiling on a
     machine without GPUs.
     '''
@@ -726,7 +726,7 @@ def onemkl_library():
         inc = '-I' + root + '/linux/include ' \
             + '-I' + root + '/linux/include/sycl '
     env = {'LIBS': libs,
-           'CXXFLAGS': inc + define('HAVE_ONEMKL')
+           'CXXFLAGS': inc + define('HAVE_SYCL')
            + ' -fsycl -Wno-deprecated-declarations'}
     (rc, out, err) = compile_exe( 'config/onemkl.cc', env )
     print_result( libs, rc )
@@ -744,7 +744,7 @@ def gpu_blas():
     test_auto   = re.search( r'\b(auto)\b',     gpu_backend )
     test_cuda   = re.search( r'\b(cuda)\b',     gpu_backend ) or test_auto
     test_rocm   = re.search( r'\b(hip|rocm)\b', gpu_backend ) or test_auto
-    test_onemkl = re.search( r'\b(onemkl)\b',   gpu_backend ) or test_auto
+    test_sycl   = re.search( r'\b(sycl)\b',     gpu_backend ) or test_auto
 
     #----- CUDA
     gpu_blas_found = False
@@ -769,16 +769,16 @@ def gpu_blas():
     else:
         print_msg( font.red( 'skipping HIP/ROCm search' ) )
 
-    #----- oneMKL
-    if (not gpu_blas_found and test_onemkl):
+    #----- SYCL
+    if (not gpu_blas_found and test_sycl):
         try:
-            onemkl_library()
+            sycl_onemkl_library()
             gpu_blas_found = True
         except Error as ex:
-            if (gpu_backend == 'onemkl'):
+            if (gpu_backend == 'sycl'):
                 raise ex  # fatal
     else:
-        print_msg( font.red( 'skipping oneMKL search' ) )
+        print_msg( font.red( 'skipping SYCL search' ) )
 
     if (not gpu_blas_found):
         print_warn( 'No GPU BLAS library found' )

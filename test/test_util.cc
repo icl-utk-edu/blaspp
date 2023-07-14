@@ -351,7 +351,7 @@ void test_make_scalar()
 
 //------------------------------------------------------------------------------
 /// Tests low-level wrappers around cuBLAS / rocBLAS functions, and
-/// tests oneMKL SYCL functions.
+/// tests SYCL functions.
 ///
 void test_device_routines()
 {
@@ -519,7 +519,7 @@ void test_device_routines()
         printf( "\n" );
 
     //----------------------------------------
-    #elif defined( BLAS_HAVE_ONEMKL )
+    #elif defined( BLAS_HAVE_SYCL )
 
         // stream_t === sycl::queue
         // Use pointer so we can time destructor.
@@ -573,7 +573,7 @@ void test_device_routines()
             }
         }
         printf( "\n" );
-    #endif // oneMKL
+    #endif // SYCL
 }
 
 //------------------------------------------------------------------------------
@@ -618,7 +618,7 @@ void test_queue_from_stream()
 {
     printf( "%s\n", __func__ );
 
-    #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS ) || defined( BLAS_HAVE_ONEMKL )
+    #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS ) || defined( BLAS_HAVE_SYCL )
         int repeat = 4;
         int device_cnt = blas::get_device_count();
         double t;
@@ -628,7 +628,7 @@ void test_queue_from_stream()
         blas::Queue::stream_t streams[ MAX_DEVICES ];
     #endif
 
-    // CUDA and ROCm code. These have a BLAS HANDLE that oneMKL doesn't.
+    // CUDA and ROCm code. These have a BLAS HANDLE that SYCL doesn't.
     #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
 
         blas::Queue::handle_t handles[ MAX_DEVICES ];
@@ -693,7 +693,7 @@ void test_queue_from_stream()
             blas::stream_destroy( streams[ dev ] );
         }
 
-    #elif defined( BLAS_HAVE_ONEMKL )
+    #elif defined( BLAS_HAVE_SYCL )
 
         // Create streams (sycl::queues)
         for (int dev = 0; dev < device_cnt; ++dev) {
@@ -726,7 +726,7 @@ void test_queue_from_stream()
 
         // sycl::queues destroyed implicitly.
 
-    #endif  // BLAS_HAVE_ONEMKL
+    #endif  // BLAS_HAVE_SYCL
 }
 
 // -----------------------------------------------------------------------------

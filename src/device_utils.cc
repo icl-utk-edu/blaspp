@@ -23,7 +23,7 @@ void set_device( int device )
         blas_dev_call(
             hipSetDevice( device ) );
 
-    #elif defined(BLAS_HAVE_ONEMKL)
+    #elif defined(BLAS_HAVE_SYCL)
         throw blas::Error( "unsupported function for sycl backend", __func__ );
 
     #else
@@ -44,7 +44,7 @@ void internal_set_device( int device )
         blas_dev_call(
             hipSetDevice( device ) );
 
-    #elif defined(BLAS_HAVE_ONEMKL)
+    #elif defined(BLAS_HAVE_SYCL)
         // skip, no need to throw error since this is an internal function
 
     #else
@@ -70,7 +70,7 @@ void get_device( int *device )
             hipGetDevice(&dev) );
         (*device) = dev;
 
-    #elif defined(BLAS_HAVE_ONEMKL)
+    #elif defined(BLAS_HAVE_SYCL)
         throw blas::Error( "unsupported function for sycl backend", __func__ );
 
     #else
@@ -94,7 +94,7 @@ int get_device_count()
         if (err != hipSuccess && err != hipErrorNoDevice)
             blas_dev_call( err );
 
-    #elif defined(BLAS_HAVE_ONEMKL)
+    #elif defined(BLAS_HAVE_SYCL)
         dev_count = DeviceList::size();
     #endif
 
@@ -116,7 +116,7 @@ void device_free( void* ptr )
         blas_dev_call(
             hipFree( ptr ) );
 
-    #elif defined(BLAS_HAVE_ONEMKL)
+    #elif defined(BLAS_HAVE_SYCL)
         /// SYCL requires a device/queue to free.
         throw blas::Error( "unsupported function for sycl backend", __func__ );
 
@@ -140,7 +140,7 @@ void device_free( void* ptr, blas::Queue &queue )
         blas_dev_call(
             hipFree( ptr ) );
 
-    #elif defined(BLAS_HAVE_ONEMKL)
+    #elif defined(BLAS_HAVE_SYCL)
         blas_dev_call(
             sycl::free( ptr, queue.stream() ) );
     #endif
@@ -160,7 +160,7 @@ void host_free_pinned( void* ptr )
         blas_dev_call(
             hipHostFree( ptr ) );
 
-    #elif defined(BLAS_HAVE_ONEMKL)
+    #elif defined(BLAS_HAVE_SYCL)
         throw blas::Error( "unsupported function for sycl backend", __func__ );
 
     #else
@@ -180,7 +180,7 @@ void host_free_pinned( void* ptr, blas::Queue &queue )
         blas_dev_call(
             hipHostFree( ptr ) );
 
-    #elif defined(BLAS_HAVE_ONEMKL)
+    #elif defined(BLAS_HAVE_SYCL)
         blas_dev_call(
             sycl::free( ptr, queue.stream() ) );
 

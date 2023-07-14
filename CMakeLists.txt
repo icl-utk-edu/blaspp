@@ -51,7 +51,7 @@ option( use_openmp "Use OpenMP, if available" true )
 
 set( gpu_backend "auto" CACHE STRING "GPU backend to use" )
 set_property( CACHE gpu_backend PROPERTY STRINGS
-              auto cuda hip onemkl none )
+              auto cuda hip sycl none )
 
 # After color.
 include( "cmake/util.cmake" )
@@ -298,18 +298,18 @@ else()
 endif()
 
 #-------------------------------------------------------------------------------
-# oneMKL/SYCL support.
+# SYCL support.
 message( "" )
-set( blaspp_use_onemkl false )  # output in blasppConfig.cmake.in
+set( blaspp_use_sycl false )  # output in blasppConfig.cmake.in
 # if cuda or hip were found gpu_backend was set appropriately
-if (gpu_backend MATCHES "^(onemkl|auto)$")
+if (gpu_backend MATCHES "^(sycl|auto)$")
 
-    message( STATUS "${bold}Looking for oneMKL-SYCL device${not_bold} (gpu_backend = ${gpu_backend})" )
-    if ( TARGET MKL::MKL_DPCPP ) # Search for MKL only if not already been found
+    message( STATUS "${bold}Looking for oneMKL-SYCL${not_bold} (gpu_backend = ${gpu_backend})" )
+    if (TARGET MKL::MKL_DPCPP) # Search for MKL only if not already been found
         set( MKL_FOUND true )
     endif()
-    if ( NOT MKL_FOUND ) # Search for MKL only if not already been found
-        if (gpu_backend STREQUAL "onemkl")
+    if (NOT MKL_FOUND) # Search for MKL only if not already been found
+        if (gpu_backend STREQUAL "sycl")
             find_package( MKL CONFIG REQUIRED QUIET HINTS "$ENV{MKL_ROOT}")
         else()
             find_package( MKL CONFIG QUIET HINTS "$ENV{MKL_ROOT}")
@@ -322,10 +322,10 @@ if (gpu_backend MATCHES "^(onemkl|auto)$")
 
     # If oneMKL is found and the compiler supports SYCL then
     # enable oneMKL-SYCL-device support
-    if ( MKL_FOUND AND FSYCL_SUPPORT )
-        set( gpu_backend "onemkl" )
-        set( blaspp_defs_onemkl_ "-DBLAS_HAVE_ONEMKL;-DBLAS_FORTRAN_ADD_" )
-        set( blaspp_use_onemkl true )
+    if (MKL_FOUND AND FSYCL_SUPPORT)
+        set( gpu_backend "sycl" )
+        set( blaspp_defs_sycl_ "-DBLAS_HAVE_SYCL;-DBLAS_FORTRAN_ADD_" )
+        set( blaspp_use_sycl true )
 
         # Uncomment to use CMake FindBLAS using BLA_VENDOR
         # if (NOT BLA_VENDOR)
@@ -336,9 +336,8 @@ if (gpu_backend MATCHES "^(onemkl|auto)$")
         target_link_options( blaspp PUBLIC -fsycl )
         target_link_libraries( blaspp PUBLIC -lmkl_sycl -lsycl -lOpenCL )
         message( STATUS "${blue}Building oneMKL-SYCL device support${plain}" )
-
     else()
-        message( STATUS "${red}No oneMKL-SYCL device support: oneMKL or SYCL-compiler not found${plain}" )
+        message( STATUS "${red}No oneMKL-SYCL device support: oneMKL or SYCL compiler not found${plain}" )
     endif()
 else()
     message( STATUS "${red}No oneMKL-SYCL device support: gpu_backend = ${gpu_backend}${plain}" )
@@ -458,7 +457,7 @@ set( blaspp_defs_ "${blaspp_defs_}"
 
 # Concat defines.
 set( blaspp_defines ${blaspp_defs_} ${blaspp_defs_cuda_}
-     ${blaspp_defs_hip_} ${blaspp_defs_onemkl_}
+     ${blaspp_defs_hip_} ${blaspp_defs_sycl_}
      CACHE INTERNAL "")
 
 if (true)

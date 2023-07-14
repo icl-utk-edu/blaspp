@@ -40,7 +40,7 @@ void nrm2(
     blas::internal_set_device( queue.device() );
 
     // call low-level wrapper
-    #if defined( BLAS_HAVE_ONEMKL )
+    #if defined( BLAS_HAVE_SYCL )
         sycl::queue syclq = queue.stream();
         // check how the result scalar was allocated
         auto result_ptr_type = sycl::get_pointer_type( result, syclq.get_context() );

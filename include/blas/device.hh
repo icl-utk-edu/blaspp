@@ -11,7 +11,7 @@
 
 #if defined( BLAS_HAVE_CUBLAS ) \
     || defined( BLAS_HAVE_ROCBLAS ) \
-    || defined( BLAS_HAVE_ONEMKL )
+    || defined( BLAS_HAVE_SYCL )
     #define BLAS_HAVE_DEVICE
 #endif
 
@@ -41,7 +41,7 @@
         #undef BLAS_HIP_PLATFORM_HCC
     #endif
 
-#elif defined(BLAS_HAVE_ONEMKL)
+#elif defined(BLAS_HAVE_SYCL)
     #include <sycl/detail/cl.h>  // For CL version
     #include <sycl.hpp>
 
@@ -58,7 +58,7 @@ typedef int Device;
     typedef int                  device_blas_int;
 #elif defined(BLAS_HAVE_ROCBLAS)
     typedef int                  device_blas_int;
-#elif defined(BLAS_HAVE_ONEMKL)
+#elif defined(BLAS_HAVE_SYCL)
     typedef std::int64_t         device_blas_int;
 #else
     typedef int                  device_blas_int;
@@ -113,7 +113,7 @@ enum class MemcpyKind : device_blas_int {
             default: throw blas::Error( "unknown memcpy direction" );
         }
     }
-#elif defined(BLAS_HAVE_ONEMKL)
+#elif defined(BLAS_HAVE_SYCL)
     /// @return the corresponding sycl memcpy kind constant
     /// The memcpy method in the sycl::queue class does not accept
     /// a direction (i.e. always operates in default mode).
@@ -136,7 +136,7 @@ const int MaxBatchChunk = 50000;
 /// Queue for executing GPU device routines.
 /// This wraps CUDA stream and cuBLAS handle,
 /// HIP stream and rocBLAS handle,
-/// or SYCL queue for oneMKL.
+/// or SYCL queue.
 ///
 class Queue
 {
@@ -152,7 +152,7 @@ public:
         using event_t  = hipEvent_t;
         using handle_t = rocblas_handle;
 
-    #elif defined( BLAS_HAVE_ONEMKL )
+    #elif defined( BLAS_HAVE_SYCL )
         using stream_t = sycl::queue;
 
     #else
@@ -316,7 +316,7 @@ inline const char* device_error_string( rocblas_status error )
 #elif defined(BLAS_ERROR_ASSERT)
 
     // BLAS++ aborts on device errors
-    #if defined(BLAS_HAVE_ONEMKL)
+    #if defined(BLAS_HAVE_SYCL)
         #define blas_dev_call( error ) \
             do { \
                 try { \
@@ -348,7 +348,7 @@ inline const char* device_error_string( rocblas_status error )
 #else
 
     // BLAS++ throws device errors (default)
-    #if defined(BLAS_HAVE_ONEMKL)
+    #if defined(BLAS_HAVE_SYCL)
         #define blas_dev_call( error ) \
             do { \
                 try { \
@@ -385,7 +385,7 @@ inline const char* device_error_string( rocblas_status error )
 [[deprecated("use blas::Queues& with all BLAS++ calls. To be removed 2024-05.")]]
 void set_device( int device );
 
-// private, internal routine; sets device for cuda, rocm; nothing for onemkl
+// private, internal routine; sets device for CUDA, ROCm; nothing for SYCL
 void internal_set_device( int device );
 
 [[deprecated("use blas::Queues& with all BLAS++ calls. To be removed 2024-05.")]]
@@ -448,7 +448,7 @@ T* device_malloc(
         blas_dev_call(
             hipMalloc( (void**)&ptr, nelements * sizeof(T) ) );
 
-    #elif defined(BLAS_HAVE_ONEMKL)
+    #elif defined(BLAS_HAVE_SYCL)
         // SYCL requires a device or queue to malloc
         throw blas::Error( "unsupported function for sycl backend", __func__ );
 
@@ -486,7 +486,7 @@ T* device_malloc(
         blas_dev_call(
                 hipMalloc( (void**)&ptr, nelements * sizeof(T) ) );
 
-    #elif defined(BLAS_HAVE_ONEMKL)
+    #elif defined(BLAS_HAVE_SYCL)
         blas_dev_call(
             ptr = (T*)sycl::malloc_shared( nelements*sizeof(T), queue.stream() ) );
 
@@ -519,7 +519,7 @@ T* device_malloc_pinned(
         blas_dev_call(
             hipHostMalloc( (void**)&ptr, nelements * sizeof(T) ) );
 
-    #elif defined(BLAS_HAVE_ONEMKL)
+    #elif defined(BLAS_HAVE_SYCL)
         // SYCL requires a device or queue to malloc
         throw blas::Error( "unsupported function for sycl backend", __func__ );
 
@@ -558,7 +558,7 @@ T* host_malloc_pinned(
         blas_dev_call(
             hipHostMalloc( (void**)&ptr, nelements * sizeof(T) ) );
 
-    #elif defined(BLAS_HAVE_ONEMKL)
+    #elif defined(BLAS_HAVE_SYCL)
         blas_dev_call(
             ptr = (T*)sycl::malloc_host( nelements*sizeof(T), queue.stream() ) );
 
@@ -616,7 +616,7 @@ void device_memset(
                 ptr, value,
                 nelements * sizeof(T), queue.stream() ) );
 
-    #elif defined(BLAS_HAVE_ONEMKL)
+    #elif defined(BLAS_HAVE_SYCL)
         blas_dev_call(
             queue.stream().memset( ptr, value, nelements * sizeof(T) ) );
 
@@ -659,7 +659,7 @@ void device_memcpy(
                 dst, src, sizeof(T)*nelements,
                 memcpy2hip(kind), queue.stream() ) );
 
-    #elif defined(BLAS_HAVE_ONEMKL)
+    #elif defined(BLAS_HAVE_SYCL)
         blas_dev_call(
             queue.stream().memcpy( dst, src, sizeof(T)*nelements ) );
 
@@ -736,7 +736,7 @@ void device_memcpy_2d(
                 src, sizeof(T)*src_pitch,
                 sizeof(T)*width, height, memcpy2hip(kind), queue.stream() ) );
 
-    #elif defined(BLAS_HAVE_ONEMKL)
+    #elif defined(BLAS_HAVE_SYCL)
         if (dst_pitch == width && src_pitch == width) {
             // one contiguous memcpy
             blas_dev_call(

@@ -39,7 +39,7 @@ Queue::Queue()
             blas_dev_call( hipGetDevice( &device_ ) );
         #endif
 
-    #elif defined( BLAS_HAVE_ONEMKL )
+    #elif defined( BLAS_HAVE_SYCL )
         throw blas::Error( "SYCL requires a device; use Queue( device )",
                            __func__ );
     #endif
@@ -47,7 +47,7 @@ Queue::Queue()
 
 //------------------------------------------------------------------------------
 // SYCL needs this property in Queue constructor.
-#if defined( BLAS_HAVE_ONEMKL )
+#if defined( BLAS_HAVE_SYCL )
 
     static const sycl::property_list s_property_in_order
         { sycl::property::queue::in_order() };
@@ -68,7 +68,7 @@ Queue::Queue( int device )
         own_handle_        ( true ),
         own_default_stream_( true ),
 
-    #elif defined( BLAS_HAVE_ONEMKL )
+    #elif defined( BLAS_HAVE_SYCL )
         streams_{ sycl::queue( DeviceList::at( device ), s_property_in_order ) },
 
     #else
@@ -157,7 +157,7 @@ Queue::Queue( int device )
         streams_[ 0 ] = handle_get_stream( handle_ );
     }
 
-#elif defined( BLAS_HAVE_ONEMKL )
+#elif defined( BLAS_HAVE_SYCL )
     // -------------------------------------------------------------------------
     /// Constructor taking a SYCL queue (stream).
     /// Unlike in CUDA/ROCm, this copies the SYCL queue.
@@ -219,7 +219,7 @@ Queue::~Queue()
                 }
             }
 
-        #elif defined( BLAS_HAVE_ONEMKL )
+        #elif defined( BLAS_HAVE_SYCL )
             // wait for any completions
             streams_[ 0 ].wait();
             // free any work allocation
@@ -242,7 +242,7 @@ void Queue::sync()
             stream_synchronize( streams_[ i ] );
         }
 
-    #elif defined( BLAS_HAVE_ONEMKL )
+    #elif defined( BLAS_HAVE_SYCL )
         // todo: see wait_and_throw()
         streams_[ 0 ].wait();
     #endif
@@ -284,7 +284,7 @@ void Queue::fork( int num_streams )
             stream_wait_event( streams_[ i ], events_[ 0 ], 0 );
         }
 
-    #elif defined( BLAS_HAVE_ONEMKL )
+    #elif defined( BLAS_HAVE_SYCL )
         // todo: see possible implementations for sycl
         return;
     #endif
@@ -310,7 +310,7 @@ void Queue::join()
         // Assign current stream to BLAS handle.
         handle_set_stream( handle_, streams_[ current_stream_index_ ] );
 
-    #elif defined( BLAS_HAVE_ONEMKL )
+    #elif defined( BLAS_HAVE_SYCL )
         // todo: see possible implementations for sycl
         return;
     #endif
@@ -328,7 +328,7 @@ void Queue::revolve()
         // Assign current stream to BLAS handle.
         handle_set_stream( handle_, streams_[ current_stream_index_ ] );
 
-    #elif defined( BLAS_HAVE_ONEMKL )
+    #elif defined( BLAS_HAVE_SYCL )
         // todo: see possible implementations for sycl
         return;
     #endif
