@@ -19,6 +19,8 @@ project(
     LANGUAGES CXX
 )
 
+include( CheckCXXCompilerFlag )
+
 # When built as a sub-project, add a namespace to make targets unique,
 # e.g., `make tester` becomes `make blaspp_tester`.
 if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
@@ -302,20 +304,25 @@ set( blaspp_use_onemkl false )  # output in blasppConfig.cmake.in
 # if cuda or hip were found gpu_backend was set appropriately
 if (gpu_backend MATCHES "^(onemkl|auto)$")
 
-    message( STATUS "${bold}Looking for oneMKL${not_bold} (gpu_backend = ${gpu_backend})" )
+    message( STATUS "${bold}Looking for oneMKL-SYCL device${not_bold} (gpu_backend = ${gpu_backend})" )
     if ( TARGET MKL::MKL_DPCPP ) # Search for MKL only if not already been found
         set( MKL_FOUND true )
     endif()
     if ( NOT MKL_FOUND ) # Search for MKL only if not already been found
         if (gpu_backend STREQUAL "onemkl")
-            find_package( MKL CONFIG REQUIRED HINTS "$ENV{MKL_ROOT}")
+            find_package( MKL CONFIG REQUIRED QUIET HINTS "$ENV{MKL_ROOT}")
         else()
             find_package( MKL CONFIG QUIET HINTS "$ENV{MKL_ROOT}")
         endif()
     endif()
     # message(STATUS "Available targets: ${MKL_IMPORTED_TARGETS}")
 
-    if (MKL_FOUND)
+    # Check if compiler supports the SYCL flag
+    check_cxx_compiler_flag( "-fsycl" FSYCL_SUPPORT )
+
+    # If oneMKL is found and the compiler supports SYCL then
+    # enable oneMKL-SYCL-device support
+    if ( MKL_FOUND AND FSYCL_SUPPORT )
         set( gpu_backend "onemkl" )
         set( blaspp_defs_onemkl_ "-DBLAS_HAVE_ONEMKL;-DBLAS_FORTRAN_ADD_" )
         set( blaspp_use_onemkl true )
@@ -328,12 +335,13 @@ if (gpu_backend MATCHES "^(onemkl|auto)$")
         target_compile_options( blaspp PUBLIC -fsycl )
         target_link_options( blaspp PUBLIC -fsycl )
         target_link_libraries( blaspp PUBLIC -lmkl_sycl -lsycl -lOpenCL )
-        message( STATUS "${blue}Building oneMKL support${plain}" )
+        message( STATUS "${blue}Building oneMKL-SYCL device support${plain}" )
+
     else()
-        message( STATUS "${red}No oneMKL support: oneMKL not found${plain}" )
+        message( STATUS "${red}No oneMKL-SYCL device support: oneMKL or SYCL-compiler not found${plain}" )
     endif()
 else()
-    message( STATUS "${red}No oneMKL support: gpu_backend = ${gpu_backend}${plain}" )
+    message( STATUS "${red}No oneMKL-SYCL device support: gpu_backend = ${gpu_backend}${plain}" )
 endif()
 
 #-------------------------------------------------------------------------------
