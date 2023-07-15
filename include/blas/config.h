@@ -6,14 +6,18 @@
 #ifndef BLAS_CONFIG_H
 #define BLAS_CONFIG_H
 
+#include <stdint.h>
+
 #include "blas/defines.h"
 
 #ifndef blas_int
     #if defined(BLAS_ILP64)
-        #define blas_int              long long  /* or int64_t */
+        typedef int64_t blas_int;
     #else
-        #define blas_int              int
+        typedef int blas_int;
     #endif
+    /* #define so that #ifdef works. */
+    #define blas_int blas_int
 #endif
 
 /* f2c, hence MacOS Accelerate, returns double instead of float
