@@ -131,7 +131,7 @@ foreach (lapack_libs IN LISTS lapack_libs_list)
             # Not "quoted"; screws up OpenMP.
             ${lapack_libs} ${blaspp_libraries}
         COMPILE_DEFINITIONS
-            ${blaspp_defines}
+            ${blaspp_defs_}
         COMPILE_OUTPUT_VARIABLE
             compile_output
         RUN_OUTPUT_VARIABLE
