@@ -48,12 +48,15 @@ cblas_rot(
     std::complex<float> *y, int incy,
     float c, std::complex<float> s )
 {
+    blas_int n_ = n;
+    blas_int incx_ = incx;
+    blas_int incy_ = incy;
     BLAS_crot(
-        &n,
+        &n_,
         (blas_complex_float*) x,
-        &incx,
+        &incx_,
         (blas_complex_float*) y,
-        &incy,
+        &incy_,
         &c,
         (blas_complex_float*) &s );
 }
@@ -65,12 +68,15 @@ cblas_rot(
     std::complex<double> *y, int incy,
     double c, std::complex<double> s )
 {
+    blas_int n_ = n;
+    blas_int incx_ = incx;
+    blas_int incy_ = incy;
     BLAS_zrot(
-        &n,
+        &n_,
         (blas_complex_double*) x,
-        &incx,
+        &incx_,
         (blas_complex_double*) y,
-        &incy,
+        &incy_,
         &c,
         (blas_complex_double*) &s );
 }
