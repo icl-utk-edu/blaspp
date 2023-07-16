@@ -129,7 +129,7 @@ void gemm_check(
         delete[] internal_info;
 
         // throw an exception if needed
-        blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
+        blas_error_if_msg( info[0] != 0, "info = %lld", llong( info[0] ) );
     }
     else {
         int64_t info_ = 0;
@@ -244,7 +244,7 @@ void trsm_check(
         delete[] internal_info;
 
         // throw an exception if needed
-        blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
+        blas_error_if_msg( info[0] != 0, "info = %lld", llong( info[0] ) );
     }
     else {
         int64_t info_ = 0;
@@ -359,7 +359,7 @@ void trmm_check(
         delete[] internal_info;
 
         // throw an exception if needed
-        blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
+        blas_error_if_msg( info[0] != 0, "info = %lld", llong( info[0] ) );
     }
     else {
         int64_t info_ = 0;
@@ -484,7 +484,7 @@ void hemm_check(
         delete[] internal_info;
 
         // throw an exception if needed
-         blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
+         blas_error_if_msg( info[0] != 0, "info = %lld", llong( info[0] ) );
     }
     else {
         int64_t info_ = 0;
@@ -595,7 +595,7 @@ void herk_check(
         delete[] internal_info;
 
         // throw an exception if needed
-        blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
+        blas_error_if_msg( info[0] != 0, "info = %lld", llong( info[0] ) );
     }
     else {
         int64_t info_ = 0;
@@ -725,7 +725,7 @@ void syrk_check(
         delete[] internal_info;
 
         // throw an exception if needed
-        blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
+        blas_error_if_msg( info[0] != 0, "info = %lld", llong( info[0] ) );
     }
     else {
         int64_t info_ = 0;
@@ -850,7 +850,7 @@ void her2k_check(
         delete[] internal_info;
 
         // throw an exception if needed
-        blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
+        blas_error_if_msg( info[0] != 0, "info = %lld", llong( info[0] ) );
     }
     else {
         int64_t info_ = 0;
@@ -975,7 +975,7 @@ void syr2k_check(
         delete[] internal_info;
 
         // throw an exception if needed
-        blas_error_if_msg( info[0] != 0, "info = %lld", (long long) info[0] );
+        blas_error_if_msg( info[0] != 0, "info = %lld", llong( info[0] ) );
     }
     else {
         int64_t info_ = 0;

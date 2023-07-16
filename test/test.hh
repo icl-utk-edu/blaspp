@@ -232,6 +232,4 @@ void test_util  ( Params& params, bool run );
 void test_memcpy( Params& params, bool run );
 void test_memcpy_2d( Params& params, bool run );
 
-typedef long long llong;
-
 #endif        //  #ifndef TEST_HH
