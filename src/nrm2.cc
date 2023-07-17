@@ -6,6 +6,7 @@
 #include "blas/fortran.h"
 #include "blas.hh"
 #include "blas_internal.hh"
+#include "blas/counter.hh"
 
 #include <limits>
 
@@ -72,6 +73,10 @@ real_type<scalar_t> nrm2(
     // check arguments
     blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
     blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
+
+    // PAPI instrumentation
+    counter::nrm2_type element = { n };
+    counter::insert( element, counter::Id::nrm2 );
 
     // convert arguments
     blas_int n_    = to_blas_int( n );

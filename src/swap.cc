@@ -6,6 +6,7 @@
 #include "blas/fortran.h"
 #include "blas.hh"
 #include "blas_internal.hh"
+#include "blas/counter.hh"
 
 #include <limits>
 
@@ -82,6 +83,10 @@ void swap(
     blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
     blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
     blas_error_if( incy == 0 );
+
+    // PAPI instrumentation
+    counter::swap_type element = { n };
+    counter::insert( element, counter::Id::swap );
 
     // convert arguments
     blas_int n_    = to_blas_int( n );
