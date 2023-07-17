@@ -6,6 +6,7 @@
 #include "blas/fortran.h"
 #include "blas.hh"
 #include "blas_internal.hh"
+#include "blas/counter.hh"
 
 #include <limits>
 
@@ -123,6 +124,10 @@ void gemv(
 
     blas_error_if( incx == 0 );
     blas_error_if( incy == 0 );
+
+    // PAPI instrumentation
+    counter::gemv_type element = { trans, m, n };
+    counter::insert( element, counter::Id::gemv );
 
     // convert arguments
     blas_int m_    = to_blas_int( m );

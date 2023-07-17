@@ -6,6 +6,7 @@
 #include "blas/fortran.h"
 #include "blas.hh"
 #include "blas_internal.hh"
+#include "blas/counter.hh"
 
 #include <limits>
 
@@ -79,6 +80,10 @@ void her2(
     blas_error_if( lda < n );
     blas_error_if( incx == 0 );
     blas_error_if( incy == 0 );
+
+    // PAPI instrumentation
+    counter::her2_type element = { uplo, n };
+    counter::insert( element, counter::Id::her2 );
 
     // convert arguments
     blas_int n_    = to_blas_int( n );

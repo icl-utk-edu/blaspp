@@ -6,6 +6,7 @@
 #include "blas/fortran.h"
 #include "blas.hh"
 #include "blas_internal.hh"
+#include "blas/counter.hh"
 
 #include <limits>
 
@@ -150,6 +151,10 @@ void ger(
     else
         blas_error_if( lda < n );
 
+    // PAPI instrumentation
+    counter::ger_type element = { m, n };
+    counter::insert( element, counter::Id::ger );
+
     // convert arguments
     blas_int m_    = to_blas_int( m );
     blas_int n_    = to_blas_int( n );
@@ -205,6 +210,10 @@ void geru(
         blas_error_if( lda < m );
     else
         blas_error_if( lda < n );
+
+    // PAPI instrumentation
+    counter::geru_type element = { m, n };
+    counter::insert( element, counter::Id::geru );
 
     blas_int m_    = to_blas_int( m );
     blas_int n_    = to_blas_int( n );
