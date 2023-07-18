@@ -4,6 +4,7 @@
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
 #include "blas/device_blas.hh"
+#include "blas/counter.hh"
 
 #include "device_internal.hh"
 
@@ -59,6 +60,10 @@ void trmm(
         blas_error_if( ldb < m );
     else
         blas_error_if( ldb < n );
+
+    // PAPI instrumentation
+    counter::dev_trmm_type element = { side, uplo, trans, diag, m, n };
+    counter::insert( element, counter::Id::dev_trmm );
 
     // convert arguments
     device_blas_int m_   = to_device_blas_int( m );

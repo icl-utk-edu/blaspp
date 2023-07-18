@@ -5,6 +5,7 @@
 
 #include "blas/fortran.h"
 #include "blas.hh"
+#include "blas/counter.hh"
 
 #include <limits>
 
@@ -23,6 +24,10 @@ void rotmg(
     float  b,
     float  param[5] )
 {
+    // PAPI instrumentation
+    counter::rotmg_type element = { 1 };
+    counter::insert( element, counter::Id::rotmg );
+
     BLAS_srotmg( d1, d2, a, &b, param );
 }
 
@@ -35,6 +40,10 @@ void rotmg(
     double  b,
     double  param[5] )
 {
+    // PAPI instrumentation
+    counter::rotmg_type element = { 1 };
+    counter::insert( element, counter::Id::rotmg );
+
     BLAS_drotmg( d1, d2, a, &b, param );
 }
 

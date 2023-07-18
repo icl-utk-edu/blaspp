@@ -4,6 +4,7 @@
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
 #include "blas/device_blas.hh"
+#include "blas/counter.hh"
 
 #include "device_internal.hh"
 
@@ -60,6 +61,10 @@ void symm(
         blas_error_if( ldb < n );
         blas_error_if( ldc < n );
     }
+
+    // PAPI instrumentation
+    counter::dev_symm_type element = { side, uplo, m, n };
+    counter::insert( element, counter::Id::dev_symm );
 
     // convert arguments
     device_blas_int m_   = to_device_blas_int( m );

@@ -4,6 +4,7 @@
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
 #include "blas/device_blas.hh"
+#include "blas/counter.hh"
 
 #include "device_internal.hh"
 
@@ -58,6 +59,10 @@ void syrk(
         blas_error_if( lda < k );
 
     blas_error_if( ldc < n );
+
+    // PAPI instrumentation
+    counter::dev_syrk_type element = { uplo, trans, n, k };
+    counter::insert( element, counter::Id::dev_syrk );
 
     // convert arguments
     device_blas_int n_   = to_device_blas_int( n );

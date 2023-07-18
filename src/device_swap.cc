@@ -4,6 +4,7 @@
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
 #include "blas/device_blas.hh"
+#include "blas/counter.hh"
 
 #include "device_internal.hh"
 
@@ -33,6 +34,10 @@ void swap(
     blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
     blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
     blas_error_if( incy == 0 );
+
+    // PAPI instrumentation
+    counter::dev_swap_type element = { n };
+    counter::insert( element, counter::Id::dev_swap );
 
     // convert arguments
     device_blas_int n_    = to_device_blas_int( n );
