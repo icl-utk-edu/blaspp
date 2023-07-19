@@ -115,11 +115,6 @@ public:
     typedef axpy_type rotm_type;
     typedef axpy_type rotg_type;
     typedef axpy_type rotmg_type;
-    typedef axpy_type dev_copy_type;
-    typedef axpy_type dev_dot_type;
-    typedef axpy_type dev_nrm2_type;
-    typedef axpy_type dev_scal_type;
-    typedef axpy_type dev_swap_type;
 
     //==============================================================================
     // Level 2 BLAS
@@ -167,8 +162,6 @@ public:
         int64_t m, n, k;
     };
 
-    typedef gemm_type dev_gemm_type;
-
     //------------------------------------------------------------------------------
     struct hemm_type {
         blas::Side side;
@@ -177,8 +170,6 @@ public:
     };
 
     typedef hemm_type symm_type;
-    typedef hemm_type dev_hemm_type;
-    typedef hemm_type dev_symm_type;
 
     //------------------------------------------------------------------------------
     struct herk_type {
@@ -190,10 +181,6 @@ public:
     typedef herk_type syrk_type;
     typedef herk_type syr2k_type;
     typedef herk_type her2k_type;
-    typedef herk_type dev_herk_type;
-    typedef herk_type dev_syrk_type;
-    typedef herk_type dev_syr2k_type;
-    typedef herk_type dev_her2k_type;
 
     //------------------------------------------------------------------------------
     struct trmm_type {
@@ -205,8 +192,42 @@ public:
     };
 
     typedef trmm_type trsm_type;
+
+    //==============================================================================
+    // Device BLAS
+
+    typedef axpy_type dev_copy_type;
+    typedef axpy_type dev_dot_type;
+    typedef axpy_type dev_nrm2_type;
+    typedef axpy_type dev_scal_type;
+    typedef axpy_type dev_swap_type;
+
+    typedef gemm_type dev_gemm_type;
+
+    typedef hemm_type dev_hemm_type;
+    typedef hemm_type dev_symm_type;
+
+    typedef herk_type dev_herk_type;
+    typedef herk_type dev_syrk_type;
+    typedef herk_type dev_syr2k_type;
+    typedef herk_type dev_her2k_type;
+
     typedef trmm_type dev_trmm_type;
     typedef trmm_type dev_trsm_type;
+
+    //==============================================================================
+    // Device batch BLAS
+
+    struct dev_batch_gemm_type {
+        blas::Op transA, transB;
+        int64_t m, n, k;
+        size_t batch_size;
+    };
+
+    //------------------------------------------------------------------------------
+    struct dev_batch_hemm_type {
+        size_t batch_size;
+    };
 
     //--------------------------------------------------------------------------
     /// Initializes PAPI counting set on first call.
@@ -658,6 +679,24 @@ public:
                                 op2char( ptr->transA ), diag2char( ptr->diag ),
                                 llong( ptr->m ), llong( ptr->n ), iter->count, flop );
                         totalflops += flop;
+                        break;
+                    }
+
+                    // Device batch BLAS
+                    case Id::dev_batch_gemm: {
+                        auto *ptr = static_cast<dev_batch_gemm_type *>( iter->ptr );
+                        double flop = Gflop<double>::gemm( ptr->m, ptr->n, ptr->k ) * 1e9;
+                        printf( "dev_batch_gemm( %c, %c, %lld, %lld, %lld, %lld ) count %d, flop count %.2e\n",
+                                op2char( ptr->transA ), op2char( ptr->transB ),
+                                llong( ptr->m ), llong( ptr->n ), llong( ptr->k ),
+                                llong( ptr->batch_size ), iter->count, flop );
+                        totalflops += flop;
+                        break;
+                    }
+                    case Id::dev_batch_hemm: {
+                        auto *ptr = static_cast<dev_batch_hemm_type *>( iter->ptr );
+                        printf( "dev_batch_hemm( ) batch count %lld, count %d\n",
+                                llong( ptr->batch_size ), iter->count );
                         break;
                     }
                 }

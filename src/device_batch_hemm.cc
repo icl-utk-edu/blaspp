@@ -7,6 +7,7 @@
 #include <cstring>
 #include "blas/batch_common.hh"
 #include "blas.hh"
+#include "blas/counter.hh"
 
 #include <limits>
 
@@ -55,6 +56,10 @@ void hemm(
 
     blas::internal_set_device( queue.device() );
 
+    // PAPI instrumentation
+    counter::dev_batch_hemm_type element = { batch_size };
+    counter::insert( element, counter::Id::dev_batch_hemm );
+
     queue.fork();
     for (size_t i = 0; i < batch_size; ++i) {
         blas::Side side_   = blas::batch::extract( side,   i );
@@ -69,6 +74,7 @@ void hemm(
         scalar_t*  A_      = blas::batch::extract( Aarray, i );
         scalar_t*  B_      = blas::batch::extract( Barray, i );
         scalar_t*  C_      = blas::batch::extract( Carray, i );
+
         blas::hemm( layout, side_, uplo_, m_, n_,
                     alpha_, A_, lda_, B_, ldb_, beta_, C_, ldc_,
                     queue );
