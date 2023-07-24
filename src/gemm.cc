@@ -258,6 +258,8 @@ void gemm(
 
 }  // namespace blas
 
+#ifdef BLAS_HAVE_PAPI
+
 // Hook for papi_native_avail utility. No user code which links against this library should call
 // this function because it has the same name in all SDE-enabled libraries. papi_native_avail
 // uses dlopen and dlclose on each library so it only has one version of this symbol at a time.
@@ -269,3 +271,5 @@ papi_handle_t papi_sde_hook_list_events( papi_sde_fptr_struct_t* fptr_struct )
     fptr_struct->create_counting_set( tmp_handle, "counter", NULL );
     return tmp_handle;
 }
+
+#endif

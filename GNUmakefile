@@ -54,9 +54,10 @@ endif
 
 #-------------------------------------------------------------------------------
 ifeq (${papi},1)
-    CXXFLAGS += -DBLAS_HAVE_PAPI -I ${PAPI_DIR}/include
-    LDFLAGS  += -L ${PAPI_DIR}/lib -Wl,-rpath,${abspath ${PAPI_DIR}/lib}
-    LIBS     += -lsde
+    CXXFLAGS  += -DBLAS_HAVE_PAPI -I ${PAPI_DIR}/include
+    LDFLAGS   += -L ${PAPI_DIR}/lib -Wl,-rpath,${abspath ${PAPI_DIR}/lib}
+    LIBS      += -lsde
+    TEST_LIBS += -lpapi
 endif
 
 #-------------------------------------------------------------------------------
@@ -136,7 +137,7 @@ $(tester_obj): CXXFLAGS += -I$(testsweeper_dir)
 
 TEST_LDFLAGS += -L./lib -Wl,-rpath,$(abspath ./lib)
 TEST_LDFLAGS += -L$(testsweeper_dir) -Wl,-rpath,$(abspath $(testsweeper_dir))
-TEST_LIBS    += -lblaspp -ltestsweeper -lpapi
+TEST_LIBS    += -lblaspp -ltestsweeper
 
 #-------------------------------------------------------------------------------
 # Rules

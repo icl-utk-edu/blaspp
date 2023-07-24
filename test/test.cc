@@ -11,7 +11,10 @@
 
 #include "blas/counter.hh"
 
-#include "papi.h"
+#ifdef BLAS_HAVE_PAPI
+    #include "papi.h"
+#endif
+
 #include "test.hh"
 
 // -----------------------------------------------------------------------------
@@ -294,14 +297,13 @@ Params::Params():
 void setup_PAPI( int *event_set )
 {
     blas::counter::get();
+    #ifdef BLAS_HAVE_PAPI
+        require( PAPI_library_init( PAPI_VER_CURRENT ) == PAPI_VER_CURRENT );
 
-    require( PAPI_library_init( PAPI_VER_CURRENT ) == PAPI_VER_CURRENT );
+        require( PAPI_create_eventset( event_set ) == PAPI_OK );
 
-    require( PAPI_create_eventset( event_set ) == PAPI_OK );
-
-    // int ret = PAPI_add_named_event( *event_set, "sde:::blas::counter" );
-    // printf( "%d\n", ret );
-    require( PAPI_add_named_event( *event_set, "sde:::blas::counter" ) == PAPI_OK );
+        require( PAPI_add_named_event( *event_set, "sde:::blas::counter" ) == PAPI_OK );
+    #endif
 }
 
 // -----------------------------------------------------------------------------
@@ -369,15 +371,17 @@ int main( int argc, char** argv )
             params.align.width( 5 );
         }
 
-        int event_set = PAPI_NULL;
-        long long counter_values[1];
+        #ifdef BLAS_HAVE_PAPI
+            int event_set = PAPI_NULL;
+            long long counter_values[1];
 
-        if (params.papi() == 'y') {
-            // initialize papi
-            setup_PAPI( &event_set );
+            if (params.papi() == 'y') {
+                // initialize papi
+                setup_PAPI( &event_set );
 
-            require( PAPI_start( event_set ) == PAPI_OK );
-        }
+                require( PAPI_start( event_set ) == PAPI_OK );
+            }
+        #endif
 
         // run tests
         int repeat = params.repeat();
@@ -408,14 +412,16 @@ int main( int argc, char** argv )
             }
         } while(params.next());
 
-        if (params.papi() == 'y') {
-            // stop papi
-            require( PAPI_stop( event_set, counter_values ) == PAPI_OK );
+        #ifdef BLAS_HAVE_PAPI
+            if (params.papi() == 'y') {
+                // stop papi
+                require( PAPI_stop( event_set, counter_values ) == PAPI_OK );
 
-            // print papi instrumentation
-            blas::counter::print( (cset_list_object_t *)counter_values[0] );
-            printf( "\n" );
-        }
+                // print papi instrumentation
+                blas::counter::print( (cset_list_object_t *)counter_values[0] );
+                printf( "\n" );
+            }
+        #endif
 
         if (status) {
             printf( "%d tests FAILED for %s.\n", status, routine );
