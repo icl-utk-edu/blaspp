@@ -207,6 +207,7 @@ Params::Params():
     //         name,       w,    type,         default, valid, help
     check     ( "check",   0,    ParamType::Value, 'y', "ny",  "check the results" ),
     ref       ( "ref",     0,    ParamType::Value, 'n', "ny",  "run reference; sometimes check -> ref" ),
+    papi      ( "papi",    0,    ParamType::Value, 'n', "ny",  "run papi instrumentation" ),
 
     //          name,      w, p, type,         default, min,  max, help
     repeat    ( "repeat",  0,    ParamType::Value,   1,   1, 1000, "times to repeat each test" ),
@@ -284,6 +285,7 @@ Params::Params():
     repeat();
     verbose();
     cache();
+    papi();
 
     // routine's parameters are marked by the test routine; see main
 }
@@ -367,14 +369,15 @@ int main( int argc, char** argv )
             params.align.width( 5 );
         }
 
-        // initialize papi
-        // TODO: add if for params.papi when added
         int event_set = PAPI_NULL;
         long long counter_values[1];
 
-        setup_PAPI( &event_set );
+        if (params.papi() == 'y') {
+            // initialize papi
+            setup_PAPI( &event_set );
 
-        require( PAPI_start( event_set ) == PAPI_OK );
+            require( PAPI_start( event_set ) == PAPI_OK );
+        }
 
         // run tests
         int repeat = params.repeat();
@@ -405,12 +408,14 @@ int main( int argc, char** argv )
             }
         } while(params.next());
 
-        // stop papi
-        require( PAPI_stop( event_set, counter_values ) == PAPI_OK );
+        if (params.papi() == 'y') {
+            // stop papi
+            require( PAPI_stop( event_set, counter_values ) == PAPI_OK );
 
-        // print papi instrumentation
-        blas::counter::print( (cset_list_object_t *)counter_values[0] );
-        printf( "\n" );
+            // print papi instrumentation
+            blas::counter::print( (cset_list_object_t *)counter_values[0] );
+            printf( "\n" );
+        }
 
         if (status) {
             printf( "%d tests FAILED for %s.\n", status, routine );
