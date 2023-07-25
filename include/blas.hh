@@ -8,6 +8,8 @@
 
 #include "blas/defines.h"
 
+#include "blas/counter.hh"
+
 // Version is updated by make_release.py; DO NOT EDIT.
 // Version 2023.06.00
 #define BLASPP_VERSION 20230600
