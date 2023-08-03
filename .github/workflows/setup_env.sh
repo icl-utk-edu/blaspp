@@ -32,46 +32,74 @@ export top=$(pwd)
 
 shopt -s expand_aliases
 
-
-print "======================================== Load compiler"
-quiet module load gcc@7.3.0
-quiet which g++
-g++ --version
-
 quiet module load intel-oneapi-mkl
-echo "MKLROOT=${MKLROOT}"
+print "MKLROOT=${MKLROOT}"
+
+quiet module load python
+quiet which python
+quiet which python3
+python  --version
+python3 --version
 
 quiet module load pkgconf
 quiet which pkg-config
 
-# CMake will find CUDA in /usr/local/cuda, so need to explicitly set
-# gpu_backend.
+# CMake finds CUDA in /usr/local/cuda, so need to explicitly set gpu_backend.
 export gpu_backend=none
+export color=no
+export CXXFLAGS="-Werror -Wno-unused-command-line-argument"
 
+# Test int64 build with make/cuda and cmake/amd.
+# Test int32 build with cmake/cuda and make/amd and all others.
+if [ "${maker}" = "make" -a "${device}" = "gpu_nvidia" ]; then
+    export blas_int=int64
+elif [ "${maker}" = "cmake" -a "${device}" = "gpu_amd" ]; then
+    export blas_int=int64
+else
+    export blas_int=int32
+fi
+
+#----------------------------------------------------------------- Compiler
+if [ "${device}" = "gpu_intel" ]; then
+    print "======================================== Load Intel oneAPI compiler"
+    quiet module load intel-oneapi-compilers
+else
+    print "======================================== Load GNU compiler"
+    quiet module load gcc@8.5.0
+fi
+print "---------------------------------------- Verify compiler"
+print "CXX = $CXX"
+print "CC  = $CC"
+print "FC  = $FC"
+${CXX} --version
+${CC}  --version
+${FC}  --version
+
+#----------------------------------------------------------------- GPU
 if [ "${device}" = "gpu_nvidia" ]; then
     print "======================================== Load CUDA"
-    export CUDA_HOME=/usr/local/cuda/
+    quiet module load cuda
+    print "CUDA_HOME=${CUDA_HOME}"
     export PATH=${PATH}:${CUDA_HOME}/bin
     export gpu_backend=cuda
     quiet which nvcc
     nvcc --version
-fi
 
-if [ "${device}" = "gpu_amd" ]; then
+elif [ "${device}" = "gpu_amd" ]; then
     print "======================================== Load ROCm"
-    export PATH=${PATH}:/opt/rocm/bin
+    export ROCM_PATH=/opt/rocm
+    # Some hip utilities require /usr/sbin/lsmod
+    export PATH=${PATH}:${ROCM_PATH}/bin:/usr/sbin
     export gpu_backend=hip
     quiet which hipcc
     hipcc --version
-fi
 
-if [ "${device}" = "gpu_intel" ]; then
-    print "======================================== Load Intel oneAPI"
+elif [ "${device}" = "gpu_intel" ]; then
+    # Intel oneAPI SYCL compiler loaded above
     export gpu_backend=sycl
-    quiet module load intel-oneapi-compilers
 fi
 
-
+#----------------------------------------------------------------- CMake
 if [ "${maker}" = "cmake" ]; then
     print "======================================== Load cmake"
     quiet module load cmake
@@ -79,5 +107,3 @@ if [ "${maker}" = "cmake" ]; then
     cmake --version
     cd build
 fi
-
-quiet module list

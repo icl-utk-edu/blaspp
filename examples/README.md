@@ -26,7 +26,7 @@ Then, to build and run `example_gemm` and `example_util` using the
 Makefile, run:
 
     make
-    make run
+    make test
 
 ## Option 2: CMake
 

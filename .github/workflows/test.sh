@@ -15,48 +15,48 @@ export OMP_NUM_THREADS=8
 print "======================================== Tests"
 cd test
 
-TESTER="./run_tests.py --quick"
+args="--quick"
 if [ "${device}" = "gpu_intel" ]; then
-    TESTER+=" --type s,c"
+    # Our Intel GPU supports only single precision.
+    args+=" --type s,c"
 fi
 
-${TESTER} --blas1 --blas2 --blas3 --xml ${top}/report-${maker}.xml
+./run_tests.py ${args} --blas1 --blas2 --blas3
 (( err += $? ))
 
-${TESTER} --batch-blas3           --xml ${top}/report-${maker}-batch.xml
+./run_tests.py ${args} --batch-blas3
 (( err += $? ))
 
-# CUDA or HIP
-${TESTER} --blas1-device --blas3-device --xml ${top}/report-${maker}-device.xml
+# CUDA, HIP, or SYCL. These fail gracefully when GPUs are absent.
+./run_tests.py ${args} --blas1-device --blas3-device
 (( err += $? ))
 
-${TESTER} --batch-blas3-device          --xml ${top}/report-${maker}-batch-device.xml
+./run_tests.py ${args} --batch-blas3-device
 (( err += $? ))
 
 print "======================================== Smoke tests"
-cd ${top}/example
-export CXXFLAGS="-Werror"
+cd ${top}/examples
+
+# Makefile or CMakeLists.txt picks up ${test_args}.
+if [ "${device}" = "gpu_intel" ]; then
+    # Our Intel GPU supports only single precision.
+    export test_args="s c"
+else
+    export test_args="s d c z"
+fi
 
 if [ "${maker}" = "make" ]; then
-    export PKG_CONFIG_PATH=${top}/install/lib/pkgconfig
-    make clean
-fi
-if [ "${maker}" = "cmake" ]; then
+    export PKG_CONFIG_PATH+=:${top}/install/lib/pkgconfig
+    make clean || exit 20
+
+elif [ "${maker}" = "cmake" ]; then
     rm -rf build && mkdir build && cd build
-    cmake "-DCMAKE_PREFIX_PATH=${top}/install" ..
+    cmake "-DCMAKE_PREFIX_PATH=${top}/install" .. || exit 30
 fi
 
-if [ "${device}" = "gpu_intel" ]; then
-    TESTS="s c"
-else
-    TESTS="s d c z"
-fi
-
-make
-./example_gemm $TESTS
-(( err += $? ))
-
-./example_util $TESTS
+# ARGS=-V causes CTest to print output. Makefile doesn't use it.
+make -j8 || exit 40
+make test ARGS=-V
 (( err += $? ))
 
 print "======================================== Finished test"

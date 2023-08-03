@@ -32,12 +32,17 @@ endif
 # Rules
 
 exe = example_gemm example_util
+run = ${addsuffix .run, ${exe}}
 txt = ${addsuffix .txt, ${exe}}
 
 .DELETE_ON_ERROR:
 .SECONDARY:
 .SUFFIXES:
 .DEFAULT_GOAL := all
+.PRECIOUS: ${txt}
+
+# Serialize everything so that `make test` runs in serial.
+.NOTPARALLEL:
 
 all: ${exe}
 
@@ -50,11 +55,19 @@ all: ${exe}
 clean:
 	-rm -f ${exe} ${txt} *.o *.d
 
-run: ${txt}
+# CMake uses `make test`, GNU autotools uses `make check`; allow both.
+test: check
+check: ${run}
 
-# run examples
+# Run example, but don't save results; %.run is dummy filename.
+%.run: %
+	@echo "----------------------------------------------------------------------"
+	./$< ${test_args}
+
+# Run example and save result in .txt file.
+txt: ${txt}
 %.txt: %
-	./$< > $@
+	./$< ${test_args} > $@
 
 #-------------------------------------------------------------------------------
 # Debugging
@@ -66,4 +79,5 @@ echo:
 	@echo "LIBS       $(LIBS)"
 	@echo
 	@echo "exe       $(exe)"
+	@echo "run       $(run)"
 	@echo "txt       $(txt)"

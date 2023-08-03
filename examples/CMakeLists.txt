@@ -52,6 +52,14 @@ target_link_libraries(
 
 #-------------------------------------------------------------------------------
 # CTest
+
+# Get precisions to test. See .github/workflows/test.sh
+set( test_args $ENV{test_args} )
+if (NOT test_args)
+    set( test_args "s d c z" )
+endif()
+string( REPLACE " " ";" test_args ${test_args} ) # convert to list
+
 enable_testing()
-add_test( NAME example_gemm COMMAND ./example_gemm )
-add_test( NAME example_util COMMAND ./example_util )
+add_test( NAME example_gemm COMMAND ./example_gemm ${test_args} )
+add_test( NAME example_util COMMAND ./example_util ${test_args} )

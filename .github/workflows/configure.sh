@@ -12,35 +12,41 @@ mydir=$(dirname $0)
 source ${mydir}/setup_env.sh
 
 print "======================================== Environment"
-env
+# Show environment variables, excluding functions.
+(set -o posix; set)
+
+print "======================================== Modules"
+quiet module list -l
+
+print "======================================== Query GPUs"
+if   [ "${device}" = "gpu_nvidia" ]; then
+    nvidia-smi
+elif [ "${device}" = "gpu_amd" ]; then
+    rocm-smi
+elif [ "${device}" = "gpu_intel" ]; then
+    clinfo
+    sycl-ls
+fi
 
 print "======================================== Setup build"
-export color=no
-export CXXFLAGS="-Werror -Wno-unused-command-line-argument"
-
-# Test int64 build with make/cuda and cmake/amd.
-# Test int32 build with cmake/cuda and make/amd and all others.
-if [ "${maker}" = "make" -a "${device}" = "gpu_nvidia" ]; then
-    export blas_int=int64
-elif [ "${maker}" = "cmake" -a "${device}" = "gpu_amd" ]; then
-    export blas_int=int64
-else
-    export blas_int=int32
-fi
+# Note: set all env variables in setup_env.sh,
+# else build.sh and test.sh won't see them.
 
 rm -rf ${top}/install
 if [ "${maker}" = "make" ]; then
     make distclean
     make config prefix=${top}/install \
          || exit 10
-fi
-if [ "${maker}" = "cmake" ]; then
+
+elif [ "${maker}" = "cmake" ]; then
     cmake -Dcolor=no \
           -DCMAKE_INSTALL_PREFIX=${top}/install \
           -Dblas_int=${blas_int} \
           -Dgpu_backend=${gpu_backend} .. \
           || exit 12
 fi
+
+cat include/blas/defines.h
 
 print "======================================== Finished configure"
 exit 0
