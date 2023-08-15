@@ -508,8 +508,6 @@ endif()
 
 #-------------------------------------------------------------------------------
 if (build_tests)
-    # Only tester needs lapack.
-    include( "cmake/LAPACKFinder.cmake" )
     add_subdirectory( test )
 endif()
 

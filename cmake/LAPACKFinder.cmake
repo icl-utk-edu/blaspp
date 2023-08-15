@@ -8,9 +8,9 @@ string( REGEX REPLACE "([^ ])( +|\\\;)" "\\1;"    LAPACK_LIBRARIES "${LAPACK_LIB
 string( REGEX REPLACE "-framework;" "-framework " LAPACK_LIBRARIES "${LAPACK_LIBRARIES}" )
 
 message( DEBUG "LAPACK_LIBRARIES '${LAPACK_LIBRARIES}'"        )
-message( DEBUG "  cached         '${lapack_libraries_cached}'" )
+message( DEBUG "  cached         '${blaspp_lapack_libraries_cached}'" )
 message( DEBUG "lapack           '${lapack}'"                  )
-message( DEBUG "  cached         '${lapack_cached}'"           )
+message( DEBUG "  cached         '${blaspp_lapack_cached}'"           )
 message( DEBUG "" )
 
 include( "cmake/util.cmake" )
@@ -21,13 +21,13 @@ message( STATUS "${bold}Looking for LAPACK libraries and options${not_bold} (lap
 # Check if this file has already been run with these settings.
 set( run_ true )
 if (LAPACK_LIBRARIES
-    AND NOT "${lapack_libraries_cached}" STREQUAL "${LAPACK_LIBRARIES}")
+    AND NOT "${blaspp_lapack_libraries_cached}" STREQUAL "${LAPACK_LIBRARIES}")
     # Ignore lapack if LAPACK_LIBRARIES changes.
     # Set to empty, rather than unset, so when cmake is invoked again
     # they don't force a search.
     message( DEBUG "clear lapack" )
     set( lapack "" CACHE INTERNAL "" )
-elseif (NOT ("${lapack_cached}" STREQUAL "${lapack}"))
+elseif (NOT ("${blaspp_lapack_cached}" STREQUAL "${lapack}"))
     # Ignore LAPACK_LIBRARIES if lapack* changed.
     message( DEBUG "unset LAPACK_LIBRARIES" )
     set( LAPACK_LIBRARIES "" CACHE INTERNAL "" )
@@ -166,8 +166,8 @@ endif() # run_
 #===============================================================================
 
 # Mark as already run (see top).
-set( lapack_libraries_cached ${LAPACK_LIBRARIES} CACHE INTERNAL "" )
-set( lapack_cached           ${lapack}           CACHE INTERNAL "" )
+set( blaspp_lapack_libraries_cached ${LAPACK_LIBRARIES} CACHE INTERNAL "" )
+set( blaspp_lapack_cached           ${lapack}           CACHE INTERNAL "" )
 
 #-------------------------------------------------------------------------------
 if (LAPACK_FOUND)
