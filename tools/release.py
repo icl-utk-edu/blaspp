@@ -5,9 +5,8 @@
 
 '''
 Tags project with version based on current date, and creates tar file.
-Tag is yyyy.mm.rr, where yyyy.mm is current year and month,
-and rr is a release counter within current month, starting at 0.
-Version is an integer yyyymmrr, to allow simple comparisons.
+Tag is yyyy.mm.dd, based on current year, month, and day.
+Version is an integer yyyymmdd, to allow simple comparisons.
 
 Requires Python >= 3.7.
 
@@ -139,23 +138,13 @@ def make( project, version_h, version_c ):
     today = datetime.date.today()
     year  = today.year
     month = today.month
-    release = 0
+    mday  = today.day
 
     top_dir = os.getcwd()
 
-    # Search for latest tag this month and increment release if found.
-    tags = myrun( 'git tag', stdout=PIPE, text=True ).rstrip().split( '\n' )
-    tags.sort( reverse=True )
-    pattern = r'v%04d\.%02d\.(\d+)' % (year, month)
-    for tag in tags:
-        s = re.search( pattern, tag )
-        if (s):
-            release = int( s.group(1) ) + 1
-            break
-
-    tag = '%04d.%02d.%02d' % (year, month, release)
+    tag = '%04d.%02d.%02d' % (year, month, mday)
     vtag = 'v' + tag
-    version = '%04d%02d%02d' % (year, month, release)
+    version = '%04d%02d%02d' % (year, month, mday)
     print( '\n>> Tag '+ tag +', Version '+ version )
 
     #--------------------
