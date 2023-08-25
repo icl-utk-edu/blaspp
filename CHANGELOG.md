@@ -1,9 +1,16 @@
+2023.08.25
+  - Use yyyy.mm.dd version scheme, instead of yyyy.mm.release
+  - Added oneAPI support to CMake
+  - Fixed int64 support
+  - More robust Makefile configure doesn't require CUDA or ROCm to be in
+    compiler search paths (CPATH, LIBRARY_PATH, etc.)
+
 2023.06.00
   - Revised Queue class to allow creating Queue from an existing
     CUDA/HIP stream, cuBLAS/rocBLAS handle, or SYCL queue. Also
     allocates streams and workspace on demand, to make Queue creation
     much lighter weight.
-  - Improved oneAPI support.
+  - Improved oneAPI support
 
 2023.01.00
   - Added oneAPI port (currently Makefile only)
