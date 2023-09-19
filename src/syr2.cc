@@ -42,50 +42,6 @@ inline void syr2(
     BLAS_dsyr2( &uplo, &n, &alpha, x, &incx, y, &incy, A, &lda );
 }
 
-//------------------------------------------------------------------------------
-/// Low-level overload wrapper calls Fortran, complex<float> version.
-/// @ingroup syr2k_internal
-/// todo: repeated from syr2k.cc
-inline void syr2k(
-    char uplo,
-    char trans,
-    blas_int n, blas_int k,
-    std::complex<float> alpha,
-    std::complex<float> const* A, blas_int lda,
-    std::complex<float> const* B, blas_int ldb,
-    std::complex<float> beta,
-    std::complex<float>*       C, blas_int ldc )
-{
-    BLAS_csyr2k( &uplo, &trans, &n, &k,
-                 (blas_complex_float*) &alpha,
-                 (blas_complex_float*) A, &lda,
-                 (blas_complex_float*) B, &ldb,
-                 (blas_complex_float*) &beta,
-                 (blas_complex_float*) C, &ldc );
-}
-
-//------------------------------------------------------------------------------
-/// Low-level overload wrapper calls Fortran, complex<double> version.
-/// @ingroup syr2k_internal
-/// todo: repeated from syr2k.cc
-inline void syr2k(
-    char uplo,
-    char trans,
-    blas_int n, blas_int k,
-    std::complex<double> alpha,
-    std::complex<double> const* A, blas_int lda,
-    std::complex<double> const* B, blas_int ldb,
-    std::complex<double> beta,
-    std::complex<double>*       C, blas_int ldc )
-{
-    BLAS_zsyr2k( &uplo, &trans, &n, &k,
-                 (blas_complex_double*) &alpha,
-                 (blas_complex_double*) A, &lda,
-                 (blas_complex_double*) B, &ldb,
-                 (blas_complex_double*) &beta,
-                 (blas_complex_double*) C, &ldc );
-}
-
 }  // namespace internal
 
 //==============================================================================
@@ -127,10 +83,10 @@ void syr2(
         // swap lower <=> upper
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
     }
-    char uplo_ = uplo2char( uplo );
 
     if constexpr (! is_complex<scalar_t>::value) {
         // call low-level wrapper
+        char uplo_ = uplo2char( uplo );
         internal::syr2( uplo_, n_, alpha, x, incx_, y, incy_, A, lda_ );
     }
     else { // is_complex<scalar_t>
@@ -173,7 +129,7 @@ void syr2(
         scalar_t beta = 1;
 
         // call low-level wrapper
-        internal::syr2k( uplo_, trans_, n_, k_,
+        syr2k( blas::Layout::ColMajor, uplo, char2op(trans_), n_, k_,
                          alpha, x2, ldx_, y2, ldy_, beta, A, lda_ );
 
         if (x2 != x) {
