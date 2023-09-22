@@ -13,11 +13,21 @@
 
 #include <limits>
 
+namespace std {
+  template <> class numeric_limits<half> {
+  public:
+    static half epsilon() {
+      // Value coming from MAGMA testing/testing_hgemm.cpp
+      return half( 0.00097656 );
+    }
+  };
+}; // namespace std
+
 // -----------------------------------------------------------------------------
 // Computes error for multiplication with general matrix result.
 // Covers dot, gemv, ger, geru, gemm, symv, hemv, symm, trmv, trsv?, trmm, trsm?.
 // Cnorm is norm of original C, before multiplication operation.
-template <typename T>
+template <typename T, typename err_prec = T>
 void check_gemm(
     int64_t m, int64_t n, int64_t k,
     T alpha,
@@ -70,7 +80,7 @@ void check_gemm(
         error[0] /= 2*sqrt(2);
     }
 
-    real_t u = 0.5 * std::numeric_limits< real_t >::epsilon();
+    real_t u = 0.5 * std::numeric_limits<blas::real_type<err_prec>>::epsilon();
     *okay = (error[0] < u);
 
     #undef C

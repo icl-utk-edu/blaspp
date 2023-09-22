@@ -37,6 +37,10 @@ make.inc:
 RANLIB   ?= ranlib
 prefix   ?= /opt/slate
 
+NVCC     ?= nvcc
+
+NVCCFLAGS  += -O3 -std=c++11 --compiler-options '-Wall -Wno-unused-function'
+
 abs_prefix := ${abspath ${prefix}}
 
 # Default LD=ld won't work; use CXX. Can override in make.inc or environment.
@@ -77,7 +81,7 @@ lib_src  = $(wildcard src/*.cc)
 lib_obj  = $(addsuffix .o, $(basename $(lib_src)))
 dep     += $(addsuffix .d, $(basename $(lib_src)))
 
-tester_src = $(wildcard test/*.cc)
+tester_src = $(wildcard test/*.cc test/*.cu)
 tester_obj = $(addsuffix .o, $(basename $(tester_src)))
 dep       += $(addsuffix .d, $(basename $(tester_src)))
 
@@ -123,6 +127,7 @@ src/version.o: .id
 #-------------------------------------------------------------------------------
 # BLAS++ specific flags and libraries
 CXXFLAGS += -I./include
+NVCCFLAGS += -I./include
 
 # additional flags and libraries for testers
 $(tester_obj): CXXFLAGS += -I$(testsweeper_dir)
@@ -288,6 +293,9 @@ hooks: ${hooks}
 
 %.o: %.cc
 	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+%.o: %.cu
+	$(NVCC) $(NVCCFLAGS) -c $< -o $@
 
 # preprocess source
 %.i: %.cc
