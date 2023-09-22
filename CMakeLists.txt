@@ -427,7 +427,6 @@ include( "cmake/CBLASConfig.cmake" )
 
 # Export via blasppConfig.cmake
 # Needed for finding LAPACK.
-list( REMOVE_DUPLICATES BLAS_LIBRARIES )
 set( blaspp_libraries "${BLAS_LIBRARIES};${openmp_lib}" CACHE INTERNAL "" )
 message( DEBUG "blaspp_libraries = '${blaspp_libraries}'" )
 
@@ -442,7 +441,6 @@ else()
     message( DEBUG "Using LAPACKFinder" )
     include( "cmake/LAPACKFinder.cmake" )
 endif()
-list( REMOVE_DUPLICATES LAPACK_LIBRARIES )
 
 if (NOT LAPACK_FOUND)
     message( "For [cz]rot, [cz]syr, and [cz]symv, BLAS++ requires a LAPACK library and none was found."
@@ -489,7 +487,6 @@ endif()
 if (LAPACK_LIBRARIES)
     # Update BLAS libraries with LAPACK libraries.
     set( BLAS_LAPACK_LIBRARIES "${BLAS_LIBRARIES};${LAPACK_LIBRARIES}" )
-    list( REMOVE_DUPLICATES BLAS_LAPACK_LIBRARIES )
     # Export via blasppConfig.cmake
     set( blaspp_libraries "${BLAS_LAPACK_LIBRARIES};${openmp_lib}" CACHE INTERNAL "" )
     message( DEBUG "blaspp_libraries = '${blaspp_libraries}'" )
