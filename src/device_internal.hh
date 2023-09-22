@@ -483,6 +483,16 @@ void copy(
 void gemm(
     blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
+    half alpha,
+    half const *dA, device_blas_int ldda,
+    half const *dB, device_blas_int lddb,
+    half beta,
+    half       *dC, device_blas_int lddc,
+    blas::Queue& queue );
+
+void gemm(
+    blas::Op transA, blas::Op transB,
+    device_blas_int m, device_blas_int n, device_blas_int k,
     float alpha,
     float const *dA, device_blas_int ldda,
     float const *dB, device_blas_int lddb,

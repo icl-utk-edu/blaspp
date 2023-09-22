@@ -255,6 +255,18 @@ void gemm(
     std::complex<double>*       C, int64_t ldc,
     blas::Queue& queue );
 
+void gemm(
+    blas::Layout layout,
+    blas::Op transA,
+    blas::Op transB,
+    int64_t m, int64_t n, int64_t k,
+    half alpha,
+    half const* A, int64_t lda,
+    half const* B, int64_t ldb,
+    half beta,
+    half*       C, int64_t ldc,
+    blas::Queue& queue );
+
 //------------------------------------------------------------------------------
 void hemm(
     blas::Layout layout,

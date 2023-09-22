@@ -14,7 +14,14 @@
 
 #include <assert.h>
 
+#include <cuda_fp16.h>
+
 namespace blas {
+
+using half = __half;
+
+inline float real(half& a) { return a; }
+inline float imag(half& a) { return 0.0; }
 
 /// Use to silence compiler warning of unused variable.
 #define blas_unused( var ) ((void)var)

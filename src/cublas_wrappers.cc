@@ -567,6 +567,27 @@ void gemm(
 }
 
 //------------------------------------------------------------------------------
+void gemm(
+    blas::Op transA, blas::Op transB,
+    device_blas_int m, device_blas_int n, device_blas_int k,
+    half alpha,
+    half const *dA, device_blas_int ldda,
+    half const *dB, device_blas_int lddb,
+    half beta,
+    half       *dC, device_blas_int lddc,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasHgemm(
+            queue.handle(),
+            op2cublas(transA), op2cublas(transB),
+            m, n, k,
+            &alpha, dA, ldda,
+                    dB, lddb,
+            &beta,  dC, lddc ) );
+}
+
+//------------------------------------------------------------------------------
 // trsm
 //------------------------------------------------------------------------------
 void trsm(
