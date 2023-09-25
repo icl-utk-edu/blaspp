@@ -3,8 +3,6 @@
 
 #include "blas.hh"
 
-#include <cuda_runtime.h>
-
 namespace blas {
 
 template <typename src_t, typename dst_t = src_t>
