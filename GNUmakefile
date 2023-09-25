@@ -61,6 +61,7 @@ endif
 ifneq ($(static),1)
     CXXFLAGS += -fPIC
     LDFLAGS  += -fPIC
+    NVCCFLAGS  += --compiler-options '-fPIC'
     lib_ext = so
 else
     lib_ext = a
