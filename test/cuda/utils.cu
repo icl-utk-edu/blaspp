@@ -1,4 +1,4 @@
-#include "utils.cuh"
+#include "../utils.cuh"
 
 //------------------------------------------------------------------------------
 /// @return ceil( x / y ), for integer type T.

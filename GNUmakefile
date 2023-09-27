@@ -38,8 +38,12 @@ RANLIB   ?= ranlib
 prefix   ?= /opt/slate
 
 NVCC     ?= nvcc
+HIPCC    ?= hipcc
+hipify   ?= hipify-perl
+md5sum   ?= tools/md5sum.pl
 
 NVCCFLAGS  += -O3 -std=c++11 --compiler-options '-Wall -Wno-unused-function'
+HIPCCFLAGS += -std=c++11 -DTCE_HIP -fno-gpu-rdc
 
 abs_prefix := ${abspath ${prefix}}
 
@@ -57,11 +61,24 @@ ifneq ($(findstring darwin, $(ostype)),)
 endif
 
 #-------------------------------------------------------------------------------
+# Detect which gpu_backend used
+cuda = 0
+hip  = 0
+sycl = 0
+
+ifeq ($(gpu_backend),cuda)
+		cuda = 1
+else ifeq ($(gpu_backend),hip)
+		hip = 1
+endif
+
+#-------------------------------------------------------------------------------
 # if shared
 ifneq ($(static),1)
     CXXFLAGS += -fPIC
     LDFLAGS  += -fPIC
     NVCCFLAGS  += --compiler-options '-fPIC'
+    HIPCCFLAGS += -fPIC
     lib_ext = so
 else
     lib_ext = a
@@ -82,7 +99,19 @@ lib_src  = $(wildcard src/*.cc)
 lib_obj  = $(addsuffix .o, $(basename $(lib_src)))
 dep     += $(addsuffix .d, $(basename $(lib_src)))
 
-tester_src = $(wildcard test/*.cc test/*.cu)
+cuda_src = $(wildcard test/cuda/*.cu)
+hip_src  = $(patsubst test/cuda/%.cu,test/hip/%.hip.cc,$(cuda_src))
+
+tester_src = $(wildcard test/*.cc)
+
+ifeq ($(cuda),1)
+    tester_src += $(cuda_src)
+endif
+
+ifeq ($(hip),1)
+    tester_src += $(hip_src)
+endif
+
 tester_obj = $(addsuffix .o, $(basename $(tester_src)))
 dep       += $(addsuffix .d, $(basename $(tester_src)))
 
@@ -129,6 +158,7 @@ src/version.o: .id
 # BLAS++ specific flags and libraries
 CXXFLAGS += -I./include
 NVCCFLAGS += -I./include
+HIPCCFLAGS += -I./include
 
 # additional flags and libraries for testers
 $(tester_obj): CXXFLAGS += -I$(testsweeper_dir)
@@ -163,6 +193,59 @@ uninstall:
 	$(RM) -r $(DESTDIR)$(abs_prefix)/include/blas
 	$(RM) $(DESTDIR)$(abs_prefix)/lib$(LIB_SUFFIX)/libblaspp.*
 	$(RM) $(DESTDIR)$(abs_prefix)/lib$(LIB_SUFFIX)/pkgconfig/blaspp.pc
+
+#-------------------------------------------------------------------------------
+# HIP sources converted from CUDA sources.
+
+# if_md5_outdated applies the given build rule ($1) only if the md5 sums
+# of the target's dependency ($<) doesn't match that stored in the
+# target's dep file ($@.dep). If the target ($@) is already up-to-date
+# based on md5 sums, its timestamp is updated so make will recognize it
+# as up-to-date. Otherwise, the target is built and its dep file
+# updated. Instead of depending on the src file, the target depends on
+# the md5 file of the src file. This can be adapted for multiple dependencies.
+# Example usage:
+#
+# %: %.c.md5
+#     ${call if_md5_outdated,\
+#            gcc -o $@ ${basename $<}}
+#
+define if_md5_outdated
+    if [ -e $@ ] && diff $< $@.dep > /dev/null 2>&1; then \
+        echo "  make: '$@' is up-to-date based on md5sum."; \
+        echo "  touch $@"; \
+                touch $@; \
+    else \
+        echo "  make: '$@' is out-of-date based on md5sum."; \
+        echo "  ${strip $1}"; \
+        $1; \
+        cp $< $@.dep; \
+    fi
+endef
+
+# From GNU manual: Commas ... cannot appear in an argument as written.
+# The[y] can be put into the argument value by variable substitution.
+comma := ,
+
+# Convert CUDA => HIP code.
+# Explicitly mention ${hip_src}, ${hip_hdr}, ${md5_files}
+# to prevent them from being intermediate files,
+# so they are _always_ generated and never removed.
+# Perl updates includes and removes excess spaces that fail style hook.
+${hip_src}: test/hip/%.hip.cc: test/cuda/%.cu.md5 | test/hip
+	@${call if_md5_outdated, \
+	        ${hipify} ${basename $<} > $@; \
+	        perl -pi -e 's/\.cuh/.hip.hh/g; s/ +(${comma}|;|$$)/$$1/g;' $@}
+
+hipify: ${hip_src}
+
+md5_files := ${addsuffix .md5, ${cuda_src}}
+
+${md5_files}: %.md5: %
+	${md5sum} $< > $@
+
+test/hip:
+	mkdir -p $@
 
 #-------------------------------------------------------------------------------
 # if re-configured, recompile everything
@@ -292,6 +375,10 @@ hooks: ${hooks}
 		cp $< $@ ; \
 	fi
 
+# .hip.cc rule before .cc rule.
+%.hip.o: %.hip.cc
+	$(HIPCC) $(HIPCCFLAGS) -c $< -o $@
+
 %.o: %.cc
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
@@ -341,6 +428,24 @@ echo:
 	@echo "tester        = $(tester)"
 	@echo
 	@echo "dep           = $(dep)"
+	@echo
+	@echo "---------- CUDA options"
+	@echo "cuda          = '$(cuda)'"
+	@echo "NVCC          = $(NVCC)"
+	@echo "NVCC_which    = $(NVCC_which)"
+	@echo "CUDA_PATH     = $(CUDA_PATH)"
+	@echo "NVCCFLAGS     = $(NVCCFLAGS)"
+	@echo
+	@echo "---------- HIP options"
+	@echo "hip           = '$(hip)'"
+	@echo "HIPCC         = $(HIPCC)"
+	@echo "HIPCC_which   = $(HIPCC_which)"
+	@echo "ROCM_PATH     = $(ROCM_PATH)"
+	@echo "HIPCCFLAGS    = $(HIPCCFLAGS)"
+	@echo "hipify        = ${hipify}"
+	@echo "cuda_src      = ${cuda_src}"
+	@echo "hip_src       = ${hip_src}"
+	@echo "md5_files     = $(md5_files)"
 	@echo
 	@echo "testsweeper_dir   = $(testsweeper_dir)"
 	@echo "testsweeper_src   = $(testsweeper_src)"

@@ -752,6 +752,7 @@ def gpu_blas():
         try:
             cublas_library()
             gpu_blas_found = True
+            environ.merge( {'gpu_backend' : 'cuda' } )
         except Error as ex:
             if (gpu_backend == 'cuda'):
                 raise ex  # fatal
@@ -763,6 +764,7 @@ def gpu_blas():
         try:
             rocblas_library()
             gpu_blas_found = True
+            environ.merge( {'gpu_backend' : 'hip' } )
         except Error as ex:
             if (gpu_backend in ('hip', 'rocm')):
                 raise ex  # fatal
@@ -773,6 +775,7 @@ def gpu_blas():
     if (not gpu_blas_found and test_sycl):
         try:
             sycl_onemkl_library()
+            environ.merge( {'gpu_backend' : 'sycl' } )
             gpu_blas_found = True
         except Error as ex:
             if (gpu_backend == 'sycl'):

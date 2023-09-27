@@ -5,17 +5,19 @@
 # CPATH: @CPATH@
 # LIBRARY_PATH: @LIBRARY_PATH@
 #
-CXX      = @CXX@
+CXX         = @CXX@
 
-CXXFLAGS = @CXXFLAGS@
+CXXFLAGS    = @CXXFLAGS@
 
 # see include/blas/defines.h
 # @DEFINES@
 
-LDFLAGS  = @LDFLAGS@
+LDFLAGS     = @LDFLAGS@
 
-LIBS     = @LIBS@
+LIBS        = @LIBS@
 
-prefix   = @prefix@
+prefix      = @prefix@
 
-static   = @static@
+static      = @static@
+
+gpu_backend = @gpu_backend@
