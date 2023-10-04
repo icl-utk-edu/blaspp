@@ -487,6 +487,31 @@ void copy(
 void gemm(
     blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
+    float16 alpha,
+    float16 const *dA, device_blas_int ldda,
+    float16 const *dB, device_blas_int lddb,
+    float16 beta,
+    float16       *dC, device_blas_int lddc,
+    blas::Queue& queue )
+{
+    // Cast from blas::float16 to rocblas_half
+    rocblas_half alpha_ = *(rocblas_half*)&alpha;
+    rocblas_half beta_  = *(rocblas_half*)&beta;
+
+    blas_dev_call(
+        rocblas_hgemm(
+            queue.handle(),
+            op2rocblas(transA), op2rocblas(transB),
+            m, n, k,
+            &alpha_, (rocblas_half const*)dA, ldda,
+                     (rocblas_half const*)dB, lddb,
+            &beta_,  (rocblas_half*)dC, lddc ) );
+}
+//
+//------------------------------------------------------------------------------
+void gemm(
+    blas::Op transA, blas::Op transB,
+    device_blas_int m, device_blas_int n, device_blas_int k,
     float alpha,
     float const *dA, device_blas_int ldda,
     float const *dB, device_blas_int lddb,
