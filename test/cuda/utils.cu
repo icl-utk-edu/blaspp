@@ -1,4 +1,4 @@
-#include "../utils.cuh"
+#include "../utils.hh"
 
 //------------------------------------------------------------------------------
 /// @return ceil( x / y ), for integer type T.
@@ -33,7 +33,11 @@ inline void copy_scalar( float src, __half& dst )
 __host__ __device__
 inline void copy_scalar( double src, __half& dst )
 {
+#ifdef __NVCC__
     dst = __double2half( src );
+#else
+    dst = __float2half( (float)src );
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -132,21 +136,35 @@ void copy_matrix(
 
 //------------------------------------------------------------------------------
 // Explicit instantiations.
-template
-void copy_matrix<float, half>(
+template <>
+void copy_matrix<float, float16>(
     int m, int n,
     float const* src, int ld_src,
-    half*        dst, int ld_dst,
-    blas::Queue &queue);
+    float16*     dst, int ld_dst,
+    blas::Queue &queue)
+{
+    copy_matrix(
+        m, n,
+                  src, ld_src,
+        (__half*) dst, ld_dst,
+        queue );
+}
 
-template
-void copy_matrix<half, float>(
+template <>
+void copy_matrix<float16, float>(
     int m, int n,
-    half const* src, int ld_src,
-    float*      dst, int ld_dst,
-    blas::Queue &queue);
+    float16 const* src, int ld_src,
+    float*         dst, int ld_dst,
+    blas::Queue &queue)
+{
+    copy_matrix(
+        m, n,
+        (__half*) src, ld_src,
+                  dst, ld_dst,
+        queue );
+}
 
-template
+template <>
 void copy_matrix<float, float>(
     int m, int n,
     float const* src, int ld_src,

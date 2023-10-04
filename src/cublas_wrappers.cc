@@ -482,6 +482,30 @@ void copy(
 void gemm(
     blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
+    float16 alpha,
+    float16 const *dA, device_blas_int ldda,
+    float16 const *dB, device_blas_int lddb,
+    float16 beta,
+    float16       *dC, device_blas_int lddc,
+    blas::Queue& queue )
+{
+    __half alpha_ = __half( alpha );
+    __half beta_  = __half( beta );
+
+    blas_dev_call(
+        cublasHgemm(
+            queue.handle(),
+            op2cublas(transA), op2cublas(transB),
+            m, n, k,
+            &alpha_, (__half const*)dA, ldda,
+                     (__half const*)dB, lddb,
+            &beta_,  (__half*)dC, lddc ) );
+}
+
+//------------------------------------------------------------------------------
+void gemm(
+    blas::Op transA, blas::Op transB,
+    device_blas_int m, device_blas_int n, device_blas_int k,
     float alpha,
     float const *dA, device_blas_int ldda,
     float const *dB, device_blas_int lddb,
@@ -564,27 +588,6 @@ void gemm(
             (cuDoubleComplex*) dB, lddb,
             (cuDoubleComplex*) &beta,
             (cuDoubleComplex*) dC, lddc ) );
-}
-
-//------------------------------------------------------------------------------
-void gemm(
-    blas::Op transA, blas::Op transB,
-    device_blas_int m, device_blas_int n, device_blas_int k,
-    half alpha,
-    half const *dA, device_blas_int ldda,
-    half const *dB, device_blas_int lddb,
-    half beta,
-    half       *dC, device_blas_int lddc,
-    blas::Queue& queue )
-{
-    blas_dev_call(
-        cublasHgemm(
-            queue.handle(),
-            op2cublas(transA), op2cublas(transB),
-            m, n, k,
-            &alpha, dA, ldda,
-                    dB, lddb,
-            &beta,  dC, lddc ) );
 }
 
 //------------------------------------------------------------------------------

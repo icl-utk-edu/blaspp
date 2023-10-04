@@ -202,7 +202,7 @@ void test_gemm_device_work( Params& params, bool run )
 //
 // -----------------------------------------------------------------------------
 template <>
-void test_gemm_device_work<half,half,half>( Params& params, bool run )
+void test_gemm_device_work<blas::float16,blas::float16,blas::float16>( Params& params, bool run )
 {
     using namespace testsweeper;
     using std::real;
@@ -210,7 +210,7 @@ void test_gemm_device_work<half,half,half>( Params& params, bool run )
     using blas::Op;
     using blas::Layout;
     using scalar_hi = float;
-    using scalar_lo = half;
+    using scalar_lo = blas::float16;
     using real_t   = blas::real_type< scalar_hi >;
 
     // get & mark input values
@@ -257,9 +257,9 @@ void test_gemm_device_work<half,half,half>( Params& params, bool run )
     size_t size_A = size_t(lda)*An;
     size_t size_B = size_t(ldb)*Bn;
     size_t size_C = size_t(ldc)*Cn;
-    half* A_lo   = new half[ size_A ];
-    half* B_lo   = new half[ size_B ];
-    half* C_lo   = new half[ size_C ];
+    blas::float16* A_lo   = new blas::float16[ size_A ];
+    blas::float16* B_lo   = new blas::float16[ size_B ];
+    blas::float16* C_lo   = new blas::float16[ size_C ];
     float* A_hi  = new float[ size_A ];
     float* B_hi  = new float[ size_B ];
     float* C_hi  = new float[ size_C ];
@@ -267,16 +267,16 @@ void test_gemm_device_work<half,half,half>( Params& params, bool run )
 
     // device specifics
     blas::Queue queue( device );
-    half* dA_lo;
-    half* dB_lo;
-    half* dC_lo;
+    blas::float16* dA_lo;
+    blas::float16* dB_lo;
+    blas::float16* dC_lo;
     float* dA_hi;
     float* dB_hi;
     float* dC_hi;
 
-    dA_lo = blas::device_malloc<half>( size_A, queue );
-    dB_lo = blas::device_malloc<half>( size_B, queue );
-    dC_lo = blas::device_malloc<half>( size_C, queue );
+    dA_lo = blas::device_malloc<blas::float16>( size_A, queue );
+    dB_lo = blas::device_malloc<blas::float16>( size_B, queue );
+    dC_lo = blas::device_malloc<blas::float16>( size_C, queue );
     dA_hi = blas::device_malloc<float>( size_A, queue );
     dB_hi = blas::device_malloc<float>( size_B, queue );
     dC_hi = blas::device_malloc<float>( size_C, queue );
@@ -292,6 +292,7 @@ void test_gemm_device_work<half,half,half>( Params& params, bool run )
     blas::device_copy_matrix(Bm, Bn, B_hi, ldb, dB_hi, ldb, queue);
     blas::device_copy_matrix(Cm, Cn, C_hi, ldc, dC_hi, ldc, queue);
 
+    // Convert float->float16
     blas::copy_matrix( Am, An, dA_hi, lda, dA_lo, lda, queue );
     blas::copy_matrix( Bm, Bn, dB_hi, ldb, dB_lo, ldb, queue );
     blas::copy_matrix( Cm, Cn, dC_hi, ldc, dC_lo, ldc, queue );
@@ -319,13 +320,13 @@ void test_gemm_device_work<half,half,half>( Params& params, bool run )
     assert_throw( blas::gemm( Layout::RowMajor, Op::Trans,     Op::NoTrans, m, n, k, alpha, dA_hi, m-1, dB_hi, ldb, beta, dC_hi, ldc, queue ), blas::Error );
     assert_throw( blas::gemm( Layout::RowMajor, Op::ConjTrans, Op::NoTrans, m, n, k, alpha, dA_hi, m-1, dB_hi, ldb, beta, dC_hi, ldc, queue ), blas::Error );
 
-    assert_throw( blas::gemm( Layout::ColMajor, Op::NoTrans, Op::NoTrans,   m, n, k, alpha, dA_hi, lda, B_hi, k-1, beta, dC_hi, ldc, queue ), blas::Error );
-    assert_throw( blas::gemm( Layout::ColMajor, Op::NoTrans, Op::Trans,     m, n, k, alpha, dA_hi, lda, B_hi, n-1, beta, dC_hi, ldc, queue ), blas::Error );
-    assert_throw( blas::gemm( Layout::ColMajor, Op::NoTrans, Op::ConjTrans, m, n, k, alpha, dA_hi, lda, B_hi, n-1, beta, dC_hi, ldc, queue ), blas::Error );
+    assert_throw( blas::gemm( Layout::ColMajor, Op::NoTrans, Op::NoTrans,   m, n, k, alpha, dA_hi, lda, dB_hi, k-1, beta, dC_hi, ldc, queue ), blas::Error );
+    assert_throw( blas::gemm( Layout::ColMajor, Op::NoTrans, Op::Trans,     m, n, k, alpha, dA_hi, lda, dB_hi, n-1, beta, dC_hi, ldc, queue ), blas::Error );
+    assert_throw( blas::gemm( Layout::ColMajor, Op::NoTrans, Op::ConjTrans, m, n, k, alpha, dA_hi, lda, dB_hi, n-1, beta, dC_hi, ldc, queue ), blas::Error );
 
-    assert_throw( blas::gemm( Layout::RowMajor, Op::NoTrans, Op::NoTrans,   m, n, k, alpha, dA_hi, lda, B_hi, n-1, beta, dC_hi, ldc, queue ), blas::Error );
-    assert_throw( blas::gemm( Layout::RowMajor, Op::NoTrans, Op::Trans,     m, n, k, alpha, dA_hi, lda, B_hi, k-1, beta, dC_hi, ldc, queue ), blas::Error );
-    assert_throw( blas::gemm( Layout::RowMajor, Op::NoTrans, Op::ConjTrans, m, n, k, alpha, dA_hi, lda, B_hi, k-1, beta, dC_hi, ldc, queue ), blas::Error );
+    assert_throw( blas::gemm( Layout::RowMajor, Op::NoTrans, Op::NoTrans,   m, n, k, alpha, dA_hi, lda, dB_hi, n-1, beta, dC_hi, ldc, queue ), blas::Error );
+    assert_throw( blas::gemm( Layout::RowMajor, Op::NoTrans, Op::Trans,     m, n, k, alpha, dA_hi, lda, dB_hi, k-1, beta, dC_hi, ldc, queue ), blas::Error );
+    assert_throw( blas::gemm( Layout::RowMajor, Op::NoTrans, Op::ConjTrans, m, n, k, alpha, dA_hi, lda, dB_hi, k-1, beta, dC_hi, ldc, queue ), blas::Error );
 
     assert_throw( blas::gemm( Layout::ColMajor, transA, transB, m, n, k, alpha, dA_hi, lda, dB_hi, ldb, beta, dC_hi, m-1, queue ), blas::Error );
     assert_throw( blas::gemm( Layout::RowMajor, transA, transB, m, n, k, alpha, dA_hi, lda, dB_hi, ldb, beta, dC_hi, n-1, queue ), blas::Error );
@@ -360,6 +361,7 @@ void test_gemm_device_work<half,half,half>( Params& params, bool run )
     params.time()   = time;
     params.gflops() = gflop / time;
 
+    // Convert float16->float
     blas::copy_matrix( Cm, Cn, dC_lo, ldc, dC_hi, ldc, queue );
     blas::device_copy_matrix(Cm, Cn, dC_hi, ldc, C_hi, ldc, queue);
     queue.sync();
@@ -388,7 +390,7 @@ void test_gemm_device_work<half,half,half>( Params& params, bool run )
         // check error compared to reference
         real_t error;
         bool okay;
-        check_gemm<float, half>( Cm, Cn, k, alpha, beta, Anorm, Bnorm, Cnorm,
+        check_gemm<float, blas::float16>( Cm, Cn, k, alpha, beta, Anorm, Bnorm, Cnorm,
                     Cref, ldc, C_hi, ldc, verbose, &error, &okay );
         params.error() = error;
         params.okay() = okay;
@@ -415,7 +417,7 @@ void test_gemm_device( Params& params, bool run )
 {
     switch (params.datatype()) {
         case testsweeper::DataType::Half:
-            test_gemm_device_work< half, half, half >( params, run );
+            test_gemm_device_work< blas::float16, blas::float16, blas::float16 >( params, run );
             break;
 
         case testsweeper::DataType::Single:

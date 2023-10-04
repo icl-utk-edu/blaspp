@@ -104,18 +104,18 @@ void gemm(
 // High-level overloaded wrappers call mid-level templated wrapper.
 
 //------------------------------------------------------------------------------
-/// GPU device, half version.
+/// GPU device, float16 version.
 /// @ingroup gemm
 void gemm(
     blas::Layout layout,
     blas::Op transA,
     blas::Op transB,
     int64_t m, int64_t n, int64_t k,
-    half alpha,
-    half const* A, int64_t lda,
-    half const* B, int64_t ldb,
-    half beta,
-    half*       C, int64_t ldc,
+    float16 alpha,
+    float16 const* A, int64_t lda,
+    float16 const* B, int64_t ldb,
+    float16 beta,
+    float16*       C, int64_t ldc,
     blas::Queue& queue )
 {
     impl::gemm( layout, transA, transB, m, n, k,

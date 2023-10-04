@@ -14,11 +14,11 @@
 #include <limits>
 
 namespace std {
-  template <> class numeric_limits<half> {
+  template <> class numeric_limits<blas::float16> {
   public:
-    static half epsilon() {
-      // Value coming from MAGMA testing/testing_hgemm.cpp
-      return half( 0.00097656 );
+    static blas::float16 epsilon() {
+        // Value coming from MAGMA testing/testing_hgemm.cpp
+        return blas::float16( 0.00097656 );
     }
   };
 }; // namespace std

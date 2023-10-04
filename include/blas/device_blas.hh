@@ -212,6 +212,18 @@ void gemm(
     blas::Op transA,
     blas::Op transB,
     int64_t m, int64_t n, int64_t k,
+    float16 alpha,
+    float16 const* A, int64_t lda,
+    float16 const* B, int64_t ldb,
+    float16 beta,
+    float16*       C, int64_t ldc,
+    blas::Queue& queue );
+
+void gemm(
+    blas::Layout layout,
+    blas::Op transA,
+    blas::Op transB,
+    int64_t m, int64_t n, int64_t k,
     float alpha,
     float const* A, int64_t lda,
     float const* B, int64_t ldb,
@@ -253,18 +265,6 @@ void gemm(
     std::complex<double> const* B, int64_t ldb,
     std::complex<double> beta,
     std::complex<double>*       C, int64_t ldc,
-    blas::Queue& queue );
-
-void gemm(
-    blas::Layout layout,
-    blas::Op transA,
-    blas::Op transB,
-    int64_t m, int64_t n, int64_t k,
-    half alpha,
-    half const* A, int64_t lda,
-    half const* B, int64_t ldb,
-    half beta,
-    half*       C, int64_t ldc,
     blas::Queue& queue );
 
 //------------------------------------------------------------------------------
