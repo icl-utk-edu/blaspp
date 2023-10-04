@@ -1,6 +1,12 @@
 #include "hip/hip_runtime.h"
 #include "../utils.hh"
 
+#if defined(BLAS_HAVE_CUBLAS)
+    #include <hip/hip_fp16.h>
+#elif defined(BLAS_HAVE_ROCBLAS)
+    #include <hip/hip_fp16.h>
+#endif
+
 //------------------------------------------------------------------------------
 /// @return ceil( x / y ), for integer type T.
 template <typename T>

@@ -10,7 +10,7 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-#include "utils.cuh"
+#include "utils.hh"
 
 // -----------------------------------------------------------------------------
 template <typename TA, typename TB, typename TC>
