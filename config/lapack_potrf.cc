@@ -8,16 +8,27 @@
 
 #include "config.h"
 
-#define LAPACK_dpotrf FORTRAN_NAME( dpotrf, DPOTRF )
+#define LAPACK_dpotrf_base FORTRAN_NAME( dpotrf, DPOTRF )
 
 #ifdef __cplusplus
 extern "C"
 #endif
-void LAPACK_dpotrf(
+void LAPACK_dpotrf_base(
     const char* uplo, const lapack_int* n,
     double* A, const lapack_int* lda,
-    lapack_int* info );
+    lapack_int* info
+    #ifdef LAPACK_FORTRAN_STRLEN_END
+    , size_t uplo_len
+    #endif
+    );
 
+#ifdef LAPACK_FORTRAN_STRLEN_END
+    #define LAPACK_dpotrf( ... ) LAPACK_dpotrf_base( __VA_ARGS__, 1 )
+#else
+    #define LAPACK_dpotrf( ... ) LAPACK_dpotrf_base( __VA_ARGS__ )
+#endif
+
+//------------------------------------------------------------------------------
 int main()
 {
     // If lapack_int is 32-bit, but LAPACK actually interprets it as 64-bit,
