@@ -15,6 +15,7 @@ template <typename T>
 void test_asum_work( Params& params, bool run )
 {
     using namespace testsweeper;
+    using std::abs;
     using real_t   = blas::real_type< T >;
 
     // get & mark input values
@@ -92,7 +93,7 @@ void test_asum_work( Params& params, bool run )
 
         // relative forward error
         // note: using sqrt(n) here gives failures
-        real_t error = std::abs( (ref - result) / (n * ref) );
+        real_t error = abs( (ref - result) / (n * ref) );
 
         // complex needs extra factor; see Higham, 2002, sec. 3.6.
         if (blas::is_complex<T>::value) {

@@ -16,6 +16,7 @@ void test_nrm2_work( Params& params, bool run )
     using namespace testsweeper;
     typedef T scalar_t;
     using real_t   = blas::real_type< T >;
+    using std::abs;
 
     // get & mark input values
     int64_t n       = params.dim.n();
@@ -91,7 +92,7 @@ void test_nrm2_work( Params& params, bool run )
         }
 
         // relative forward error
-        real_t error = std::abs( (ref - result) / (sqrt(n+1) * ref) );
+        real_t error = abs( (ref - result) / (sqrt(n+1) * ref) );
 
         // complex needs extra factor; see Higham, 2002, sec. 3.6.
         if (blas::is_complex<scalar_t>::value) {

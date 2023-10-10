@@ -16,6 +16,7 @@ void test_nrm2_device_work( Params& params, bool run )
     using namespace testsweeper;
     using scalar_t = blas::scalar_type<Tx>;
     using real_t   = blas::real_type<scalar_t>;
+    using std::abs;
 
     // get & mark input values
     char mode       = params.pointer_mode();
@@ -128,7 +129,7 @@ void test_nrm2_device_work( Params& params, bool run )
         }
 
         // relative forward error:
-        real_t error = std::abs( (result_cblas - result_host)
+        real_t error = abs( (result_cblas - result_host)
                            / (sqrt(n+1) * result_cblas) );
         params.error() = error;
 

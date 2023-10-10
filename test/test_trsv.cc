@@ -23,6 +23,7 @@ void test_trsv_work( Params& params, bool run )
     using blas::Diag;
     using scalar_t = blas::scalar_type< TA, TX >;
     using real_t   = blas::real_type< scalar_t >;
+    using std::swap;
 
     // get & mark input values
     blas::Layout layout = params.layout();
@@ -95,7 +96,7 @@ void test_trsv_work( Params& params, bool run )
     if (layout == Layout::RowMajor) {
         for (int64_t j = 0; j < n; ++j) {
             for (int64_t i = 0; i < j; ++i) {
-                std::swap( A[ i + j*lda ], A[ j + i*lda ] );
+                swap( A[ i + j*lda ], A[ j + i*lda ] );
             }
         }
     }

@@ -177,13 +177,15 @@ private:
 template <typename T>
 T abs1( T x )
 {
-    return std::abs( x );
+    using std::abs;
+    return abs( x );
 }
 
 template <typename T>
 T abs1( std::complex<T> x )
 {
-    return std::abs( real(x) ) + std::abs( imag(x) );
+    using std::abs;
+    return abs( real( x ) ) + abs( imag( x ) );
 }
 
 // -----------------------------------------------------------------------------

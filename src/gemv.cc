@@ -107,6 +107,8 @@ void gemv(
     scalar_t beta,
     scalar_t*       y, int64_t incy )
 {
+    using std::swap;
+
     // check arguments
     blas_error_if( layout != Layout::ColMajor &&
                    layout != Layout::RowMajor );
@@ -158,7 +160,7 @@ void gemv(
             }
         }
         // A => A^T; A^T => A; A^H => A + conj
-        std::swap( m_, n_ );
+        swap( m_, n_ );
         trans2 = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
     }
     char trans_ = op2char( trans2 );

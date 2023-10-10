@@ -108,6 +108,8 @@ void trmm(
     scalar_t const* A, int64_t lda,
     scalar_t*       B, int64_t ldb )
 {
+    using std::swap;
+
     // check arguments
     blas_error_if( layout != Layout::ColMajor &&
                    layout != Layout::RowMajor );
@@ -143,7 +145,7 @@ void trmm(
         // swap lower <=> upper, left <=> right, m <=> n
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
         side = (side == Side::Left ? Side::Right : Side::Left);
-        std::swap( m_, n_ );
+        swap( m_, n_ );
     }
     char side_  = side2char( side );
     char uplo_  = uplo2char( uplo );

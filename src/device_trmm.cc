@@ -35,6 +35,8 @@ void trmm(
 #ifndef BLAS_HAVE_DEVICE
     throw blas::Error( "device BLAS not available", __func__ );
 #else
+    using std::swap;
+
     // check arguments
     blas_error_if( layout != Layout::ColMajor &&
                    layout != Layout::RowMajor );
@@ -70,7 +72,7 @@ void trmm(
         // swap lower <=> upper, left <=> right, m <=> n
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
         side = (side == Side::Left ? Side::Right : Side::Left);
-        std::swap( m_, n_ );
+        swap( m_, n_ );
     }
 
     blas::internal_set_device( queue.device() );

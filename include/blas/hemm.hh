@@ -93,7 +93,8 @@ void hemm(
     scalar_type<TA, TB, TC> beta,
     TC       *C, int64_t ldc )
 {
-    typedef blas::scalar_type<TA, TB, TC> scalar_t;
+    using std::swap;
+    using scalar_t = blas::scalar_type<TA, TB, TC>;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]
     #define B(i_, j_) B[ (i_) + (j_)*ldb ]
@@ -123,7 +124,7 @@ void hemm(
             uplo = Uplo::Upper;
         else if (uplo == Uplo::Upper)
             uplo = Uplo::Lower;
-        std::swap( m, n );
+        swap( m, n );
     }
 
     // check remaining arguments

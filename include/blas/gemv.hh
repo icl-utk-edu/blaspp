@@ -86,7 +86,8 @@ void gemv(
     blas::scalar_type<TA, TX, TY> beta,
     TY *y, int64_t incy )
 {
-    typedef blas::scalar_type<TA, TX, TY> scalar_t;
+    using std::swap;
+    using scalar_t = blas::scalar_type<TA, TX, TY>;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]
 
@@ -118,7 +119,7 @@ void gemv(
     bool doconj = false;
     if (layout == Layout::RowMajor) {
         // A => A^T; A^T => A; A^H => A & conj
-        std::swap( m, n );
+        swap( m, n );
         if (trans == Op::NoTrans) {
             trans = Op::Trans;
         }

@@ -22,6 +22,7 @@ void test_trsm_work( Params& params, bool run )
     using blas::Diag;
     using scalar_t = blas::scalar_type< TA, TB >;
     using real_t   = blas::real_type< scalar_t >;
+    using std::swap;
 
     // get & mark input values
     blas::Layout layout = params.layout();
@@ -49,7 +50,7 @@ void test_trsm_work( Params& params, bool run )
     int64_t Bm = m;
     int64_t Bn = n;
     if (layout == Layout::RowMajor)
-        std::swap( Bm, Bn );
+        swap( Bm, Bn );
     int64_t lda = roundup( Am, align );
     int64_t ldb = roundup( Bm, align );
     size_t size_A = size_t(lda)*Am;
@@ -96,7 +97,7 @@ void test_trsm_work( Params& params, bool run )
     if (layout == Layout::RowMajor) {
         for (int64_t j = 0; j < Am; ++j) {
             for (int64_t i = 0; i < j; ++i) {
-                std::swap( A[ i + j*lda ], A[ j + i*lda ] );
+                swap( A[ i + j*lda ], A[ j + i*lda ] );
             }
         }
     }

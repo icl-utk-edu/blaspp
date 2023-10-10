@@ -15,6 +15,7 @@ void test_iamax_work( Params& params, bool run )
 {
     using namespace testsweeper;
     using real_t   = blas::real_type< T >;
+    using std::abs;
 
     // get & mark input values
     int64_t n       = params.dim.n();
@@ -90,7 +91,7 @@ void test_iamax_work( Params& params, bool run )
         }
 
         // error = |ref - result|
-        real_t error = std::abs( ref - result );
+        real_t error = abs( ref - result );
         params.error() = error;
 
         // iamax must be exact!

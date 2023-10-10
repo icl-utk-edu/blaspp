@@ -14,6 +14,8 @@ template <typename T>
 void test_scal_work( Params& params, bool run )
 {
     using namespace testsweeper;
+    using blas::max;
+    using std::abs;
     using std::real;
     using std::imag;
     using real_t = blas::real_type< T >;
@@ -101,7 +103,7 @@ void test_scal_work( Params& params, bool run )
         real_t error = 0;
         int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
         for (int64_t i = 0; i < n; ++i) {
-            error = std::max( error, std::abs( (xref[ix] - x[ix]) / xref[ix] ));
+            error = max( error, abs( (xref[ix] - x[ix]) / xref[ix] ));
             ix += incx;
         }
         params.error() = error;

@@ -13,6 +13,7 @@ template <typename T>
 void test_rotmg_work( Params& params, bool run )
 {
     using namespace testsweeper;
+    using std::abs;
     using std::real;
     using std::imag;
     using real_t   = blas::real_type< T >;
@@ -83,10 +84,10 @@ void test_rotmg_work( Params& params, bool run )
         int64_t ips = cblas_iamax( 5*n, &ps_ref[0], 1 );
 
         real_t error = blas::max(
-            std::abs( d1_ref[ id1 ] ),
-            std::abs( d2_ref[ id2 ] ),
-            std::abs( x1_ref[ ix1 ] ),
-            std::abs( ps_ref[ ips ] )
+            abs( d1_ref[ id1 ] ),
+            abs( d2_ref[ id2 ] ),
+            abs( x1_ref[ ix1 ] ),
+            abs( ps_ref[ ips ] )
         );
 
         // error is normally 0, but allow for some rounding just in case.

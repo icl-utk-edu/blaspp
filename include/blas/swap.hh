@@ -42,6 +42,8 @@ void swap(
     TX *x, int64_t incx,
     TY *y, int64_t incy )
 {
+    using std::swap;
+
     // check arguments
     blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
     blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
@@ -50,7 +52,7 @@ void swap(
     if (incx == 1 && incy == 1) {
         // unit stride
         for (int64_t i = 0; i < n; ++i) {
-            std::swap( x[i], y[i] );
+            swap( x[i], y[i] );
         }
     }
     else {
@@ -58,7 +60,7 @@ void swap(
         int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
         int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
         for (int64_t i = 0; i < n; ++i) {
-            std::swap( x[ix], y[iy] );
+            swap( x[ix], y[iy] );
             ix += incx;
             iy += incy;
         }

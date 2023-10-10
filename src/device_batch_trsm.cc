@@ -38,6 +38,8 @@ void trsm(
 #ifndef BLAS_HAVE_DEVICE
     throw blas::Error( "device BLAS not available", __func__ );
 #else
+    using std::swap;
+
     blas_error_if( layout != Layout::ColMajor && layout != Layout::RowMajor );
     blas_error_if( batch_size < 0 );
     blas_error_if( info.size() != 0
@@ -81,7 +83,7 @@ void trsm(
             // swap lower <=> upper, left <=> right, m <=> n
             uplo_ = ( uplo_ == blas::Uplo::Lower ? blas::Uplo::Upper : blas::Uplo::Lower );
             side_ = ( side_ == blas::Side::Left ? blas::Side::Right : blas::Side::Left );
-            std::swap( m_, n_ );
+            swap( m_, n_ );
         }
 
         // trsm needs only 2 ptr arrays (A and B). Allocate usual

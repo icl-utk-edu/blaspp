@@ -34,7 +34,9 @@ void check_gemm(
     #define    C(i_, j_)    C[ (i_) + (j_)*ldc ]
     #define Cref(i_, j_) Cref[ (i_) + (j_)*ldcref ]
 
-    typedef blas::real_type<T> real_t;
+    using std::sqrt;
+    using std::abs;
+    using real_t = blas::real_type<T>;
 
     assert( m >= 0 );
     assert( n >= 0 );
@@ -52,15 +54,15 @@ void check_gemm(
     real_t work[1], Cout_norm;
     Cout_norm = lapack_lange( "f", m, n, C, ldc, work );
     error[0] = Cout_norm
-             / (sqrt(real_t(k)+2)*std::abs(alpha)*Anorm*Bnorm
-                 + 2*std::abs(beta)*Cnorm);
+             / (sqrt( real_t( k ) + 2 ) * abs( alpha ) * Anorm * Bnorm
+                 + 2 * abs( beta ) * Cnorm);
     if (verbose) {
         printf( "error: ||Cout||=%.2e / (sqrt(k=%lld + 2)"
                 " * |alpha|=%.2e * ||A||=%.2e * ||B||=%.2e"
                 " + 2 * |beta|=%.2e * ||C||=%.2e) = %.2e\n",
                 Cout_norm, llong( k ),
-                std::abs( alpha ), Anorm, Bnorm,
-                std::abs( beta ), Cnorm, error[0] );
+                abs( alpha ), Anorm, Bnorm,
+                abs( beta ), Cnorm, error[0] );
     }
 
     // complex needs extra factor; see Higham, 2002, sec. 3.6.
@@ -103,6 +105,8 @@ void check_herk(
     #define    C(i_, j_)    C[ (i_) + (j_)*ldc ]
     #define Cref(i_, j_) Cref[ (i_) + (j_)*ldcref ]
 
+    using std::sqrt;
+    using std::abs;
     typedef blas::real_type<T> real_t;
 
     assert( n >= 0 );
@@ -133,15 +137,15 @@ void check_herk(
     real_t work[1], Cout_norm;
     Cout_norm = lapack_lanhe( "f", uplo2str(uplo), n, C, ldc, work );
     error[0] = Cout_norm
-             / (sqrt(real_t(k)+2)*std::abs(alpha)*Anorm*Bnorm
-                 + 2*std::abs(beta)*Cnorm);
+             / (sqrt( real_t( k ) + 2 ) * abs( alpha ) * Anorm * Bnorm
+                 + 2 * abs( beta ) * Cnorm);
     if (verbose) {
         printf( "error: ||Cout||=%.2e / (sqrt(k=%lld + 2)"
                 " * |alpha|=%.2e * ||A||=%.2e * ||B||=%.2e"
                 " + 2 * |beta|=%.2e * ||C||=%.2e) = %.2e\n",
                 Cout_norm, llong( k ),
-                std::abs( alpha ), Anorm, Bnorm,
-                std::abs( beta ), Cnorm, error[0] );
+                abs( alpha ), Anorm, Bnorm,
+                abs( beta ), Cnorm, error[0] );
     }
 
     // complex needs extra factor; see Higham, 2002, sec. 3.6.

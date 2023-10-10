@@ -23,6 +23,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
     using blas::Diag;
     using scalar_t = blas::scalar_type< TA, TB >;
     using real_t   = blas::real_type< scalar_t >;
+    using std::swap;
 
     // get & mark input values
     blas::Layout layout = params.layout();
@@ -57,7 +58,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
     int64_t Bm    = m_;
     int64_t Bn    = n_;
     if (layout == Layout::RowMajor)
-        std::swap( Bm, Bn );
+        swap( Bm, Bn );
     int64_t lda_  = roundup( Am, align );
     int64_t ldb_  = roundup( Bm, align );
     size_t size_A = size_t(lda_)*Am;
@@ -139,7 +140,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
         for (size_t s = 0; s < batch; ++s) {
             for (int64_t j = 0; j < Am; ++j) {
                 for (int64_t i = 0; i < j; ++i) {
-                    std::swap( Aarray[s][ i + j*lda_ ], Aarray[s][ j + i*lda_ ] );
+                    swap( Aarray[s][ i + j*lda_ ], Aarray[s][ j + i*lda_ ] );
                 }
             }
         }

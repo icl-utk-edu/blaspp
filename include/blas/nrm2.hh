@@ -36,7 +36,8 @@ nrm2(
     int64_t n,
     T const * x, int64_t incx )
 {
-    typedef real_type<T> real_t;
+    using std::sqrt;
+    using real_t = real_type<T>;
 
     // check arguments
     blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
@@ -58,7 +59,7 @@ nrm2(
             ix += incx;
         }
     }
-    return std::sqrt( result );
+    return sqrt( result );
 }
 
 }  // namespace blas

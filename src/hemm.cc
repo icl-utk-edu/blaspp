@@ -78,6 +78,8 @@ void hemm(
     scalar_t beta,
     scalar_t*       C, int64_t ldc )
 {
+    using std::swap;
+
     // check arguments
     blas_error_if( layout != Layout::ColMajor &&
                    layout != Layout::RowMajor );
@@ -115,7 +117,7 @@ void hemm(
         // swap left <=> right, lower <=> upper, m <=> n
         side = (side == Side::Left  ? Side::Right : Side::Left);
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
-        std::swap( m_, n_ );
+        swap( m_, n_ );
     }
     char side_ = side2char( side );
     char uplo_ = uplo2char( uplo );

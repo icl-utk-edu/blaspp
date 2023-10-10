@@ -102,7 +102,8 @@ void trsm(
     TA const *A, int64_t lda,
     TB       *B, int64_t ldb )
 {
-    typedef blas::scalar_type<TA, TB> scalar_t;
+    using std::swap;
+    using scalar_t = blas::scalar_type<TA, TB>;
 
     #define A(i_, j_) A[ (i_) + (j_)*lda ]
     #define B(i_, j_) B[ (i_) + (j_)*ldb ]
@@ -134,7 +135,7 @@ void trsm(
             uplo = Uplo::Upper;
         else if (uplo == Uplo::Upper)
             uplo = Uplo::Lower;
-        std::swap( m, n );
+        swap( m, n );
     }
 
     // check remaining arguments

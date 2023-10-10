@@ -35,6 +35,8 @@ void hemm(
 #ifndef BLAS_HAVE_DEVICE
     throw blas::Error( "device BLAS not available", __func__ );
 #else
+    using std::swap;
+
     // check arguments
     blas_error_if( layout != Layout::ColMajor &&
                    layout != Layout::RowMajor );
@@ -72,7 +74,7 @@ void hemm(
         // swap left <=> right, lower <=> upper, m <=> n
         side = (side == Side::Left  ? Side::Right : Side::Left);
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
-        std::swap( m_, n_ );
+        swap( m_, n_ );
     }
 
     blas::internal_set_device( queue.device() );
