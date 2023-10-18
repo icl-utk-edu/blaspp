@@ -17,9 +17,9 @@
 #include <blas/defines.h>
 
 #ifdef BLAS_HAVE_CUBLAS
-  #include <cuda_fp16.h>
+#include <cuda_fp16.h>
 #elif defined(BLAS_HAVE_ROCBLAS)
-  #include <hip/hip_fp16.h>
+#include <hip/hip_fp16.h>
 #endif
 
 
@@ -27,12 +27,12 @@ namespace blas {
 
 class float16 {
 
-#if BLAS_USE_ISO_FLOAT16
+#ifdef BLAS_USE_ISO_FLOAT16
   using float16_ = _Float16;
 #elif defined(BLAS_HAVE_CUBLAS)
   using float16_ = __half;
 #elif defined(BLAS_HAVE_ROCBLAS)
-  using float16_ = rocblas__half;
+  using float16_ = rocblas_half;
 #else
   using float16_ = uint16_t;
 #endif
