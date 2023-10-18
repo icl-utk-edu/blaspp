@@ -77,7 +77,7 @@ def define( var, value=None ):
 
 # ------------------------------------------------------------------------------
 # variables to replace instead of appending/prepending
-replace_vars = ['CC', 'CXX', 'NVCC', 'FC', 'AR', 'RANLIB', 'prefix']
+replace_vars = ['CC', 'CXX', 'NVCC', 'FC', 'AR', 'RANLIB', 'prefix', 'gpu_backend']
 
 # ------------------------------------------------------------------------------
 # map file extensions to languages
