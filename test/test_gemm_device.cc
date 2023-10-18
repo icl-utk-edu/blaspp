@@ -357,7 +357,7 @@ void test_gemm_device_work<blas::float16,blas::float16,blas::float16>( Params& p
     queue.sync();
     time = get_wtime() - time;
 
-    double gflop = blas::Gflop< scalar_hi >::gemm( m, n, k );
+    double gflop = blas::Gflop< scalar_lo >::gemm( m, n, k );
     params.time()   = time;
     params.gflops() = gflop / time;
 
