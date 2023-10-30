@@ -986,7 +986,7 @@ void Queue::work_ensure_size( size_t lwork )
             device_free( work_, *this );
         }
         lwork_ = max( lwork, 3*MaxBatchChunk*sizeof(void*) );
-        work_ = device_malloc<char>( lwork, *this );
+        work_ = device_malloc<char>( lwork_, *this );
     }
 }
 
