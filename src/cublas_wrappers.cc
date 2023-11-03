@@ -57,6 +57,151 @@ cublasSideMode_t side2cublas(blas::Side side)
 
 //==============================================================================
 // Level 1 BLAS - Device Interfaces
+//---------------------------------------------------------
+//amax
+//---------------------------------------------------------
+void amax(    
+    device_blas_int n,
+    float const* dx, device_blas_int incdx,
+    device_blas_int *result, 
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasIsamax(queue.handle(), n, dx, incdx, result)
+    );
+}
+//---------------------------------------------------------
+void amax(    
+    device_blas_int n,
+    double const* dx, device_blas_int incdx,
+    device_blas_int *result, 
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasIdamax(queue.handle(), n, dx, incdx, result)
+    );
+}
+//---------------------------------------------------------
+void amax(    
+    device_blas_int n,
+    std::complex<float> const* dx, device_blas_int incdx,
+    device_blas_int *result, 
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasIcamax(queue.handle(), n, (const cuComplex*)dx, incdx, result)
+    );
+}
+//---------------------------------------------------------
+void amax(    
+    device_blas_int n,
+    std::complex<double> const* dx, device_blas_int incdx,
+    device_blas_int *result, 
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasIzamax(queue.handle(), n, (const cuDoubleComplex*)dx, incdx, result)
+    );
+}
+//----------------------------------------------------------
+
+
+//---------------------------------------------------------
+//amin
+//---------------------------------------------------------
+void amin(    
+    device_blas_int n,
+    float const* dx, device_blas_int incdx,
+    device_blas_int *result, 
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasIsamin(queue.handle(), n, dx, incdx, result)
+    );
+}
+//---------------------------------------------------------
+void amin(    
+    device_blas_int n,
+    double const* dx, device_blas_int incdx,
+    device_blas_int *result, 
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasIdamin(queue.handle(), n, dx, incdx, result)
+    );
+}
+//---------------------------------------------------------
+void amin(    
+    device_blas_int n,
+    std::complex<float> const* dx, device_blas_int incdx,
+    device_blas_int *result, 
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasIcamin(queue.handle(), n, (const cuComplex*)dx, incdx, result)
+    );
+}
+//---------------------------------------------------------
+void amin(    
+    device_blas_int n,
+    std::complex<double> const* dx, device_blas_int incdx,
+    device_blas_int *result, 
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasIzamin(queue.handle(), n, (const cuDoubleComplex*)dx, incdx, result)
+    );
+}
+//----------------------------------------------------------
+
+//---------------------------------------------------------
+//asum
+//---------------------------------------------------------
+void asum(    
+    device_blas_int n,
+    float const* dx, device_blas_int incdx,
+    float *result, 
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasSasum(queue.handle(), n, dx, incdx, result)
+    );
+}
+//---------------------------------------------------------
+void asum(    
+    device_blas_int n,
+    double const* dx, device_blas_int incdx,
+    double *result, 
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasDasum(queue.handle(), n, dx, incdx, result)
+    );
+}
+//---------------------------------------------------------
+void asum(    
+    device_blas_int n,
+    std::complex<float> const* dx, device_blas_int incdx,
+    float *result, 
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasScasum(queue.handle(), n, (const cuComplex*)dx, incdx, result)
+    );
+}
+//---------------------------------------------------------
+void asum(    
+    device_blas_int n,
+    std::complex<double> const* dx, device_blas_int incdx,
+    double *result, 
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasDzasum(queue.handle(), n, (const cuDoubleComplex*)dx, incdx, result)
+    );
+}
+
+
 
 //------------------------------------------------------------------------------
 // axpy

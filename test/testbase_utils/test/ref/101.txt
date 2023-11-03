@@ -1,0 +1,22 @@
+
+Error: --type: invalid value 'x'
+TestSweeper version NA, id NA
+input: ./tester --type 's,x,d' sort
+Usage: test [-h|--help]
+       test [-h|--help] routine
+       test [parameters] routine
+
+Parameters for sort:
+    --check          check the results; default y; valid: [ny]
+    --ref            run reference; sometimes check -> ref; default n; valid: [ny]
+    --tol            tolerance (e.g., error < tol*epsilon to pass); default 50
+    --repeat         times to repeat each test; default 1
+    --verbose        verbose level; default 0
+    --cache          total cache size, in MiB; default 20
+
+Parameters that take comma-separated list of values and may be repeated:
+    --type           One of: s, r32, single, float; d, r64, double; c, c32, complex<float>; z, c64, complex<double>; i, int, integer; default d
+    --nb             block size; default 32
+    --dim            m x n x k dimensions
+    --alpha          alpha value
+    --beta           beta value; default 2.72

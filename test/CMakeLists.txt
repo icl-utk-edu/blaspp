@@ -22,17 +22,22 @@ if (NOT TARGET testsweeper)
         message( "   ${blue}Found TestSweeper library: ${testsweeper_DIR}${plain}" )
         message( "" )
     else()
-        set( url "https://github.com/icl-utk-edu/testsweeper" )
-        set( tag "v2023.08.25" )
-        message( "" )
-        message( "---------- TestSweeper" )
-        message( STATUS "Fetching TestSweeper ${tag} from ${url}" )
-        include( FetchContent )
-        FetchContent_Declare( testsweeper GIT_REPOSITORY "${url}"
-                                          GIT_TAG "${tag}" )
-        FetchContent_MakeAvailable( testsweeper )
-        message( "---------- TestSweeper done" )
-        message( "" )
+    #     set( url "https://github.com/icl-utk-edu/testsweeper" )
+    #     set( tag "v2023.08.25" )
+    #     message( "" )
+    #     message( "---------- TestSweeper" )
+    #     message( STATUS "Fetching TestSweeper ${tag} from ${url}" )
+    #     include( FetchContent )
+    #     FetchContent_Declare( testsweeper GIT_REPOSITORY "${url}"
+    #                                       GIT_TAG "${tag}" )
+    #     FetchContent_MakeAvailable( testsweeper )
+    #     message( "---------- TestSweeper done" )
+    #     message( "" )
+    message( "---------- TestSweeper" )
+    add_subdirectory(testbase_utils)
+    message( "---------- TestSweeper done" )
+    message( "" )
+
     endif()
 else()
     message( "   ${blue}TestSweeper already included${plain}" )
@@ -102,6 +107,7 @@ add_executable(
     test_batch_syrk_device.cc
     test_batch_trmm_device.cc
     test_batch_trsm_device.cc
+    test_asum_device.cc
     test_axpy_device.cc
     test_dot_device.cc
     test_dotu_device.cc

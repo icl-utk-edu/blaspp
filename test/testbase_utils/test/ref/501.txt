@@ -1,0 +1,10 @@
+TestSweeper version NA, id NA
+input: ./tester --check n sort5
+                                                            SLATE        SLATE               LAPACK Reference             LAPACK          
+type   nb       m       n       k        alpha  beta        error    time (ms)      gflop/s         time (ms)  reference gflop/s  status  
+   d   32     100     100     100   3.14+1.41i  2.72           NA  -----------  -----------  ----------------  -----------------  no check  
+   d   32     200     200     200   3.14+1.41i  2.72           NA  -----------  -----------  ----------------  -----------------  no check  
+   d   32     300     300     300   3.14+1.41i  2.72           NA  -----------  -----------  ----------------  -----------------  no check  
+   d   32     400     400     400   3.14+1.41i  2.72           NA  -----------  -----------  ----------------  -----------------  no check  
+   d   32     500     500     500   3.14+1.41i  2.72           NA  -----------  -----------  ----------------  -----------------  no check  
+All tests passed.

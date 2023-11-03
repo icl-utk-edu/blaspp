@@ -24,6 +24,15 @@ inline device_blas_int to_device_blas_int_( int64_t x, const char* x_str )
     return device_blas_int( x );
 }
 
+inline device_blas_int* to_device_blas_intp_( int64_t* x, const char* x_str )
+{
+    if (sizeof(int64_t) > sizeof(device_blas_int)) {
+        blas_error_if_msg( std::abs( *x ) > std::numeric_limits<device_blas_int>::max(),
+                           "%s", x_str );
+    }
+    return reinterpret_cast<device_blas_int*>(x);
+}
+
 //----------------------------------------
 /// Convert int64_t to device_blas_int.
 /// If device_blas_int is 64-bit, this does nothing.
@@ -33,7 +42,7 @@ inline device_blas_int to_device_blas_int_( int64_t x, const char* x_str )
 /// the namespace when apps #include <blas.hh>.
 ///
 #define to_device_blas_int( x ) to_device_blas_int_( x, #x )
-
+#define to_device_blas_intp( x ) to_device_blas_intp_( x, #x )
 
 #if defined( BLAS_HAVE_SYCL )
 
@@ -297,6 +306,92 @@ namespace internal {
 //==============================================================================
 // Level 1 BLAS - Device Interfaces
 // Alphabetical order
+//---------------------------------------------------------
+//amax
+//---------------------------------------------------------
+void amax(    
+    device_blas_int n,
+    float const* dx, device_blas_int incdx,
+    device_blas_int *result, 
+    blas::Queue& queue );
+//---------------------------------------------------------
+void amax(    
+    device_blas_int n,
+    double const* dx, device_blas_int incdx,
+    device_blas_int *result, 
+    blas::Queue& queue );
+//---------------------------------------------------------
+void amax(    
+    device_blas_int n,
+    std::complex<float> const* dx, device_blas_int incdx,
+    device_blas_int *result, 
+    blas::Queue& queue );
+//---------------------------------------------------------
+void amax(    
+    device_blas_int n,
+    std::complex<double> const* dx, device_blas_int incdx,
+    device_blas_int *result, 
+    blas::Queue& queue );
+//----------------------------------------------------------
+
+
+//---------------------------------------------------------
+//amin
+//---------------------------------------------------------
+void amin(    
+    device_blas_int n,
+    float const* dx, device_blas_int incdx,
+    device_blas_int *result, 
+    blas::Queue& queue );
+//---------------------------------------------------------
+void amin(    
+    device_blas_int n,
+    double const* dx, device_blas_int incdx,
+    device_blas_int *result, 
+    blas::Queue& queue );
+//---------------------------------------------------------
+void amin(    
+    device_blas_int n,
+    std::complex<float> const* dx, device_blas_int incdx,
+    device_blas_int *result, 
+    blas::Queue& queue );
+//---------------------------------------------------------
+void amin(    
+    device_blas_int n,
+    std::complex<double> const* dx, device_blas_int incdx,
+    device_blas_int *result, 
+    blas::Queue& queue );
+//----------------------------------------------------------
+
+
+//---------------------------------------------------------
+//asum
+//---------------------------------------------------------
+void asum(    
+    device_blas_int n,
+    float const* dx, device_blas_int incdx,
+    float *result, 
+    blas::Queue& queue );
+//---------------------------------------------------------
+void asum(    
+    device_blas_int n,
+    double const* dx, device_blas_int incdx,
+    double *result, 
+    blas::Queue& queue );
+//---------------------------------------------------------
+void asum(    
+    device_blas_int n,
+    std::complex<float> const* dx, device_blas_int incdx,
+    float *result, 
+    blas::Queue& queue );
+//---------------------------------------------------------
+void asum(    
+    device_blas_int n,
+    std::complex<double> const* dx, device_blas_int incdx,
+    double *result, 
+    blas::Queue& queue );
+
+
 
 //------------------------------------------------------------------------------
 void axpy(

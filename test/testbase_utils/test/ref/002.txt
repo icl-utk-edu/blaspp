@@ -1,0 +1,19 @@
+TestSweeper version NA, id NA
+input: ./tester --help
+Usage: ./tester [-h|--help]
+       ./tester [-h|--help] routine
+       ./tester [parameters] routine
+
+Available routines:
+
+Level 1
+  sort                sort2               sort3               sort4             
+  sort5               sort6               sort7               sort8             
+
+Level 2
+  bar                 bar2                bar3              
+  bar4                bar5                bar6              
+
+Level 3
+  baz                 baz2                baz3              
+  baz4                baz5              

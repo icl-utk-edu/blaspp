@@ -35,7 +35,7 @@ public:
     testsweeper::ParamInt    repeat;
     testsweeper::ParamInt    verbose;
     testsweeper::ParamInt    cache;
-
+    
     // ----- routine parameters
     testsweeper::ParamEnum< testsweeper::DataType > datatype;
     testsweeper::ParamEnum< blas::Layout >      layout;
@@ -61,6 +61,9 @@ public:
     testsweeper::ParamScientific error;
     testsweeper::ParamScientific error2;
     testsweeper::ParamScientific error3;
+    
+    testsweeper::ParamInt    runs;//new add param by cj
+
     testsweeper::ParamDouble     time;
     testsweeper::ParamDouble     gflops;
     testsweeper::ParamDouble     gbytes;
@@ -85,6 +88,8 @@ public:
     testsweeper::ParamString     msg;
 
     std::string              routine;
+
+
 };
 
 // -----------------------------------------------------------------------------
@@ -193,6 +198,7 @@ void test_batch_trsm  ( Params& params, bool run );
 
 // -----------------------------------------------------------------------------
 // Level 1 GPU BLAS
+void test_asum_device  ( Params& params, bool run );
 void test_axpy_device  ( Params& params, bool run );
 void test_dot_device   ( Params& params, bool run );
 void test_dotu_device  ( Params& params, bool run );

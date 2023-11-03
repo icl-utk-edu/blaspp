@@ -126,6 +126,7 @@ std::vector< testsweeper::routines_t > routines = {
     { "",              nullptr,          Section::newline },
 
     // Device Level 1 BLAS
+    { "dev-asum",         test_asum_device,         Section::device_blas1   },
     { "dev-axpy",         test_axpy_device,         Section::device_blas1   },
     { "dev-dot",          test_dot_device,          Section::device_blas1   },
     { "dev-dotu",         test_dotu_device,         Section::device_blas1   },
@@ -209,10 +210,11 @@ Params::Params():
     repeat    ( "repeat",  0,    ParamType::Value,   1,   1, 1000, "times to repeat each test" ),
     verbose   ( "verbose", 0,    ParamType::Value,   0,   0,   10, "verbose level" ),
     cache     ( "cache",   0,    ParamType::Value,  20,   1, 1024, "total cache size, in MiB" ),
+    runs    ( "runs",  4,    ParamType::Value,   10,   1, 1000, "When testing performance, how many times do you run each" ),
 
     // ----- routine parameters
     //          name,      w,    type,            def,                    char2enum,         enum2char,         enum2str,         help
-    datatype  ( "type",    4,    ParamType::List, DataType::Double,       char2datatype,     datatype2char,     datatype2str,     "s=single (float), d=double, c=complex-single, z=complex-double" ),
+    datatype  ( "type",    4,    ParamType::List, DataType::Single,       char2datatype,     datatype2char,     datatype2str,     "s=single (float), d=double, c=complex-single, z=complex-double" ),
     layout    ( "layout",  6,    ParamType::List, blas::Layout::ColMajor, blas::char2layout, blas::layout2char, blas::layout2str, "layout: r=row major, c=column major" ),
     format    ( "format",  6,    ParamType::List, blas::Format::LAPACK,   blas::char2format, blas::format2char, blas::format2str, "format: l=lapack, t=tile" ),
     side      ( "side",    6,    ParamType::List, blas::Side::Left,       blas::char2side,   blas::side2char,   blas::side2str,   "side: l=left, r=right" ),

@@ -13,6 +13,85 @@ namespace blas {
 // Level 1 BLAS
 // Alphabetical order
 
+void amax(    
+    int64_t n,
+    float const* dx, int64_t incdx,
+    int64_t *result, 
+    blas::Queue& queue );
+//---------------------------------------------------------
+void amax(    
+    int64_t n,
+    double const* dx, int64_t incdx,
+    int64_t *result, 
+    blas::Queue& queue );
+//---------------------------------------------------------
+void amax(    
+    int64_t n,
+    std::complex<float> const* dx, int64_t incdx,
+    int64_t *result, 
+    blas::Queue& queue );
+//---------------------------------------------------------
+void amax(    
+    int64_t n,
+    std::complex<double> const* dx, int64_t incdx,
+    int64_t *result, 
+    blas::Queue& queue );
+
+//---------------------------------------------------------
+//amin
+//---------------------------------------------------------
+void amin(    
+    int64_t n,
+    float const* dx, int64_t incdx,
+    int64_t *result, 
+    blas::Queue& queue );
+//---------------------------------------------------------
+void amin(    
+    int64_t n,
+    double const* dx, int64_t incdx,
+    int64_t *result, 
+    blas::Queue& queue );
+//---------------------------------------------------------
+void amin(    
+    int64_t n,
+    std::complex<float> const* dx, int64_t incdx,
+    int64_t *result, 
+    blas::Queue& queue );
+//---------------------------------------------------------
+void amin(    
+    int64_t n,
+    std::complex<double> const* dx, int64_t incdx,
+    int64_t *result, 
+    blas::Queue& queue );
+
+//---------------------------------------------------------
+//asum
+//---------------------------------------------------------
+void asum(    
+    int64_t n,
+    float const *x, int64_t incdx,
+    float *result, 
+    blas::Queue& queue );
+
+void asum(    
+    int64_t n,
+    double const *x, int64_t incdx,
+    double * result, 
+    blas::Queue& queue );
+//---------------------------------------------------------
+void asum(    
+    int64_t n,
+    std::complex<float> const *x, int64_t incdx,
+    float *result, 
+    blas::Queue& queue );
+//---------------------------------------------------------
+void asum(    
+    int64_t n,
+    std::complex<double> const *x, int64_t incdx,
+    double *result, 
+    blas::Queue& queue );
+
+//-----------axpy--------
 //------------------------------------------------------------------------------
 void axpy(
     int64_t n,
