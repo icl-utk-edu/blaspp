@@ -9,8 +9,8 @@
 #include "blas/defines.h"
 
 // Version is updated by make_release.py; DO NOT EDIT.
-// Version 2023.08.25
-#define BLASPP_VERSION 20230825
+// Version 2023.11.05
+#define BLASPP_VERSION 20231105
 
 namespace blas {
 

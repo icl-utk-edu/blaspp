@@ -1,3 +1,9 @@
+2023.11.05
+  - Fix Queue workspace
+  - Update Fortran strlen handling
+  - Fix CMake unity build
+  - Fix CMake library ordering
+
 2023.08.25
   - Use yyyy.mm.dd version scheme, instead of yyyy.mm.release
   - Added oneAPI support to CMake
