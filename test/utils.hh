@@ -12,6 +12,12 @@ void copy_matrix(
     dst_t*       dst, int ld_dst,
     blas::Queue &queue);
 
+template <typename scalar_from, typename scalar_to>
+void cast_onto_device(
+    int m, int n,
+    const scalar_from* A, int lda,
+    scalar_to*         B, int ldb,
+    blas::Queue &queue);
 } // namespace blas
 
 #endif // UTILS_HH

@@ -288,9 +288,9 @@ void test_gemm_device_work<blas::float16,blas::float16,blas::float16>( Params& p
     lapack_larnv( idist, iseed, size_C, C_hi );
     lapack_lacpy( "g", Cm, Cn, C_hi, ldc, Cref, ldc );
 
-    blas::device_copy_matrix(Am, An, A_hi, lda, dA_hi, lda, queue);
-    blas::device_copy_matrix(Bm, Bn, B_hi, ldb, dB_hi, ldb, queue);
-    blas::device_copy_matrix(Cm, Cn, C_hi, ldc, dC_hi, ldc, queue);
+    blas::device_copy_matrix( Am, An, A_hi, lda, dA_hi, lda, queue );
+    blas::device_copy_matrix( Bm, Bn, B_hi, ldb, dB_hi, ldb, queue );
+    blas::device_copy_matrix( Cm, Cn, C_hi, ldc, dC_hi, ldc, queue );
 
     // Convert float->float16
     blas::copy_matrix( Am, An, dA_hi, lda, dA_lo, lda, queue );
@@ -390,8 +390,9 @@ void test_gemm_device_work<blas::float16,blas::float16,blas::float16>( Params& p
         // check error compared to reference
         real_t error;
         bool okay;
-        check_gemm<float, blas::float16>( Cm, Cn, k, alpha, beta, Anorm, Bnorm, Cnorm,
-                    Cref, ldc, C_hi, ldc, verbose, &error, &okay );
+        check_gemm<float, blas::float16>(
+            Cm, Cn, k, alpha, beta, Anorm, Bnorm, Cnorm,
+            Cref, ldc, C_hi, ldc, verbose, &error, &okay );
         params.error() = error;
         params.okay() = okay;
     }
