@@ -22,7 +22,7 @@
 #include <hip/hip_fp16.h>
 #endif
 
-#define BLAS_USE_ISO_FLOAT16
+//#define BLAS_USE_ISO_FLOAT16
 
 namespace blas {
 

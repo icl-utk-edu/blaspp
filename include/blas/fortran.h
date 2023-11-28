@@ -903,6 +903,20 @@ void BLAS_ztrsv_base(
 // =============================================================================
 // Level 3 BLAS - Fortran prototypes
 
+#if defined(BLAS_HAVE_MKL)
+#include <mkl_types.h>
+// -----------------------------------------------------------------------------
+#define BLAS_hgemm BLAS_FORTRAN_NAME( hgemm, HGEMM )
+void BLAS_hgemm(
+    char const *transA, char const *transB,
+    blas_int const *m, blas_int const *n, blas_int const *k,
+    MKL_F16 const *alpha,
+    MKL_F16 const *A, blas_int const *lda,
+    MKL_F16 const *B, blas_int const *ldb,
+    MKL_F16 const *beta,
+    MKL_F16       *C, blas_int const *ldc );
+#endif
+
 // -----------------------------------------------------------------------------
 #define BLAS_sgemm_base BLAS_FORTRAN_NAME( sgemm, SGEMM )
 void BLAS_sgemm_base(

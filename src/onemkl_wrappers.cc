@@ -497,6 +497,27 @@ void copy(
 //------------------------------------------------------------------------------
 // gemm
 //------------------------------------------------------------------------------
+//void gemm(
+//    blas::Op transA, blas::Op transB,
+//    device_blas_int m, device_blas_int n, device_blas_int k,
+//    float16 alpha,
+//    float16 const *dA, device_blas_int ldda,
+//    float16 const *dB, device_blas_int lddb,
+//    float16 beta,
+//    float16       *dC, device_blas_int lddc,
+//    blas::Queue& queue )
+//{
+//    blas_dev_call(
+//        oneapi::mkl::blas::gemm(
+//            queue.stream(),
+//            op2onemkl( transA ), op2onemkl( transB ),
+//            m, n, k,
+//            (MKL_F16)alpha, (MKL_F16*)dA, ldda,
+//                            (MKL_F16*)dB, lddb,
+//            (MKL_F16)beta,  (MKL_F16*)dC, lddc ) );
+//}
+
+//------------------------------------------------------------------------------
 void gemm(
     blas::Op transA, blas::Op transB,
     device_blas_int m, device_blas_int n, device_blas_int k,
