@@ -616,6 +616,24 @@ def openmp( flags=['-fopenmp', '-qopenmp', '-openmp', '-omp', ''] ):
 # end
 
 #-------------------------------------------------------------------------------
+def float16( ):
+    '''
+    Tests for _Float16 support from the compiler.
+    '''
+    print_header( '_Float16 support' )
+    src = 'config/return_float16.cc'
+    cxxflags = define('USE_ISO_FLOAT16')
+    print_test( cxxflags )
+    env = {'CXXFLAGS': cxxflags}
+    (rc, out, err) = compile_run( src, env )
+    print_result( "_Float16", rc )
+    if (rc == 0):
+        environ.merge( env )
+    else:
+        print_msg( font.red( 'skipping _Float16 search' ) )
+# end
+
+#-------------------------------------------------------------------------------
 def cublas_library():
     '''
     Tests for linking CUDA and cuBLAS libraries.

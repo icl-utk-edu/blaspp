@@ -58,6 +58,7 @@ def main():
    #config.prog_cxx_flag( '-Werror' )
 
     config.openmp()
+    config.float16()
 
     config.lapack.blas()
     print()

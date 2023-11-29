@@ -26,30 +26,33 @@
 
 namespace blas {
 
-class float16 {
 
 #ifdef BLAS_USE_ISO_FLOAT16
-  using float16_ = _Float16;
+  using float16 = _Float16;
+
 #elif defined(BLAS_HAVE_CUBLAS)
-  using float16_ = __half;
+  using float16 = __half;
+
 #elif defined(BLAS_HAVE_ROCBLAS)
-  using float16_ = rocblas_half;
+  using float16 = rocblas_half;
+
 #else
-  using float16_ = uint16_t;
-#endif
+class float16 {
+    public:
+    float16() : data_( 0.0f ) { }
+    
+    // TODO manipulate the bits here
+    float16( float v ) : data_( v ) { }
 
-  float16_ value_;
+    // TODO manipulate the bits here
+    operator float() const {
+        return float( data_ );
+    }
 
-  public:
-
-  float16() : value_( 0.0f ) { }
-
-  float16( float v ) : value_( v ) { }
-
-  operator float() const {
-    return float( value_ );
-  }
+    private:
+        uint16_t data_;
 };
+#endif
 
 inline float real(float16& a) { return float( a ); }
 inline float imag(float16& a) { return 0.0f; }
