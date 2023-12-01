@@ -217,8 +217,8 @@ void test_gemm_device_work<blas::float16,blas::float16,blas::float16>( Params& p
     blas::Layout layout = params.layout();
     blas::Op transA     = params.transA();
     blas::Op transB     = params.transB();
-    scalar_lo alpha     = params.alpha();
-    scalar_lo beta      = params.beta();
+    scalar_lo alpha     = (scalar_lo)params.alpha();
+    scalar_lo beta      = (scalar_lo)params.beta();
     int64_t m           = params.dim.m();
     int64_t n           = params.dim.n();
     int64_t k           = params.dim.k();

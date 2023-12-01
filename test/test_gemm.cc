@@ -180,6 +180,8 @@ void test_gemm_work<blas::float16, blas::float16, blas::float16>(
     using namespace testsweeper;
     using std::real;
     using std::imag;
+    using blas::real;
+    using blas::imag;
     using blas::Op;
     using blas::Layout;
     using scalar_hi = float;
@@ -190,8 +192,8 @@ void test_gemm_work<blas::float16, blas::float16, blas::float16>(
     blas::Layout layout = params.layout();
     blas::Op transA  = params.transA();
     blas::Op transB  = params.transB();
-    scalar_lo alpha  = params.alpha();
-    scalar_lo beta   = params.beta();
+    scalar_lo alpha  = (scalar_lo)params.alpha();
+    scalar_lo beta   = (scalar_lo)params.beta();
     int64_t m        = params.dim.m();
     int64_t n        = params.dim.n();
     int64_t k        = params.dim.k();
@@ -205,15 +207,6 @@ void test_gemm_work<blas::float16, blas::float16, blas::float16>(
 
     if (! run)
         return;
-
-    if (blas::get_device_count() == 0) {
-        params.msg() = "skipping: no GPU devices or no GPU support";
-        return;
-    }
-
-    int64_t device = 0;//params.device();
-    // device specifics
-    blas::Queue queue( device );
 
     // setup
     int64_t Am = (transA == Op::NoTrans ? m : k);
@@ -249,10 +242,9 @@ void test_gemm_work<blas::float16, blas::float16, blas::float16>(
     lapack_lacpy( "g", Cm, Cn, C_hi, ldc, Cref, ldc );
 
     // Convert float->float16
-    blas::cast_onto_device( Am, An, A_hi, lda, A_lo, lda, queue );
-    blas::cast_onto_device( Bm, Bn, B_hi, ldb, B_lo, ldb, queue );
-    blas::cast_onto_device( Cm, Cn, C_hi, ldc, C_lo, ldc, queue );
-    queue.sync();
+    blas::copy_matrix( Am, An, A_hi, lda, A_lo, lda );
+    blas::copy_matrix( Bm, Bn, B_hi, ldb, B_lo, ldb );
+    blas::copy_matrix( Cm, Cn, C_hi, ldc, C_lo, ldc );
 
     // norms for error check
     real_t work[1];
@@ -317,8 +309,7 @@ void test_gemm_work<blas::float16, blas::float16, blas::float16>(
     params.gflops() = gflop / time;
 
     // Convert float16->float
-    blas::cast_onto_device( Cm, Cn, C_lo, ldc, C_hi, ldc, queue );
-    queue.sync();
+    blas::copy_matrix( Cm, Cn, C_lo, ldc, C_hi, ldc );
 
     if (verbose >= 2) {
         printf( "C2 = " ); print_matrix( Cm, Cn, C_hi, ldc );
