@@ -622,7 +622,7 @@ def float16( ):
     '''
     print_header( '_Float16 support' )
     src = 'config/return_float16.cc'
-    cxxflags = define('USE_ISO_FLOAT16')
+    cxxflags = define('HAVE_ISO_FLOAT16')
     print_test( cxxflags )
     env = {'CXXFLAGS': cxxflags}
     (rc, out, err) = compile_run( src, env )

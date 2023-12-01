@@ -57,8 +57,9 @@ def main():
    #config.prog_cxx_flag( '-Wconversion' )
    #config.prog_cxx_flag( '-Werror' )
 
-    config.openmp()
     config.float16()
+
+    config.openmp()
 
     config.lapack.blas()
     print()
