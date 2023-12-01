@@ -11,14 +11,20 @@
 //------------------------------------------------------------------------------
 #define BLAS_ddot FORTRAN_NAME( ddot, DDOT )
 
-// result return directly
-#ifdef __cplusplus
-extern "C"
+#ifdef ACCELERATE_NEW_LAPACK
+    #pragma message "Including Accelerate.h"
+    #include <Accelerate/Accelerate.h>
+#else
+    #pragma message "Defining BLAS_ddot"
+    // result return directly
+    #ifdef __cplusplus
+    extern "C"
+    #endif
+    double BLAS_ddot(
+        const blas_int* n,
+        const double* x, const blas_int* incx,
+        const double* y, const blas_int* incy );
 #endif
-double BLAS_ddot(
-    const blas_int* n,
-    const double* x, const blas_int* incx,
-    const double* y, const blas_int* incy );
 
 //------------------------------------------------------------------------------
 int main()
