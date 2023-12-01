@@ -489,8 +489,8 @@ void gemm(
     float16       *dC, device_blas_int lddc,
     blas::Queue& queue )
 {
-    __half alpha_ = __half( alpha );
-    __half beta_  = __half( beta );
+    __half alpha_ = *((__half*)&alpha);
+    __half beta_  = *((__half*)&beta);
 
     blas_dev_call(
         cublasHgemm(
