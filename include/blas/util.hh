@@ -20,14 +20,13 @@
 #include <cuda_fp16.h>
 #elif defined(BLAS_HAVE_ROCBLAS)
 #include <hip/hip_fp16.h>
+#elif defined(BLAS_HAVE_MKL)
+#include <mkl_types.h>
 #endif
-
-//#define BLAS_USE_ISO_FLOAT16
 
 namespace blas {
 
-
-#ifdef BLAS_USE_ISO_FLOAT16
+#ifdef BLAS_HAVE_ISO_FLOAT16
   using float16 = _Float16;
 
 #elif defined(BLAS_HAVE_CUBLAS)
@@ -38,19 +37,105 @@ namespace blas {
 
 #else
 class float16 {
-    public:
+#if defined(BLAS_HAVE_MKL)
+    using float16_ = MKL_F16;
+#else
+    using float16_ = uint16_t;
+#endif
+
+public:
     float16() : data_( 0.0f ) { }
     
     // TODO manipulate the bits here
-    float16( float v ) : data_( v ) { }
+    float16( float v ) { data_ = float_to_float16( v ); }
 
     // TODO manipulate the bits here
     operator float() const {
-        return float( data_ );
+        return float16_to_float( data_ );
     }
 
-    private:
-        uint16_t data_;
+private:
+    float16_ data_;
+
+    typedef union {
+      float16_  data;
+      struct {
+        unsigned int frac : 10;
+        unsigned int exp  :  5;
+        unsigned int sign :  1;
+      } bits;
+    } float16_repr_data_t;
+
+    typedef union {
+      float data;
+      struct {
+        unsigned int frac : 23;
+        unsigned int exp  :  8;
+        unsigned int sign :  1;
+      } bits;
+    } float_repr_data_t;
+
+    static float float16_to_float(float16_ x) {
+        float16_repr_data_t src;
+        float_repr_data_t dst;
+
+        src.data = x;
+        dst.data = 0;
+        dst.bits.sign = src.bits.sign;
+
+        if (src.bits.exp == 0x01fU) {
+            dst.bits.exp  = 0xffU;
+            if (src.bits.frac > 0) {
+                dst.bits.frac = ((src.bits.frac | 0x200U) << 13);
+            }
+        } else if (src.bits.exp > 0x00U) {
+            dst.bits.exp  = src.bits.exp + ((1 << 7) - (1 << 4));
+            dst.bits.frac = (src.bits.frac << 13);
+        } else {
+            unsigned int v = (src.bits.frac << 13);
+
+            if (v > 0) {
+                dst.bits.exp = 0x71;
+                while ((v & 0x800000UL) == 0) {
+                    dst.bits.exp --;
+                    v <<= 1;
+                }
+                dst.bits.frac = v;
+            }
+        }
+
+        return dst.data;
+    }
+
+    static float16_ float_to_float16(float x) {
+        float_repr_data_t src;
+        float16_repr_data_t dst;
+
+        src.data = x;
+        dst.data = 0;
+        dst.bits.sign = src.bits.sign;
+
+        if (src.bits.exp == 0x0ffU) {
+            dst.bits.exp  = 0x01fU;
+            dst.bits.frac = (src.bits.frac >> 13);
+            if (src.bits.frac > 0) dst.bits.frac |= 0x200U;
+        } else if (src.bits.exp >= 0x08fU) {
+            dst.bits.exp  = 0x01fU;
+            dst.bits.frac = 0x000U;
+        } else if (src.bits.exp >= 0x071U){
+            dst.bits.exp  = src.bits.exp + ((1 << 4) - (1 << 7));
+            dst.bits.frac = (src.bits.frac >> 13);
+        } else if (src.bits.exp >= 0x067U){
+            dst.bits.exp  = 0x000;
+            if (src.bits.frac > 0) {
+                dst.bits.frac = (((1U << 23) | src.bits.frac) >> 14);
+            } else {
+                dst.bits.frac = 1;
+            }
+        }
+
+        return dst.data;
+    }
 };
 #endif
 
