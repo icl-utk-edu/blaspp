@@ -30,10 +30,12 @@ inline void gemm(
     float16 beta,
     float16*       C, blas_int ldc )
 {
+#ifdef BLAS_HAVE_MKL
     BLAS_hgemm( &transA, &transB, &m, &n, &k,
         (MKL_F16*)&alpha,  (MKL_F16*)A, &lda,
                            (MKL_F16*)B, &ldb,
         (MKL_F16*)&beta,   (MKL_F16*)C, &ldc );
+#endif
 }
 
 //------------------------------------------------------------------------------
