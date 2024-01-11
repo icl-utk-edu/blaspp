@@ -17,7 +17,7 @@ void test_gemm( int m, int n, int k )
     print_func();
 
     int lda = m;
-    int ldb = n;
+    int ldb = k;
     int ldc = m;
     std::vector<T> A( lda*k, 1.0 );  // m-by-k
     std::vector<T> B( ldb*n, 2.0 );  // k-by-n
@@ -43,7 +43,7 @@ void test_device_gemm( int m, int n, int k )
     }
     else {
         int lda = m;
-        int ldb = n;
+        int ldb = k;
         int ldc = m;
         std::vector<T> A( lda*k, 1.0 );  // m-by-k
         std::vector<T> B( ldb*n, 2.0 );  // k-by-n
@@ -103,8 +103,10 @@ int main( int argc, char** argv )
         bool types[ 4 ];
         parse_args( argc, argv, types );
 
-        // Run tests.
         int m = 100, n = 200, k = 50;
+        printf( "m %d, n %d, k %d\n", m, n, k );
+
+        // Run tests.
         if (types[ 0 ])
             test_gemm< float  >( m, n, k );
         if (types[ 1 ])
@@ -124,7 +126,7 @@ int main( int argc, char** argv )
             test_device_gemm< std::complex<double> >( m, n, k );
     }
     catch (std::exception const& ex) {
-        fprintf( stderr, "%s", ex.what() );
+        fprintf( stderr, "%s\n", ex.what() );
         return 1;
     }
     return 0;
