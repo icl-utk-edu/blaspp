@@ -13,11 +13,21 @@
 
 #include <limits>
 
+namespace std {
+  template <> class numeric_limits<blas::float16> {
+  public:
+    static blas::float16 epsilon() {
+        // Value coming from MAGMA testing/testing_hgemm.cpp
+        return blas::float16( 0.00097656 );
+    }
+  };
+}; // namespace std
+
 // -----------------------------------------------------------------------------
 // Computes error for multiplication with general matrix result.
 // Covers dot, gemv, ger, geru, gemm, symv, hemv, symm, trmv, trsv?, trmm, trsm?.
 // Cnorm is norm of original C, before multiplication operation.
-template <typename T>
+template <typename T, typename err_prec = T>
 void check_gemm(
     int64_t m, int64_t n, int64_t k,
     T alpha,
@@ -54,8 +64,8 @@ void check_gemm(
     real_t work[1], Cout_norm;
     Cout_norm = lapack_lange( "f", m, n, C, ldc, work );
     error[0] = Cout_norm
-             / (sqrt( real_t( k ) + 2 ) * abs( alpha ) * Anorm * Bnorm
-                 + 2 * abs( beta ) * Cnorm);
+             / ( ( real_t( k ) + 2 ) * abs( alpha ) * Anorm * Bnorm
+                 + 2 * abs( beta ) * Cnorm );
     if (verbose) {
         printf( "error: ||Cout||=%.2e / (sqrt(k=%lld + 2)"
                 " * |alpha|=%.2e * ||A||=%.2e * ||B||=%.2e"
@@ -70,7 +80,7 @@ void check_gemm(
         error[0] /= 2*sqrt(2);
     }
 
-    real_t u = 0.5 * std::numeric_limits< real_t >::epsilon();
+    real_t u = 0.5 * std::numeric_limits<blas::real_type<err_prec>>::epsilon();
     *okay = (error[0] < u);
 
     #undef C

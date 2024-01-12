@@ -9,10 +9,34 @@
 
 #include <limits>
 
+#if defined(BLAS_HAVE_MKL)
+    #include <mkl_blas.h>
+#endif
+
 namespace blas {
 
 //==============================================================================
 namespace internal {
+
+//------------------------------------------------------------------------------
+/// Low-level overload wrapper calls Fortran, float16 version.
+/// @ingroup gemm_internal
+inline void gemm(
+    char transA, char transB,
+    blas_int m, blas_int n, blas_int k,
+    float16 alpha,
+    float16 const* A, blas_int lda,
+    float16 const* B, blas_int ldb,
+    float16 beta,
+    float16*       C, blas_int ldc )
+{
+#ifdef BLAS_HAVE_MKL
+    BLAS_hgemm( &transA, &transB, &m, &n, &k,
+        (MKL_F16*)&alpha,  (MKL_F16*)A, &lda,
+                           (MKL_F16*)B, &ldb,
+        (MKL_F16*)&beta,   (MKL_F16*)C, &ldc );
+#endif
+}
 
 //------------------------------------------------------------------------------
 /// Low-level overload wrapper calls Fortran, float version.
@@ -178,6 +202,24 @@ void gemm(
 // and allows for a separate templated implementation.
 // When calling a template, all the templated arguments (e.g., scalar_t)
 // must match types exactly.
+
+//------------------------------------------------------------------------------
+/// CPU, float16 version.
+/// @ingroup gemm
+void gemm(
+    blas::Layout layout,
+    blas::Op transA,
+    blas::Op transB,
+    int64_t m, int64_t n, int64_t k,
+    float16 alpha,
+    float16 const* A, int64_t lda,
+    float16 const* B, int64_t ldb,
+    float16 beta,
+    float16*       C, int64_t ldc )
+{
+    impl::gemm( layout, transA, transB, m, n, k,
+                alpha, A, lda, B, ldb, beta, C, ldc );
+}
 
 //------------------------------------------------------------------------------
 /// CPU, float version.

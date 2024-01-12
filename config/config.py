@@ -77,7 +77,7 @@ def define( var, value=None ):
 
 # ------------------------------------------------------------------------------
 # variables to replace instead of appending/prepending
-replace_vars = ['CC', 'CXX', 'NVCC', 'FC', 'AR', 'RANLIB', 'prefix']
+replace_vars = ['CC', 'CXX', 'NVCC', 'FC', 'AR', 'RANLIB', 'prefix', 'gpu_backend']
 
 # ------------------------------------------------------------------------------
 # map file extensions to languages
@@ -616,6 +616,24 @@ def openmp( flags=['-fopenmp', '-qopenmp', '-openmp', '-omp', ''] ):
 # end
 
 #-------------------------------------------------------------------------------
+def float16( ):
+    '''
+    Tests for _Float16 support from the compiler.
+    '''
+    print_header( '_Float16 support' )
+    src = 'config/return_float16.cc'
+    cxxflags = define('HAVE_ISO_FLOAT16')
+    print_test( cxxflags )
+    env = {'CXXFLAGS': cxxflags}
+    (rc, out, err) = compile_run( src, env )
+    print_result( "_Float16", rc )
+    if (rc == 0):
+        environ.merge( env )
+    else:
+        print_msg( font.red( 'skipping _Float16 search' ) )
+# end
+
+#-------------------------------------------------------------------------------
 def cublas_library():
     '''
     Tests for linking CUDA and cuBLAS libraries.
@@ -752,6 +770,7 @@ def gpu_blas():
         try:
             cublas_library()
             gpu_blas_found = True
+            environ.merge( {'gpu_backend' : 'cuda' } )
         except Error as ex:
             if (gpu_backend == 'cuda'):
                 raise ex  # fatal
@@ -763,6 +782,7 @@ def gpu_blas():
         try:
             rocblas_library()
             gpu_blas_found = True
+            environ.merge( {'gpu_backend' : 'hip' } )
         except Error as ex:
             if (gpu_backend in ('hip', 'rocm')):
                 raise ex  # fatal
@@ -773,6 +793,7 @@ def gpu_blas():
     if (not gpu_blas_found and test_sycl):
         try:
             sycl_onemkl_library()
+            environ.merge( {'gpu_backend' : 'sycl' } )
             gpu_blas_found = True
         except Error as ex:
             if (gpu_backend == 'sycl'):

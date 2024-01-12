@@ -1156,7 +1156,24 @@ cblas_syr2(
 // =============================================================================
 // Level 3 BLAS
 
+#if defined(BLAS_HAVE_MKL)
 // -----------------------------------------------------------------------------
+inline void
+cblas_gemm(
+    CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA, CBLAS_TRANSPOSE transB,
+    int m, int n, int k,
+    blas::float16  alpha,
+    blas::float16 const *A, int lda,
+    blas::float16 const *B, int ldb,
+    blas::float16  beta,
+    blas::float16* C, int ldc )
+{
+    cblas_hgemm( layout, transA, transB, m, n, k,
+                 (MKL_F16)alpha, (MKL_F16*)A, lda, (MKL_F16*)B, ldb,
+                 (MKL_F16)beta,  (MKL_F16*)C, ldc );
+}
+#endif
+
 inline void
 cblas_gemm(
     CBLAS_LAYOUT layout, CBLAS_TRANSPOSE transA, CBLAS_TRANSPOSE transB,
