@@ -64,7 +64,7 @@ void test_trmv_work( Params& params, bool run )
 
     // norms for error check
     real_t work[1];
-    real_t Anorm = lapack_lantr( "f", uplo2str(uplo), diag2str(diag),
+    real_t Anorm = lapack_lantr( "f", to_c_string( uplo ), to_c_string( diag ),
                                  n, n, A, lda, work );
     real_t Xnorm = cblas_nrm2( n, x, std::abs(incx) );
 

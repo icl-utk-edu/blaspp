@@ -89,7 +89,7 @@ void test_hemm_device_work( Params& params, bool run )
 
     // norms for error check
     real_t work[1];
-    real_t Anorm = lapack_lansy( "f", uplo2str(uplo), An, A, lda, work );
+    real_t Anorm = lapack_lansy( "f", to_c_string( uplo ), An, A, lda, work );
     real_t Bnorm = lapack_lange( "f", Cm, Cn, B, ldb, work );
     real_t Cnorm = lapack_lange( "f", Cm, Cn, C, ldc, work );
 
@@ -115,7 +115,7 @@ void test_hemm_device_work( Params& params, bool run )
                 "A An=%5lld, An=%5lld, lda=%5lld, size=%10lld, norm %.2e\n"
                 "B  m=%5lld,  n=%5lld, ldb=%5lld, size=%10lld, norm %.2e\n"
                 "C  m=%5lld,  n=%5lld, ldc=%5lld, size=%10lld, norm %.2e\n",
-                side2char(side), uplo2char(uplo),
+                to_char( side ), to_char( uplo ),
                 llong( An ), llong( An ), llong( lda ), llong( size_A ), Anorm,
                 llong( m ), llong( n ), llong( ldb ), llong( size_B ), Bnorm,
                 llong( m ), llong( n ), llong( ldc ), llong( size_C ), Cnorm );

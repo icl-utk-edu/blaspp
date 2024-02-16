@@ -84,12 +84,12 @@ void test_trsm_work( Params& params, bool run )
         A[ i + i*lda ] += Am;
     }
     int64_t info = 0;
-    lapack_potrf( uplo2str(uplo), Am, A, lda, &info );
+    lapack_potrf( to_c_string( uplo ), Am, A, lda, &info );
     require( info == 0 );
 
     // norms for error check
     real_t work[1];
-    real_t Anorm = lapack_lantr( "f", uplo2str(uplo), diag2str(diag),
+    real_t Anorm = lapack_lantr( "f", to_c_string( uplo ), to_c_string( diag ),
                                  Am, Am, A, lda, work );
     real_t Bnorm = lapack_lange( "f", Bm, Bn, B, ldb, work );
 
