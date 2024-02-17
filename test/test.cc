@@ -13,18 +13,24 @@
 
 // -----------------------------------------------------------------------------
 using testsweeper::ParamType;
-using testsweeper::DataType;
-using testsweeper::char2datatype;
-using testsweeper::datatype2char;
-using testsweeper::datatype2str;
+using testsweeper::DataType, testsweeper::DataType_help;
 using testsweeper::ansi_bold;
 using testsweeper::ansi_red;
 using testsweeper::ansi_normal;
 
+using blas::Layout, blas::Layout_help;
+using blas::Uplo,   blas::Uplo_help;
+using blas::Side,   blas::Side_help;
+using blas::Op,     blas::Op_help;
+using blas::Diag,   blas::Diag_help;
+using blas::Format;
+
+const char* Format_help = "one of: L or LAPACK; T or Tile";
+
 const double no_data = testsweeper::no_data_flag;
 
-// const ParamType PT_Value  = ParamType::Value; currently unused
-// const ParamType PT_List   = ParamType::List; currently unused
+const ParamType PT_Value  = ParamType::Value;
+const ParamType PT_List   = ParamType::List;
 const ParamType PT_Output = ParamType::Output;
 
 // -----------------------------------------------------------------------------
@@ -201,37 +207,37 @@ Params::Params():
     // p = precision
     // def = default
     // ----- test framework parameters
-    //         name,       w,    type,         default, valid, help
-    check     ( "check",   0,    ParamType::Value, 'y', "ny",  "check the results" ),
-    ref       ( "ref",     0,    ParamType::Value, 'n', "ny",  "run reference; sometimes check -> ref" ),
+    //         name,       w, type,  default, valid, help
+    check     ( "check",   0, PT_Value,  'y', "ny",  "check the results" ),
+    ref       ( "ref",     0, PT_Value,  'n', "ny",  "run reference; sometimes check -> ref" ),
 
-    //          name,      w, p, type,         default, min,  max, help
-    repeat    ( "repeat",  0,    ParamType::Value,   1,   1, 1000, "times to repeat each test" ),
-    verbose   ( "verbose", 0,    ParamType::Value,   0,   0,   10, "verbose level" ),
-    cache     ( "cache",   0,    ParamType::Value,  20,   1, 1024, "total cache size, in MiB" ),
+    //          name,      w, type, default, min,  max, help
+    repeat    ( "repeat",  0, PT_Value,   1,   1, 1000, "times to repeat each test" ),
+    verbose   ( "verbose", 0, PT_Value,   0,   0,   10, "verbose level" ),
+    cache     ( "cache",   0, PT_Value,  20,   1, 1024, "total cache size, in MiB" ),
 
     // ----- routine parameters
-    //          name,      w,    type,            def,                    char2enum,         enum2char,         enum2str,         help
-    datatype  ( "type",    4,    ParamType::List, DataType::Double,       char2datatype,     datatype2char,     datatype2str,     "s=single (float), d=double, c=complex-single, z=complex-double" ),
-    layout    ( "layout",  6,    ParamType::List, blas::Layout::ColMajor, blas::char2layout, blas::layout2char, blas::layout2str, "layout: r=row major, c=column major" ),
-    format    ( "format",  6,    ParamType::List, blas::Format::LAPACK,   blas::char2format, blas::format2char, blas::format2str, "format: l=lapack, t=tile" ),
-    side      ( "side",    6,    ParamType::List, blas::Side::Left,       blas::char2side,   blas::side2char,   blas::side2str,   "side: l=left, r=right" ),
-    uplo      ( "uplo",    6,    ParamType::List, blas::Uplo::Lower,      blas::char2uplo,   blas::uplo2char,   blas::uplo2str,   "triangle: l=lower, u=upper" ),
-    trans     ( "trans",   7,    ParamType::List, blas::Op::NoTrans,      blas::char2op,     blas::op2char,     blas::op2str,     "transpose: n=no-trans, t=trans, c=conj-trans" ),
-    transA    ( "transA",  7,    ParamType::List, blas::Op::NoTrans,      blas::char2op,     blas::op2char,     blas::op2str,     "transpose of A: n=no-trans, t=trans, c=conj-trans" ),
-    transB    ( "transB",  7,    ParamType::List, blas::Op::NoTrans,      blas::char2op,     blas::op2char,     blas::op2str,     "transpose of B: n=no-trans, t=trans, c=conj-trans" ),
-    diag      ( "diag",    7,    ParamType::List, blas::Diag::NonUnit,    blas::char2diag,   blas::diag2char,   blas::diag2str,   "diagonal: n=non-unit, u=unit" ),
+    //          name,      w, type,      default;          help
+    datatype  ( "type",    4, PT_List,   DataType::Double, DataType_help ),
+    layout    ( "layout",  6, PT_List,   Layout::ColMajor, Layout_help ),
+    format    ( "format",  6, PT_List,   Format::LAPACK,   Format_help ),
+    side      ( "side",    6, PT_List,   Side::Left,       Side_help ),
+    uplo      ( "uplo",    6, PT_List,   Uplo::Lower,      Uplo_help ),
+    trans     ( "trans",   7, PT_List,   Op::NoTrans,      Op_help ),
+    transA    ( "transA",  7, PT_List,   Op::NoTrans,      Op_help ),
+    transB    ( "transB",  7, PT_List,   Op::NoTrans,      Op_help ),
+    diag      ( "diag",    7, PT_List,   Diag::NonUnit,    Diag_help ),
 
-    //          name,      w, p, type,            def,   min,     max, help
-    dim       ( "dim",     6,    ParamType::List,          0,     1e9, "m by n by k dimensions" ),
-    alpha     ( "alpha",   9, 4, ParamType::List,  pi,  -inf,     inf, "scalar alpha" ),
-    beta      ( "beta",    9, 4, ParamType::List,   e,  -inf,     inf, "scalar beta" ),
-    incx      ( "incx",    4,    ParamType::List,   1, -1000,    1000, "stride of x vector" ),
-    incy      ( "incy",    4,    ParamType::List,   1, -1000,    1000, "stride of y vector" ),
-    align     ( "align",   0,    ParamType::List,   1,     1,    1024, "column alignment (sets lda, ldb, etc. to multiple of align)" ),
-    batch     ( "batch",   6,    ParamType::List, 100,     0,     1e6, "batch size" ),
-    device    ( "device",  6,    ParamType::List,   0,     0,     100, "device id" ),
-    pointer_mode ( "pointer-mode",  3,    ParamType::List, 'h',  "hd",          "h == host, d == device" ),
+    //          name,      w, p, type,  default, min, max, help
+    dim       ( "dim",     6,    PT_List,            0,     1e9, "m by n by k dimensions" ),
+    alpha     ( "alpha",   9, 4, PT_List,    pi,  -inf,     inf, "scalar alpha" ),
+    beta      ( "beta",    9, 4, PT_List,     e,  -inf,     inf, "scalar beta" ),
+    incx      ( "incx",    4,    PT_List,     1, -1000,    1000, "stride of x vector" ),
+    incy      ( "incy",    4,    PT_List,     1, -1000,    1000, "stride of y vector" ),
+    align     ( "align",   0,    PT_List,     1,     1,    1024, "column alignment (sets lda, ldb, etc. to multiple of align)" ),
+    batch     ( "batch",   6,    PT_List,   100,     0,     1e6, "batch size" ),
+    device    ( "device",  6,    PT_List,     0,     0,     100, "device id" ),
+    pointer_mode( "pointer-mode", 3, PT_List, 'h', "hd",          "h=host, d=device" ),
 
     // ----- output parameters
     // min, max are ignored
@@ -264,8 +270,8 @@ Params::Params():
     ref_gbytes( "ref gbyte/s",  12, 3, PT_Output, no_data, 0, 0, "reference Gbyte/s rate" ),
 
     // default -1 means "no check"
-    okay      ( "status",              6,    ParamType::Output,  -1,   0,   0, "success indicator" ),
-    msg       ( "",       1, ParamType::Output,  "",           "error message" )
+    okay      ( "status",              6,    PT_Output,  -1,   0,   0, "success indicator" ),
+    msg       ( "",       1, PT_Output,  "",           "error message" )
 {
     // set header different than command line prefix
     pointer_mode.name("ptr", "pointer-mode");

@@ -15,6 +15,51 @@
 // Cast to llong to ensure printing 64 bits.
 using llong = long long;
 
+//------------------------------------------------------------------------------
+namespace blas {
+
+enum class Format : char
+{
+    LAPACK   = 'L',
+    Tile     = 'T',
+};
+
+extern const char* Format_help;
+
+inline char to_char( Format format )
+{
+    return char(format);
+}
+
+inline const char* to_c_string( Format value )
+{
+    switch (value) {
+        case Format::LAPACK: return "lapack";
+        case Format::Tile:   return "tile";
+    }
+    return "?";
+}
+
+inline std::string to_string( Format value )
+{
+    return to_c_string( value );
+}
+
+inline Format from_string( std::string const& str, Format dummy )
+{
+    std::string str_ = str;
+    std::transform( str_.begin(), str_.end(), str_.begin(), ::tolower );
+    if (str_ == "l" || str_ == "lapack")
+        return Format::LAPACK;
+    else if (str_ == "t" || str_ == "tile")
+        return Format::Tile;
+    else
+        throw blas::Error( "unknown Format: " + str );
+}
+
+}  // namespace blas
+
+
 // -----------------------------------------------------------------------------
 class Params: public testsweeper::ParamsBase
 {

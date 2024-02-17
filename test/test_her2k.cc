@@ -69,7 +69,7 @@ void test_her2k_work( Params& params, bool run )
     real_t work[1];
     real_t Anorm = lapack_lange( "f", Am, An, A, lda, work );
     real_t Bnorm = lapack_lange( "f", Am, An, B, ldb, work );
-    real_t Cnorm = lapack_lansy( "f", uplo2str(uplo), n, C, ldc, work );
+    real_t Cnorm = lapack_lansy( "f", to_c_string( uplo ), n, C, ldc, work );
 
     // test error exits
     assert_throw( blas::her2k( Layout(0), uplo,    trans,  n,  k, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
@@ -107,7 +107,7 @@ void test_her2k_work( Params& params, bool run )
                 "A An=%5lld, An=%5lld, lda=%5lld, size=%10lld, norm %.2e\n"
                 "B Bn=%5lld, Bn=%5lld, ldb=%5lld, size=%10lld, norm %.2e\n"
                 "C  n=%5lld,  n=%5lld, ldc=%5lld, size=%10lld, norm %.2e\n",
-                uplo2char(uplo), op2char(trans),
+                to_char( uplo ), to_char( trans ),
                 llong( Am ), llong( An ), llong( lda ), llong( size_A ), Anorm,
                 llong( Am ), llong( An ), llong( ldb ), llong( size_B ), Bnorm,
                 llong( n ), llong( n ), llong( ldc ), llong( size_C ), Cnorm );
