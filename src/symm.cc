@@ -9,6 +9,7 @@
 #include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -139,9 +140,13 @@ void symm(
         blas_error_if( ldc < n );
     }
 
-    // PAPI instrumentation
-    counter::symm_type element = { side, uplo, m, n };
-    counter::insert( element, counter::Id::symm );
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::symm_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { side, uplo, m, n };
+        counter::insert( element, counter::Id::symm );
+    #endif
 
     // convert arguments
     blas_int m_   = to_blas_int( m );

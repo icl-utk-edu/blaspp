@@ -9,6 +9,7 @@
 #include "device_internal.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -62,9 +63,13 @@ void symm(
         blas_error_if( ldc < n );
     }
 
-    // PAPI instrumentation
-    counter::dev_symm_type element = { side, uplo, m, n };
-    counter::insert( element, counter::Id::dev_symm );
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::dev_symm_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { side, uplo, m, n };
+        counter::insert( element, counter::Id::dev_symm );
+    #endif
 
     // convert arguments
     device_blas_int m_   = to_device_blas_int( m );

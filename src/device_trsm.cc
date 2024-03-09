@@ -9,6 +9,7 @@
 #include "device_internal.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -61,9 +62,13 @@ void trsm(
     else
         blas_error_if( ldb < n );
 
-    // PAPI instrumentation
-    counter::dev_trsm_type element = { side, uplo, trans, diag, m, n };
-    counter::insert( element, counter::Id::dev_trsm );
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::dev_trsm_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { side, uplo, trans, diag, m, n };
+        counter::insert( element, counter::Id::dev_trsm );
+    #endif
 
     // convert arguments
     device_blas_int m_   = to_device_blas_int( m );

@@ -10,6 +10,7 @@
 #include "device_internal.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -83,9 +84,13 @@ void gemm(
         device_blas_int ldb_ = to_device_blas_int( ldb[0] );
         device_blas_int ldc_ = to_device_blas_int( ldc[0] );
 
-        // PAPI instrumentation
-        counter::dev_batch_gemm_type element = { transA_, transB_, m_, n_, k_, batch_size };
-        counter::insert( element, counter::Id::dev_batch_gemm );
+        #ifdef BLAS_HAVE_PAPI
+            // PAPI instrumentation
+            counter::dev_batch_gemm_type element;
+            memset( &element, 0, sizeof( element ) );
+            element = { transA_, transB_, m_, n_, k_, batch_size };
+            counter::insert( element, counter::Id::dev_batch_gemm );
+        #endif
 
         // gemm needs 3 arrays (A, B, and C).
         size_t max_chunk = MaxBatchChunk;

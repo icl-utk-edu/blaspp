@@ -9,6 +9,7 @@
 #include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -142,9 +143,13 @@ void syr2k(
 
     blas_error_if( ldc < n );
 
-    // PAPI instrumentation
-    counter::syr2k_type element = { uplo, trans, n, k };
-    counter::insert( element, counter::Id::syr2k );
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::syr2k_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { uplo, trans, n, k };
+        counter::insert( element, counter::Id::syr2k );
+    #endif
 
     // convert arguments
     blas_int n_   = to_blas_int( n );

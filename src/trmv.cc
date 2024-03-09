@@ -9,6 +9,7 @@
 #include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -109,9 +110,13 @@ void trmv(
     blas_error_if( lda < n );
     blas_error_if( incx == 0 );
 
-    // PAPI instrumentation
-    counter::trmv_type element = { uplo, trans, diag, n };
-    counter::insert( element, counter::Id::trmv );
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::trmv_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { uplo, trans, diag, n };
+        counter::insert( element, counter::Id::trmv );
+    #endif
 
     // convert arguments
     blas_int n_    = to_blas_int( n );

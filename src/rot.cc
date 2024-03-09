@@ -8,6 +8,7 @@
 #include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -35,9 +36,13 @@ void rot(
         blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
-    // PAPI instrumentation
-    counter::rot_type element = { n };
-    counter::insert( element, counter::Id::rot );
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::rot_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { n };
+        counter::insert( element, counter::Id::rot );
+    #endif
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
@@ -66,9 +71,13 @@ void rot(
         blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
-    // PAPI instrumentation
-    counter::rot_type element = { n };
-    counter::insert( element, counter::Id::rot );
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::rot_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { n };
+        counter::insert( element, counter::Id::rot );
+    #endif
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
@@ -102,9 +111,13 @@ void rot(
         blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
-    // PAPI instrumentation
-    counter::rot_type element = { n };
-    counter::insert( element, counter::Id::rot );
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::rot_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { n };
+        counter::insert( element, counter::Id::rot );
+    #endif
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
@@ -137,9 +150,13 @@ void rot(
         blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
-    // PAPI instrumentation
-    counter::rot_type element = { n };
-    counter::insert( element, counter::Id::rot );
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::rot_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { n };
+        counter::insert( element, counter::Id::rot );
+    #endif
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
@@ -175,9 +192,13 @@ void rot(
         blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
-    // PAPI instrumentation
-    counter::rot_type element = { n };
-    counter::insert( element, counter::Id::rot );
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::rot_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { n };
+        counter::insert( element, counter::Id::rot );
+    #endif
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
@@ -211,9 +232,13 @@ void rot(
         blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
-    // PAPI instrumentation
-    counter::rot_type element = { n };
-    counter::insert( element, counter::Id::rot );
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::rot_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { n };
+        counter::insert( element, counter::Id::rot );
+    #endif
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;

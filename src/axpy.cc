@@ -9,6 +9,7 @@
 #include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -91,9 +92,13 @@ void axpy(
     blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
     blas_error_if( incy == 0 );
 
-    // PAPI instrumentation
-    counter::axpy_type element = { n };
-    counter::insert( element, counter::Id::axpy );
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::axpy_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { n };
+        counter::insert( element, counter::Id::axpy );
+    #endif
 
     // convert arguments
     blas_int n_    = to_blas_int( n );

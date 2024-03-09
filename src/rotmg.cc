@@ -8,6 +8,7 @@
 #include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -24,9 +25,13 @@ void rotmg(
     float  b,
     float  param[5] )
 {
-    // PAPI instrumentation
-    counter::rotmg_type element = { 1 };
-    counter::insert( element, counter::Id::rotmg );
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::rotmg_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { 1 };
+        counter::insert( element, counter::Id::rotmg );
+    #endif
 
     BLAS_srotmg( d1, d2, a, &b, param );
 }
@@ -40,9 +45,13 @@ void rotmg(
     double  b,
     double  param[5] )
 {
-    // PAPI instrumentation
-    counter::rotmg_type element = { 1 };
-    counter::insert( element, counter::Id::rotmg );
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::rotmg_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { 1 };
+        counter::insert( element, counter::Id::rotmg );
+    #endif
 
     BLAS_drotmg( d1, d2, a, &b, param );
 }

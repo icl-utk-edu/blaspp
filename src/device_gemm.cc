@@ -9,6 +9,7 @@
 #include "device_internal.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -76,9 +77,13 @@ void gemm(
         blas_error_if( ldc < n );
     }
 
-    // PAPI instrumentation
-    counter::dev_gemm_type element = { transA, transB, m, n, k };
-    counter::insert( element, counter::Id::dev_gemm );
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::dev_gemm_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { transA, transB, m, n, k };
+        counter::insert( element, counter::Id::dev_gemm );
+    #endif
 
     // convert arguments
     device_blas_int m_   = to_device_blas_int( m );

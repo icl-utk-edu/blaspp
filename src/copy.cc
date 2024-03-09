@@ -9,6 +9,7 @@
 #include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -84,9 +85,13 @@ void copy(
     blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
     blas_error_if( incy == 0 );
 
-    // PAPI instrumentation
-    counter::copy_type element = { n };
-    counter::insert( element, counter::Id::copy );
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::copy_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { n };
+        counter::insert( element, counter::Id::copy );
+    #endif
 
     // convert arguments
     blas_int n_    = to_blas_int( n );

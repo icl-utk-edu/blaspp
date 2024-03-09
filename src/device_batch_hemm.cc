@@ -4,12 +4,14 @@
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
 #include <limits>
+#include <string.h>
 #include <cstring>
 #include "blas/batch_common.hh"
 #include "blas.hh"
 #include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -56,9 +58,13 @@ void hemm(
 
     blas::internal_set_device( queue.device() );
 
-    // PAPI instrumentation
-    counter::dev_batch_hemm_type element = { batch_size };
-    counter::insert( element, counter::Id::dev_batch_hemm );
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::dev_batch_hemm_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { batch_size };
+        counter::insert( element, counter::Id::dev_batch_hemm );
+    #endif
 
     queue.fork();
     for (size_t i = 0; i < batch_size; ++i) {

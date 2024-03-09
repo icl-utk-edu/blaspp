@@ -9,6 +9,7 @@
 #include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -74,9 +75,13 @@ real_type<scalar_t> asum(
     blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
     blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
 
-    // PAPI instrumentation
-    counter::asum_type element = { n };
-    counter::insert( element, counter::Id::asum );
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::asum_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { n };
+        counter::insert( element, counter::Id::asum );
+    #endif
 
     // convert arguments
     blas_int n_    = to_blas_int( n );

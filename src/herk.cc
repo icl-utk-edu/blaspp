@@ -9,6 +9,7 @@
 #include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -91,9 +92,13 @@ void herk(
 
     blas_error_if( ldc < n );
 
-    // PAPI instrumentation
-    counter::herk_type element = { uplo, trans, n, k };
-    counter::insert( element, counter::Id::herk );
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::herk_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { uplo, trans, n, k };
+        counter::insert( element, counter::Id::herk );
+    #endif
 
     // convert arguments
     blas_int n_   = to_blas_int( n );

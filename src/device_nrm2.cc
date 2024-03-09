@@ -9,6 +9,7 @@
 #include "device_internal.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -34,9 +35,13 @@ void nrm2(
     blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
     blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
 
-    // PAPI instrumentation
-    counter::dev_nrm2_type element = { n };
-    counter::insert( element, counter::Id::dev_nrm2 );
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::dev_nrm2_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { n };
+        counter::insert( element, counter::Id::dev_nrm2 );
+    #endif
 
     // convert arguments
     device_blas_int n_    = to_device_blas_int( n );
