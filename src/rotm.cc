@@ -8,6 +8,7 @@
 #include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -36,7 +37,9 @@ void rotm(
     }
 
     // PAPI instrumentation
-    counter::rotm_type element = { n };
+    counter::rotm_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { n };
     counter::insert( element, counter::Id::rotm );
 
     blas_int n_    = (blas_int) n;
@@ -66,7 +69,9 @@ void rotm(
     }
 
     // PAPI instrumentation
-    counter::rotm_type element = { n };
+    counter::rotm_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { n };
     counter::insert( element, counter::Id::rotm );
 
     blas_int n_    = (blas_int) n;

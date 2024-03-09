@@ -9,6 +9,7 @@
 #include "device_internal.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -52,7 +53,9 @@ void herk(
     blas_error_if( ldc < n );
 
     // PAPI instrumentation
-    counter::dev_herk_type element = { uplo, trans, n, k };
+    counter::dev_herk_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { uplo, trans, n, k };
     counter::insert( element, counter::Id::dev_herk );
 
     // convert arguments

@@ -9,6 +9,7 @@
 #include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -92,7 +93,9 @@ void axpy(
     blas_error_if( incy == 0 );
 
     // PAPI instrumentation
-    counter::axpy_type element = { n };
+    counter::axpy_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { n };
     counter::insert( element, counter::Id::axpy );
 
     // convert arguments

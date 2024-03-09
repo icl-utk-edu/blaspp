@@ -9,6 +9,7 @@
 #include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -84,7 +85,9 @@ void scal(
     blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
 
     // PAPI instrumentation
-    counter::scal_type element = { n };
+    counter::scal_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { n };
     counter::insert( element, counter::Id::scal );
 
     // convert arguments

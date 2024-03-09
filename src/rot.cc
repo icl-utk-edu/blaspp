@@ -8,6 +8,7 @@
 #include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -36,7 +37,9 @@ void rot(
     }
 
     // PAPI instrumentation
-    counter::rot_type element = { n };
+    counter::rot_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { n };
     counter::insert( element, counter::Id::rot );
 
     blas_int n_    = (blas_int) n;
@@ -67,7 +70,9 @@ void rot(
     }
 
     // PAPI instrumentation
-    counter::rot_type element = { n };
+    counter::rot_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { n };
     counter::insert( element, counter::Id::rot );
 
     blas_int n_    = (blas_int) n;
@@ -103,7 +108,9 @@ void rot(
     }
 
     // PAPI instrumentation
-    counter::rot_type element = { n };
+    counter::rot_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { n };
     counter::insert( element, counter::Id::rot );
 
     blas_int n_    = (blas_int) n;
@@ -138,7 +145,9 @@ void rot(
     }
 
     // PAPI instrumentation
-    counter::rot_type element = { n };
+    counter::rot_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { n };
     counter::insert( element, counter::Id::rot );
 
     blas_int n_    = (blas_int) n;
@@ -176,7 +185,9 @@ void rot(
     }
 
     // PAPI instrumentation
-    counter::rot_type element = { n };
+    counter::rot_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { n };
     counter::insert( element, counter::Id::rot );
 
     blas_int n_    = (blas_int) n;
@@ -212,7 +223,9 @@ void rot(
     }
 
     // PAPI instrumentation
-    counter::rot_type element = { n };
+    counter::rot_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { n };
     counter::insert( element, counter::Id::rot );
 
     blas_int n_    = (blas_int) n;

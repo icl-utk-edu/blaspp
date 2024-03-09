@@ -9,6 +9,7 @@
 #include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -70,7 +71,9 @@ void syr(
     blas_error_if( incx == 0 );
 
     // PAPI instrumentation
-    counter::syr_type element = { uplo, n };
+    counter::syr_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { uplo, n };
     counter::insert( element, counter::Id::syr );
 
     // convert arguments

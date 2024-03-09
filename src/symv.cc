@@ -9,6 +9,7 @@
 #include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -79,7 +80,9 @@ void symv(
     blas_error_if( incy == 0 );
 
     // PAPI instrumentation
-    counter::symv_type element = { uplo, n };
+    counter::symv_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { uplo, n };
     counter::insert( element, counter::Id::symv );
 
     // convert arguments

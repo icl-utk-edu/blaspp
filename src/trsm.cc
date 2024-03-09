@@ -9,6 +9,7 @@
 #include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -135,7 +136,9 @@ void trsm(
         blas_error_if( ldb < n );
 
     // PAPI instrumentation
-    counter::trsm_type element = { side, uplo, trans, diag, m, n };
+    counter::trsm_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { side, uplo, trans, diag, m, n };
     counter::insert( element, counter::Id::trsm );
 
     // convert arguments

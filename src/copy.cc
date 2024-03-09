@@ -9,6 +9,7 @@
 #include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -85,7 +86,9 @@ void copy(
     blas_error_if( incy == 0 );
 
     // PAPI instrumentation
-    counter::copy_type element = { n };
+    counter::copy_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { n };
     counter::insert( element, counter::Id::copy );
 
     // convert arguments

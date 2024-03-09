@@ -9,6 +9,7 @@
 #include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -152,7 +153,9 @@ void ger(
         blas_error_if( lda < n );
 
     // PAPI instrumentation
-    counter::ger_type element = { m, n };
+    counter::ger_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { m, n };
     counter::insert( element, counter::Id::ger );
 
     // convert arguments
@@ -212,7 +215,9 @@ void geru(
         blas_error_if( lda < n );
 
     // PAPI instrumentation
-    counter::geru_type element = { m, n };
+    counter::geru_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { m, n };
     counter::insert( element, counter::Id::geru );
 
     blas_int m_    = to_blas_int( m );

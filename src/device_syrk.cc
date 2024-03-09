@@ -9,6 +9,7 @@
 #include "device_internal.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -61,7 +62,9 @@ void syrk(
     blas_error_if( ldc < n );
 
     // PAPI instrumentation
-    counter::dev_syrk_type element = { uplo, trans, n, k };
+    counter::dev_syrk_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { uplo, trans, n, k };
     counter::insert( element, counter::Id::dev_syrk );
 
     // convert arguments

@@ -8,6 +8,7 @@
 #include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -23,7 +24,9 @@ void rotg(
     float *s )
 {
     // PAPI instrumentation
-    counter::rotg_type element = { 1 };
+    counter::rotg_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { 1 };
     counter::insert( element, counter::Id::rotg );
 
     BLAS_srotg( a, b, c, s );
@@ -38,7 +41,9 @@ void rotg(
     double *s )
 {
     // PAPI instrumentation
-    counter::rotg_type element = { 1 };
+    counter::rotg_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { 1 };
     counter::insert( element, counter::Id::rotg );
 
     BLAS_drotg( a, b, c, s );
@@ -53,7 +58,9 @@ void rotg(
     std::complex<float> *s )
 {
     // PAPI instrumentation
-    counter::rotg_type element = { 1};
+    counter::rotg_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { 1};
     counter::insert( element, counter::Id::rotg );
 
     BLAS_crotg( (blas_complex_float*) a,
@@ -71,7 +78,9 @@ void rotg(
     std::complex<double> *s )
 {
     // PAPI instrumentation
-    counter::rotg_type element = { 1 };
+    counter::rotg_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { 1 };
     counter::insert( element, counter::Id::rotg );
 
     BLAS_zrotg( (blas_complex_double*) a,

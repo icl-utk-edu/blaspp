@@ -9,6 +9,7 @@
 #include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -165,7 +166,9 @@ scalar_t dot(
     blas_error_if( incy == 0 );
 
     // PAPI instrumentation
-    counter::dot_type element = { n };
+    counter::dot_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { n };
     counter::insert( element, counter::Id::dot );
 
     // convert arguments
@@ -195,7 +198,9 @@ scalar_t dotu(
     blas_error_if( incy == 0 );
 
     // PAPI instrumentation
-    counter::dotu_type element = { n };
+    counter::dotu_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { n };
     counter::insert( element, counter::Id::dotu );
 
     // convert arguments

@@ -9,6 +9,7 @@
 #include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -150,7 +151,9 @@ void gemm(
     }
 
     // PAPI instrumentation
-    counter::gemm_type element = { transA, transB, m, n, k };
+    counter::gemm_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { transA, transB, m, n, k };
     counter::insert( element, counter::Id::gemm );
 
     // convert arguments
