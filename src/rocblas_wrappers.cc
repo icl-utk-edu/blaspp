@@ -3,9 +3,14 @@
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
+#define ROCBLAS_V3
+
 #include "device_internal.hh"
 
 #ifdef BLAS_HAVE_ROCBLAS
+
+// ROCm doesn't define ROCBLAS_VERSION as one variable (as of 5.7.1).
+#define rocblas_version ROCBLAS_VERSION_MAJOR*10000000 + ROCBLAS_VERSION_MINOR*100000 + ROCBLAS_VERSION_PATCH
 
 #ifdef __HIP_PLATFORM_NVCC__
     #warning Compiling with rocBLAS on NVCC mode... This is an odd configuration. (Consider using NVCC only)
@@ -667,6 +672,9 @@ void trmm(
             m, n,
             &alpha,
             dA, ldda,
+            #if rocblas_version >= 30000000  // 3.0.0 (ROCm 5.6.0)
+            dB, lddb,
+            #endif
             dB, lddb ) );
 }
 
@@ -686,6 +694,9 @@ void trmm(
             m, n,
             &alpha,
             dA, ldda,
+            #if rocblas_version >= 30000000  // 3.0.0 (ROCm 5.6.0)
+            dB, lddb,
+            #endif
             dB, lddb ) );
 }
 
@@ -705,6 +716,9 @@ void trmm(
             m, n,
             (rocblas_float_complex*) &alpha,
             (rocblas_float_complex*) dA, ldda,
+            #if rocblas_version >= 30000000  // 3.0.0 (ROCm 5.6.0)
+            (rocblas_float_complex*) dB, lddb,
+            #endif
             (rocblas_float_complex*) dB, lddb ) );
 }
 
@@ -724,6 +738,9 @@ void trmm(
             m, n,
             (rocblas_double_complex*) &alpha,
             (rocblas_double_complex*) dA, ldda,
+            #if rocblas_version >= 30000000  // 3.0.0 (ROCm 5.6.0)
+            (rocblas_double_complex*) dB, lddb,
+            #endif
             (rocblas_double_complex*) dB, lddb ) );
 }
 
