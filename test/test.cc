@@ -11,6 +11,20 @@
 
 #include "test.hh"
 
+// Headers for versions.
+#ifdef BLAS_HAVE_MKL
+    #include <mkl.h>
+#endif
+#ifdef BLAS_HAVE_OPENBLAS
+    #include <cblas.h>
+#endif
+#ifdef BLAS_HAVE_CUBLAS
+    #include <cuda_runtime.h>
+#endif
+#ifdef BLAS_HAVE_ROCBLAS
+    #include <rocm-core/rocm_version.h>
+#endif
+
 // -----------------------------------------------------------------------------
 using testsweeper::ParamType;
 using testsweeper::DataType;
@@ -296,9 +310,47 @@ int main( int argc, char** argv )
     int status = 0;
     try {
         int version = blas::blaspp_version();
-        printf( "BLAS++ version %d.%02d.%02d, id %s\n",
+        printf( "BLAS++ version %d.%02d.%02d, id %s",
                 version / 10000, (version % 10000) / 100, version % 100,
                 blas::blaspp_id() );
+
+        // CPU BLAS
+        // todo: Accelerate, IBM ESSL, Cray LibSci, BLIS, etc. version.
+        #ifdef BLAS_HAVE_ACCELERATE
+            printf( ", Apple Accelerate" );
+        #endif
+        #ifdef BLAS_HAVE_ESSL
+            printf( ", IBM ESSL" );
+        #endif
+        #ifdef BLAS_HAVE_MKL
+            MKLVersion mkl_version;
+            mkl_get_version( &mkl_version );
+            printf( ", Intel MKL %d.%d.%d",
+                    mkl_version.MajorVersion,
+                    mkl_version.MinorVersion,
+                    mkl_version.UpdateVersion );
+        #endif
+        #ifdef BLAS_HAVE_OPENBLAS
+            printf( ", %s", OPENBLAS_VERSION );
+        #endif
+
+        // GPU BLAS
+        #ifdef BLAS_HAVE_CUBLAS
+            printf( ", CUDA %d.%d.%d",
+                    CUDART_VERSION / 1000,
+                    (CUDART_VERSION % 1000) / 100,
+                    CUDART_VERSION % 10 );
+        #endif
+        #ifdef BLAS_HAVE_ROCBLAS
+            printf( ", ROCm %d.%d.%d",
+                    ROCM_VERSION_MAJOR,
+                    ROCM_VERSION_MINOR,
+                    ROCM_VERSION_PATCH );
+        #endif
+        #ifdef BLAS_HAVE_SYCL
+            printf( ", SYCL" );
+        #endif
+        printf( "\n" );
 
         // print input so running `test [input] > out.txt` documents input
         printf( "input: %s", argv[0] );
