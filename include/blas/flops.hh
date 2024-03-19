@@ -56,6 +56,20 @@ inline double fmuls_scal( double n )
 inline double fadds_scal( double n )
     { return 0; }
 
+// -----------------------------------------------------------------------------
+inline double fmuls_rot( double n )
+    { return 4 * n; }
+
+inline double fadds_rot( double n )
+    { return 2 * n; }
+
+// -----------------------------------------------------------------------------
+inline double fmuls_rotm( double n )
+    { return 2 * n; }
+
+inline double fadds_rotm( double n )
+    { return 2 * n; }
+
 // =============================================================================
 // Level 2 BLAS
 // most formulas assume alpha=1, beta=0 or 1; otherwise add lower-order terms.
@@ -353,6 +367,14 @@ public:
 
     static double swap( double n )
         { return 0; }
+
+    static double rot( double n )
+        { return 1e-9 * (mul_ops*fmuls_rot(n) +
+                         add_ops*fadds_rot(n)); }
+
+    static double rotm( double n )
+        { return 1e-9 * (mul_ops*fmuls_rotm(n) +
+                         add_ops*fadds_rotm(n)); }
 
     // ----------------------------------------
     // Level 2 BLAS

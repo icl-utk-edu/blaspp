@@ -31,6 +31,7 @@ public:
     // ----- test framework parameters
     testsweeper::ParamChar   check;
     testsweeper::ParamChar   ref;
+    testsweeper::ParamChar   papi;
     //testsweeper::ParamDouble tol;  // stricter bounds don't need arbitrary tol
     testsweeper::ParamInt    repeat;
     testsweeper::ParamInt    verbose;

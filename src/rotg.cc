@@ -5,8 +5,10 @@
 
 #include "blas/fortran.h"
 #include "blas.hh"
+#include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -21,6 +23,12 @@ void rotg(
     float *c,
     float *s )
 {
+    // PAPI instrumentation
+    counter::rotg_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { 1 };
+    counter::insert( element, counter::Id::rotg );
+
     BLAS_srotg( a, b, c, s );
 }
 
@@ -32,6 +40,12 @@ void rotg(
     double *c,
     double *s )
 {
+    // PAPI instrumentation
+    counter::rotg_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { 1 };
+    counter::insert( element, counter::Id::rotg );
+
     BLAS_drotg( a, b, c, s );
 }
 
@@ -43,6 +57,12 @@ void rotg(
     float *c,
     std::complex<float> *s )
 {
+    // PAPI instrumentation
+    counter::rotg_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { 1};
+    counter::insert( element, counter::Id::rotg );
+
     BLAS_crotg( (blas_complex_float*) a,
                 (blas_complex_float*) b,
                 c,
@@ -57,6 +77,12 @@ void rotg(
     double *c,
     std::complex<double> *s )
 {
+    // PAPI instrumentation
+    counter::rotg_type element;
+    memset( &element, 0, sizeof( element ) );
+    element = { 1 };
+    counter::insert( element, counter::Id::rotg );
+
     BLAS_zrotg( (blas_complex_double*) a,
                 (blas_complex_double*) b,
                 c,
