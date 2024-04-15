@@ -5,8 +5,10 @@
 
 #include "blas/fortran.h"
 #include "blas.hh"
+#include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -34,6 +36,14 @@ void rotm(
         blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
 
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::rotm_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { n };
+        counter::insert( element, counter::Id::rotm );
+    #endif
+
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;
     blas_int incy_ = (blas_int) incy;
@@ -59,6 +69,14 @@ void rotm(
         blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
         blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
     }
+
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::rotm_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { n };
+        counter::insert( element, counter::Id::rotm );
+    #endif
 
     blas_int n_    = (blas_int) n;
     blas_int incx_ = (blas_int) incx;

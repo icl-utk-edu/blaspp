@@ -6,8 +6,10 @@
 #include "blas/fortran.h"
 #include "blas.hh"
 #include "blas_internal.hh"
+#include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -129,6 +131,14 @@ void syrk(
         blas_error_if( lda < k );
 
     blas_error_if( ldc < n );
+
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::syrk_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { uplo, trans, n, k };
+        counter::insert( element, counter::Id::syrk );
+    #endif
 
     // convert arguments
     blas_int n_   = to_blas_int( n );

@@ -6,8 +6,10 @@
 #include "blas/fortran.h"
 #include "blas.hh"
 #include "blas_internal.hh"
+#include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -105,6 +107,14 @@ void hemm(
         blas_error_if( ldb < n );
         blas_error_if( ldc < n );
     }
+
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::hemm_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { side, uplo, m, n };
+        counter::insert( element, counter::Id::hemm );
+    #endif
 
     // convert arguments
     blas_int m_   = to_blas_int( m );

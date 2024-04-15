@@ -4,10 +4,12 @@
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
 #include "blas/device_blas.hh"
+#include "blas/counter.hh"
 
 #include "device_internal.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -32,6 +34,14 @@ void scal(
     // check arguments
     blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
     blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
+
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::dev_scal_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { n };
+        counter::insert( element, counter::Id::dev_scal );
+    #endif
 
     // convert arguments
     device_blas_int n_    = to_device_blas_int( n );

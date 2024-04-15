@@ -4,10 +4,12 @@
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
 #include "blas/device_blas.hh"
+#include "blas/counter.hh"
 
 #include "device_internal.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -63,6 +65,14 @@ void syr2k(
     }
 
     blas_error_if( ldc < n );
+
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::dev_syr2k_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { uplo, trans, n, k };
+        counter::insert( element, counter::Id::dev_syr2k );
+    #endif
 
     // convert arguments
     device_blas_int n_   = to_device_blas_int( n );

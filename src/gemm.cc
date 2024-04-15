@@ -6,8 +6,10 @@
 #include "blas/fortran.h"
 #include "blas.hh"
 #include "blas_internal.hh"
+#include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -148,6 +150,14 @@ void gemm(
         blas_error_if( ldc < n );
     }
 
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::gemm_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { transA, transB, m, n, k };
+        counter::insert( element, counter::Id::gemm );
+    #endif
+
     // convert arguments
     blas_int m_   = to_blas_int( m );
     blas_int n_   = to_blas_int( n );
@@ -252,3 +262,19 @@ void gemm(
 }
 
 }  // namespace blas
+
+#ifdef BLAS_HAVE_PAPI
+
+// Hook for papi_native_avail utility. No user code which links against this library should call
+// this function because it has the same name in all SDE-enabled libraries. papi_native_avail
+// uses dlopen and dlclose on each library so it only has one version of this symbol at a time.
+extern "C"
+papi_handle_t papi_sde_hook_list_events( papi_sde_fptr_struct_t* fptr_struct )
+{
+    papi_handle_t tmp_handle;
+    tmp_handle = fptr_struct->init( "blas" );
+    fptr_struct->create_counting_set( tmp_handle, "counter", NULL );
+    return tmp_handle;
+}
+
+#endif

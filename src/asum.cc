@@ -6,8 +6,10 @@
 #include "blas/fortran.h"
 #include "blas.hh"
 #include "blas_internal.hh"
+#include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -72,6 +74,14 @@ real_type<scalar_t> asum(
     // check arguments
     blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
     blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
+
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::asum_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { n };
+        counter::insert( element, counter::Id::asum );
+    #endif
 
     // convert arguments
     blas_int n_    = to_blas_int( n );

@@ -6,8 +6,10 @@
 #include "blas/fortran.h"
 #include "blas.hh"
 #include "blas_internal.hh"
+#include "blas/counter.hh"
 
 #include <limits>
+#include <string.h>
 
 namespace blas {
 
@@ -125,6 +127,14 @@ void gemv(
 
     blas_error_if( incx == 0 );
     blas_error_if( incy == 0 );
+
+    #ifdef BLAS_HAVE_PAPI
+        // PAPI instrumentation
+        counter::gemv_type element;
+        memset( &element, 0, sizeof( element ) );
+        element = { trans, m, n };
+        counter::insert( element, counter::Id::gemv );
+    #endif
 
     // convert arguments
     blas_int m_    = to_blas_int( m );
