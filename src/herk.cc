@@ -98,6 +98,9 @@ void herk(
         memset( &element, 0, sizeof( element ) );
         element = { uplo, trans, n, k };
         counter::insert( element, counter::Id::herk );
+
+        double gflops = 1e9 * blas::Gflop< scalar_t >::herk( n, k );
+        counter::inc_flop_count( (long long int)gflops );
     #endif
 
     // convert arguments

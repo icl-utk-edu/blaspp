@@ -81,6 +81,9 @@ real_type<scalar_t> nrm2(
         memset( &element, 0, sizeof( element ) );
         element = { n };
         counter::insert( element, counter::Id::nrm2 );
+
+        double gflops = 1e9 * blas::Gflop< scalar_t >::nrm2( n );
+        counter::inc_flop_count( (long long int)gflops );
     #endif
 
     // convert arguments

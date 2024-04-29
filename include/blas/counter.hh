@@ -9,6 +9,7 @@
 #include "blas/defines.h"
 #include "blas/util.hh"
 #include "blas/flops.hh"
+#include <atomic>
 
 #ifdef BLAS_HAVE_PAPI
     #include "sde_lib.h"
@@ -230,13 +231,12 @@ public:
     };
 
     //--------------------------------------------------------------------------
-    /// Initializes PAPI counting set on first call.
-    /// Without PAPI, returns null.
-    /// @return PAPI counting set.
-    static CountingSet* get()
+    /// Initializes PAPI counters on first call.
+    /// @return reference to counter class.
+    static counter &get()
     {
         static counter s_cnt;
-        return s_cnt.set_;
+        return s_cnt;
     }
 
     //--------------------------------------------------------------------------
@@ -246,7 +246,7 @@ public:
     static void insert( T element, Id id )
     {
         #ifdef BLAS_HAVE_PAPI
-            get()->insert( element, uint32_t( id ) );
+            get().set_->insert( element, uint32_t( id ) );
         #endif
     }
 
@@ -258,8 +258,31 @@ public:
     static void insert( size_t hashable_size, T element, Id id )
     {
         #ifdef BLAS_HAVE_PAPI
-            get()->insert( hashable_size, element, uint32_t( id ) );
+            get().set_->insert( hashable_size, element, uint32_t( id ) );
         #endif
+    }
+
+    //--------------------------------------------------------------------------
+    /// Get the current flop count.
+    /// Without PAPI, returns zero.
+    static long long int get_flop_count(std::atomic<long long> *atmc_var)
+    {
+        long long int fp = 0;
+        #ifdef BLAS_HAVE_PAPI
+            fp = *atmc_var;
+        #endif
+        return fp;
+    }
+
+    //--------------------------------------------------------------------------
+    /// Increment the current flop count.
+    /// Without PAPI, does nothing.
+    static void inc_flop_count(long long int fp)
+    {
+        #ifdef BLAS_HAVE_PAPI
+            get().total_flop_count_ += fp;
+        #endif
+        return;
     }
 
     //--------------------------------------------------------------------------
@@ -707,17 +730,21 @@ public:
 
 private:
     //--------------------------------------------------------------------------
-    /// Constructor initializes PAPI counting set on first call to get().
-    counter():
-        set_( nullptr )
+    /// Constructor initializes SDEs on first call to get().
+    counter()
     {
+        set_ = nullptr;
+        total_flop_count_ = -1;
         #ifdef BLAS_HAVE_PAPI
             papi_sde::PapiSde sde( "blas" );
             set_ = sde.create_counting_set( "counter" );
+            total_flop_count_ = 0;
+            sde.register_counter_cb("flops", PAPI_SDE_RO|PAPI_SDE_DELTA, get_flop_count, total_flop_count_);
         #endif
     }
 
     CountingSet* set_;
+    std::atomic<long long> total_flop_count_;
 };  // class count
 
 }  // namespace blas

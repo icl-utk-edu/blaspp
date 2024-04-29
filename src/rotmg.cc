@@ -31,6 +31,9 @@ void rotmg(
         memset( &element, 0, sizeof( element ) );
         element = { 1 };
         counter::insert( element, counter::Id::rotmg );
+
+        // This operation does not incur any FLOPs, so no
+        // need to call counter::inc_flop_count()
     #endif
 
     BLAS_srotmg( d1, d2, a, &b, param );
@@ -51,6 +54,9 @@ void rotmg(
         memset( &element, 0, sizeof( element ) );
         element = { 1 };
         counter::insert( element, counter::Id::rotmg );
+
+        // This operation does not incur any FLOPs, so no
+        // need to call counter::inc_flop_count()
     #endif
 
     BLAS_drotmg( d1, d2, a, &b, param );

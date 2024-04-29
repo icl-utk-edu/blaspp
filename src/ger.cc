@@ -158,6 +158,9 @@ void ger(
         memset( &element, 0, sizeof( element ) );
         element = { m, n };
         counter::insert( element, counter::Id::ger );
+
+        double gflops = 1e9 * blas::Gflop< scalar_t >::ger( m, n );
+        counter::inc_flop_count( (long long int)gflops );
     #endif
 
     // convert arguments
@@ -222,6 +225,9 @@ void geru(
         memset( &element, 0, sizeof( element ) );
         element = { m, n };
         counter::insert( element, counter::Id::geru );
+
+        double gflops = 1e9 * blas::Gflop< scalar_t >::ger( m, n );
+        counter::inc_flop_count( (long long int)gflops );
     #endif
 
     blas_int m_    = to_blas_int( m );

@@ -82,6 +82,9 @@ void her(
         memset( &element, 0, sizeof( element ) );
         element = { uplo, n };
         counter::insert( element, counter::Id::her );
+
+        double gflops = 1e9 * blas::Gflop< scalar_t >::her( n );
+        counter::inc_flop_count( (long long int)gflops );
     #endif
 
     // convert arguments

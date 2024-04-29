@@ -116,6 +116,9 @@ void trmv(
         memset( &element, 0, sizeof( element ) );
         element = { uplo, trans, diag, n };
         counter::insert( element, counter::Id::trmv );
+
+        double gflops = 1e9 * blas::Gflop< scalar_t >::trmv( n );
+        counter::inc_flop_count( (long long int)gflops );
     #endif
 
     // convert arguments
