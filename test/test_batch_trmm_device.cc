@@ -26,7 +26,7 @@ void test_batch_trmm_work_device( Params& params, bool run )
     blas::Uplo uplo_    = params.uplo();
     blas::Op trans_     = params.trans();
     blas::Diag diag_    = params.diag();
-    scalar_t alpha_     = params.alpha();
+    scalar_t alpha_     = params.alpha.get<scalar_t>();
     int64_t m_          = params.dim.m();
     int64_t n_          = params.dim.n();
     size_t  batch       = params.batch();

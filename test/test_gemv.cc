@@ -25,8 +25,8 @@ void test_gemv_work( Params& params, bool run )
     // get & mark input values
     blas::Layout layout = params.layout();
     blas::Op trans  = params.trans();
-    scalar_t alpha  = params.alpha();
-    scalar_t beta   = params.beta();
+    scalar_t alpha  = params.alpha.get<scalar_t>();
+    scalar_t beta   = params.beta.get<scalar_t>();
     int64_t m       = params.dim.m();
     int64_t n       = params.dim.n();
     int64_t incx    = params.incx();

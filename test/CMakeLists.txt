@@ -23,7 +23,7 @@ if (NOT TARGET testsweeper)
         message( "" )
     else()
         set( url "https://github.com/icl-utk-edu/testsweeper" )
-        set( tag "v2023.11.05" )
+        set( tag "ad53c374818312bcf4bda19dd22468c129135206" ) # 2024-05-22
         message( "" )
         message( "---------- TestSweeper" )
         message( STATUS "Fetching TestSweeper ${tag} from ${url}" )

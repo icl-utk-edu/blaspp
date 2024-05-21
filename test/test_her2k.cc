@@ -27,8 +27,8 @@ void test_her2k_work( Params& params, bool run )
     blas::Layout layout = params.layout();
     blas::Op trans  = params.trans();
     blas::Uplo uplo = params.uplo();
-    scalar_t alpha  = params.alpha();
-    real_t beta     = params.beta();   // note: real
+    scalar_t alpha  = params.alpha.get<scalar_t>();
+    real_t beta     = params.beta.get<real_t>();   // note: real
     int64_t n       = params.dim.n();
     int64_t k       = params.dim.k();
     int64_t align   = params.align();

@@ -27,8 +27,8 @@ void test_symm_device_work( Params& params, bool run )
     blas::Layout layout = params.layout();
     blas::Side side     = params.side();
     blas::Uplo uplo     = params.uplo();
-    scalar_t alpha      = params.alpha();
-    scalar_t beta       = params.beta();
+    scalar_t alpha      = params.alpha.get<scalar_t>();
+    scalar_t beta       = params.beta.get<scalar_t>();
     int64_t m           = params.dim.m();
     int64_t n           = params.dim.n();
     int64_t device      = params.device();

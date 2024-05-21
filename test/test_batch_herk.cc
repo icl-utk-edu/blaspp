@@ -24,8 +24,8 @@ void test_batch_herk_work( Params& params, bool run )
     blas::Layout layout = params.layout();
     blas::Op trans_      = params.trans();
     blas::Uplo uplo_     = params.uplo();
-    real_t alpha_        = params.alpha();  // note: real
-    real_t beta_         = params.beta();   // note: real
+    real_t alpha_        = params.alpha.get<real_t>();  // note: real
+    real_t beta_         = params.beta.get<real_t>();   // note: real
     int64_t n_           = params.dim.n();
     int64_t k_           = params.dim.k();
     size_t  batch       = params.batch();

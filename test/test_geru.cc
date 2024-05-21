@@ -23,7 +23,7 @@ void test_geru_work( Params& params, bool run )
 
     // get & mark input values
     blas::Layout layout = params.layout();
-    scalar_t alpha  = params.alpha();
+    scalar_t alpha  = params.alpha.get<scalar_t>();
     int64_t m       = params.dim.m();
     int64_t n       = params.dim.n();
     int64_t incx    = params.incx();

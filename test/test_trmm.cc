@@ -29,7 +29,7 @@ void test_trmm_work( Params& params, bool run )
     blas::Uplo uplo = params.uplo();
     blas::Op trans  = params.trans();
     blas::Diag diag = params.diag();
-    scalar_t alpha  = params.alpha();
+    scalar_t alpha  = params.alpha.get<scalar_t>();
     int64_t m       = params.dim.m();
     int64_t n       = params.dim.n();
     int64_t align   = params.align();

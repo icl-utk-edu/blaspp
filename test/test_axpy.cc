@@ -22,7 +22,7 @@ void test_axpy_work( Params& params, bool run )
     using real_t   = blas::real_type< scalar_t >;
 
     // get & mark input values
-    scalar_t alpha  = params.alpha();
+    scalar_t alpha  = params.alpha.get<scalar_t>();
     int64_t n       = params.dim.n();
     int64_t incx    = params.incx();
     int64_t incy    = params.incy();

@@ -26,8 +26,8 @@ void test_gemm_device_work( Params& params, bool run )
     blas::Layout layout = params.layout();
     blas::Op transA     = params.transA();
     blas::Op transB     = params.transB();
-    scalar_t alpha      = params.alpha();
-    scalar_t beta       = params.beta();
+    scalar_t alpha      = params.alpha.get<scalar_t>();
+    scalar_t beta       = params.beta.get<scalar_t>();
     int64_t m           = params.dim.m();
     int64_t n           = params.dim.n();
     int64_t k           = params.dim.k();

@@ -25,7 +25,7 @@ void test_syr_work( Params& params, bool run )
     // get & mark input values
     blas::Layout layout = params.layout();
     blas::Uplo uplo = params.uplo ();
-    scalar_t alpha  = params.alpha();
+    scalar_t alpha  = params.alpha.get<scalar_t>();
     int64_t n       = params.dim.n();
     int64_t incx    = params.incx();
     int64_t align   = params.align();

@@ -10,7 +10,7 @@
 #include "print_matrix.hh"
 
 // -----------------------------------------------------------------------------
-template <typename T>
+template <typename scalar_t>
 void test_scal_device_work( Params& params, bool run )
 {
     using namespace testsweeper;
@@ -18,10 +18,10 @@ void test_scal_device_work( Params& params, bool run )
     using std::abs;
     using std::real;
     using std::imag;
-    using real_t = blas::real_type< T >;
+    using real_t = blas::real_type< scalar_t >;
 
     // get & mark input values
-    T alpha         = params.alpha();
+    scalar_t alpha  = params.alpha.get<scalar_t>();
     int64_t n       = params.dim.n();
     int64_t incx    = params.incx();
     int64_t device  = params.device();
@@ -49,14 +49,14 @@ void test_scal_device_work( Params& params, bool run )
 
     // setup
     size_t size_x = (n - 1) * std::abs(incx) + 1;
-    T* x    = new T[ size_x ];
-    T* xref = new T[ size_x ];
+    scalar_t* x    = new scalar_t[ size_x ];
+    scalar_t* xref = new scalar_t[ size_x ];
 
     // device specifics
     blas::Queue queue( device );
-    T* dx;
+    scalar_t* dx;
 
-    dx = blas::device_malloc<T>(size_x, queue);
+    dx = blas::device_malloc<scalar_t>(size_x, queue);
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
@@ -89,8 +89,8 @@ void test_scal_device_work( Params& params, bool run )
     queue.sync();
     time = get_wtime() - time;
 
-    double gflop = blas::Gflop< T >::scal( n );
-    double gbyte = blas::Gbyte< T >::scal( n );
+    double gflop = blas::Gflop< scalar_t >::scal( n );
+    double gbyte = blas::Gbyte< scalar_t >::scal( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
@@ -128,7 +128,7 @@ void test_scal_device_work( Params& params, bool run )
         params.error() = error;
 
         // complex needs extra factor; see Higham, 2002, sec. 3.6.
-        if (blas::is_complex<T>::value) {
+        if (blas::is_complex<scalar_t>::value) {
             error /= 2*sqrt(2);
         }
 

@@ -9,59 +9,105 @@
 #include "testsweeper.hh"
 #include "blas.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // For printf, int64_t could be long (%ld), which is >= 32 bits,
 // or long long (%lld), guaranteed >= 64 bits.
 // Cast to llong to ensure printing 64 bits.
 using llong = long long;
 
-// -----------------------------------------------------------------------------
-class Params: public testsweeper::ParamsBase
+//------------------------------------------------------------------------------
+namespace blas {
+
+enum class Format : char
 {
+    LAPACK   = 'L',
+    Tile     = 'T',
+};
+
+extern const char* Format_help;
+
+inline char to_char( Format format )
+{
+    return char(format);
+}
+
+inline const char* to_c_string( Format value )
+{
+    switch (value) {
+        case Format::LAPACK: return "lapack";
+        case Format::Tile:   return "tile";
+    }
+    return "?";
+}
+
+inline std::string to_string( Format value )
+{
+    return to_c_string( value );
+}
+
+inline Format from_string( std::string const& str, Format dummy )
+{
+    std::string str_ = str;
+    std::transform( str_.begin(), str_.end(), str_.begin(), ::tolower );
+    if (str_ == "l" || str_ == "lapack")
+        return Format::LAPACK;
+    else if (str_ == "t" || str_ == "tile")
+        return Format::Tile;
+    else
+        throw blas::Error( "unknown Format: " + str );
+}
+
+}  // namespace blas
+
+
+//------------------------------------------------------------------------------
+class Params: public testsweeper::ParamsBase {
 public:
     const double inf = std::numeric_limits<double>::infinity();
     const double nan = std::numeric_limits<double>::quiet_NaN();
-    const double pi  = 3.141592653589793;
-    const double e   = 2.718281828459045;
 
     Params();
 
     // Field members are explicitly public.
     // Order here determines output order.
-    // ----- test framework parameters
+    //----- test framework parameters
     testsweeper::ParamChar   check;
     testsweeper::ParamChar   ref;
     testsweeper::ParamChar   papi;
-    //testsweeper::ParamDouble tol;  // stricter bounds don't need arbitrary tol
     testsweeper::ParamInt    repeat;
     testsweeper::ParamInt    verbose;
     testsweeper::ParamInt    cache;
+    std::string              routine;
 
-    // ----- routine parameters
+    //----- routine parameters, enums
     testsweeper::ParamEnum< testsweeper::DataType > datatype;
-    testsweeper::ParamEnum< blas::Layout >      layout;
-    testsweeper::ParamEnum< blas::Format >      format;
-    testsweeper::ParamEnum< blas::Side >        side;
-    testsweeper::ParamEnum< blas::Uplo >        uplo;
-    testsweeper::ParamEnum< blas::Op >          trans;
-    testsweeper::ParamEnum< blas::Op >          transA;
-    testsweeper::ParamEnum< blas::Op >          transB;
-    testsweeper::ParamEnum< blas::Diag >        diag;
 
-    testsweeper::ParamInt3   dim;
-    testsweeper::ParamDouble alpha;
-    testsweeper::ParamDouble beta;
-    testsweeper::ParamInt    incx;
-    testsweeper::ParamInt    incy;
-    testsweeper::ParamInt    align;
-    testsweeper::ParamInt    batch;
-    testsweeper::ParamInt    device;
-    testsweeper::ParamChar   pointer_mode;
+    // BLAS & LAPACK options
+    testsweeper::ParamEnum< blas::Layout >          layout;
+    testsweeper::ParamEnum< blas::Format >          format;
+    testsweeper::ParamEnum< blas::Side >            side;
+    testsweeper::ParamEnum< blas::Uplo >            uplo;
+    testsweeper::ParamEnum< blas::Op >              trans;
+    testsweeper::ParamEnum< blas::Op >              transA;
+    testsweeper::ParamEnum< blas::Op >              transB;
+    testsweeper::ParamEnum< blas::Diag >            diag;
+    testsweeper::ParamChar                          pointer_mode;
 
-    // ----- output parameters
+    //----- routine parameters, numeric
+    testsweeper::ParamInt3    dim;  // m, n, k
+    testsweeper::ParamComplex alpha;
+    testsweeper::ParamComplex beta;
+    testsweeper::ParamInt     incx;
+    testsweeper::ParamInt     incy;
+    testsweeper::ParamInt     align;
+    testsweeper::ParamInt     batch;
+    testsweeper::ParamInt     device;
+
+    //----- output parameters
     testsweeper::ParamScientific error;
     testsweeper::ParamScientific error2;
     testsweeper::ParamScientific error3;
+
     testsweeper::ParamDouble     time;
     testsweeper::ParamDouble     gflops;
     testsweeper::ParamDouble     gbytes;
@@ -84,18 +130,16 @@ public:
 
     testsweeper::ParamOkay       okay;
     testsweeper::ParamString     msg;
-
-    std::string              routine;
 };
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename T>
 inline T roundup( T x, T y )
 {
     return T( (x + y - 1) / y ) * y;
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #ifndef assert_throw
     #if defined(BLAS_ERROR_NDEBUG) || (defined(BLAS_ERROR_ASSERT) && defined(NDEBUG))
         #define assert_throw( expr, exception_type ) \
@@ -116,7 +160,7 @@ inline T roundup( T x, T y )
     #endif
 #endif
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Like assert(), but throws error and is not disabled by NDEBUG.
 inline
 void require_( bool cond, const char* condstr, const char* file, int line )
@@ -129,7 +173,7 @@ void require_( bool cond, const char* condstr, const char* file, int line )
 
 #define require( cond ) require_( (cond), #cond, __FILE__, __LINE__ )
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /// Synchronize the GPU queue, then return the current time in seconds.
 inline
 double sync_get_wtime( blas::Queue& queue )
@@ -138,7 +182,7 @@ double sync_get_wtime( blas::Queue& queue )
     return testsweeper::get_wtime();
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Level 1 BLAS
 void test_asum  ( Params& params, bool run );
 void test_axpy  ( Params& params, bool run );
@@ -154,7 +198,7 @@ void test_rotmg ( Params& params, bool run );
 void test_scal  ( Params& params, bool run );
 void test_swap  ( Params& params, bool run );
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Level 2 BLAS
 void test_gemv  ( Params& params, bool run );
 void test_ger   ( Params& params, bool run );
@@ -168,7 +212,7 @@ void test_syr2  ( Params& params, bool run );
 void test_trmv  ( Params& params, bool run );
 void test_trsv  ( Params& params, bool run );
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Level 3 BLAS
 void test_gemm  ( Params& params, bool run );
 void test_hemm  ( Params& params, bool run );
@@ -180,7 +224,7 @@ void test_syrk  ( Params& params, bool run );
 void test_trmm  ( Params& params, bool run );
 void test_trsm  ( Params& params, bool run );
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Level 3 Batch BLAS
 void test_batch_gemm  ( Params& params, bool run );
 void test_batch_hemm  ( Params& params, bool run );
@@ -192,7 +236,7 @@ void test_batch_syrk  ( Params& params, bool run );
 void test_batch_trmm  ( Params& params, bool run );
 void test_batch_trsm  ( Params& params, bool run );
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Level 1 GPU BLAS
 void test_axpy_device  ( Params& params, bool run );
 void test_dot_device   ( Params& params, bool run );
@@ -202,7 +246,7 @@ void test_scal_device  ( Params& params, bool run );
 void test_swap_device  ( Params& params, bool run );
 void test_copy_device  ( Params& params, bool run );
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Level 3 GPU BLAS
 void test_gemm_device  ( Params& params, bool run );
 void test_hemm_device  ( Params& params, bool run );
@@ -225,7 +269,7 @@ void test_batch_syrk_device  ( Params& params, bool run );
 void test_batch_trmm_device  ( Params& params, bool run );
 void test_batch_trsm_device  ( Params& params, bool run );
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // auxiliary
 void test_error ( Params& params, bool run );
 void test_max   ( Params& params, bool run );

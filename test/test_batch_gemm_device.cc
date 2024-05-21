@@ -25,8 +25,8 @@ void test_device_batch_gemm_work( Params& params, bool run )
     blas::Layout layout = params.layout();
     blas::Op transA_    = params.transA();
     blas::Op transB_    = params.transB();
-    scalar_t alpha_     = params.alpha();
-    scalar_t beta_      = params.beta();
+    scalar_t alpha_     = params.alpha.get<scalar_t>();
+    scalar_t beta_      = params.beta.get<scalar_t>();
     int64_t m_          = params.dim.m();
     int64_t n_          = params.dim.n();
     int64_t k_          = params.dim.k();

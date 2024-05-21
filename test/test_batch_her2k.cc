@@ -24,8 +24,8 @@ void test_batch_her2k_work( Params& params, bool run )
     blas::Layout layout = params.layout();
     blas::Op trans_     = params.trans();
     blas::Uplo uplo_    = params.uplo();
-    scalar_t alpha_     = params.alpha();
-    real_t beta_        = params.beta();   // note: real
+    scalar_t alpha_     = params.alpha.get<scalar_t>();
+    real_t beta_        = params.beta.get<real_t>();   // note: real
     int64_t n_          = params.dim.n();
     int64_t k_          = params.dim.k();
     size_t  batch       = params.batch();

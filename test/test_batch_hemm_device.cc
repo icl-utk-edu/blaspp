@@ -24,8 +24,8 @@ void test_batch_hemm_device_work( Params& params, bool run )
     blas::Layout layout = params.layout();
     blas::Side side_    = params.side();
     blas::Uplo uplo_    = params.uplo();
-    scalar_t alpha_     = params.alpha();
-    scalar_t beta_      = params.beta();
+    scalar_t alpha_     = params.alpha.get<scalar_t>();
+    scalar_t beta_      = params.beta.get<scalar_t>();
     int64_t m_          = params.dim.m();
     int64_t n_          = params.dim.n();
     size_t  batch       = params.batch();

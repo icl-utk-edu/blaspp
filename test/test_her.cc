@@ -23,7 +23,7 @@ void test_her_work( Params& params, bool run )
     // get & mark input values
     blas::Layout layout = params.layout();
     blas::Uplo uplo = params.uplo();
-    real_t alpha    = params.alpha();  // note: real
+    real_t alpha    = params.alpha.get<real_t>();  // note: real
     int64_t n       = params.dim.n();
     int64_t incx    = params.incx();
     int64_t align   = params.align();
