@@ -97,7 +97,7 @@ void test_batch_symm_work( Params& params, bool run )
     real_t* Cnorm = new real_t[ batch ];
 
     for (size_t s = 0; s < batch; ++s) {
-        Anorm[s] = lapack_lansy( "f", uplo2str(uplo_), An, Aarray[s], lda_, work );
+        Anorm[s] = lapack_lansy( "f", to_c_string( uplo_ ), An, Aarray[s], lda_, work );
         Bnorm[s] = lapack_lange( "f", Cm, Cn, Barray[s], ldb_, work );
         Cnorm[s] = lapack_lange( "f", Cm, Cn, Carray[s], ldc_, work );
     }

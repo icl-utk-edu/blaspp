@@ -98,7 +98,7 @@ void test_batch_her2k_work( Params& params, bool run )
     for (size_t s = 0; s < batch; ++s) {
         Anorm[s] = lapack_lange( "f", Am, An, Aarray[s], lda_, work );
         Bnorm[s] = lapack_lange( "f", Am, An, Barray[s], ldb_, work );
-        Cnorm[s] = lapack_lansy( "f", uplo2str(uplo_), n_, Carray[s], ldc_, work );
+        Cnorm[s] = lapack_lansy( "f", to_c_string( uplo_ ), n_, Carray[s], ldc_, work );
     }
 
     // decide error checking mode

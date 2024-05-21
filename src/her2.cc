@@ -100,7 +100,7 @@ void her2(
         // swap lower <=> upper
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
     }
-    char uplo_ = uplo2char( uplo );
+    char uplo_ = to_char( uplo );
 
     // call low-level wrapper
     internal::her2( uplo_, n_,

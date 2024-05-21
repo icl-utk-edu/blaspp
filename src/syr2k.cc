@@ -164,8 +164,8 @@ void syr2k(
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
         trans = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
     }
-    char uplo_ = uplo2char( uplo );
-    char trans_ = op2char( trans );
+    char uplo_  = to_char( uplo );
+    char trans_ = to_char( trans );
 
     // call low-level wrapper
     internal::syr2k( uplo_, trans_, n_, k_,

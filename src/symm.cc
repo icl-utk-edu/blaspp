@@ -163,8 +163,8 @@ void symm(
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
         swap( m_, n_ );
     }
-    char side_ = side2char( side );
-    char uplo_ = uplo2char( uplo );
+    char side_ = to_char( side );
+    char uplo_ = to_char( uplo );
 
     // call low-level wrapper
     internal::symm( side_, uplo_, m_, n_,

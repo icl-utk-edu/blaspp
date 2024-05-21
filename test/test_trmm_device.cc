@@ -84,7 +84,7 @@ void test_trmm_device_work( Params& params, bool run )
 
     // norms for error check
     real_t work[1];
-    real_t Anorm = lapack_lantr( "f", uplo2str(uplo), diag2str(diag),
+    real_t Anorm = lapack_lantr( "f", to_c_string( uplo ), to_c_string( diag ),
                                  Am, Am, A, lda, work );
     real_t Bnorm = lapack_lange( "f", Bm, Bn, B, ldb, work );
 

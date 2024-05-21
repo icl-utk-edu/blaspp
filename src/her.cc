@@ -105,7 +105,7 @@ void her(
         }
         incx_ = 1;
     }
-    char uplo_ = uplo2char( uplo );
+    char uplo_ = to_char( uplo );
 
     // call low-level wrapper
     internal::her( uplo_, n_,

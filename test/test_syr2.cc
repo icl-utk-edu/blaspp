@@ -69,7 +69,7 @@ void test_syr2_work( Params& params, bool run )
 
     // norms for error check
     real_t work[1];
-    real_t Anorm = lapack_lansy( "f", uplo2str(uplo), n, A, lda, work );
+    real_t Anorm = lapack_lansy( "f", to_c_string( uplo ), n, A, lda, work );
     real_t Xnorm = cblas_nrm2( n, x, std::abs(incx) );
     real_t Ynorm = cblas_nrm2( n, y, std::abs(incy) );
 

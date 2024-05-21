@@ -157,10 +157,10 @@ void trsm(
         side = (side == Side::Left ? Side::Right : Side::Left);
         swap( m_, n_ );
     }
-    char side_  = side2char( side );
-    char uplo_  = uplo2char( uplo );
-    char trans_ = op2char( trans );
-    char diag_  = diag2char( diag );
+    char side_  = to_char( side );
+    char uplo_  = to_char( uplo );
+    char trans_ = to_char( trans );
+    char diag_  = to_char( diag );
 
     // call low-level wrapper
     internal::trsm( side_, uplo_, trans_, diag_, m_, n_,

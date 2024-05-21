@@ -173,7 +173,7 @@ void gemv(
         swap( m_, n_ );
         trans2 = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
     }
-    char trans_ = op2char( trans2 );
+    char trans_ = to_char( trans2 );
 
     // call low-level wrapper
     internal::gemv( trans_, m_, n_,

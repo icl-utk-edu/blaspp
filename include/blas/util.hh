@@ -11,6 +11,7 @@
 #include <cstdarg>
 #include <limits>
 #include <vector>
+#include <algorithm>
 
 #include <assert.h>
 
@@ -24,126 +25,7 @@ namespace blas {
 // Cast to llong to ensure printing 64 bits.
 using llong = long long;
 
-// -----------------------------------------------------------------------------
-enum class Layout : char { ColMajor = 'C', RowMajor = 'R' };
-enum class Op     : char { NoTrans  = 'N', Trans    = 'T', ConjTrans = 'C' };
-enum class Uplo   : char { Upper    = 'U', Lower    = 'L', General   = 'G' };
-enum class Diag   : char { NonUnit  = 'N', Unit     = 'U' };
-enum class Side   : char { Left     = 'L', Right    = 'R' };
-enum class Format : char { LAPACK   = 'L', Tile     = 'T' };
-
-// -----------------------------------------------------------------------------
-// Convert enum to LAPACK-style char.
-inline char layout2char( Layout layout ) { return char(layout); }
-inline char     op2char( Op     op     ) { return char(op);     }
-inline char   uplo2char( Uplo   uplo   ) { return char(uplo);   }
-inline char   diag2char( Diag   diag   ) { return char(diag);   }
-inline char   side2char( Side   side   ) { return char(side);   }
-inline char format2char( Format format ) { return char(format); }
-
-// -----------------------------------------------------------------------------
-// Convert enum to LAPACK-style string.
-inline const char* layout2str( Layout layout )
-{
-    switch (layout) {
-        case Layout::ColMajor: return "col";
-        case Layout::RowMajor: return "row";
-    }
-    return "";
-}
-
-inline const char* op2str( Op op )
-{
-    switch (op) {
-        case Op::NoTrans:   return "notrans";
-        case Op::Trans:     return "trans";
-        case Op::ConjTrans: return "conj";
-    }
-    return "";
-}
-
-inline const char* uplo2str( Uplo uplo )
-{
-    switch (uplo) {
-        case Uplo::Lower:   return "lower";
-        case Uplo::Upper:   return "upper";
-        case Uplo::General: return "general";
-    }
-    return "";
-}
-
-inline const char* diag2str( Diag diag )
-{
-    switch (diag) {
-        case Diag::NonUnit: return "nonunit";
-        case Diag::Unit:    return "unit";
-    }
-    return "";
-}
-
-inline const char* side2str( Side side )
-{
-    switch (side) {
-        case Side::Left:  return "left";
-        case Side::Right: return "right";
-    }
-    return "";
-}
-
-inline const char* format2str( Format format )
-{
-    switch (format) {
-        case Format::LAPACK: return "lapack";
-        case Format::Tile: return "tile";
-    }
-    return "";
-}
-
-// -----------------------------------------------------------------------------
-// Convert LAPACK-style char to enum.
-inline Layout char2layout( char layout )
-{
-    layout = (char) toupper( layout );
-    assert( layout == 'C' || layout == 'R' );
-    return Layout( layout );
-}
-
-inline Op char2op( char op )
-{
-    op = (char) toupper( op );
-    assert( op == 'N' || op == 'T' || op == 'C' );
-    return Op( op );
-}
-
-inline Uplo char2uplo( char uplo )
-{
-    uplo = (char) toupper( uplo );
-    assert( uplo == 'L' || uplo == 'U' || uplo == 'G' );
-    return Uplo( uplo );
-}
-
-inline Diag char2diag( char diag )
-{
-    diag = (char) toupper( diag );
-    assert( diag == 'N' || diag == 'U' );
-    return Diag( diag );
-}
-
-inline Side char2side( char side )
-{
-    side = (char) toupper( side );
-    assert( side == 'L' || side == 'R' );
-    return Side( side );
-}
-
-inline Format char2format( char format )
-{
-    format = (char) toupper( format );
-    assert( format == 'L' || format == 'T' );
-    return Format( format );
-}
-
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /// Exception class for BLAS errors.
 class Error: public std::exception {
 public:
@@ -171,6 +53,264 @@ public:
 private:
     std::string msg_;
 };
+
+// -----------------------------------------------------------------------------
+enum class Layout : char { ColMajor = 'C', RowMajor = 'R' };
+enum class Op     : char { NoTrans  = 'N', Trans    = 'T', ConjTrans = 'C' };
+enum class Uplo   : char { Upper    = 'U', Lower    = 'L', General   = 'G' };
+enum class Diag   : char { NonUnit  = 'N', Unit     = 'U' };
+enum class Side   : char { Left     = 'L', Right    = 'R' };
+
+extern const char* Layout_help;
+extern const char* Op_help;
+extern const char* Uplo_help;
+extern const char* Diag_help;
+extern const char* Side_help;
+
+// -----------------------------------------------------------------------------
+// Convert enum to LAPACK-style char.
+
+inline char to_char( Layout value ) { return char( value ); }
+inline char to_char( Op     value ) { return char( value ); }
+inline char to_char( Uplo   value ) { return char( value ); }
+inline char to_char( Diag   value ) { return char( value ); }
+inline char to_char( Side   value ) { return char( value ); }
+
+[[deprecated("use to_char. To be removed 2025-05.")]]
+inline char layout2char( Layout value ) { return char( value ); }
+
+[[deprecated("use to_char. To be removed 2025-05.")]]
+inline char     op2char( Op     value ) { return char( value ); }
+
+[[deprecated("use to_char. To be removed 2025-05.")]]
+inline char   uplo2char( Uplo   value ) { return char( value ); }
+
+[[deprecated("use to_char. To be removed 2025-05.")]]
+inline char   diag2char( Diag   value ) { return char( value ); }
+
+[[deprecated("use to_char. To be removed 2025-05.")]]
+inline char   side2char( Side   value ) { return char( value ); }
+
+//------------------------------------------------------------------------------
+// Convert enum to LAPACK-style C string (const char*).
+
+inline const char* to_c_string( Layout value )
+{
+    switch (value) {
+        case Layout::ColMajor: return "col";
+        case Layout::RowMajor: return "row";
+    }
+    return "?";
+}
+
+inline const char* to_c_string( Op value )
+{
+    switch (value) {
+        case Op::NoTrans:   return "notrans";
+        case Op::Trans:     return "trans";
+        case Op::ConjTrans: return "conj";
+    }
+    return "?";
+}
+
+inline const char* to_c_string( Uplo value )
+{
+    switch (value) {
+        case Uplo::Lower:   return "lower";
+        case Uplo::Upper:   return "upper";
+        case Uplo::General: return "general";
+    }
+    return "?";
+}
+
+inline const char* to_c_string( Diag value )
+{
+    switch (value) {
+        case Diag::NonUnit: return "nonunit";
+        case Diag::Unit:    return "unit";
+    }
+    return "?";
+}
+
+inline const char* to_c_string( Side value )
+{
+    switch (value) {
+        case Side::Left:  return "left";
+        case Side::Right: return "right";
+    }
+    return "?";
+}
+
+//------------------------------------------------------------------------------
+// Convert enum to LAPACK-style C++ string.
+
+inline std::string to_string( Layout value )
+{
+    return to_c_string( value );
+}
+
+inline std::string to_string( Op value )
+{
+    return to_c_string( value );
+}
+
+inline std::string to_string( Uplo value )
+{
+    return to_c_string( value );
+}
+
+inline std::string to_string( Diag value )
+{
+    return to_c_string( value );
+}
+
+inline std::string to_string( Side value )
+{
+    return to_c_string( value );
+}
+
+//------------------------------------------------------------------------------
+// Convert enum to LAPACK-style C string.
+
+[[deprecated("use to_string or to_c_string. To be removed 2025-05.")]]
+inline const char* layout2str( Layout value )
+{
+    return to_c_string( value );
+}
+
+[[deprecated("use to_string or to_c_string. To be removed 2025-05.")]]
+inline const char* op2str( Op value )
+{
+    return to_c_string( value );
+}
+
+[[deprecated("use to_string or to_c_string. To be removed 2025-05.")]]
+inline const char* uplo2str( Uplo value )
+{
+    return to_c_string( value );
+}
+
+[[deprecated("use to_string or to_c_string. To be removed 2025-05.")]]
+inline const char* diag2str( Diag value )
+{
+    return to_c_string( value );
+}
+
+[[deprecated("use to_string or to_c_string. To be removed 2025-05.")]]
+inline const char* side2str( Side value )
+{
+    return to_c_string( value );
+}
+
+//------------------------------------------------------------------------------
+// Convert LAPACK-style char or string to enum.
+
+inline Layout from_string( std::string const& str, Layout dummy )
+{
+    std::string str_ = str;
+    std::transform( str_.begin(), str_.end(), str_.begin(), ::tolower );
+    if (str_ == "c" || str_ == "colmajor")
+        return Layout::ColMajor;
+    else if (str_ == "r" || str_ == "rowmajor")
+        return Layout::RowMajor;
+    else
+        throw Error( "unknown Layout: " + str );
+}
+
+inline Op from_string( std::string const& str, Op dummy )
+{
+    std::string str_ = str;
+    std::transform( str_.begin(), str_.end(), str_.begin(), ::tolower );
+    if (str_ == "n" || str_ == "notrans")
+        return Op::NoTrans;
+    else if (str_ == "t" || str_ == "trans")
+        return Op::Trans;
+    else if (str_ == "c" || str_ == "conjtrans")
+        return Op::ConjTrans;
+    else
+        throw Error( "unknown Op: " + str );
+}
+
+inline Uplo from_string( std::string const& str, Uplo dummy )
+{
+    std::string str_ = str;
+    std::transform( str_.begin(), str_.end(), str_.begin(), ::tolower );
+    if (str_ == "l" || str_ == "lower")
+        return Uplo::Lower;
+    else if (str_ == "u" || str_ == "upper")
+        return Uplo::Upper;
+    else if (str_ == "g" || str_ == "general")
+        return Uplo::General;
+    else
+        throw Error( "unknown Uplo: " + str );
+}
+
+inline Diag from_string( std::string const& str, Diag dummy )
+{
+    std::string str_ = str;
+    std::transform( str_.begin(), str_.end(), str_.begin(), ::tolower );
+    if (str_ == "n" || str_ == "nonunit")
+        return Diag::NonUnit;
+    else if (str_ == "u" || str_ == "unit")
+        return Diag::Unit;
+    else
+        throw Error( "unknown Diag: " + str );
+}
+
+inline Side from_string( std::string const& str, Side dummy )
+{
+    std::string str_ = str;
+    std::transform( str_.begin(), str_.end(), str_.begin(), ::tolower );
+    if (str_ == "l" || str_ == "left")
+        return Side::Left;
+    else if (str_ == "r" || str_ == "right")
+        return Side::Right;
+    else
+        throw Error( "unknown Side: " + str );
+}
+
+///-----------------------------------------------------------------------------
+// Convert LAPACK-style char to enum.
+
+[[deprecated("use from_string. To be removed 2025-05.")]]
+inline Layout char2layout( char layout )
+{
+    layout = (char) toupper( layout );
+    assert( layout == 'C' || layout == 'R' );
+    return Layout( layout );
+}
+
+[[deprecated("use from_string. To be removed 2025-05.")]]
+inline Op char2op( char op )
+{
+    op = (char) toupper( op );
+    assert( op == 'N' || op == 'T' || op == 'C' );
+    return Op( op );
+}
+
+[[deprecated("use from_string. To be removed 2025-05.")]]
+inline Uplo char2uplo( char uplo )
+{
+    uplo = (char) toupper( uplo );
+    assert( uplo == 'L' || uplo == 'U' || uplo == 'G' );
+    return Uplo( uplo );
+}
+
+[[deprecated("use from_string. To be removed 2025-05.")]]
+inline Diag char2diag( char diag )
+{
+    diag = (char) toupper( diag );
+    assert( diag == 'N' || diag == 'U' );
+    return Diag( diag );
+}
+
+[[deprecated("use from_string. To be removed 2025-05.")]]
+inline Side char2side( char side )
+{
+    side = (char) toupper( side );
+    assert( side == 'L' || side == 'R' );
+    return Side( side );
+}
 
 // -----------------------------------------------------------------------------
 // 1-norm absolute value, |Re(x)| + |Im(x)|

@@ -128,7 +128,7 @@ void hemv(
             iy += incy;
         }
     }
-    char uplo_ = uplo2char( uplo );
+    char uplo_ = to_char( uplo );
 
     // call low-level wrapper
     internal::hemv( uplo_, n_,

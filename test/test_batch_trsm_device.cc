@@ -131,7 +131,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
             pA[ i + i*lda_ ] += Am;
         }
         int64_t potrf_info = 0;
-        lapack_potrf( uplo2str(uplo_), Am, pA, lda_, &potrf_info );
+        lapack_potrf( to_c_string( uplo_ ), Am, pA, lda_, &potrf_info );
         require( potrf_info == 0 );
     }
 
@@ -155,7 +155,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
     real_t* Anorm = new real_t[ batch ];
     real_t* Bnorm = new real_t[ batch ];
     for (size_t s = 0; s < batch; ++s) {
-        Anorm[ s ] = lapack_lantr( "f", uplo2str(uplo_), diag2str(diag_), Am, Am, Aarray[s], lda_, work );
+        Anorm[ s ] = lapack_lantr( "f", to_c_string( uplo_ ), to_c_string( diag_ ), Am, Am, Aarray[s], lda_, work );
         Bnorm[ s ] = lapack_lange( "f", Bm, Bn, Barray[s], ldb_, work );
     }
 

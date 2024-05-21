@@ -141,9 +141,9 @@ void trsv(
             }
         }
     }
-    char uplo_  = uplo2char( uplo );
-    char trans_ = op2char( trans2 );
-    char diag_  = diag2char( diag );
+    char uplo_  = to_char( uplo );
+    char trans_ = to_char( trans2 );
+    char diag_  = to_char( diag );
 
     // call low-level wrapper
     internal::trsv( uplo_, trans_, diag_, n_, A, lda_, x, incx_ );

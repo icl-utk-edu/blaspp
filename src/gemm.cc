@@ -165,8 +165,8 @@ void gemm(
     blas_int lda_ = to_blas_int( lda );
     blas_int ldb_ = to_blas_int( ldb );
     blas_int ldc_ = to_blas_int( ldc );
-    char transA_ = op2char( transA );
-    char transB_ = op2char( transB );
+    char transA_  = to_char( transA );
+    char transB_  = to_char( transB );
 
     // call low-level wrapper
     if (layout == Layout::RowMajor) {

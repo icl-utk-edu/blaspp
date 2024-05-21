@@ -135,7 +135,7 @@ void check_herk(
     //     + 3 |beta| norm(C)
     // However, so far using the same bound as rank-k works fine.
     real_t work[1], Cout_norm;
-    Cout_norm = lapack_lanhe( "f", uplo2str(uplo), n, C, ldc, work );
+    Cout_norm = lapack_lanhe( "f", to_c_string( uplo ), n, C, ldc, work );
     error[0] = Cout_norm
              / (sqrt( real_t( k ) + 2 ) * abs( alpha ) * Anorm * Bnorm
                  + 2 * abs( beta ) * Cnorm);

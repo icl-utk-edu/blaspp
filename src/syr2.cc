@@ -96,7 +96,7 @@ void syr2(
 
     if constexpr (! is_complex<scalar_t>::value) {
         // call low-level wrapper
-        char uplo_ = uplo2char( uplo );
+        char uplo_ = to_char( uplo );
         internal::syr2( uplo_, n_, alpha, x, incx_, y, incy_, A, lda_ );
     }
     else { // is_complex<scalar_t>
@@ -109,15 +109,15 @@ void syr2(
         // elif inc >= 1, consider x and y as 1-by-n matrices in inc-by-n arrays,
         // else, copy x and y and use case inc == 1 above.
         blas_int k_ = 1;
-        char trans_;
+        Op trans_;
         blas_int ldx_, ldy_;
         if (incx == 1 && incy == 1) {
-            trans_ = 'N';
+            trans_ = Op::NoTrans;
             ldx_ = n_;
             ldy_ = n_;
         }
         else if (incx >= 1 && incy >= 1) {
-            trans_ = 'T';
+            trans_ = Op::Trans;
             ldx_ = incx_;
             ldy_ = incy_;
         }
@@ -132,14 +132,14 @@ void syr2(
                 ix += incx;
                 iy += incy;
             }
-            trans_ = 'N';
+            trans_ = Op::NoTrans;
             ldx_ = n_;
             ldy_ = n_;
         }
         scalar_t beta = 1;
 
         // call low-level wrapper
-        syr2k( blas::Layout::ColMajor, uplo, char2op(trans_), n_, k_,
+        syr2k( blas::Layout::ColMajor, uplo, trans_, n_, k_,
                          alpha, x2, ldx_, y2, ldy_, beta, A, lda_ );
 
         if (x2 != x) {

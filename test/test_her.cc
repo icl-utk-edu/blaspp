@@ -60,7 +60,7 @@ void test_her_work( Params& params, bool run )
 
     // norms for error check
     real_t work[1];
-    real_t Anorm = lapack_lanhe( "f", uplo2str(uplo), n, A, lda, work );
+    real_t Anorm = lapack_lanhe( "f", to_c_string( uplo ), n, A, lda, work );
     real_t Xnorm = cblas_nrm2( n, x, std::abs(incx) );
 
     // test error exits
