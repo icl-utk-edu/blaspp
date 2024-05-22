@@ -78,6 +78,7 @@ void her2k(
         // A => A^T; A^T => A; A^H => A
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
         trans = (trans == Op::NoTrans ? Op::ConjTrans : Op::NoTrans);
+        alpha = conj( alpha );
     }
 
     blas::internal_set_device( queue.device() );

@@ -121,6 +121,7 @@ void her2k(
         // A => A^T; A^T => A; A^H => A
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
         trans = (trans == Op::NoTrans ? Op::ConjTrans : Op::NoTrans);
+        alpha = conj( alpha );
     }
 
     char uplo_  = to_char( uplo );
