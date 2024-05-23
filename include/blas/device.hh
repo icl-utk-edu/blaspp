@@ -51,8 +51,6 @@ namespace blas {
 
 // -----------------------------------------------------------------------------
 // types
-[[deprecated("use int. Remove 2023-12.")]]
-typedef int Device;
 
 #ifdef BLAS_HAVE_CUBLAS
     typedef int                  device_blas_int;
@@ -76,8 +74,8 @@ typedef int Device;
 /// - MemcpyKind::DeviceToDevice: both src and dst on GPU devices,
 ///                               which may be 2 different devices.
 ///
-/// MemcpyKind may be deprecated in the future.
-///
+/// @deprecated use memcpy without kind. To be removed 2025-05.
+/// Can't use [[deprecated]] because other deprecated functions here still use this.
 enum class MemcpyKind : device_blas_int {
     HostToHost     = 0,
     HostToDevice   = 1,
@@ -89,6 +87,7 @@ enum class MemcpyKind : device_blas_int {
 // -----------------------------------------------------------------------------
 #if defined(BLAS_HAVE_CUBLAS)
     /// @return the corresponding cuda memcpy kind constant
+    /// @deprecated use memcpy without kind. To be removed 2025-05.
     inline cudaMemcpyKind memcpy2cuda( MemcpyKind kind )
     {
         switch (kind) {
@@ -102,6 +101,7 @@ enum class MemcpyKind : device_blas_int {
     }
 #elif defined(BLAS_HAVE_ROCBLAS)
     /// @return the corresponding hip memcpy kind constant
+    /// @deprecated use memcpy without kind. To be removed 2025-05.
     inline hipMemcpyKind memcpy2hip( MemcpyKind kind )
     {
         switch (kind) {
@@ -118,6 +118,7 @@ enum class MemcpyKind : device_blas_int {
     /// The memcpy method in the sycl::queue class does not accept
     /// a direction (i.e. always operates in default mode).
     /// For interface compatibility with cuda/hip, return a default value
+    /// @deprecated use memcpy without kind. To be removed 2025-05.
     inline int64_t memcpy2sycl( MemcpyKind kind ) { return 0; }
 #endif
 
@@ -163,11 +164,6 @@ public:
     Queue();
     Queue( int device );
 
-    [[deprecated("use Queue( device ). Batch size is handled automatically. To be removed 2024-05.")]]
-    Queue( int device, int64_t batch_chunk )
-        : Queue( device )
-    {}
-
     Queue( int device, stream_t& stream );
 
     #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
@@ -192,10 +188,6 @@ public:
 
     template <typename scalar_t>
     void work_ensure_size( size_t lwork );
-
-    template <typename scalar_t>
-    [[deprecated("Use work_ensure_size(). To be removed 2024-05.")]]
-    void work_resize( size_t lwork ) { work_ensure_size<scalar_t>( lwork ); }
 
     // switch from default stream to parallel streams
     void fork( int num_streams=MaxForkSize );
@@ -382,82 +374,22 @@ inline const char* device_error_string( rocblas_status error )
 
 // -----------------------------------------------------------------------------
 // set/get device functions
-[[deprecated("use blas::Queues& with all BLAS++ calls. To be removed 2024-05.")]]
-void set_device( int device );
 
 // private, internal routine; sets device for CUDA, ROCm; nothing for SYCL
 void internal_set_device( int device );
-
-[[deprecated("use blas::Queues& with all BLAS++ calls. To be removed 2024-05.")]]
-void get_device( int *device );
 
 int get_device_count();
 
 // -----------------------------------------------------------------------------
 // memory functions
 
-/// @deprecated: use device_free( ptr, queue ).
-[[deprecated("use device_free( ptr, queue )")]]
-void device_free( void* ptr );
-
 void device_free( void* ptr, blas::Queue &queue );
 
-/// @deprecated: use host_free_pinned( ptr, queue ).
-// todo: does this really need to be deprecated
-void host_free_pinned( void* ptr );
-
 void host_free_pinned( void* ptr, blas::Queue &queue );
-
-/// @deprecated: use host_free_pinned( ptr, queue ).
-[[deprecated("use device_free_pinned( ptr, queue )")]]
-inline void device_free_pinned( void* ptr ) {
-    host_free_pinned( ptr );
-}
-
-/// @deprecated: use host_free_pinned( ptr, queue ).
-[[deprecated("use host_free_pinned( ptr, queue )")]]
-inline void device_free_pinned( void* ptr, blas::Queue &queue )
-{
-    host_free_pinned( ptr, queue );
-}
 
 // -----------------------------------------------------------------------------
 // Template functions declared here
 // -----------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-/// @deprecated: use device_malloc( nelements, queue ).
-///
-/// @return a device pointer to an allocated memory space
-/// In CUDA and ROCm, this version uses current device;
-/// in SYCL, this doesn't work since there is no concept of a current device.
-///
-template <typename T>
-[[deprecated("use device_malloc( nelements, queue )")]]
-T* device_malloc(
-    int64_t nelements)
-{
-    blas_error_if( nelements < 0 );
-
-    T* ptr = nullptr;
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_dev_call(
-            cudaMalloc( (void**)&ptr, nelements * sizeof(T) ) );
-
-    #elif defined(BLAS_HAVE_ROCBLAS)
-        blas_dev_call(
-            hipMalloc( (void**)&ptr, nelements * sizeof(T) ) );
-
-    #elif defined(BLAS_HAVE_SYCL)
-        // SYCL requires a device or queue to malloc
-        throw blas::Error( "unsupported function for sycl backend", __func__ );
-
-    #else
-
-        throw blas::Error( "device BLAS not available", __func__ );
-    #endif
-    return ptr;
-}
 
 //------------------------------------------------------------------------------
 /// @return a pointer to an allocated GPU device memory.
@@ -489,39 +421,6 @@ T* device_malloc(
     #elif defined(BLAS_HAVE_SYCL)
         blas_dev_call(
             ptr = (T*)sycl::malloc_shared( nelements*sizeof(T), queue.stream() ) );
-
-    #else
-        throw blas::Error( "device BLAS not available", __func__ );
-    #endif
-    return ptr;
-}
-
-//------------------------------------------------------------------------------
-/// @deprecated: use host_malloc_pinned( nelements, queue ).
-///
-/// @return a host pointer to a pinned memory space.
-/// In CUDA and ROCm, this version uses current device;
-/// in SYCL, this doesn't work since there is no concept of a current device.
-///
-template <typename T>
-[[deprecated("use host_malloc_pinned( nelements, queue )")]]
-T* device_malloc_pinned(
-    int64_t nelements)
-{
-    blas_error_if( nelements < 0 );
-
-    T* ptr = nullptr;
-    #ifdef BLAS_HAVE_CUBLAS
-        blas_dev_call(
-            cudaMallocHost( (void**)&ptr, nelements * sizeof(T) ) );
-
-    #elif defined(BLAS_HAVE_ROCBLAS)
-        blas_dev_call(
-            hipHostMalloc( (void**)&ptr, nelements * sizeof(T) ) );
-
-    #elif defined(BLAS_HAVE_SYCL)
-        // SYCL requires a device or queue to malloc
-        throw blas::Error( "unsupported function for sycl backend", __func__ );
 
     #else
         throw blas::Error( "device BLAS not available", __func__ );
@@ -566,17 +465,6 @@ T* host_malloc_pinned(
         throw blas::Error( "device BLAS not available", __func__ );
     #endif
     return ptr;
-}
-
-//------------------------------------------------------------------------------
-/// @deprecated: use host_malloc_pinned( nelements, queue ).
-///
-template <typename T>
-[[deprecated("device_malloc_pinned( nelements, queue )")]]
-T* device_malloc_pinned(
-    int64_t nelements, blas::Queue &queue )
-{
-    return host_malloc_pinned<T>( nelements, queue );
 }
 
 //------------------------------------------------------------------------------
@@ -638,6 +526,7 @@ void device_memset(
 /// @see device_memcpy(T*,T const*,int64_t,Queue&)
 ///
 template <typename T>
+[[deprecated("Use device_memcpy without kind. To be removed 2025-05.")]]
 void device_memcpy(
     T*       dst,
     T const* src,
@@ -692,9 +581,29 @@ void device_memcpy(
     T const* src,
     int64_t nelements, Queue& queue)
 {
-    device_memcpy<T>(
-        dst, src,
-        nelements, MemcpyKind::Default, queue);
+    blas_error_if( nelements < 0 );
+
+    #ifdef BLAS_HAVE_CUBLAS
+        blas::internal_set_device( queue.device() );
+        blas_dev_call(
+            cudaMemcpyAsync(
+                dst, src, sizeof(T)*nelements,
+                cudaMemcpyDefault, queue.stream() ) );
+
+    #elif defined(BLAS_HAVE_ROCBLAS)
+        blas::internal_set_device( queue.device() );
+        blas_dev_call(
+            hipMemcpyAsync(
+                dst, src, sizeof(T)*nelements,
+                hipMemcpyDefault, queue.stream() ) );
+
+    #elif defined(BLAS_HAVE_SYCL)
+        blas_dev_call(
+            queue.stream().memcpy( dst, src, sizeof(T)*nelements ) );
+
+    #else
+        throw blas::Error( "device BLAS not available", __func__ );
+    #endif
 }
 
 //------------------------------------------------------------------------------
@@ -710,6 +619,7 @@ void device_memcpy(
 /// @see device_memcpy_2d(T*,int64_t,T const*,int64_t,int64_t,int64_t,Queue&)
 ///
 template <typename T>
+[[deprecated("Use device_memcpy_2d without kind. To be removed 2025-05.")]]
 void device_memcpy_2d(
     T*       dst, int64_t dst_pitch,
     T const* src, int64_t src_pitch,
@@ -806,10 +716,48 @@ void device_memcpy_2d(
     T const* src, int64_t src_pitch,
     int64_t width, int64_t height, Queue& queue)
 {
-    device_memcpy_2d<T>(
-        dst, dst_pitch,
-        src, src_pitch,
-        width, height, MemcpyKind::Default, queue);
+    blas_error_if( width  < 0 );
+    blas_error_if( height < 0 );
+    blas_error_if( dst_pitch < width );
+    blas_error_if( src_pitch < width );
+
+    #ifdef BLAS_HAVE_CUBLAS
+        blas::internal_set_device( queue.device() );
+        blas_dev_call(
+            cudaMemcpy2DAsync(
+                dst, sizeof(T)*dst_pitch,
+                src, sizeof(T)*src_pitch,
+                sizeof(T)*width, height,
+                cudaMemcpyDefault, queue.stream() ) );
+
+    #elif defined(BLAS_HAVE_ROCBLAS)
+        blas::internal_set_device( queue.device() );
+        blas_dev_call(
+            hipMemcpy2DAsync(
+                dst, sizeof(T)*dst_pitch,
+                src, sizeof(T)*src_pitch,
+                sizeof(T)*width, height,
+                hipMemcpyDefault, queue.stream() ) );
+
+    #elif defined(BLAS_HAVE_SYCL)
+        if (dst_pitch == width && src_pitch == width) {
+            // one contiguous memcpy
+            blas_dev_call(
+                queue.stream().memcpy( dst, src, width * height * sizeof(T) ) );
+        }
+        else {
+            // Copy each contiguous image row (matrix column).
+            // SYCL does not support set/get/lacpy matrix.
+            for (int64_t i = 0; i < height; ++i) {
+                T*       dst_row = dst + i*dst_pitch;
+                T const* src_row = src + i*src_pitch;
+                blas_dev_call(
+                    queue.stream().memcpy( dst_row, src_row, width*sizeof(T) ) );
+            }
+        }
+    #else
+        throw blas::Error( "device BLAS not available", __func__ );
+    #endif
 }
 
 //------------------------------------------------------------------------------
@@ -889,82 +837,6 @@ void device_copy_matrix(
     T*       dst, int64_t ld_dst, Queue& queue)
 {
     device_memcpy_2d( dst, ld_dst, src, ld_src, m, n, queue );
-}
-
-//------------------------------------------------------------------------------
-/// @deprecated: recommend using
-///     device_copy_vector( n, src, inc_src, dst, inc_dst, queue )
-/// instead, which can copy from host or device, to host or device memory.
-///
-/// Copy n-element vector from host to device memory.
-///
-/// @see device_copy_vector
-///
-template <typename T>
-[[deprecated("recommend device_copy_vector( n, any_src, inc_src, any_dst, inc_dst, queue )")]]
-void device_setvector(
-    int64_t n,
-    T const* src_host, int64_t inc_src,
-    T*       dst_dev,  int64_t inc_dst, Queue& queue)
-{
-    device_copy_vector( n, src_host, inc_src, dst_dev, inc_dst, queue );
-}
-
-//------------------------------------------------------------------------------
-/// @deprecated: recommend using
-///     device_copy_vector( n, src, inc_src, dst, inc_dst, queue )
-/// instead, which can copy from host or device, to host or device memory.
-///
-/// Copy n-element vector from device to host memory.
-///
-/// @see device_copy_vector
-///
-template <typename T>
-[[deprecated("recommend device_copy_vector( n, any_src, inc_src, any_dst, inc_dst, queue )")]]
-void device_getvector(
-    int64_t n,
-    T const* src_dev,  int64_t inc_src,
-    T*       dst_host, int64_t inc_dst, Queue& queue)
-{
-    device_copy_vector( n, src_dev, inc_src, dst_host, inc_dst, queue );
-}
-
-//------------------------------------------------------------------------------
-/// @deprecated: recommend using
-///     device_copy_matrix( m, n, src, ld_src, dst, ld_dst, queue )
-/// instead, which can copy from host or device, to host or device memory.
-///
-/// Copy m-by-n matrix in ld-by-n array from host to device memory.
-///
-/// @see device_copy_matrix
-///
-template <typename T>
-[[deprecated("recommend device_copy_matrix( m, n, any_src, ld_src, any_dst, ld_dst, queue )")]]
-void device_setmatrix(
-    int64_t m, int64_t n,
-    T const* src_host, int64_t ld_src,
-    T*       dst_dev,  int64_t ld_dst, Queue& queue)
-{
-    device_copy_matrix( m, n, src_host, ld_src, dst_dev, ld_dst, queue );
-}
-
-//------------------------------------------------------------------------------
-/// @deprecated: recommend using
-///     device_copy_matrix( m, n, src, ld_src, dst, ld_dst, queue )
-/// instead, which can copy from host or device, to host or device memory.
-///
-/// Copy m-by-n matrix in ld-by-n array from device to host memory.
-///
-/// @see device_copy_matrix
-///
-template <typename T>
-[[deprecated("recommend device_copy_matrix( m, n, any_src, ld_src, any_dst, ld_dst, queue )")]]
-void device_getmatrix(
-    int64_t m, int64_t n,
-    T const* src_dev,  int64_t ld_src,
-    T*       dst_host, int64_t ld_dst, Queue& queue)
-{
-    device_copy_matrix( m, n, src_dev, ld_src, dst_host, ld_dst, queue );
 }
 
 //------------------------------------------------------------------------------
