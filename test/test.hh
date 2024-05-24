@@ -45,14 +45,14 @@ inline std::string to_string( Format value )
     return to_c_string( value );
 }
 
-inline Format from_string( std::string const& str, Format dummy )
+inline void from_string( std::string const& str, Format* val )
 {
     std::string str_ = str;
     std::transform( str_.begin(), str_.end(), str_.begin(), ::tolower );
     if (str_ == "l" || str_ == "lapack")
-        return Format::LAPACK;
+        *val = Format::LAPACK;
     else if (str_ == "t" || str_ == "tile")
-        return Format::Tile;
+        *val = Format::Tile;
     else
         throw blas::Error( "unknown Format: " + str );
 }

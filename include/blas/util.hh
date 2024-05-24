@@ -205,66 +205,66 @@ inline const char* side2str( Side value )
 //------------------------------------------------------------------------------
 // Convert LAPACK-style char or string to enum.
 
-inline Layout from_string( std::string const& str, Layout dummy )
+inline void from_string( std::string const& str, Layout* val )
 {
     std::string str_ = str;
     std::transform( str_.begin(), str_.end(), str_.begin(), ::tolower );
     if (str_ == "c" || str_ == "colmajor")
-        return Layout::ColMajor;
+        *val = Layout::ColMajor;
     else if (str_ == "r" || str_ == "rowmajor")
-        return Layout::RowMajor;
+        *val = Layout::RowMajor;
     else
         throw Error( "unknown Layout: " + str );
 }
 
-inline Op from_string( std::string const& str, Op dummy )
+inline void from_string( std::string const& str, Op* val )
 {
     std::string str_ = str;
     std::transform( str_.begin(), str_.end(), str_.begin(), ::tolower );
     if (str_ == "n" || str_ == "notrans")
-        return Op::NoTrans;
+        *val = Op::NoTrans;
     else if (str_ == "t" || str_ == "trans")
-        return Op::Trans;
+        *val = Op::Trans;
     else if (str_ == "c" || str_ == "conjtrans")
-        return Op::ConjTrans;
+        *val = Op::ConjTrans;
     else
         throw Error( "unknown Op: " + str );
 }
 
-inline Uplo from_string( std::string const& str, Uplo dummy )
+inline void from_string( std::string const& str, Uplo* val )
 {
     std::string str_ = str;
     std::transform( str_.begin(), str_.end(), str_.begin(), ::tolower );
     if (str_ == "l" || str_ == "lower")
-        return Uplo::Lower;
+        *val = Uplo::Lower;
     else if (str_ == "u" || str_ == "upper")
-        return Uplo::Upper;
+        *val = Uplo::Upper;
     else if (str_ == "g" || str_ == "general")
-        return Uplo::General;
+        *val = Uplo::General;
     else
         throw Error( "unknown Uplo: " + str );
 }
 
-inline Diag from_string( std::string const& str, Diag dummy )
+inline void from_string( std::string const& str, Diag* val )
 {
     std::string str_ = str;
     std::transform( str_.begin(), str_.end(), str_.begin(), ::tolower );
     if (str_ == "n" || str_ == "nonunit")
-        return Diag::NonUnit;
+        *val = Diag::NonUnit;
     else if (str_ == "u" || str_ == "unit")
-        return Diag::Unit;
+        *val = Diag::Unit;
     else
         throw Error( "unknown Diag: " + str );
 }
 
-inline Side from_string( std::string const& str, Side dummy )
+inline void from_string( std::string const& str, Side* val )
 {
     std::string str_ = str;
     std::transform( str_.begin(), str_.end(), str_.begin(), ::tolower );
     if (str_ == "l" || str_ == "left")
-        return Side::Left;
+        *val = Side::Left;
     else if (str_ == "r" || str_ == "right")
-        return Side::Right;
+        *val = Side::Right;
     else
         throw Error( "unknown Side: " + str );
 }

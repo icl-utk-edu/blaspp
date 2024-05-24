@@ -24,13 +24,15 @@ void test_enums()
     require( to_c_string( blas::Layout::RowMajor ) == str("row") );
     require( to_string( blas::Layout::ColMajor ) == "col" );
     require( to_string( blas::Layout::RowMajor ) == "row" );
-    require( from_string( "C", blas::Layout() ) == blas::Layout::ColMajor );
-    require( from_string( "c", blas::Layout() ) == blas::Layout::ColMajor );
-    require( from_string( "R", blas::Layout() ) == blas::Layout::RowMajor );
-    require( from_string( "r", blas::Layout() ) == blas::Layout::RowMajor );
-    require( from_string( "colmajor", blas::Layout() ) == blas::Layout::ColMajor );
-    require( from_string( "rowmajor", blas::Layout() ) == blas::Layout::RowMajor );
-    assert_throw( from_string( "xyz", blas::Layout() ), blas::Error );
+
+    blas::Layout layout;
+    from_string( "C", &layout );  require( layout == blas::Layout::ColMajor );
+    from_string( "c", &layout );  require( layout == blas::Layout::ColMajor );
+    from_string( "R", &layout );  require( layout == blas::Layout::RowMajor );
+    from_string( "r", &layout );  require( layout == blas::Layout::RowMajor );
+    from_string( "colmajor", &layout );  require( layout == blas::Layout::ColMajor );
+    from_string( "rowmajor", &layout );  require( layout == blas::Layout::RowMajor );
+    assert_throw( from_string( "xyz", &layout ), blas::Error );
 
     require( to_char( blas::Op::NoTrans   ) == 'N' );
     require( to_char( blas::Op::Trans     ) == 'T' );
@@ -41,16 +43,18 @@ void test_enums()
     require( to_string( blas::Op::NoTrans   ) == "notrans" );
     require( to_string( blas::Op::Trans     ) == "trans" );
     require( to_string( blas::Op::ConjTrans ) == "conj" );
-    require( from_string( "N", blas::Op() ) == blas::Op::NoTrans   );
-    require( from_string( "n", blas::Op() ) == blas::Op::NoTrans   );
-    require( from_string( "T", blas::Op() ) == blas::Op::Trans     );
-    require( from_string( "t", blas::Op() ) == blas::Op::Trans     );
-    require( from_string( "C", blas::Op() ) == blas::Op::ConjTrans );
-    require( from_string( "c", blas::Op() ) == blas::Op::ConjTrans );
-    require( from_string( "notrans",   blas::Op() ) == blas::Op::NoTrans   );
-    require( from_string( "trans",     blas::Op() ) == blas::Op::Trans     );
-    require( from_string( "conjtrans", blas::Op() ) == blas::Op::ConjTrans );
-    assert_throw( from_string( "xyz", blas::Op() ), blas::Error );
+
+    blas::Op op;
+    from_string( "N", &op );  require( op == blas::Op::NoTrans   );
+    from_string( "n", &op );  require( op == blas::Op::NoTrans   );
+    from_string( "T", &op );  require( op == blas::Op::Trans     );
+    from_string( "t", &op );  require( op == blas::Op::Trans     );
+    from_string( "C", &op );  require( op == blas::Op::ConjTrans );
+    from_string( "c", &op );  require( op == blas::Op::ConjTrans );
+    from_string( "notrans",   &op );  require( op == blas::Op::NoTrans   );
+    from_string( "trans",     &op );  require( op == blas::Op::Trans     );
+    from_string( "conjtrans", &op );  require( op == blas::Op::ConjTrans );
+    assert_throw( from_string( "xyz", &op ), blas::Error );
 
     require( to_char( blas::Uplo::Upper   ) == 'U' );
     require( to_char( blas::Uplo::Lower   ) == 'L' );
@@ -61,16 +65,18 @@ void test_enums()
     require( to_string( blas::Uplo::Upper   ) == "upper" );
     require( to_string( blas::Uplo::Lower   ) == "lower" );
     require( to_string( blas::Uplo::General ) == "general" );
-    require( from_string( "U", blas::Uplo() ) == blas::Uplo::Upper   );
-    require( from_string( "u", blas::Uplo() ) == blas::Uplo::Upper   );
-    require( from_string( "L", blas::Uplo() ) == blas::Uplo::Lower   );
-    require( from_string( "l", blas::Uplo() ) == blas::Uplo::Lower   );
-    require( from_string( "G", blas::Uplo() ) == blas::Uplo::General );
-    require( from_string( "g", blas::Uplo() ) == blas::Uplo::General );
-    require( from_string( "upper",   blas::Uplo() ) == blas::Uplo::Upper   );
-    require( from_string( "lower",   blas::Uplo() ) == blas::Uplo::Lower   );
-    require( from_string( "general", blas::Uplo() ) == blas::Uplo::General );
-    assert_throw( from_string( "xyz", blas::Uplo() ), blas::Error );
+
+    blas::Uplo uplo;
+    from_string( "U", &uplo );  require( uplo == blas::Uplo::Upper   );
+    from_string( "u", &uplo );  require( uplo == blas::Uplo::Upper   );
+    from_string( "L", &uplo );  require( uplo == blas::Uplo::Lower   );
+    from_string( "l", &uplo );  require( uplo == blas::Uplo::Lower   );
+    from_string( "G", &uplo );  require( uplo == blas::Uplo::General );
+    from_string( "g", &uplo );  require( uplo == blas::Uplo::General );
+    from_string( "upper",   &uplo );  require( uplo == blas::Uplo::Upper   );
+    from_string( "lower",   &uplo );  require( uplo == blas::Uplo::Lower   );
+    from_string( "general", &uplo );  require( uplo == blas::Uplo::General );
+    assert_throw( from_string( "xyz", &uplo ), blas::Error );
 
     require( to_char( blas::Diag::NonUnit ) == 'N' );
     require( to_char( blas::Diag::Unit    ) == 'U' );
@@ -78,13 +84,15 @@ void test_enums()
     require( to_c_string( blas::Diag::Unit    ) == str("unit") );
     require( to_string( blas::Diag::NonUnit ) == "nonunit" );
     require( to_string( blas::Diag::Unit    ) == "unit" );
-    require( from_string( "N", blas::Diag() ) == blas::Diag::NonUnit );
-    require( from_string( "n", blas::Diag() ) == blas::Diag::NonUnit );
-    require( from_string( "U", blas::Diag() ) == blas::Diag::Unit    );
-    require( from_string( "u", blas::Diag() ) == blas::Diag::Unit    );
-    require( from_string( "nonunit", blas::Diag() ) == blas::Diag::NonUnit );
-    require( from_string( "unit",    blas::Diag() ) == blas::Diag::Unit    );
-    assert_throw( from_string( "xyz", blas::Diag() ), blas::Error );
+
+    blas::Diag diag;
+    from_string( "N", &diag );  require( diag == blas::Diag::NonUnit );
+    from_string( "n", &diag );  require( diag == blas::Diag::NonUnit );
+    from_string( "U", &diag );  require( diag == blas::Diag::Unit    );
+    from_string( "u", &diag );  require( diag == blas::Diag::Unit    );
+    from_string( "nonunit", &diag );  require( diag == blas::Diag::NonUnit );
+    from_string( "unit",    &diag );  require( diag == blas::Diag::Unit    );
+    assert_throw( from_string( "xyz", &diag ), blas::Error );
 
     require( to_char( blas::Side::Left  ) == 'L' );
     require( to_char( blas::Side::Right ) == 'R' );
@@ -92,13 +100,15 @@ void test_enums()
     require( to_c_string( blas::Side::Right ) == str("right") );
     require( to_string( blas::Side::Left  ) == "left" );
     require( to_string( blas::Side::Right ) == "right" );
-    require( from_string( "L", blas::Side() ) == blas::Side::Left  );
-    require( from_string( "l", blas::Side() ) == blas::Side::Left  );
-    require( from_string( "R", blas::Side() ) == blas::Side::Right );
-    require( from_string( "r", blas::Side() ) == blas::Side::Right );
-    require( from_string( "left",  blas::Side() ) == blas::Side::Left  );
-    require( from_string( "right", blas::Side() ) == blas::Side::Right );
-    assert_throw( from_string( "xyz", blas::Side() ), blas::Error );
+
+    blas::Side side;
+    from_string( "L", &side );  require( side == blas::Side::Left  );
+    from_string( "l", &side );  require( side == blas::Side::Left  );
+    from_string( "R", &side );  require( side == blas::Side::Right );
+    from_string( "r", &side );  require( side == blas::Side::Right );
+    from_string( "left",  &side );  require( side == blas::Side::Left  );
+    from_string( "right", &side );  require( side == blas::Side::Right );
+    assert_throw( from_string( "xyz", &side ), blas::Error );
 }
 
 // -----------------------------------------------------------------------------
