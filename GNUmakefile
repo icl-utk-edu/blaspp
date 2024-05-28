@@ -20,7 +20,7 @@ ifeq (${MAKECMDGOALS},config)
     config: make.inc
 
     make.inc: force
-else ifneq ($(findstring clean,${MAKECMDGOALS}),clean)
+else ifneq (clean,${findstring clean,${MAKECMDGOALS}})
     # For `make clean` or `make distclean`, don't include make.inc,
     # which could generate it. Otherwise, include make.inc.
     include make.inc
@@ -67,7 +67,7 @@ ldflags_shared = -shared
 # auto-detect OS
 # $OSTYPE may not be exported from the shell, so echo it
 ostype := ${shell echo $${OSTYPE}}
-ifneq ($(findstring darwin, ${ostype}),)
+ifneq (,${findstring darwin, ${ostype}})
     # MacOS is darwin
     macos = 1
     # MacOS needs shared library's path set, and shared library version.
