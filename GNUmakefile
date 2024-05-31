@@ -373,19 +373,29 @@ hooks: ${hooks}
 #-------------------------------------------------------------------------------
 # debugging
 echo:
-	@echo "ostype        = '${ostype}'"
+	@echo "---------- Options"
 	@echo "static        = '${static}'"
+	@echo "prefix        = '${prefix}'"
+	@echo "abs_prefix    = '${abs_prefix}'"
+	@echo "papi          = '${papi}'"
+	@echo
+	@echo "---------- Internal variables"
+	@echo "ostype        = '${ostype}'"
+	@echo "macos         = '${macos}'"
 	@echo "id            = '${id}'"
 	@echo "last_id       = '${last_id}'"
 	@echo "abi_version   = '${abi_version}'"
 	@echo "soversion     = '${soversion}'"
 	@echo
+	@echo "---------- Libraries"
 	@echo "lib_name      = ${lib_name}"
 	@echo "lib_a         = ${lib_a}"
 	@echo "lib_so        = ${lib_so}"
 	@echo "lib           = ${lib}"
 	@echo "lib_so_abi    = ${lib_so_abi}"
 	@echo "lib_soname    = ${lib_soname}"
+	@echo
+	@echo "pkg           = ${pkg}"
 	@echo
 	@echo "lib_src       = ${lib_src}"
 	@echo
@@ -403,9 +413,11 @@ echo:
 	@echo "testsweeper_src   = ${testsweeper_src}"
 	@echo "testsweeper       = ${testsweeper}"
 	@echo
+	@echo "---------- C++ compiler"
 	@echo "CXX           = ${CXX}"
 	@echo "CXXFLAGS      = ${CXXFLAGS}"
 	@echo
+	@echo "---------- Link flags"
 	@echo "LD            = ${LD}"
 	@echo "LDFLAGS       = ${LDFLAGS}"
 	@echo "LIBS          = ${LIBS}"
