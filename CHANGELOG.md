@@ -1,3 +1,14 @@
+2024.05.31
+  - Added shared library version (ABI version 1.0.0)
+  - Updated enum parameters to have `to_string`, `from_string`;
+    deprecate `<enum>2str`, `str2<enum>`
+  - Removed some deprecated functions. Deprecated MemcpyKind
+  - Added PAPI SDE counters (manually enable for now)
+  - Support ROCm 5.6.0 (rocBLAS 3.0), trmm with 3 matrices (A, B, C)
+  - Fixed bug in her2k with complex alpha and row-major matrix
+  - Fixed bug in example_gemm
+  - Use `sqrt`, etc. without `std::` to enable argument dependent lookup (ADL)
+
 2023.11.05
   - Fix Queue workspace
   - Update Fortran strlen handling
