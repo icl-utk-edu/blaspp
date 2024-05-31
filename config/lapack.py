@@ -335,21 +335,23 @@ def blas():
 
     #-------------------- Apple Accelerate
     if (test_all or test_accelerate):
-        # macOS puts cblas.h in weird places.
-        paths = [
-            '/System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/Headers',
-            '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Headers',
-        ]
-        inc = ''
-        for p in paths:
-            if (os.path.exists( p + '/cblas.h' )):
-                inc = '-I' + p + ' ' + define('HAVE_ACCELERATE_CBLAS_H')
-                break
+        choices.append(
+            ['macOS Accelerate (new)',
+             {'LIBS': '-framework Accelerate',
+              'CXXFLAGS': define('HAVE_ACCELERATE')
+                        + ' -DACCELERATE_NEW_LAPACK'}])
+
+        # macOS 13.3, g++ 12.2 requires extra flag to parse Apple's headers.
+        choices.append(
+            ['macOS Accelerate (new, -flax-vector-conversions)',
+             {'LIBS': '-framework Accelerate',
+              'CXXFLAGS': define('HAVE_ACCELERATE')
+                        + ' -DACCELERATE_NEW_LAPACK -flax-vector-conversions'}])
 
         choices.append(
-            ['MacOS Accelerate',
+            ['macOS Accelerate',
              {'LIBS': '-framework Accelerate',
-              'CXXFLAGS': inc + define('HAVE_ACCELERATE')}])
+              'CXXFLAGS': define('HAVE_ACCELERATE')}])
     # end
 
     #-------------------- generic -lblas
@@ -400,6 +402,25 @@ def cblas():
         ['CBLAS (cblas_ddot) in BLAS library', {}],
         ['CBLAS (cblas_ddot) in -lcblas', {'LIBS': '-lcblas'}],
     ]
+
+    LIBS = config.environ['LIBS']
+    if ('-framework Accelerate' in LIBS):
+        # macOS puts cblas.h in weird places; add -I for path.
+        # Insert as 2nd choice, so it won't be used if 1st choice above works.
+        # On macOS 13, cblas.h seems to be in the compiler's default search
+        # path, so this is no longer needed.
+        paths = [
+            '/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers',
+            '/System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/Headers',
+            '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Headers',
+        ]
+        for p in paths:
+            if (os.path.exists( p + '/cblas.h' )):
+                inc = '-I' + p + ' ' + define('HAVE_ACCELERATE_CBLAS_H')
+                choices.insert( 1, ['CBLAS (cblas_ddot) in BLAS library, -I' + p,
+                                    {'CXXFLAGS': inc}] )
+                break
+    # end
 
     passed = []
     for (label, env) in choices:
