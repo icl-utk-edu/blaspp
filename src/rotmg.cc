@@ -32,7 +32,7 @@ void rotmg(
         element = { 1 };
         counter::insert( element, counter::Id::rotmg );
 
-        // This operation does not incur any FLOPs, so no
+        // This operation does not incur significant FLOPs, so no
         // need to call counter::inc_flop_count()
     #endif
 
@@ -55,7 +55,7 @@ void rotmg(
         element = { 1 };
         counter::insert( element, counter::Id::rotmg );
 
-        // This operation does not incur any FLOPs, so no
+        // This operation does not incur significant FLOPs, so no
         // need to call counter::inc_flop_count()
     #endif
 
