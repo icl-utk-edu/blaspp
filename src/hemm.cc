@@ -114,6 +114,9 @@ void hemm(
         memset( &element, 0, sizeof( element ) );
         element = { side, uplo, m, n };
         counter::insert( element, counter::Id::hemm );
+
+        double gflops = 1e9 * blas::Gflop< scalar_t >::hemm( side, m, n );
+        counter::inc_flop_count( (long long int)gflops );
     #endif
 
     // convert arguments

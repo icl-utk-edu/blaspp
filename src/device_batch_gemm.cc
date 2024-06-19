@@ -90,6 +90,9 @@ void gemm(
             memset( &element, 0, sizeof( element ) );
             element = { transA_, transB_, m_, n_, k_, batch_size };
             counter::insert( element, counter::Id::dev_batch_gemm );
+
+            double gflops = 1e9 * blas::Gflop< scalar_t >::gemm( m, n, k );
+            counter::inc_flop_count( (long long int)gflops );
         #endif
 
         // gemm needs 3 arrays (A, B, and C).

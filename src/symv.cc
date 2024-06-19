@@ -85,6 +85,9 @@ void symv(
         memset( &element, 0, sizeof( element ) );
         element = { uplo, n };
         counter::insert( element, counter::Id::symv );
+
+        double gflops = 1e9 * blas::Gflop< scalar_t >::symv( n );
+        counter::inc_flop_count( (long long int)gflops );
     #endif
 
     // convert arguments

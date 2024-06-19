@@ -76,6 +76,9 @@ void syr(
         memset( &element, 0, sizeof( element ) );
         element = { uplo, n };
         counter::insert( element, counter::Id::syr );
+
+        double gflops = 1e9 * blas::Gflop< scalar_t >::syr( n );
+        counter::inc_flop_count( (long long int)gflops );
     #endif
 
     // convert arguments

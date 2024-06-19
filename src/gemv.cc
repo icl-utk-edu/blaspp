@@ -134,6 +134,9 @@ void gemv(
         memset( &element, 0, sizeof( element ) );
         element = { trans, m, n };
         counter::insert( element, counter::Id::gemv );
+
+        double gflops = 1e9 * blas::Gflop< scalar_t >::gemv( m, n );
+        counter::inc_flop_count( (long long int)gflops );
     #endif
 
     // convert arguments

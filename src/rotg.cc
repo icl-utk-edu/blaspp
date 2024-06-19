@@ -29,6 +29,9 @@ void rotg(
         memset( &element, 0, sizeof( element ) );
         element = { 1 };
         counter::insert( element, counter::Id::rotg );
+
+        // This operation does not incur significant FLOPs, so no
+        // need to call counter::inc_flop_count()
     #endif
 
     BLAS_srotg( a, b, c, s );
@@ -48,6 +51,9 @@ void rotg(
         memset( &element, 0, sizeof( element ) );
         element = { 1 };
         counter::insert( element, counter::Id::rotg );
+
+        // This operation does not incur significant FLOPs, so no
+        // need to call counter::inc_flop_count()
     #endif
 
     BLAS_drotg( a, b, c, s );
@@ -67,6 +73,9 @@ void rotg(
         memset( &element, 0, sizeof( element ) );
         element = { 1 };
         counter::insert( element, counter::Id::rotg );
+
+        // This operation does not incur significant FLOPs, so no
+        // need to call counter::inc_flop_count()
     #endif
 
     BLAS_crotg( (blas_complex_float*) a,
@@ -89,6 +98,9 @@ void rotg(
         memset( &element, 0, sizeof( element ) );
         element = { 1 };
         counter::insert( element, counter::Id::rotg );
+
+        // This operation does not incur significant FLOPs, so no
+        // need to call counter::inc_flop_count()
     #endif
 
     BLAS_zrotg( (blas_complex_double*) a,

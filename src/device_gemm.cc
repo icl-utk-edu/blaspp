@@ -83,6 +83,9 @@ void gemm(
         memset( &element, 0, sizeof( element ) );
         element = { transA, transB, m, n, k };
         counter::insert( element, counter::Id::dev_gemm );
+
+        double gflops = 1e9 * blas::Gflop< scalar_t >::gemm( m, n, k );
+        counter::inc_flop_count( (long long int)gflops );
     #endif
 
     // convert arguments

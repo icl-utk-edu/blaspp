@@ -332,6 +332,7 @@ void setup_PAPI( int *event_set )
         require( PAPI_create_eventset( event_set ) == PAPI_OK );
 
         require( PAPI_add_named_event( *event_set, "sde:::blas::counter" ) == PAPI_OK );
+        require( PAPI_add_named_event( *event_set, "sde:::blas::flops" ) == PAPI_OK );
     #endif
 }
 
@@ -446,7 +447,7 @@ int main( int argc, char** argv )
 
         #ifdef BLAS_HAVE_PAPI
             int event_set = PAPI_NULL;
-            long long counter_values[1];
+            long long counter_values[2];
 
             if (params.papi() == 'y') {
                 // initialize papi
@@ -477,6 +478,17 @@ int main( int argc, char** argv )
 
                 params.print();
                 fflush( stdout );
+
+                #ifdef BLAS_HAVE_PAPI
+                    if (params.papi() == 'y') {
+                        // stop papi
+                        require( PAPI_read( event_set, counter_values ) == PAPI_OK );
+
+                        // print papi instrumentation
+                        printf("FLOP count: %lld\n", counter_values[1]);
+                    }
+                #endif
+
                 status += ! params.okay();
                 params.reset_output();
             }
@@ -492,6 +504,7 @@ int main( int argc, char** argv )
 
                 // print papi instrumentation
                 blas::counter::print( (cset_list_object_t *)counter_values[0] );
+                printf("FLOP count: %lld\n", counter_values[1]);
                 printf( "\n" );
             }
         #endif

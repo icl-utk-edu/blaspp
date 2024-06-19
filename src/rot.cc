@@ -42,6 +42,9 @@ void rot(
         memset( &element, 0, sizeof( element ) );
         element = { n };
         counter::insert( element, counter::Id::rot );
+
+        double gflops = 1e9 * blas::Gflop< float >::rot( n );
+        counter::inc_flop_count( (long long int)gflops );
     #endif
 
     blas_int n_    = (blas_int) n;
@@ -77,6 +80,9 @@ void rot(
         memset( &element, 0, sizeof( element ) );
         element = { n };
         counter::insert( element, counter::Id::rot );
+
+        double gflops = 1e9 * blas::Gflop< double >::rot( n );
+        counter::inc_flop_count( (long long int)gflops );
     #endif
 
     blas_int n_    = (blas_int) n;
@@ -117,6 +123,9 @@ void rot(
         memset( &element, 0, sizeof( element ) );
         element = { n };
         counter::insert( element, counter::Id::rot );
+
+        double gflops = 1e9 * blas::Gflop< std::complex<float> >::rot( n );
+        counter::inc_flop_count( (long long int)gflops );
     #endif
 
     blas_int n_    = (blas_int) n;
@@ -156,6 +165,9 @@ void rot(
         memset( &element, 0, sizeof( element ) );
         element = { n };
         counter::insert( element, counter::Id::rot );
+
+        double gflops = 1e9 * blas::Gflop< std::complex<double> >::rot( n );
+        counter::inc_flop_count( (long long int)gflops );
     #endif
 
     blas_int n_    = (blas_int) n;
@@ -198,6 +210,9 @@ void rot(
         memset( &element, 0, sizeof( element ) );
         element = { n };
         counter::insert( element, counter::Id::rot );
+
+        double gflops = 1e9 * blas::Gflop< std::complex<float> >::rot( n );
+        counter::inc_flop_count( (long long int)gflops );
     #endif
 
     blas_int n_    = (blas_int) n;
@@ -238,6 +253,9 @@ void rot(
         memset( &element, 0, sizeof( element ) );
         element = { n };
         counter::insert( element, counter::Id::rot );
+
+        double gflops = 1e9 * blas::Gflop< std::complex<double> >::rot( n );
+        counter::inc_flop_count( (long long int)gflops );
     #endif
 
     blas_int n_    = (blas_int) n;

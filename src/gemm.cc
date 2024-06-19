@@ -156,6 +156,9 @@ void gemm(
         memset( &element, 0, sizeof( element ) );
         element = { transA, transB, m, n, k };
         counter::insert( element, counter::Id::gemm );
+
+        double gflops = 1e9 * blas::Gflop< scalar_t >::gemm( m, n, k );
+        counter::inc_flop_count( (long long int)gflops );
     #endif
 
     // convert arguments
@@ -274,6 +277,7 @@ papi_handle_t papi_sde_hook_list_events( papi_sde_fptr_struct_t* fptr_struct )
     papi_handle_t tmp_handle;
     tmp_handle = fptr_struct->init( "blas" );
     fptr_struct->create_counting_set( tmp_handle, "counter", NULL );
+    fptr_struct->register_counter_cb( tmp_handle, "flops", PAPI_SDE_RO|PAPI_SDE_DELTA, PAPI_SDE_long_long, NULL, NULL);
     return tmp_handle;
 }
 

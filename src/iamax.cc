@@ -83,6 +83,9 @@ int64_t iamax(
         memset( &element, 0, sizeof( element ) );
         element = { n };
         counter::insert( element, counter::Id::iamax );
+
+        double gflops = 1e9 * blas::Gflop< scalar_t >::iamax( n );
+        counter::inc_flop_count( (long long int)gflops );
     #endif
 
     // convert arguments

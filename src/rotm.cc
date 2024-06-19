@@ -42,6 +42,9 @@ void rotm(
         memset( &element, 0, sizeof( element ) );
         element = { n };
         counter::insert( element, counter::Id::rotm );
+
+        double gflops = 1e9 * blas::Gflop< float >::rotm( n );
+        counter::inc_flop_count( (long long int)gflops );
     #endif
 
     blas_int n_    = (blas_int) n;
@@ -76,6 +79,9 @@ void rotm(
         memset( &element, 0, sizeof( element ) );
         element = { n };
         counter::insert( element, counter::Id::rotm );
+
+        double gflops = 1e9 * blas::Gflop< double >::rotm( n );
+        counter::inc_flop_count( (long long int)gflops );
     #endif
 
     blas_int n_    = (blas_int) n;

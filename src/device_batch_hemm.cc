@@ -64,6 +64,9 @@ void hemm(
         memset( &element, 0, sizeof( element ) );
         element = { batch_size };
         counter::insert( element, counter::Id::dev_batch_hemm );
+
+        double gflops = 1e9 * blas::Gflop< scalar_t >::hemm( side, m, n );
+        counter::inc_flop_count( (long long int)gflops );
     #endif
 
     queue.fork();
