@@ -9,14 +9,15 @@
 #include "config.h"
 
 //------------------------------------------------------------------------------
+#define BLAS_sdot FORTRAN_NAME( sdot, SDOT )
 #define BLAS_ddot FORTRAN_NAME( ddot, DDOT )
 
-#ifdef ACCELERATE_NEW_LAPACK
-    #pragma message "Including Accelerate.h"
+#ifdef BLAS_HAVE_ACCELERATE
+//ACCELERATE_NEW_LAPACK
+    #pragma message "include Accelerate.h"
     #include <Accelerate/Accelerate.h>
 #else
-    #pragma message "Defining BLAS_ddot"
-    // result return directly
+    // result returned directly
     #ifdef __cplusplus
     extern "C"
     #endif
@@ -44,8 +45,18 @@ int main()
 
     double result = BLAS_ddot( n, x, &ione, y, &ione );
     printf( "result = %.1f; should be 35.0\n", result );
-
     bool okay = (result == 35);
+
+    #ifdef ACCELERATE_NEW_LAPACK
+        // To verify this is new Accelerate, check the return type of sdot.
+        float sx[] = { 1, 2, 3, 4, 5 };
+        float sy[] = { 5, 4, 3, 2, 1 };
+        auto r = BLAS_sdot( n, sx, &ione, sy, &ione );
+        static_assert( std::is_same< float, decltype( r ) >::value,
+                       "With new Accelerate, sdot returns float"
+                       " -> this is old Accelerate" );
+    #endif
+
     printf( "%s\n", okay ? "ok" : "failed" );
     return ! okay;
 }

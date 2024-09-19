@@ -9,7 +9,8 @@ import os
 import re
 import config
 from   config import print_header, print_subhead, print_msg, print_warn, \
-                     print_test, print_result, define, Error, get
+                     print_test, print_value, print_result, define, Error, \
+                     font, get
 
 #-------------------------------------------------------------------------------
 def get_fortran_manglings():
@@ -335,23 +336,30 @@ def blas():
 
     #-------------------- Apple Accelerate
     if (test_all or test_accelerate):
+        flags      = define('HAVE_ACCELERATE')
+        new_lapack = ' -DACCELERATE_NEW_LAPACK'
         choices.append(
             ['macOS Accelerate (new)',
              {'LIBS': '-framework Accelerate',
-              'CXXFLAGS': define('HAVE_ACCELERATE')
-                        + ' -DACCELERATE_NEW_LAPACK'}])
+              'CXXFLAGS': flags + new_lapack }])
 
         # macOS 13.3, g++ 12.2 requires extra flag to parse Apple's headers.
+        version = ' -mmacosx-version-min=13.3'
+        extra   = ' -flax-vector-conversions'
         choices.append(
             ['macOS Accelerate (new, -flax-vector-conversions)',
-             {'LIBS': '-framework Accelerate',
-              'CXXFLAGS': define('HAVE_ACCELERATE')
-                        + ' -DACCELERATE_NEW_LAPACK -flax-vector-conversions'}])
+             {'LIBS': '-framework Accelerate ',
+              'CXXFLAGS': flags + new_lapack + version + extra }])
 
         choices.append(
-            ['macOS Accelerate',
+            ['macOS Accelerate (old, pre 13.3)',
              {'LIBS': '-framework Accelerate',
-              'CXXFLAGS': define('HAVE_ACCELERATE')}])
+              'CXXFLAGS': flags }])
+
+        choices.append(
+            ['macOS Accelerate (old, pre 13.3, -flax-vector-conversions)',
+             {'LIBS': '-framework Accelerate',
+              'CXXFLAGS': flags + extra}])
     # end
 
     #-------------------- generic -lblas
@@ -546,13 +554,13 @@ def blas_float_return():
     '''
     (rc, out, err) = config.compile_run(
         'config/return_float.cc', {},
-        'BLAS (sdot) returns float as float (standard)' )
+        'BLAS (sdot) returns float (standard)' )
     if (rc == 0):
         return
 
     (rc, out, err) = config.compile_run(
         'config/return_float_f2c.cc', {},
-        'BLAS (sdot) returns float as double (f2c convention)' )
+        'BLAS (sdot) returns double (f2c convention)' )
     if (rc == 0):
         config.environ.append( 'CXXFLAGS', define('HAVE_F2C') )
     else:
@@ -589,11 +597,19 @@ def lapack_version():
     (rc, out, err) = config.compile_run( 'config/lapack_version.cc' )
     s = re.search( r'^LAPACK_VERSION=((\d+)\.(\d+)\.(\d+))', out )
     if (rc == 0 and s):
-        v = '%d%02d%02d' % (int(s.group(2)), int(s.group(3)), int(s.group(4)))
+        major = int( s.group( 2 ) )
+        minor = int( s.group( 3 ) )
+        patch = int( s.group( 4 ) )
+        # Sanity checks may catch ilp64 error.
+        assert 3 <= major <= 4, "Expected LAPACK version 3 (current) or 4 (future), got version " + str( major )
+        assert 0 <= minor <= 100, "Expected LAPACK minor in 0-100, got " + str( minor )
+        assert 0 <= minor <= 100, "Expected LAPACK patch in 0-100, got " + str( patch )
+        v = '%d%02d%02d' % (major, minor, patch)
         config.environ.append( 'CXXFLAGS', define('LAPACK_VERSION', v) )
-        config.print_result( 'LAPACK', rc, '(' + s.group(1) + ')' )
+        config.environ.append( 'LAPACK_VERSION', v )
+        config.print_value( 'LAPACK', font.blue( s.group(1) ) )
     else:
-        config.print_result( 'LAPACK', rc )
+        config.print_value( 'LAPACK', font.red( 'unknown' ) )
 # end
 
 #-------------------------------------------------------------------------------

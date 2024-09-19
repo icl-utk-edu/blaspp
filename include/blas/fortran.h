@@ -14,16 +14,21 @@
 #include "blas/config.h"
 
 #ifdef ACCELERATE_NEW_LAPACK
+    // New macOS Accelerate (>= macOS 13.3) requires their prototypes
+    // with extra mangling, and does not include strlen.
+    #if defined( BLAS_ILP64 ) && ! defined( ACCELERATE_ILP64 )
+        #define ACCELERATE_ILP64
+    #endif
     #include <Accelerate/Accelerate.h>
 #else
     // It seems all current Fortran compilers put strlen at end.
     // Some historical compilers put strlen after the str argument
     // or make the str argument into a struct.
-    // New Apple Accelerate (macOS >= 13.3) does not include strlen.
     #ifndef BLAS_FORTRAN_STRLEN_END
     #define BLAS_FORTRAN_STRLEN_END
     #endif
 
+    // Set flag to define prototypes below (i.e., not Accelerate's prototypes).
     #define BLAS_PROTO
 #endif
 

@@ -191,8 +191,23 @@ def print_test( label ):
     '''
     if (label):
         print( '-'*20 + '\n' + label, file=log )
-        print( '%-72s' % label, end='' )
+        if (len( label ) > 72):
+            print( label )
+            label = ''
+        print( '%-72s ' % label, end='' )
         sys.stdout.flush()
+# end
+
+#-------------------------------------------------------------------------------
+def print_value( label, value ):
+    '''
+    If label is given, prints the value and newline.
+    If no label is given, does nothing.
+    @see print_test(), print_result().
+    '''
+    if (label):
+        print( value, file=log )
+        print( value )
 # end
 
 #-------------------------------------------------------------------------------
@@ -201,15 +216,15 @@ def print_result( label, rc, extra='' ):
     If label is given, prints either "yes" (if rc == 0) or "no" (otherwise).
     Extra is printed after yes or no.
     If no label is given, does nothing.
-    @see print_test().
+    @see print_test(), print_value().
     '''
-    if (label):
-        if (rc == 0):
-            print( font.blue( 'yes'  ), extra, file=log )
-            print( font.blue( ' yes' ), extra )
-        else:
-            print( font.red( 'no'  ), extra, file=log )
-            print( font.red( ' no' ), extra )
+    if (rc == 0):
+        value = font.blue( 'yes' )
+    else:
+        value = font.red( 'no' )
+    if (extra):
+        value += ' ' + extra
+    print_value( label, value )
 # end
 
 # ------------------------------------------------------------------------------
