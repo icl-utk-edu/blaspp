@@ -9,16 +9,20 @@
 #include "blas/defines.h"
 #include "blas/mangling.h"
 
-// Accelerate uses std::complex
-#define BLAS_COMPLEX_CPP
+#ifdef ACCELERATE_NEW_LAPACK
+    // Accelerate uses std::complex; see config.h
+    #define BLAS_COMPLEX_CPP
+#endif
+
 #include "blas/config.h"
 
 #ifdef ACCELERATE_NEW_LAPACK
     // New macOS Accelerate (>= macOS 13.3) requires their prototypes
     // with extra mangling, and does not include strlen.
-    #if defined( BLAS_ILP64 ) && ! defined( ACCELERATE_ILP64 )
-        #define ACCELERATE_ILP64
-    #endif
+    // macOS 13.3, GNU g++ 12.2 has bug including Accelerate.h:
+    //   stdlib.h:142:44: error: expected ')' before '__compar'
+    // Including stdlib.h first appeases the compiler.
+    #include <stdlib.h>  // workaround
     #include <Accelerate/Accelerate.h>
 #else
     // It seems all current Fortran compilers put strlen at end.

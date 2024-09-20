@@ -336,11 +336,12 @@ def blas():
 
     #-------------------- Apple Accelerate
     if (test_all or test_accelerate):
+        libs       = '-framework Accelerate'
         flags      = define('HAVE_ACCELERATE')
         new_lapack = ' -DACCELERATE_NEW_LAPACK'
         choices.append(
             ['macOS Accelerate (new)',
-             {'LIBS': '-framework Accelerate',
+             {'LIBS': libs,
               'CXXFLAGS': flags + new_lapack }])
 
         # macOS 13.3, g++ 12.2 requires extra flag to parse Apple's headers.
@@ -348,17 +349,17 @@ def blas():
         extra   = ' -flax-vector-conversions'
         choices.append(
             ['macOS Accelerate (new, -flax-vector-conversions)',
-             {'LIBS': '-framework Accelerate ',
+             {'LIBS': libs + version,
               'CXXFLAGS': flags + new_lapack + version + extra }])
 
         choices.append(
             ['macOS Accelerate (old, pre 13.3)',
-             {'LIBS': '-framework Accelerate',
+             {'LIBS': libs,
               'CXXFLAGS': flags }])
 
         choices.append(
             ['macOS Accelerate (old, pre 13.3, -flax-vector-conversions)',
-             {'LIBS': '-framework Accelerate',
+             {'LIBS': libs,
               'CXXFLAGS': flags + extra}])
     # end
 
@@ -411,8 +412,10 @@ def cblas():
         ['CBLAS (cblas_ddot) in -lcblas', {'LIBS': '-lcblas'}],
     ]
 
-    LIBS = config.environ['LIBS']
-    if ('-framework Accelerate' in LIBS):
+    CXXFLAGS = config.environ['CXXFLAGS']
+    LIBS     = config.environ['LIBS']
+    if ('-framework Accelerate' in LIBS
+        and 'ACCELERATE_NEW_LAPACK' not in CXXFLAGS):
         # macOS puts cblas.h in weird places; add -I for path.
         # Insert as 2nd choice, so it won't be used if 1st choice above works.
         # On macOS 13, cblas.h seems to be in the compiler's default search

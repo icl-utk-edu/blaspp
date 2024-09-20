@@ -13,6 +13,7 @@
 
 #ifdef ACCELERATE_NEW_LAPACK
     #pragma message "include Accelerate.h"
+    #include <stdlib.h>  // workaround
     #include <Accelerate/Accelerate.h>
 #else
     // result returned as *hidden argument*

@@ -29,6 +29,7 @@
         #include <cblas.h>
     #else
         #pragma message "include Accelerate.h"
+        #include <stdlib.h>  // workaround
         #include <Accelerate/Accelerate.h>
     #endif
 #else

@@ -12,9 +12,9 @@
 #define BLAS_sdot FORTRAN_NAME( sdot, SDOT )
 #define BLAS_ddot FORTRAN_NAME( ddot, DDOT )
 
-#ifdef BLAS_HAVE_ACCELERATE
-//ACCELERATE_NEW_LAPACK
+#ifdef ACCELERATE_NEW_LAPACK
     #pragma message "include Accelerate.h"
+    #include <stdlib.h>  // workaround
     #include <Accelerate/Accelerate.h>
 #else
     // result returned directly
@@ -35,17 +35,6 @@ int main()
     // If blas_int is 64-bit, BLAS can interpret it as 32-bit or 64-bit
     // to see n = 5 and pass.
     blas_int n[] = { 5, 5 }, ione = 1;
-    double x[] = { 1, 2, 3, 4, 5 };
-    double y[] = { 5, 4, 3, 2, 1 };
-    for (int i = 0; i < n[0]; ++i) {
-        printf( "x[ %d ] = %.1f; y[ %d ] = %.1f\n",
-                i, x[ i ],
-                i, y[ i ] );
-    }
-
-    double result = BLAS_ddot( n, x, &ione, y, &ione );
-    printf( "result = %.1f; should be 35.0\n", result );
-    bool okay = (result == 35);
 
     #ifdef ACCELERATE_NEW_LAPACK
         // To verify this is new Accelerate, check the return type of sdot.
@@ -57,6 +46,18 @@ int main()
                        " -> this is old Accelerate" );
     #endif
 
+    double x[] = { 1, 2, 3, 4, 5 };
+    double y[] = { 5, 4, 3, 2, 1 };
+    for (int i = 0; i < n[0]; ++i) {
+        printf( "x[ %d ] = %.1f; y[ %d ] = %.1f\n",
+                i, x[ i ],
+                i, y[ i ] );
+    }
+
+    double result = BLAS_ddot( n, x, &ione, y, &ione );
+    printf( "result = %.1f; should be 35.0\n", result );
+
+    bool okay = (result == 35);
     printf( "%s\n", okay ? "ok" : "failed" );
     return ! okay;
 }

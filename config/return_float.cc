@@ -11,9 +11,9 @@
 //------------------------------------------------------------------------------
 #define BLAS_sdot FORTRAN_NAME( sdot, SDOT )
 
-#ifdef BLAS_HAVE_ACCELERATE
-//ACCELERATE_NEW_LAPACK
+#ifdef ACCELERATE_NEW_LAPACK
     #pragma message "include Accelerate.h"
+    #include <stdlib.h>  // workaround
     #include <Accelerate/Accelerate.h>
 #else
     // returns `float` as usual.
