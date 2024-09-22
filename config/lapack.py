@@ -339,18 +339,21 @@ def blas():
         libs       = '-framework Accelerate'
         flags      = define('HAVE_ACCELERATE')
         new_lapack = ' -DACCELERATE_NEW_LAPACK'
+        # macOS 13.3, g++ 12.2 requires extra flag to parse Apple's headers.
+        extra      = ' -flax-vector-conversions'
+        # todo: -mmacos-version-min starting with Xcode 16
+        # todo: check `${CXX} --help -v`, as CMake does?
+        macos      = ' -mmacosx-version-min=13.3'
+
         choices.append(
             ['macOS Accelerate (new)',
              {'LIBS': libs,
               'CXXFLAGS': flags + new_lapack }])
 
-        # macOS 13.3, g++ 12.2 requires extra flag to parse Apple's headers.
-        version = ' -mmacosx-version-min=13.3'
-        extra   = ' -flax-vector-conversions'
         choices.append(
             ['macOS Accelerate (new, -flax-vector-conversions)',
-             {'LIBS': libs + version,
-              'CXXFLAGS': flags + new_lapack + version + extra }])
+             {'LIBS': libs + macos,
+              'CXXFLAGS': flags + new_lapack + macos + extra }])
 
         choices.append(
             ['macOS Accelerate (old, pre 13.3)',
@@ -360,7 +363,7 @@ def blas():
         choices.append(
             ['macOS Accelerate (old, pre 13.3, -flax-vector-conversions)',
              {'LIBS': libs,
-              'CXXFLAGS': flags + extra}])
+              'CXXFLAGS': flags + extra }])
     # end
 
     #-------------------- generic -lblas
@@ -598,13 +601,13 @@ def lapack_version():
     '''
     config.print_test( 'LAPACK version' )
     (rc, out, err) = config.compile_run( 'config/lapack_version.cc' )
-    s = re.search( r'^LAPACK_VERSION=((\d+)\.(\d+)\.(\d+))', out )
+    s = re.search( r'^LAPACK_VERSION=((-?\d+)\.(-?\d+)\.(-?\d+))', out )
     if (rc == 0 and s):
         major = int( s.group( 2 ) )
         minor = int( s.group( 3 ) )
         patch = int( s.group( 4 ) )
         # Sanity checks may catch ilp64 error.
-        assert 3 <= major <= 4, "Expected LAPACK version 3 (current) or 4 (future), got version " + str( major )
+        assert 3 <= major <= 4, "Expected LAPACK version 3 (current) or 4 (future), got version " + str( major ) + "; possibly 32/64-bit mismatch"
         assert 0 <= minor <= 100, "Expected LAPACK minor in 0-100, got " + str( minor )
         assert 0 <= minor <= 100, "Expected LAPACK patch in 0-100, got " + str( patch )
         v = '%d%02d%02d' % (major, minor, patch)

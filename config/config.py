@@ -191,6 +191,7 @@ def print_test( label ):
     '''
     if (label):
         print( '-'*20 + '\n' + label, file=log )
+        # For long lines, print result on next line.
         if (len( label ) > 72):
             print( label )
             label = ''
