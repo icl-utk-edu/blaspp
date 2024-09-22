@@ -383,6 +383,8 @@ if (opts.batch_blas3_device):
 
 if (opts.aux):
     cmds += [
+    [ 'util',        '' ],
+
     [ 'memcpy',      dtype + n ],
     [ 'copy_vector', dtype + n + incx_pos + incy_pos ],
     [ 'set_vector',  dtype + n + incx_pos + incy_pos ],

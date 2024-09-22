@@ -5,10 +5,20 @@
 
 #include "test.hh"
 #include "../src/device_internal.hh"
+#include "get_type_name.hh"
+#include "blas/config.h"
 
 #include <string>
 
 using testsweeper::get_wtime;
+
+// -----------------------------------------------------------------------------
+void test_types()
+{
+    printf( "%s\n", __func__ );
+    printf( "\tblas_int is %s\n", get_type_name<blas_int>().c_str() );
+    printf( "\tsizeof( blas_int ) = %lld\n", llong( sizeof( blas_int ) ) );
+}
 
 // -----------------------------------------------------------------------------
 void test_enums()
@@ -884,6 +894,7 @@ void test_util( Params& params, bool run )
     if (first) {
         first = false;
 
+        test_types();
         test_enums();
         test_exceptions();
         test_abs1();
