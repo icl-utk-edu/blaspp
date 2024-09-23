@@ -68,12 +68,14 @@ function( debug_print_list msg )
         message( "---------- lists: ${msg}" )
         message( "blas_name_list = ${blas_name_list}" )
         message( "blas_libs_list = ${blas_libs_list}" )
+        message( "blas_defs_list = ${blas_defs_list}" )
 
         message( "\nrow;  ${red}blas_name;${plain}  blas_libs" )
         set( i 0 )
         foreach (name IN LISTS blas_name_list)
             list( GET blas_libs_list ${i} libs )
-            message( "${i};  ${red}${name};${plain}  ${libs}" )
+            list( GET blas_defs_list ${i} defs )
+            message( "${i};  ${red}${name};${plain}  libs = ${libs}  defs = ${defs}" )
             math( EXPR i "${i} + 1" )
         endforeach()
         message( "" )
@@ -118,12 +120,6 @@ else()
         "-DBLAS_FORTRAN_UPPER"
     )
 endif()
-
-#---------------------------------------- integer sizes to test
-set( int_size_list
-    " "             # int (LP64)
-    "-DBLAS_ILP64"  # int64_t (ILP64)
-)
 
 #-------------------------------------------------------------------------------
 # Parse options: BLAS_LIBRARIES, blas, blas_int, blas_threaded, blas_fortran.
@@ -223,11 +219,20 @@ if (CMAKE_CROSSCOMPILING AND test_int AND test_int64)
              " `blas_int=int64` (ilp64 convention).${plain}" )
 endif()
 
+set( int_size_list "" )
+if (test_int)
+    list( APPEND int_size_list " " )  # int (lp64)
+endif()
+if (test_int64)
+    list( APPEND int_size_list "-DBLAS_ILP64" )  # int64_t (ILP64)
+endif()
+
 message( DEBUG "
 blas_int            = '${blas_int}'
 blas_int_           = '${blas_int_}'
 test_int            = '${test_int}'
-test_int64          = '${test_int64}'")
+test_int64          = '${test_int64}'
+int_size_list       = '${int_size_list}'")
 
 #---------------------------------------- blas_threaded
 string( TOLOWER "${blas_threaded}" blas_threaded_ )
@@ -256,6 +261,7 @@ test_sequential     = '${test_sequential}'")
 
 set( blas_name_list "" )
 set( blas_libs_list "" )
+set( blas_defs_list "" )
 
 #---------------------------------------- BLAS_LIBRARIES
 if (test_blas_libraries)
@@ -266,6 +272,7 @@ if (test_blas_libraries)
 
     list( APPEND blas_name_list "\$BLAS_LIBRARIES" )
     list( APPEND blas_libs_list "${BLAS_LIBRARIES_ESC}" )
+    list( APPEND blas_defs_list " " )
     debug_print_list( "BLAS_LIBRARIES" )
 endif()
 
@@ -273,6 +280,7 @@ endif()
 if (test_all OR test_default)
     list( APPEND blas_name_list "default (no library)" )
     list( APPEND blas_libs_list " " )  # Use space so APPEND works later.
+    list( APPEND blas_defs_list " " )
     debug_print_list( "default" )
 endif()
 
@@ -285,11 +293,13 @@ if (test_all OR test_mkl)
             if (test_int)
                 list( APPEND blas_name_list "Intel MKL lp64,  GNU threads (gomp), gfortran")
                 list( APPEND blas_libs_list "-lmkl_gf_lp64  -lmkl_gnu_thread -lmkl_core" )
+                list( APPEND blas_defs_list " " )
             endif()
 
             if (test_int64)
                 list( APPEND blas_name_list "Intel MKL ilp64, GNU threads (gomp), gfortran")
                 list( APPEND blas_libs_list "-lmkl_gf_ilp64 -lmkl_gnu_thread -lmkl_core" )
+                list( APPEND blas_defs_list " " )
             endif()
 
         elseif (test_ifort AND intelllvm_compiler)
@@ -297,9 +307,11 @@ if (test_all OR test_mkl)
             if (test_int)
                 list( APPEND blas_name_list "Intel MKL lp64,  Intel threads (iomp5), ifort")
                 list( APPEND blas_libs_list "-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core" )
+                list( APPEND blas_defs_list " " )
             elseif (test_int64)
                 list( APPEND blas_name_list "Intel MKL ilp64, Intel threads (iomp5), ifort")
                 list( APPEND blas_libs_list "-lmkl_intel_ilp64 -lmkl_intel_thread -lmkl_core" )
+                list( APPEND blas_defs_list " " )
             endif()
 
         elseif (test_ifort AND intel_compiler)
@@ -307,11 +319,13 @@ if (test_all OR test_mkl)
             if (test_int)
                 list( APPEND blas_name_list "Intel MKL lp64,  Intel threads (iomp5), ifort")
                 list( APPEND blas_libs_list "-lmkl_intel_lp64  -lmkl_intel_thread -lmkl_core" )
+                list( APPEND blas_defs_list " " )
             endif()
 
             if (test_int64)
                 list( APPEND blas_name_list "Intel MKL ilp64, Intel threads (iomp5), ifort")
                 list( APPEND blas_libs_list "-lmkl_intel_ilp64 -lmkl_intel_thread -lmkl_core" )
+                list( APPEND blas_defs_list " " )
             endif()
 
         else()
@@ -327,11 +341,13 @@ if (test_all OR test_mkl)
             if (test_int)
                 list( APPEND blas_name_list "Intel MKL lp64,  sequential, ifort" )
                 list( APPEND blas_libs_list "-lmkl_intel_lp64  -lmkl_sequential -lmkl_core" )
+                list( APPEND blas_defs_list " " )
             endif()
 
             if (test_int64)
                 list( APPEND blas_name_list "Intel MKL ilp64, sequential, ifort" )
                 list( APPEND blas_libs_list "-lmkl_intel_ilp64 -lmkl_sequential -lmkl_core" )
+                list( APPEND blas_defs_list " " )
             endif()
         endif()  # ifort
 
@@ -340,11 +356,13 @@ if (test_all OR test_mkl)
             if (test_int)
                 list( APPEND blas_name_list "Intel MKL lp64,  sequential, gfortran" )
                 list( APPEND blas_libs_list "-lmkl_gf_lp64  -lmkl_sequential -lmkl_core" )
+                list( APPEND blas_defs_list " " )
             endif()
 
             if (test_int64)
                 list( APPEND blas_name_list "Intel MKL ilp64, sequential, gfortran" )
                 list( APPEND blas_libs_list "-lmkl_gf_ilp64 -lmkl_sequential -lmkl_core" )
+                list( APPEND blas_defs_list " " )
             endif()
         endif()  # gfortran
 
@@ -354,11 +372,13 @@ if (test_all OR test_mkl)
             if (test_int)
                 list( APPEND blas_name_list "Intel MKL lp64,  sequential, ifort" )
                 list( APPEND blas_libs_list "-lmkl_intel_lp64  -lmkl_sequential -lmkl_core" )
+                list( APPEND blas_defs_list " " )
             endif()
 
             if (test_int64)
                 list( APPEND blas_name_list "Intel MKL ilp64, sequential, ifort" )
                 list( APPEND blas_libs_list "-lmkl_intel_ilp64 -lmkl_sequential -lmkl_core" )
+                list( APPEND blas_defs_list " " )
             endif()
         endif()  # ifort && not intel
     endif()  # sequential
@@ -387,11 +407,13 @@ if (test_all OR test_essl)
             if (test_int)
                 list( APPEND blas_name_list "IBM ESSL int (lp64), multi-threaded, with OpenMP"  )
                 list( APPEND blas_libs_list "-lesslsmp"  )
+                list( APPEND blas_defs_list " " )
             endif()
 
             if (test_int64)
                 list( APPEND blas_name_list "IBM ESSL int64 (ilp64), multi-threaded, with OpenMP"  )
                 list( APPEND blas_libs_list "-lesslsmp6464"  )
+                list( APPEND blas_defs_list " " )
             endif()
         endif()
     endif()  # threaded
@@ -400,11 +422,13 @@ if (test_all OR test_essl)
         if (test_int)
             list( APPEND blas_name_list "IBM ESSL int (lp64), sequential"  )
             list( APPEND blas_libs_list "-lessl"  )
+            list( APPEND blas_defs_list " " )
         endif()
 
         if (test_int64)
             list( APPEND blas_name_list "IBM ESSL int64 (ilp64), sequential"  )
             list( APPEND blas_libs_list "-lessl6464"  )
+            list( APPEND blas_defs_list " " )
         endif()
     endif()  # sequential
     debug_print_list( "essl" )
@@ -415,13 +439,20 @@ if (test_all OR test_openblas)
     # todo: OPENBLAS_?(ROOT|DIR)
     list( APPEND blas_name_list "OpenBLAS" )
     list( APPEND blas_libs_list "-lopenblas" )
+    list( APPEND blas_defs_list " " )
     debug_print_list( "openblas" )
 endif()
 
 #---------------------------------------- Apple Accelerate
 if (test_all OR test_accelerate)
-    list( APPEND blas_name_list "Apple Accelerate" )
+    list( APPEND blas_name_list "Apple Accelerate (new)" )
     list( APPEND blas_libs_list "-framework Accelerate" )
+    list( APPEND blas_defs_list "-DBLAS_HAVE_ACCELERATE -DACCELERATE_NEW_LAPACK" )
+
+    list( APPEND blas_name_list "Apple Accelerate (old, pre 13.3)" )
+    list( APPEND blas_libs_list "-framework Accelerate" )
+    list( APPEND blas_defs_list "-DBLAS_HAVE_ACCELERATE" )
+
     debug_print_list( "accelerate" )
 endif()
 
@@ -429,6 +460,7 @@ endif()
 if (test_all OR test_generic)
     list( APPEND blas_name_list "generic" )
     list( APPEND blas_libs_list "-lblas" )
+    list( APPEND blas_defs_list " " )
     debug_print_list( "generic" )
 endif()
 
@@ -439,11 +471,13 @@ if (test_all OR test_acml)
     if (test_threaded)
         list( APPEND blas_name_list "AMD ACML threaded" )
         list( APPEND blas_libs_list "-lacml_mp" )
+        list( APPEND blas_defs_list " " )
     endif()
 
     if (test_sequential)
         list( APPEND blas_name_list "AMD ACML sequential" )
         list( APPEND blas_libs_list "-lacml" )
+        list( APPEND blas_defs_list " " )
     endif()
     debug_print_list( "acml" )
 endif()
@@ -458,6 +492,7 @@ set( i 0 )
 foreach (blas_name IN LISTS blas_name_list)
     message( TRACE "i: ${i}" )
     list( GET blas_libs_list ${i} blas_libs )
+    list( GET blas_defs_list ${i} blas_defs )
     math( EXPR i "${i}+1" )
 
     if (i GREATER 1)
@@ -465,7 +500,11 @@ foreach (blas_name IN LISTS blas_name_list)
     endif()
     message( "${blas_name}" )
     message( "   libs:  ${blas_libs}" )
+    if (defs MATCHES "[^ ]") # non-empty
+        message( "   defs: ${blas_defs}" )
+    endif()
 
+    # Split space-separated libs into CMake list.
     # Strip to deal with default lib being space, " ".
     # Undo escaping \; semi-colons and split on spaces to make list.
     # But keep '-framework Accelerate' together as one item.
@@ -488,7 +527,7 @@ foreach (blas_name IN LISTS blas_name_list)
                 LINK_LIBRARIES
                     ${blas_libs} ${openmp_lib} # not "..." quoted; screws up OpenMP
                 COMPILE_DEFINITIONS
-                    "${mangling} ${int_size}"
+                    "${mangling} ${int_size} ${blas_defs}"
                 OUTPUT_VARIABLE
                     link_output
             )
@@ -509,7 +548,7 @@ foreach (blas_name IN LISTS blas_name_list)
                 LINK_LIBRARIES
                     ${blas_libs} ${openmp_lib} # not "..." quoted; screws up OpenMP
                 COMPILE_DEFINITIONS
-                    "${mangling} ${int_size}"
+                    "${mangling} ${int_size} ${blas_defs}"
                 COMPILE_OUTPUT_VARIABLE
                     compile_output
                 RUN_OUTPUT_VARIABLE
@@ -533,6 +572,12 @@ foreach (blas_name IN LISTS blas_name_list)
                 # If it runs and prints ok, we're done, so break all 3 loops.
                 message( "${label} ${blue} yes${plain}" )
 
+                # Split space-separated defs into CMake list.
+                message( DEBUG "   blas_defs: '${blas_defs}'" )
+                string( STRIP "${blas_defs}" blas_defs )
+                string( REGEX REPLACE "([^ ])( +|\\\;)" "\\1;" blas_defs "${blas_defs}" )
+                message( DEBUG "   blas_defs: '${blas_defs}' (split)" )
+
                 set( BLAS_FOUND true CACHE INTERNAL "" )
                 set( BLAS_LIBRARIES "${blas_libs}" CACHE STRING "" FORCE )
                 if (mangling MATCHES "[^ ]")  # non-empty
@@ -540,6 +585,9 @@ foreach (blas_name IN LISTS blas_name_list)
                 endif()
                 if (int_size MATCHES "[^ ]")  # non-empty
                     list( APPEND blaspp_defs_ "${int_size}" )
+                endif()
+                if (blas_defs MATCHES "[^ ]")  # non-empty
+                    list( APPEND blaspp_defs_ "${blas_defs}" )
                 endif()
                 break()
             else()
