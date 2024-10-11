@@ -481,7 +481,6 @@ if (true)
         string( APPEND blaspp_header_defines "#define ${def}\n" )
     endforeach()
 
-    cmake_host_system_information( RESULT HOSTNAME QUERY HOSTNAME )
     # ctime format: Mon Nov 16 15:19:47 2020
     string( TIMESTAMP datetime "%a %b %d %H:%M:%S %Y" )
 
