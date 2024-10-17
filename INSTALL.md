@@ -326,6 +326,6 @@ them. See also `blas_int` above.
 
     blas_return_float_f2c
         Whether sdot, etc., returns float (usual convention) or double
-        (f2c convention used in CLAPACK and macOS Accelerate).
-        no              returns float. Default except for macOS Accelerate.
-        yes             returns double. Default for macOS Accelerate.
+        (f2c convention used in CLAPACK and old macOS Accelerate before macOS 13.3).
+        no              returns float. Default except for old macOS Accelerate.
+        yes             returns double. Default for old macOS Accelerate.

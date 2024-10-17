@@ -9,7 +9,8 @@ import os
 import re
 import config
 from   config import print_header, print_subhead, print_msg, print_warn, \
-                     print_test, print_result, define, Error, get
+                     print_test, print_value, print_result, define, Error, \
+                     font, get
 
 #-------------------------------------------------------------------------------
 def get_fortran_manglings():
@@ -335,21 +336,34 @@ def blas():
 
     #-------------------- Apple Accelerate
     if (test_all or test_accelerate):
-        # macOS puts cblas.h in weird places.
-        paths = [
-            '/System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/Headers',
-            '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Headers',
-        ]
-        inc = ''
-        for p in paths:
-            if (os.path.exists( p + '/cblas.h' )):
-                inc = '-I' + p + ' ' + define('HAVE_ACCELERATE_CBLAS_H')
-                break
+        libs       = '-framework Accelerate'
+        flags      = define('HAVE_ACCELERATE')
+        new_lapack = ' -DACCELERATE_NEW_LAPACK'
+        # macOS 13.3, g++ 12.2 requires extra flag to parse Apple's headers.
+        extra      = ' -flax-vector-conversions'
+        # todo: -mmacos-version-min starting with Xcode 16
+        # todo: check `${CXX} --help -v`, as CMake does?
+        macos      = ' -mmacosx-version-min=13.3'
 
         choices.append(
-            ['MacOS Accelerate',
-             {'LIBS': '-framework Accelerate',
-              'CXXFLAGS': inc + define('HAVE_ACCELERATE')}])
+            ['macOS Accelerate (new)',
+             {'LIBS': libs,
+              'CXXFLAGS': flags + new_lapack }])
+
+        choices.append(
+            ['macOS Accelerate (new, -flax-vector-conversions)',
+             {'LIBS': libs + macos,
+              'CXXFLAGS': flags + new_lapack + macos + extra }])
+
+        choices.append(
+            ['macOS Accelerate (old, pre 13.3)',
+             {'LIBS': libs,
+              'CXXFLAGS': flags }])
+
+        choices.append(
+            ['macOS Accelerate (old, pre 13.3, -flax-vector-conversions)',
+             {'LIBS': libs,
+              'CXXFLAGS': flags + extra }])
     # end
 
     #-------------------- generic -lblas
@@ -400,6 +414,27 @@ def cblas():
         ['CBLAS (cblas_ddot) in BLAS library', {}],
         ['CBLAS (cblas_ddot) in -lcblas', {'LIBS': '-lcblas'}],
     ]
+
+    CXXFLAGS = config.environ['CXXFLAGS']
+    LIBS     = config.environ['LIBS']
+    if ('-framework Accelerate' in LIBS
+        and 'ACCELERATE_NEW_LAPACK' not in CXXFLAGS):
+        # macOS puts cblas.h in weird places; add -I for path.
+        # Insert as 2nd choice, so it won't be used if 1st choice above works.
+        # On macOS 13, cblas.h seems to be in the compiler's default search
+        # path, so this is no longer needed.
+        paths = [
+            '/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/Headers',
+            '/System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/Headers',
+            '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Headers',
+        ]
+        for p in paths:
+            if (os.path.exists( p + '/cblas.h' )):
+                inc = '-I' + p + ' ' + define('HAVE_ACCELERATE_CBLAS_H')
+                choices.insert( 1, ['CBLAS (cblas_ddot) in BLAS library, -I' + p,
+                                    {'CXXFLAGS': inc}] )
+                break
+    # end
 
     passed = []
     for (label, env) in choices:
@@ -525,13 +560,13 @@ def blas_float_return():
     '''
     (rc, out, err) = config.compile_run(
         'config/return_float.cc', {},
-        'BLAS (sdot) returns float as float (standard)' )
+        'BLAS (sdot) returns float (standard)' )
     if (rc == 0):
         return
 
     (rc, out, err) = config.compile_run(
         'config/return_float_f2c.cc', {},
-        'BLAS (sdot) returns float as double (f2c convention)' )
+        'BLAS (sdot) returns double (f2c convention)' )
     if (rc == 0):
         config.environ.append( 'CXXFLAGS', define('HAVE_F2C') )
     else:
@@ -566,13 +601,21 @@ def lapack_version():
     '''
     config.print_test( 'LAPACK version' )
     (rc, out, err) = config.compile_run( 'config/lapack_version.cc' )
-    s = re.search( r'^LAPACK_VERSION=((\d+)\.(\d+)\.(\d+))', out )
+    s = re.search( r'^LAPACK_VERSION=((-?\d+)\.(-?\d+)\.(-?\d+))', out )
     if (rc == 0 and s):
-        v = '%d%02d%02d' % (int(s.group(2)), int(s.group(3)), int(s.group(4)))
+        major = int( s.group( 2 ) )
+        minor = int( s.group( 3 ) )
+        patch = int( s.group( 4 ) )
+        # Sanity checks may catch ilp64 error.
+        assert 3 <= major <= 4, "Expected LAPACK version 3 (current) or 4 (future), got version " + str( major ) + "; possibly 32/64-bit mismatch"
+        assert 0 <= minor <= 100, "Expected LAPACK minor in 0-100, got " + str( minor )
+        assert 0 <= minor <= 100, "Expected LAPACK patch in 0-100, got " + str( patch )
+        v = '%d%02d%02d' % (major, minor, patch)
         config.environ.append( 'CXXFLAGS', define('LAPACK_VERSION', v) )
-        config.print_result( 'LAPACK', rc, '(' + s.group(1) + ')' )
+        config.environ.append( 'LAPACK_VERSION', v )
+        config.print_value( 'LAPACK', font.blue( s.group(1) ) )
     else:
-        config.print_result( 'LAPACK', rc )
+        config.print_value( 'LAPACK', font.red( 'unknown' ) )
 # end
 
 #-------------------------------------------------------------------------------

@@ -64,6 +64,7 @@ def main():
     config.lapack.blas_float_return()
     config.lapack.blas_complex_return()
     config.lapack.vendor_version()
+    config.lapack.lapack_version()
 
     # Must test mkl_version before cblas and lapacke, to define HAVE_MKL.
     try:

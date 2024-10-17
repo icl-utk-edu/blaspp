@@ -11,7 +11,12 @@
 #include "blas/defines.h"
 
 #ifndef blas_int
-    #if defined(BLAS_ILP64)
+    #if defined( BLAS_ILP64 ) && defined( ACCELERATE_NEW_LAPACK )
+        #ifndef ACCELERATE_LAPACK_ILP64
+        #define ACCELERATE_LAPACK_ILP64
+        #endif
+        typedef long blas_int;
+    #elif defined( BLAS_ILP64 )
         typedef int64_t blas_int;
     #else
         typedef int blas_int;

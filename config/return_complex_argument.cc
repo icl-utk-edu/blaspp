@@ -11,15 +11,21 @@
 //------------------------------------------------------------------------------
 #define BLAS_zdotc FORTRAN_NAME( zdotc, ZDOTC )
 
-// result returned as *hidden argument*
-#ifdef __cplusplus
-extern "C"
+#ifdef ACCELERATE_NEW_LAPACK
+    #pragma message "include Accelerate.h"
+    #include <stdlib.h>  // workaround
+    #include <Accelerate/Accelerate.h>
+#else
+    // result returned as *hidden argument*
+    #ifdef __cplusplus
+    extern "C"
+    #endif
+    void BLAS_zdotc(
+        std::complex<double>* result,
+        const blas_int* n,
+        const std::complex<double>* x, const blas_int* incx,
+        const std::complex<double>* y, const blas_int* incy );
 #endif
-void BLAS_zdotc(
-    std::complex<double>* result,
-    const blas_int* n,
-    const std::complex<double>* x, const blas_int* incx,
-    const std::complex<double>* y, const blas_int* incy );
 
 //------------------------------------------------------------------------------
 int main()
