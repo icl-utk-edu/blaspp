@@ -1,3 +1,7 @@
+2024.10.26
+  - Added PAPI SDE that counts flops.
+  - Use to_blas_int to convert int32 to int64.
+
 2024.05.31
   - Added shared library version (ABI version 1.0.0)
   - Updated enum parameters to have `to_string`, `from_string`;
