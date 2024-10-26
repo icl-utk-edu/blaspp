@@ -5,6 +5,7 @@
 
 #include "blas/fortran.h"
 #include "blas.hh"
+#include "blas_internal.hh"
 #include "blas/counter.hh"
 
 #include <limits>
@@ -29,13 +30,6 @@ void rotm(
     blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
     blas_error_if( incy == 0 );
 
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(blas_int)) {
-        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
-        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
-    }
-
     #ifdef BLAS_HAVE_PAPI
         // PAPI instrumentation
         counter::rotm_type element;
@@ -47,9 +41,10 @@ void rotm(
         counter::inc_flop_count( (long long int)gflops );
     #endif
 
-    blas_int n_    = (blas_int) n;
-    blas_int incx_ = (blas_int) incx;
-    blas_int incy_ = (blas_int) incy;
+    // convert arguments
+    blas_int n_    = to_blas_int( n );
+    blas_int incx_ = to_blas_int( incx );
+    blas_int incy_ = to_blas_int( incy );
     BLAS_srotm( &n_, x, &incx_, y, &incy_, param );
 }
 
@@ -66,13 +61,6 @@ void rotm(
     blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
     blas_error_if( incy == 0 );
 
-    // check for overflow in native BLAS integer type, if smaller than int64_t
-    if (sizeof(int64_t) > sizeof(blas_int)) {
-        blas_error_if( n              > std::numeric_limits<blas_int>::max() );
-        blas_error_if( std::abs(incx) > std::numeric_limits<blas_int>::max() );
-        blas_error_if( std::abs(incy) > std::numeric_limits<blas_int>::max() );
-    }
-
     #ifdef BLAS_HAVE_PAPI
         // PAPI instrumentation
         counter::rotm_type element;
@@ -84,9 +72,10 @@ void rotm(
         counter::inc_flop_count( (long long int)gflops );
     #endif
 
-    blas_int n_    = (blas_int) n;
-    blas_int incx_ = (blas_int) incx;
-    blas_int incy_ = (blas_int) incy;
+    // convert arguments
+    blas_int n_    = to_blas_int( n );
+    blas_int incx_ = to_blas_int( incx );
+    blas_int incy_ = to_blas_int( incy );
     BLAS_drotm( &n_, x, &incx_, y, &incy_, param );
 }
 
