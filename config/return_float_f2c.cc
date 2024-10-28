@@ -10,13 +10,20 @@
 //------------------------------------------------------------------------------
 #define BLAS_sdot FORTRAN_NAME( sdot, SDOT )
 
-// returns *double*
-#ifdef __cplusplus
-extern "C"
+#ifdef ACCELERATE_NEW_LAPACK
+    // New Accelerate API (>= macOS 13.3) does not use f2c convention.
+    // Since new Accelerate requires using their prototypes in their header,
+    // it's not possible to test using a custom prototype as below.
+    #error "Accelerate's new API (>= macOS 13.3) does not use f2c convention."
+#else
+    // returns `double` instead of `float`, per f2c convention.
+    #ifdef __cplusplus
+    extern "C"
+    #endif
+    double BLAS_sdot( const blas_int* n,
+                      const float* x, const blas_int* incx,
+                      const float* y, const blas_int* incy );
 #endif
-double BLAS_sdot( const blas_int* n,
-                  const float* x, const blas_int* incx,
-                  const float* y, const blas_int* incy );
 
 //------------------------------------------------------------------------------
 int main()
