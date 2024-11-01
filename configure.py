@@ -57,6 +57,9 @@ def main():
    #config.prog_cxx_flag( '-Wconversion' )
    #config.prog_cxx_flag( '-Werror' )
 
+    print_header( 'Libraries' )
+    config.libatomic()
+
     config.openmp()
 
     config.lapack.blas()

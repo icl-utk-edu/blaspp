@@ -785,6 +785,27 @@ def gpu_blas():
 # end
 
 #-------------------------------------------------------------------------------
+def libatomic():
+    '''
+    Tests whether using `std::atomic` requires linking with `-latomic`
+    for 64-bit values, which is the case on some 32-bit systems.
+    If so, adds `-latomic` to LIBS.
+    '''
+    print_test( 'std::atomic links without -latomic' )
+    (rc, out, err) = compile_exe( 'config/std_atomic.cc' )
+    print_result( 'x', rc )
+    if (rc != 0):
+        print_test( 'std::atomic requires -latomic' )
+        env = {'LIBS': '-latomic'}
+        (rc, out, err) = compile_exe( 'config/std_atomic.cc', env )
+        print_result( 'x', rc )
+        if (rc == 0):
+            environ.merge( env )
+        else:
+            raise Error( 'cannot compile libatomic test' )
+# end
+
+#-------------------------------------------------------------------------------
 def get_package( name, directories, repo_url, tar_url, tar_filename ):
     '''
     Searches for a package, generally used for internal packages.

@@ -61,6 +61,7 @@ set_property( CACHE gpu_backend PROPERTY STRINGS
 
 # After color.
 include( "cmake/util.cmake" )
+include( "cmake/config.cmake" )
 
 # Recognize CTest's BUILD_TESTING flag. (Quotes required.)
 if (NOT "${BUILD_TESTING}" STREQUAL "")
@@ -357,7 +358,6 @@ endif()
 
 #-------------------------------------------------------------------------------
 # Clean stale defines.h from Makefile-based build.
-message( "" )
 file( REMOVE "${CMAKE_CURRENT_SOURCE_DIR}/include/blas/defines.h" )
 
 # Include directory.
@@ -371,6 +371,8 @@ target_include_directories(
 )
 
 # OpenMP support.
+message( "" )
+message( STATUS "${bold}Looking for OpenMP${not_bold}" )
 set( openmp_lib "" )
 set( blaspp_use_openmp false )  # output in blasppConfig.cmake.in
 if (NOT use_openmp)
@@ -384,7 +386,15 @@ else()
     endif()
 endif()
 
+# If -latomic is required, add as link library to blaspp.
+message( "" )
+check_libatomic()
+if (libatomic_required)
+    target_link_libraries( blaspp PUBLIC "-latomic" )
+endif()
+
 # Get git commit id.
+message( "" )
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
     execute_process( COMMAND git rev-parse --short HEAD
                      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
