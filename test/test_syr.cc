@@ -146,8 +146,11 @@ void test_syr( Params& params, bool run )
             break;
 
         case testsweeper::DataType::SingleComplex:
+            test_syr_work< std::complex<float>, std::complex<float> >( params, run );
+            break;
+
         case testsweeper::DataType::DoubleComplex:
-            throw blas::Error( "See syr< complex > in LAPACK++", __func__ );
+            test_syr_work< std::complex<double>, std::complex<double> >( params, run );
             break;
 
         default:

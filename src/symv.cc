@@ -48,6 +48,46 @@ inline void symv(
                 &alpha, A, &lda, x, &incx, &beta, y, &incy );
 }
 
+//------------------------------------------------------------------------------
+/// Low-level overload wrapper calls Fortran, complex<float> version.
+/// @ingroup symv_internal
+inline void symv(
+    char uplo,
+    blas_int n,
+    std::complex<float> alpha,
+    std::complex<float> const* A, blas_int lda,
+    std::complex<float> const* x, blas_int incx,
+    std::complex<float> beta,
+    std::complex<float>*       y, blas_int incy )
+{
+    BLAS_csymv( &uplo, &n,
+                (blas_complex_float*) &alpha,
+                (blas_complex_float*) A, &lda,
+                (blas_complex_float*) x, &incx,
+                (blas_complex_float*) &beta,
+                (blas_complex_float*) y, &incy );
+}
+
+//------------------------------------------------------------------------------
+/// Low-level overload wrapper calls Fortran, complex<double> version.
+/// @ingroup symv_internal
+inline void symv(
+    char uplo,
+    blas_int n,
+    std::complex<double> alpha,
+    std::complex<double> const* A, blas_int lda,
+    std::complex<double> const* x, blas_int incx,
+    std::complex<double> beta,
+    std::complex<double>*       y, blas_int incy )
+{
+    BLAS_zsymv( &uplo, &n,
+                (blas_complex_double*) &alpha,
+                (blas_complex_double*) A, &lda,
+                (blas_complex_double*) x, &incx,
+                (blas_complex_double*) &beta,
+                (blas_complex_double*) y, &incy );
+}
+
 }  // namespace internal
 
 //==============================================================================
@@ -143,6 +183,40 @@ void symv(
     double const* x, int64_t incx,
     double beta,
     double*       y, int64_t incy )
+{
+    impl::symv( layout, uplo, n,
+                alpha, A, lda, x, incx, beta, y, incy );
+}
+
+//------------------------------------------------------------------------------
+/// CPU, complex<float> version.
+/// @ingroup symv
+void symv(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    int64_t n,
+    std::complex<float> alpha,
+    std::complex<float> const* A, int64_t lda,
+    std::complex<float> const* x, int64_t incx,
+    std::complex<float> beta,
+    std::complex<float>*       y, int64_t incy )
+{
+    impl::symv( layout, uplo, n,
+                alpha, A, lda, x, incx, beta, y, incy );
+}
+
+//------------------------------------------------------------------------------
+/// CPU, complex<double> version.
+/// @ingroup symv
+void symv(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    int64_t n,
+    std::complex<double> alpha,
+    std::complex<double> const* A, int64_t lda,
+    std::complex<double> const* x, int64_t incx,
+    std::complex<double> beta,
+    std::complex<double>*       y, int64_t incy )
 {
     impl::symv( layout, uplo, n,
                 alpha, A, lda, x, incx, beta, y, incy );
