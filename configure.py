@@ -73,8 +73,9 @@ def main():
 
     try:
         config.lapack.lapack()
-    except Error:
-        print_warn( 'BLAS++ needs LAPACK for testers.' )
+    except Error as ex:
+        print_warn( 'BLAS++ requires LAPACK for [cz]rot, [cz]syr, [cz]symv.' )
+        raise( ex )
 
     config.gpu_blas()
 
