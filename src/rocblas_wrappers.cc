@@ -238,6 +238,64 @@ void dotu(
             (rocblas_double_complex*) result));
 }
 
+//------------------------------------------------------------------------------
+// iamax
+//------------------------------------------------------------------------------
+void iamax(
+    device_blas_int n,
+    float const* dx, device_blas_int incdx,
+    device_blas_int *result,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        rocblas_isamax(
+            queue.handle(),
+            n, dx, incdx,
+            result));
+}
+
+//------------------------------------------------------------------------------
+void iamax(
+    device_blas_int n,
+    double const* dx, device_blas_int incdx,
+    device_blas_int *result,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        rocblas_idamax(
+            queue.handle(),
+            n, dx, incdx,
+            result));
+}
+
+//------------------------------------------------------------------------------
+void iamax(
+    device_blas_int n,
+    std::complex<float> const* dx, device_blas_int incdx,
+    device_blas_int *result,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        rocblas_icamax(
+            queue.handle(),
+            n, dx, incdx,
+            result));
+}
+
+//------------------------------------------------------------------------------
+void iamax(
+    device_blas_int n,
+    std::complex<double> const* dx, device_blas_int incdx,
+    device_blas_int *result,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        rocblas_izamax(
+            queue.handle(),
+            n, dx, incdx,
+            result));
+}
+
 // -----------------------------------------------------------------------------
 // nrm2
 //------------------------------------------------------------------------------

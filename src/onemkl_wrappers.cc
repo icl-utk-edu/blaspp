@@ -238,6 +238,68 @@ void dotu(
             result));
 }
 
+//------------------------------------------------------------------------------
+// iamax
+//------------------------------------------------------------------------------
+void iamax(
+    device_blas_int n,
+    float const* dx, device_blas_int incdx,
+    device_blas_int *result,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::iamax(
+            queue.stream(),
+            n,
+            dx, incdx,
+            result));
+}
+
+//------------------------------------------------------------------------------
+void iamax(
+    device_blas_int n,
+    double const* dx, device_blas_int incdx,
+    device_blas_int *result,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::iamax(
+            queue.stream(),
+            n,
+            dx, incdx,
+            result));
+}
+
+//------------------------------------------------------------------------------
+void iamax(
+    device_blas_int n,
+    std::complex<float> const* dx, device_blas_int incdx,
+    device_blas_int *result,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::iamax(
+            queue.stream(),
+            n,
+            dx, incdx,
+            result));
+}
+
+//------------------------------------------------------------------------------
+void iamax(
+    device_blas_int n,
+    std::complex<double> const* dx, device_blas_int incdx,
+    device_blas_int *result,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::iamax(
+            queue.stream(),
+            n,
+            dx, incdx,
+            result));
+}
+
 // -----------------------------------------------------------------------------
 // nrm2
 //------------------------------------------------------------------------------

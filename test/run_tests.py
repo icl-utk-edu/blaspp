@@ -288,6 +288,7 @@ if (opts.blas1_device):
     [ 'dev-axpy',  dtype + n + incx + incy ],
     [ 'dev-dot',   dtype + n + incx + incy ],
     [ 'dev-dotu',  dtype + n + incx + incy ],
+    [ 'dev-iamax', dtype + n + incx + incy ],
     [ 'dev-nrm2',  dtype + n + incx_pos    ],
     [ 'dev-scal',  dtype + n + incx_pos    ],
     [ 'dev-swap',  dtype + n + incx + incy ],

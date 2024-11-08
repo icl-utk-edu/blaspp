@@ -234,6 +234,7 @@ add_library(
     src/device_hemm.cc
     src/device_her2k.cc
     src/device_herk.cc
+    src/device_iamax.cc
     src/device_queue.cc
     src/device_symm.cc
     src/device_syr2k.cc
