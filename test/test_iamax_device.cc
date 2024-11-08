@@ -24,8 +24,8 @@ void test_iamax_device_work( Params& params, bool run )
     int64_t device  = params.device();
     int64_t verbose = params.verbose();
 
-    int64_t  result_host;
-    int64_t* result = &result_host;
+    int  result_host;
+    int* result = &result_host;
     real_t  result_cblas;
 
     // mark non-standard output values
@@ -59,7 +59,7 @@ void test_iamax_device_work( Params& params, bool run )
 
     dx = blas::device_malloc<T>(size_x, queue);
     if (mode == 'd') {
-        result = blas::device_malloc<int64_t>(1, queue);
+        result = blas::device_malloc<int>(1, queue);
         #if defined( BLAS_HAVE_CUBLAS )
         cublasSetPointerMode(queue.handle(), CUBLAS_POINTER_MODE_DEVICE);
         #elif defined( BLAS_HAVE_ROCBLAS )

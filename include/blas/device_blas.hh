@@ -129,25 +129,25 @@ void dotu(
 void iamax(
     int64_t n,
     float const* x, int64_t incx,
-    int64_t *result,
+    int *result,
     blas::Queue& queue );
 
 void iamax(
     int64_t n,
     double const* x, int64_t incx,
-    int64_t *result,
+    int *result,
     blas::Queue& queue );
 
 void iamax(
     int64_t n,
     std::complex<float> const* x, int64_t incx,
-    int64_t *result,
+    int *result,
     blas::Queue& queue );
 
 void iamax(
     int64_t n,
     std::complex<double> const* x, int64_t incx,
-    int64_t *result,
+    int *result,
     blas::Queue& queue );
 
 //------------------------------------------------------------------------------

@@ -232,9 +232,9 @@ void dotu(
 // iamax
 //------------------------------------------------------------------------------
 void iamax(
-    int64_t n,
-    float const* x, int64_t incx,
-    int64_t *result,
+    device_blas_int n,
+    float const *dx, device_blas_int incdx,
+    device_blas_int *result,
     blas::Queue& queue )
 {
     blas_dev_call(
@@ -247,13 +247,13 @@ void iamax(
 
 //------------------------------------------------------------------------------
 void iamax(
-    int64_t n,
-    double const* x, int64_t incx,
-    int64_t *result,
+    device_blas_int n,
+    double const *dx, device_blas_int incdx,
+    device_blas_int *result,
     blas::Queue& queue )
 {
     blas_dev_call(
-        cublasIsamax(
+        cublasIdamax(
             queue.handle(),
             n,
             dx, incdx,
@@ -262,31 +262,31 @@ void iamax(
 
 //------------------------------------------------------------------------------
 void iamax(
-    int64_t n,
-    std::complex<float> const* x, int64_t incx,
-    int64_t *result,
+    device_blas_int n,
+    std::complex<float> const *dx, device_blas_int incdx,
+    device_blas_int *result,
     blas::Queue& queue )
 {
     blas_dev_call(
-        cublasIsamax(
+        cublasIcamax(
             queue.handle(),
             n,
-            dx, incdx,
+            (const cuComplex*) dx, incdx,
             result));
 }
 
 //------------------------------------------------------------------------------
 void iamax(
-    int64_t n,
-    std::complex<double> const* x, int64_t incx,
-    int64_t *result,
+    device_blas_int n,
+    std::complex<double> const *dx, device_blas_int incdx,
+    device_blas_int *result,
     blas::Queue& queue )
 {
     blas_dev_call(
-        cublasIsamax(
+        cublasIzamax(
             queue.handle(),
             n,
-            dx, incdx,
+            (const cuDoubleComplex*) dx, incdx,
             result));
 }
 
