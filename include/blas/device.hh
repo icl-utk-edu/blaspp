@@ -54,12 +54,15 @@ namespace blas {
 
 #ifdef BLAS_HAVE_CUBLAS
     typedef int                  device_blas_int;
+    typedef int                  device_info_int;
 #elif defined(BLAS_HAVE_ROCBLAS)
     typedef int                  device_blas_int;
+    typedef rocblas_int          device_info_int;
 #elif defined(BLAS_HAVE_SYCL)
     typedef std::int64_t         device_blas_int;
 #else
     typedef int                  device_blas_int;
+    typedef int64_t              device_info_int;
 #endif
 
 // -----------------------------------------------------------------------------

@@ -14,7 +14,9 @@ template <typename T>
 void test_iamax_device_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using real_t   = blas::real_type< T >;
+    using namespace blas;
+    typedef scalar_type<T> scalar_t;
+    typedef real_type<scalar_t> real_t;
     using std::abs;
 
     // get & mark input values
@@ -24,9 +26,8 @@ void test_iamax_device_work( Params& params, bool run )
     int64_t device  = params.device();
     int64_t verbose = params.verbose();
 
-    int  result_host;
-    int* result = &result_host;
-    real_t  result_cblas;
+    device_info_int result_host;
+    device_info_int* result = &result_host;
 
     // mark non-standard output values
     params.gflops();
@@ -50,16 +51,25 @@ void test_iamax_device_work( Params& params, bool run )
 
     // setup
     size_t size_x = (n - 1) * std::abs(incx) + 1;
-    T* x = new T[ size_x ];
+    T* x     = new T[ size_x ];
 
-    
+
+    int64_t idist = 1;
+    int iseed[4] = { 0, 0, 0, 1 };
+    lapack_larnv( idist, iseed, size_x, x );
+
     // device specifics
     blas::Queue queue( device );
     T* dx;
 
-    dx = blas::device_malloc<T>(size_x, queue);
+    dx = blas::device_malloc<T>( size_x, queue );
+    blas::device_copy_vector( n, x, std::abs(incx), dx, std::abs(incx), queue );
+    queue.sync();
+
     if (mode == 'd') {
-        result = blas::device_malloc<int>(1, queue);
+        result = blas::device_malloc< device_info_int >( 1, queue );
+        // result = (int64_t *)malloc( sizeof(int64_t) );
+
         #if defined( BLAS_HAVE_CUBLAS )
         cublasSetPointerMode(queue.handle(), CUBLAS_POINTER_MODE_DEVICE);
         #elif defined( BLAS_HAVE_ROCBLAS )
@@ -67,14 +77,9 @@ void test_iamax_device_work( Params& params, bool run )
         #endif
     }
 
-    // int64_t idist = 1;
-    // int iseed[4] = { 0, 0, 0, 1 };
-    // lapack_larnv( idist, iseed, size_x, x );
-
     // test error exits
-    assert_throw( blas::iamax( -1, x, incx ), blas::Error );
-    assert_throw( blas::iamax(  n, x,    0 ), blas::Error );
-    assert_throw( blas::iamax(  n, x,   -1 ), blas::Error );
+    assert_throw( blas::iamax( -1, x, incx, result, queue ), blas::Error );
+    assert_throw( blas::iamax(  n, x,    0, result, queue ), blas::Error );
 
     if (verbose >= 1) {
         printf( "\n"
@@ -82,7 +87,7 @@ void test_iamax_device_work( Params& params, bool run )
                 llong( n ), llong( incx ), llong( size_x ) );
     }
     if (verbose >= 2) {
-        printf( "x = " ); print_vector( n, x, incx );
+        printf( "x    = " ); print_vector( n, x, incx );
     }
 
     // run test
@@ -101,6 +106,9 @@ void test_iamax_device_work( Params& params, bool run )
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
+
+    blas::device_copy_vector(n, dx, std::abs(incx), x, std::abs(incx), queue);
+    queue.sync();
 
     if (verbose >= 1) {
         printf( "result = %5lld\n", llong( result ) );
@@ -121,8 +129,8 @@ void test_iamax_device_work( Params& params, bool run )
             printf( "ref    = %5lld\n", llong( ref ) );
         }
 
-        // error = |ref - result|
-        real_t error = abs( ref - *result );
+        // check error compared to reference
+        real_t error = abs( ref - result_host );
         params.error() = error;
 
         // iamax must be exact!

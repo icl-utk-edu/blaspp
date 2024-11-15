@@ -241,10 +241,10 @@ void dotu(
 //------------------------------------------------------------------------------
 // iamax
 //------------------------------------------------------------------------------
-void iamax(
+void isamax(
     device_blas_int n,
     float const* dx, device_blas_int incdx,
-    device_blas_int *result,
+    int *result,
     blas::Queue& queue )
 {
     blas_dev_call(
@@ -256,10 +256,10 @@ void iamax(
 }
 
 //------------------------------------------------------------------------------
-void iamax(
+void idamax(
     device_blas_int n,
     double const* dx, device_blas_int incdx,
-    device_blas_int *result,
+    int *result,
     blas::Queue& queue )
 {
     blas_dev_call(
@@ -271,12 +271,13 @@ void iamax(
 }
 
 //------------------------------------------------------------------------------
-void iamax(
+void icamax(
     device_blas_int n,
     std::complex<float> const* dx, device_blas_int incdx,
-    device_blas_int *result,
+    int *result,
     blas::Queue& queue )
 {
+
     blas_dev_call(
         oneapi::mkl::blas::iamax(
             queue.stream(),
@@ -286,10 +287,10 @@ void iamax(
 }
 
 //------------------------------------------------------------------------------
-void iamax(
+void izamax(
     device_blas_int n,
     std::complex<double> const* dx, device_blas_int incdx,
-    device_blas_int *result,
+    int *result,
     blas::Queue& queue )
 {
     blas_dev_call(
