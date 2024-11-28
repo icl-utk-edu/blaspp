@@ -231,25 +231,25 @@ void dotu(
 //------------------------------------------------------------------------------
 // iamax
 //------------------------------------------------------------------------------
-void isamax(
+void iamax(
     device_blas_int n,
     float const *dx, device_blas_int incdx,
-    device_info_int* result,
+    device_blas_int* result,
     blas::Queue& queue )
 {
-//     blas_dev_call(
-//         cublasIsamax(
-//             queue.handle(),
-//             n,
-//             dx, incdx,
-//             result));
+    blas_dev_call(
+        cublasIsamax(
+            queue.handle(),
+            n,
+            dx, incdx,
+            result));
 }
 
 //------------------------------------------------------------------------------
-void idamax(
+void iamax(
     device_blas_int n,
     double const *dx, device_blas_int incdx,
-    device_info_int* result,
+    device_blas_int* result,
     blas::Queue& queue )
 {
     blas_dev_call(
@@ -261,33 +261,33 @@ void idamax(
 }
 
 //------------------------------------------------------------------------------
-void icamax(
+void iamax(
     device_blas_int n,
     std::complex<float> const *dx, device_blas_int incdx,
-    device_info_int* result,
+    device_blas_int* result,
     blas::Queue& queue )
 {
-    // blas_dev_call(
-    //     cublasIcamax(
-    //         queue.handle(),
-    //         n,
-    //         (const cuComplex*) dx, incdx,
-    //         result));
+    blas_dev_call(
+        cublasIcamax(
+            queue.handle(),
+            n,
+            (const cuComplex*) dx, incdx,
+            result));
 }
 
 //------------------------------------------------------------------------------
-void izamax(
+void iamax(
     device_blas_int n,
     std::complex<double> const *dx, device_blas_int incdx,
-    device_info_int* result,
+    device_blas_int* result,
     blas::Queue& queue )
 {
-    // blas_dev_call(
-    //     cublasIzamax(
-    //         queue.handle(),
-    //         n,
-    //         (const cuDoubleComplex*) dx, incdx,
-    //         result));
+    blas_dev_call(
+        cublasIzamax(
+            queue.handle(),
+            n,
+            (const cuDoubleComplex*) dx, incdx,
+            result));
 }
 
 // -----------------------------------------------------------------------------

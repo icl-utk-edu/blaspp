@@ -244,6 +244,7 @@ void dotu(
 void iamax(
     device_blas_int n,
     float const* dx, device_blas_int incdx,
+    device_blas_int* result,
     blas::Queue& queue )
 {
     blas_dev_call(
@@ -254,10 +255,10 @@ void iamax(
 }
 
 //------------------------------------------------------------------------------
-void isamax(
+void iamax(
     device_blas_int n,
     double const* dx, device_blas_int incdx,
-    int *result,
+    device_blas_int* result,
     blas::Queue& queue )
 {
     blas_dev_call(
@@ -268,10 +269,10 @@ void isamax(
 }
 
 //------------------------------------------------------------------------------
-void idamax(
+void iamax(
     device_blas_int n,
     std::complex<float> const* dx, device_blas_int incdx,
-    int *result,
+    device_blas_int* result,
     blas::Queue& queue )
 {
     blas_dev_call(
@@ -285,7 +286,7 @@ void idamax(
 void iamax(
     device_blas_int n,
     std::complex<double> const* dx, device_blas_int incdx,
-    int *result,
+    device_blas_int* result,
     blas::Queue& queue )
 {
     blas_dev_call(
