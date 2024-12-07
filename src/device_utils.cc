@@ -31,20 +31,22 @@ void internal_set_device( int device )
 }
 
 // -----------------------------------------------------------------------------
-/// @return number of GPU devices.
+/// @return number of GPU devices. If BLAS++ is not compiled with GPU
+/// support or any error occurs querying for GPUs (e.g., no GPUs found
+/// or GPU driver not installed), returns 0. Does not throw an error.
 int get_device_count()
 {
     device_blas_int dev_count = 0;
 
     #ifdef BLAS_HAVE_CUBLAS
-        auto err = cudaGetDeviceCount(&dev_count);
-        if (err != cudaSuccess && err != cudaErrorNoDevice)
-            blas_dev_call( err );
+        auto err = cudaGetDeviceCount( &dev_count );
+        if (err != cudaSuccess)
+            dev_count = 0;
 
-    #elif defined(BLAS_HAVE_ROCBLAS)
-        auto err = hipGetDeviceCount(&dev_count);
-        if (err != hipSuccess && err != hipErrorNoDevice)
-            blas_dev_call( err );
+    #elif defined( BLAS_HAVE_ROCBLAS )
+        auto err = hipGetDeviceCount( &dev_count );
+        if (err != hipSuccess)
+            dev_count = 0;
 
     #elif defined(BLAS_HAVE_SYCL)
         dev_count = DeviceList::size();
