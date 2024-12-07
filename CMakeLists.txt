@@ -455,9 +455,8 @@ else()
 endif()
 
 if (NOT LAPACK_FOUND)
-    message( "For [cz]rot, [cz]syr, and [cz]symv, BLAS++ requires a LAPACK library and none was found."
-             " Ensure that it is accessible in environment variables"
-             " $CPATH, $LIBRARY_PATH, and $LD_LIBRARY_PATH." )
+    message( FATAL_ERROR
+             "BLAS++ requires LAPACK for [cz]rot, [cz]syr, [cz]symv." )
 endif()
 
 # BLAS++ doesn't need LAPACKConfig.cmake, which checks version, XBLAS, LAPACKE.

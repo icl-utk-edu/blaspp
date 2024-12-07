@@ -533,46 +533,45 @@ void BLAS_dsymv_base(
     #endif
     );
 
-// [cz]symv moved to LAPACK++ since they are provided by LAPACK.
-// #define BLAS_csymv_base BLAS_FORTRAN_NAME( csymv, CSYMV )
-// void BLAS_csymv_base(
-//     char const *uplo,
-//     blas_int const *n,
-//     blas_complex_float const *alpha,
-//     blas_complex_float const *A, blas_int const *lda,
-//     blas_complex_float const *x, blas_int const *incx,
-//     blas_complex_float const *beta,
-//     blas_complex_float       *y, blas_int const *incy
-//     #ifdef BLAS_FORTRAN_STRLEN_END
-//     , size_t uplo_len
-//     #endif
-//     );
-//
-// #define BLAS_zsymv_base BLAS_FORTRAN_NAME( zsymv, ZSYMV )
-// void BLAS_zsymv_base(
-//     char const *uplo,
-//     blas_int const *n,
-//     blas_complex_double const *alpha,
-//     blas_complex_double const *A, blas_int const *lda,
-//     blas_complex_double const *x, blas_int const *incx,
-//     blas_complex_double const *beta,
-//     blas_complex_double       *y, blas_int const *incy
-//     #ifdef BLAS_FORTRAN_STRLEN_END
-//     , size_t uplo_len
-//     #endif
-//     );
+#define BLAS_csymv_base BLAS_FORTRAN_NAME( csymv, CSYMV )
+void BLAS_csymv_base(
+    char const *uplo,
+    blas_int const *n,
+    blas_complex_float const *alpha,
+    blas_complex_float const *A, blas_int const *lda,
+    blas_complex_float const *x, blas_int const *incx,
+    blas_complex_float const *beta,
+    blas_complex_float       *y, blas_int const *incy
+    #ifdef BLAS_FORTRAN_STRLEN_END
+    , size_t uplo_len
+    #endif
+    );
+
+#define BLAS_zsymv_base BLAS_FORTRAN_NAME( zsymv, ZSYMV )
+void BLAS_zsymv_base(
+    char const *uplo,
+    blas_int const *n,
+    blas_complex_double const *alpha,
+    blas_complex_double const *A, blas_int const *lda,
+    blas_complex_double const *x, blas_int const *incx,
+    blas_complex_double const *beta,
+    blas_complex_double       *y, blas_int const *incy
+    #ifdef BLAS_FORTRAN_STRLEN_END
+    , size_t uplo_len
+    #endif
+    );
 
 #ifdef BLAS_FORTRAN_STRLEN_END
     // Pass 1 for string lengths.
     #define BLAS_ssymv( ... ) BLAS_ssymv_base( __VA_ARGS__, 1 )
     #define BLAS_dsymv( ... ) BLAS_dsymv_base( __VA_ARGS__, 1 )
-    //#define BLAS_csymv( ... ) BLAS_csymv_base( __VA_ARGS__, 1 )
-    //#define BLAS_zsymv( ... ) BLAS_zsymv_base( __VA_ARGS__, 1 )
+    #define BLAS_csymv( ... ) BLAS_csymv_base( __VA_ARGS__, 1 )
+    #define BLAS_zsymv( ... ) BLAS_zsymv_base( __VA_ARGS__, 1 )
 #else
     #define BLAS_ssymv( ... ) BLAS_ssymv_base( __VA_ARGS__ )
     #define BLAS_dsymv( ... ) BLAS_dsymv_base( __VA_ARGS__ )
-    //#define BLAS_csymv( ... ) BLAS_csymv_base( __VA_ARGS__ )
-    //#define BLAS_zsymv( ... ) BLAS_zsymv_base( __VA_ARGS__ )
+    #define BLAS_csymv( ... ) BLAS_csymv_base( __VA_ARGS__ )
+    #define BLAS_zsymv( ... ) BLAS_zsymv_base( __VA_ARGS__ )
 #endif
 
 // -----------------------------------------------------------------------------
@@ -638,42 +637,41 @@ void BLAS_dsyr_base(
     #endif
     );
 
-// conflicts with current prototype in lapacke.h
-//#define BLAS_csyr_base BLAS_FORTRAN_NAME( csyr, CSYR )
-//void BLAS_FORTRAN_NAME( csyr, CSYR )(
-//    char const *uplo,
-//    blas_int const *n,
-//    blas_complex_float const *alpha,
-//    blas_complex_float const *x, blas_int const *incx,
-//    blas_complex_float       *A, blas_int const *lda
-//     #ifdef BLAS_FORTRAN_STRLEN_END
-//     , size_t uplo_len
-//     #endif
-//     );
-//
-//#define BLAS_zsyr_base BLAS_FORTRAN_NAME( zsyr, ZSYR )
-//void BLAS_zsyr_base(
-//    char const *uplo,
-//    blas_int const *n,
-//    blas_complex_double const *alpha,
-//    blas_complex_double const *x, blas_int const *incx,
-//    blas_complex_double       *A, blas_int const *lda
-//     #ifdef BLAS_FORTRAN_STRLEN_END
-//     , size_t uplo_len
-//     #endif
-//     );
+#define BLAS_csyr_base BLAS_FORTRAN_NAME( csyr, CSYR )
+void BLAS_FORTRAN_NAME( csyr, CSYR )(
+    char const *uplo,
+    blas_int const *n,
+    blas_complex_float const *alpha,
+    blas_complex_float const *x, blas_int const *incx,
+    blas_complex_float       *A, blas_int const *lda
+    #ifdef BLAS_FORTRAN_STRLEN_END
+    , size_t uplo_len
+    #endif
+    );
+
+#define BLAS_zsyr_base BLAS_FORTRAN_NAME( zsyr, ZSYR )
+void BLAS_zsyr_base(
+    char const *uplo,
+    blas_int const *n,
+    blas_complex_double const *alpha,
+    blas_complex_double const *x, blas_int const *incx,
+    blas_complex_double       *A, blas_int const *lda
+    #ifdef BLAS_FORTRAN_STRLEN_END
+    , size_t uplo_len
+    #endif
+    );
 
 #ifdef BLAS_FORTRAN_STRLEN_END
     // Pass 1 for string lengths.
     #define BLAS_ssyr( ... ) BLAS_ssyr_base( __VA_ARGS__, 1 )
     #define BLAS_dsyr( ... ) BLAS_dsyr_base( __VA_ARGS__, 1 )
-    //#define BLAS_csyr( ... ) BLAS_csyr_base( __VA_ARGS__, 1 )
-    //#define BLAS_zsyr( ... ) BLAS_zsyr_base( __VA_ARGS__, 1 )
+    #define BLAS_csyr( ... ) BLAS_csyr_base( __VA_ARGS__, 1 )
+    #define BLAS_zsyr( ... ) BLAS_zsyr_base( __VA_ARGS__, 1 )
 #else
     #define BLAS_ssyr( ... ) BLAS_ssyr_base( __VA_ARGS__ )
     #define BLAS_dsyr( ... ) BLAS_dsyr_base( __VA_ARGS__ )
-    //#define BLAS_csyr( ... ) BLAS_csyr_base( __VA_ARGS__ )
-    //#define BLAS_zsyr( ... ) BLAS_zsyr_base( __VA_ARGS__ )
+    #define BLAS_csyr( ... ) BLAS_csyr_base( __VA_ARGS__ )
+    #define BLAS_zsyr( ... ) BLAS_zsyr_base( __VA_ARGS__ )
 #endif
 
 // -----------------------------------------------------------------------------

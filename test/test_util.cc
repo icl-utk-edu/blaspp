@@ -397,7 +397,7 @@ void test_device_routines()
 {
     printf( "%s\n", __func__ );
 
-    int repeat = 4;
+    const int repeat = 4;
     double t;
     int device_cnt;
 

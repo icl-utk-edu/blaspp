@@ -84,21 +84,10 @@ endfunction()
 # Setup.
 
 #---------------------------------------- compiler
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    set( gnu_compiler true )
-endif()
-
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "IntelLLVM")
-    set( intelllvm_compiler true )
-endif()
-
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
-    set( intel_compiler true )
-endif()
-
-if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "XL|XLClang")
-    set( ibm_compiler true )
-endif()
+string( COMPARE EQUAL "${CMAKE_CXX_COMPILER_ID}" "GNU"        gnu_compiler)
+string( COMPARE EQUAL "${CMAKE_CXX_COMPILER_ID}" "IntelLLVM"  intelllvm_compiler )
+string( COMPARE EQUAL "${CMAKE_CXX_COMPILER_ID}" "Intel"      intel_compiler )
+string( REGEX MATCH   "XL|XLClang" ibm_compiler "${CMAKE_CXX_COMPILER_ID}" )
 
 #---------------------------------------- Fortran manglings to test
 if (ibm_compiler)
@@ -136,37 +125,13 @@ endif()
 #---------------------------------------- blas
 string( TOLOWER "${blas}" blas_ )
 
-if ("${blas_}" MATCHES "auto")
-    set( test_all true )
-endif()
-
-if ("${blas_}" MATCHES "acml")
-    set( test_acml true )
-endif()
-
-if ("${blas_}" MATCHES "apple|accelerate")
-    set( test_accelerate true )
-endif()
-
-if ("${blas_}" MATCHES "cray|libsci|default")
-    set( test_default true )
-endif()
-
-if ("${blas_}" MATCHES "ibm|essl")
-    set( test_essl true )
-endif()
-
-if ("${blas_}" MATCHES "intel|mkl")
-    set( test_mkl true )
-endif()
-
-if ("${blas_}" MATCHES "openblas")
-    set( test_openblas true )
-endif()
-
-if ("${blas_}" MATCHES "generic")
-    set( test_generic true )
-endif()
+string( REGEX MATCH "auto|acml"      test_acml     "${blas_}" )
+string( REGEX MATCH "auto|ibm|essl"  test_essl     "${blas_}" )
+string( REGEX MATCH "auto|intel|mkl" test_mkl      "${blas_}" )
+string( REGEX MATCH "auto|openblas"  test_openblas "${blas_}" )
+string( REGEX MATCH "auto|generic"   test_generic  "${blas_}" )
+string( REGEX MATCH "auto|apple|accelerate"    test_accelerate "${blas_}" )
+string( REGEX MATCH "auto|cray|libsci|default" test_default    "${blas_}" )
 
 message( DEBUG "
 BLAS_LIBRARIES      = '${BLAS_LIBRARIES}'
@@ -179,22 +144,13 @@ test_default        = '${test_default}'
 test_essl           = '${test_essl}'
 test_mkl            = '${test_mkl}'
 test_openblas       = '${test_openblas}'
-test_generic        = '${test_generic}'
-test_all            = '${test_all}'")
+test_generic        = '${test_generic}'" )
 
 #---------------------------------------- blas_fortran
 string( TOLOWER "${blas_fortran}" blas_fortran_ )
 
-if ("${blas_fortran_}" MATCHES "gfortran")
-    set( test_gfortran true )
-endif()
-if ("${blas_fortran_}" MATCHES "ifort")
-    set( test_ifort true )
-endif()
-if ("${blas_fortran_}" MATCHES "auto")
-    set( test_gfortran true )
-    set( test_ifort    true )
-endif()
+string( REGEX MATCH "auto|gfortran" test_gfortran "${blas_fortran_}" )
+string( REGEX MATCH "auto|ifort"    test_ifort    "${blas_fortran_}" )
 
 message( DEBUG "
 blas_fortran        = '${blas_fortran}'
@@ -206,16 +162,10 @@ test_ifort          = '${test_ifort}'")
 string( TOLOWER "${blas_int}" blas_int_ )
 
 # This regex is similar to "\b(lp64|int)\b".
-if ("${blas_int_}" MATCHES "(^|[^a-zA-Z0-9_])(lp64|int|int32|int32_t)($|[^a-zA-Z0-9_])")
-    set( test_int true )
-endif()
-if ("${blas_int_}" MATCHES "(^|[^a-zA-Z0-9_])(ilp64|int64|int64_t)($|[^a-zA-Z0-9_])")
-    set( test_int64 true )
-endif()
-if ("${blas_int_}" MATCHES "auto")
-    set( test_int   true )
-    set( test_int64 true )
-endif()
+set( regex_int32 "(^|[^a-zA-Z0-9_])(auto|lp64|int|int32|int32_t)($|[^a-zA-Z0-9_])" )
+set( regex_int64 "(^|[^a-zA-Z0-9_])(auto|ilp64|int64|int64_t)($|[^a-zA-Z0-9_])" )
+string( REGEX MATCH ${regex_int32} test_int   "${blas_int_}" )
+string( REGEX MATCH ${regex_int64} test_int64 "${blas_int_}" )
 
 if (CMAKE_CROSSCOMPILING AND test_int AND test_int64)
     message( FATAL_ERROR " ${red}When cross-compiling, one must define either\n"
@@ -232,17 +182,11 @@ test_int64          = '${test_int64}'")
 #---------------------------------------- blas_threaded
 string( TOLOWER "${blas_threaded}" blas_threaded_ )
 
-# This regex is similar to "\b(yes|...)\b".
-if ("${blas_threaded_}" MATCHES "(^|[^a-zA-Z0-9_])(y|yes|true|on|1)($|[^a-zA-Z0-9_])")
-    set( test_threaded true )
-endif()
-if ("${blas_threaded_}" MATCHES "(^|[^a-zA-Z0-9_])(n|no|false|off|0)($|[^a-zA-Z0-9_])")
-    set( test_sequential true )
-endif()
-if ("${blas_threaded_}" MATCHES "auto")
-    set( test_threaded   true )
-    set( test_sequential true )
-endif()
+# These regex are similar to "\b(yes|...)\b".
+set( regex_yes "(^|[^a-zA-Z0-9_])(auto|y|yes|true|on|1)($|[^a-zA-Z0-9_])" )
+set( regex_no  "(^|[^a-zA-Z0-9_])(auto|n|no|false|off|0)($|[^a-zA-Z0-9_])" )
+string( REGEX MATCH ${regex_yes} test_threaded   "${blas_threaded_}" )
+string( REGEX MATCH ${regex_no}  test_sequential "${blas_threaded_}" )
 
 message( DEBUG "
 blas_threaded       = '${blas_threaded}'
@@ -270,14 +214,14 @@ if (test_blas_libraries)
 endif()
 
 #---------------------------------------- default; Cray libsci
-if (test_all OR test_default)
+if (test_default)
     list( APPEND blas_name_list "default (no library)" )
     list( APPEND blas_libs_list " " )  # Use space so APPEND works later.
     debug_print_list( "default" )
 endif()
 
 #---------------------------------------- Intel MKL
-if (test_all OR test_mkl)
+if (test_mkl)
     # todo: MKL_?(ROOT|DIR)
     if (test_threaded AND OpenMP_CXX_FOUND)
         if (test_gfortran AND gnu_compiler)
@@ -366,7 +310,7 @@ if (test_all OR test_mkl)
 endif()  # MKL
 
 #---------------------------------------- IBM ESSL
-if (test_all OR test_essl)
+if (test_essl)
     # todo: ESSL_?(ROOT|DIR)
     if (test_threaded)
         #message( "essl OpenMP_CXX_FOUND ${OpenMP_CXX_FOUND}" )
@@ -411,7 +355,7 @@ if (test_all OR test_essl)
 endif()
 
 #---------------------------------------- OpenBLAS
-if (test_all OR test_openblas)
+if (test_openblas)
     # todo: OPENBLAS_?(ROOT|DIR)
     list( APPEND blas_name_list "OpenBLAS" )
     list( APPEND blas_libs_list "-lopenblas" )
@@ -419,14 +363,14 @@ if (test_all OR test_openblas)
 endif()
 
 #---------------------------------------- Apple Accelerate
-if (test_all OR test_accelerate)
+if (test_accelerate)
     list( APPEND blas_name_list "Apple Accelerate" )
     list( APPEND blas_libs_list "-framework Accelerate" )
     debug_print_list( "accelerate" )
 endif()
 
 #---------------------------------------- generic -lblas
-if (test_all OR test_generic)
+if (test_generic)
     list( APPEND blas_name_list "generic" )
     list( APPEND blas_libs_list "-lblas" )
     debug_print_list( "generic" )
@@ -434,7 +378,7 @@ endif()
 
 #---------------------------------------- AMD ACML
 # Deprecated libraries last.
-if (test_all OR test_acml)
+if (test_acml)
     # todo: ACML_?(ROOT|DIR)
     if (test_threaded)
         list( APPEND blas_name_list "AMD ACML threaded" )
