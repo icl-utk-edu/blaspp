@@ -18,11 +18,11 @@ void internal_set_device( int device )
         blas_dev_call(
             cudaSetDevice( device ) );
 
-    #elif defined(BLAS_HAVE_ROCBLAS)
+    #elif defined( BLAS_HAVE_ROCBLAS )
         blas_dev_call(
             hipSetDevice( device ) );
 
-    #elif defined(BLAS_HAVE_SYCL)
+    #elif defined( BLAS_HAVE_SYCL )
         // skip, no need to throw error since this is an internal function
 
     #else
@@ -48,7 +48,7 @@ int get_device_count()
         if (err != hipSuccess)
             dev_count = 0;
 
-    #elif defined(BLAS_HAVE_SYCL)
+    #elif defined( BLAS_HAVE_SYCL )
         dev_count = DeviceList::size();
     #endif
 
@@ -65,12 +65,12 @@ void device_free( void* ptr, blas::Queue &queue )
         blas_dev_call(
             cudaFree( ptr ) );
 
-    #elif defined(BLAS_HAVE_ROCBLAS)
+    #elif defined( BLAS_HAVE_ROCBLAS )
         blas::internal_set_device( queue.device() );
         blas_dev_call(
             hipFree( ptr ) );
 
-    #elif defined(BLAS_HAVE_SYCL)
+    #elif defined( BLAS_HAVE_SYCL )
         blas_dev_call(
             sycl::free( ptr, queue.stream() ) );
     #endif
@@ -84,11 +84,11 @@ void host_free_pinned( void* ptr, blas::Queue &queue )
         blas_dev_call(
             cudaFreeHost( ptr ) );
 
-    #elif defined(BLAS_HAVE_ROCBLAS)
+    #elif defined( BLAS_HAVE_ROCBLAS )
         blas_dev_call(
             hipHostFree( ptr ) );
 
-    #elif defined(BLAS_HAVE_SYCL)
+    #elif defined( BLAS_HAVE_SYCL )
         blas_dev_call(
             sycl::free( ptr, queue.stream() ) );
 
