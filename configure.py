@@ -56,6 +56,7 @@ def main():
    #config.prog_cxx_flag( '-Wmissing-declarations' )
    #config.prog_cxx_flag( '-Wconversion' )
    #config.prog_cxx_flag( '-Werror' )
+    config.require_libatomic()
 
     config.openmp()
 
