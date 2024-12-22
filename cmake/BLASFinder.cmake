@@ -125,7 +125,6 @@ endif()
 #---------------------------------------- blas
 string( TOLOWER "${blas}" blas_ )
 
-string( REGEX MATCH "auto|acml"      test_acml     "${blas_}" )
 string( REGEX MATCH "auto|ibm|essl"  test_essl     "${blas_}" )
 string( REGEX MATCH "auto|intel|mkl" test_mkl      "${blas_}" )
 string( REGEX MATCH "auto|openblas"  test_openblas "${blas_}" )
@@ -138,7 +137,6 @@ BLAS_LIBRARIES      = '${BLAS_LIBRARIES}'
 blas                = '${blas}'
 blas_               = '${blas_}'
 test_blas_libraries = '${test_blas_libraries}'
-test_acml           = '${test_acml}'
 test_accelerate     = '${test_accelerate}'
 test_default        = '${test_default}'
 test_essl           = '${test_essl}'
@@ -374,22 +372,6 @@ if (test_generic)
     list( APPEND blas_name_list "generic" )
     list( APPEND blas_libs_list "-lblas" )
     debug_print_list( "generic" )
-endif()
-
-#---------------------------------------- AMD ACML
-# Deprecated libraries last.
-if (test_acml)
-    # todo: ACML_?(ROOT|DIR)
-    if (test_threaded)
-        list( APPEND blas_name_list "AMD ACML threaded" )
-        list( APPEND blas_libs_list "-lacml_mp" )
-    endif()
-
-    if (test_sequential)
-        list( APPEND blas_name_list "AMD ACML sequential" )
-        list( APPEND blas_libs_list "-lacml" )
-    endif()
-    debug_print_list( "acml" )
 endif()
 
 #-------------------------------------------------------------------------------

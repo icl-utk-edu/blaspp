@@ -107,7 +107,7 @@ set( blas "auto" CACHE STRING
 set_property(
     CACHE blas PROPERTY STRINGS
     "auto" "Apple Accelerate" "Cray LibSci" "IBM ESSL"
-    "Intel MKL" "OpenBLAS" "AMD ACML" "generic" )
+    "Intel MKL" "OpenBLAS" "generic" )
 
 set( blas_fortran "auto" CACHE STRING
      "For Intel MKL: use Intel ifort or GNU gfortran conventions?" )
