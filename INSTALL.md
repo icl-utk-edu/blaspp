@@ -52,7 +52,6 @@ BLAS++ specific options include (all values are case insensitive):
         ESSL            IBM ESSL
         OpenBLAS        OpenBLAS
         Accelerate      Apple Accelerate framework
-        ACML            AMD ACML (deprecated)
         generic         generic -lblas
 
     blas_int

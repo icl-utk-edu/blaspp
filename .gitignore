@@ -9,7 +9,6 @@
 __pycache__
 blaspp-*
 build*
-config/acml_version
 config/blas
 config/cblas
 config/compiler_cxx

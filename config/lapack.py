@@ -129,12 +129,12 @@ def compile_with_manglings( src, env, manglings, int_sizes ):
 #-------------------------------------------------------------------------------
 def blas():
     '''
-    Searches for BLAS in default libraries, MKL, ACML, ESSL, OpenBLAS,
+    Searches for BLAS in default libraries, MKL, ESSL, OpenBLAS,
     and Accelerate.
     Checks FORTRAN_ADD_, FORTRAN_LOWER, FORTRAN_UPPER.
     Checks int (LP64) and int64 (ILP64).
     Setting one or more of:
-        blas = {mkl, acml, essl, openblas, accelerate, generic};
+        blas = {mkl, essl, openblas, accelerate, generic};
         blas_int = {int, int64};
         blas_threaded = {y, n};
         blas_fortran = {gfortran, ifort};
@@ -167,7 +167,6 @@ def blas():
 
     #-------------------- blas
     test_all        = (not blas or blas == 'auto')
-    test_acml       = re.search( r'\b(acml)\b',                blas ) is not None
     test_accelerate = re.search( r'\b(apple|accelerate)\b',    blas ) is not None
     test_default    = re.search( r'\b(cray|libsci|default)\b', blas ) is not None
     test_essl       = re.search( r'\b(ibm|essl)\b',            blas ) is not None
@@ -177,7 +176,6 @@ def blas():
 
     if (config.debug()):
         print( "blas                = '" + blas            + "'\n"
-             + "test_acml           = ", test_acml,           "\n"
              + "test_accelerate     = ", test_accelerate,     "\n"
              + "test_default        = ", test_default,        "\n"
              + "test_essl           = ", test_essl,           "\n"
@@ -355,15 +353,6 @@ def blas():
     #-------------------- generic -lblas
     if (test_all or test_generic):
         choices.append( ['Generic BLAS', {'LIBS': '-lblas'}])
-
-    #-------------------- AMD ACML
-    # Deprecated libraries last.
-    if (test_all or test_acml):
-        if (test_threaded):
-            choices.append( ['AMD ACML (threaded)', {'LIBS': '-lacml_mp'}])
-        if (test_sequential):
-            choices.append( ['AMD ACML (sequential)', {'LIBS': '-lacml'}])
-    # end
 
     #----------------------------------------
     # Test choices.
@@ -624,21 +613,6 @@ def mkl_version():
 # end
 
 #-------------------------------------------------------------------------------
-def acml_version():
-    '''
-    Check for ACML version via acmlversion().
-    '''
-    config.print_test( 'ACML version' )
-    (rc, out, err) = config.compile_run( 'config/acml_version.cc' )
-    s = re.search( r'^ACML_VERSION=((\d+)\.(\d+)\.(\d+)\.(\d+))', out )
-    if (rc == 0 and s):
-        config.environ.append( 'CXXFLAGS', define('HAVE_ACML') )
-        config.print_result( 'ACML', rc, '(' + s.group(1) + ')' )
-    else:
-        config.print_result( 'ACML', rc )
-# end
-
-#-------------------------------------------------------------------------------
 def essl_version():
     '''
     Check for ESSL version via iessl().
@@ -671,7 +645,7 @@ def openblas_version():
 #-------------------------------------------------------------------------------
 def vendor_version():
     '''
-    Check for MKL, ACML, ESSL, or OpenBLAS version number in BLAS/LAPACK
+    Check for MKL, ESSL, or OpenBLAS version number in BLAS/LAPACK
     libraries.
     '''
     # If we can, be smart looking for MKL, ESSL, or OpenBLAS version;
@@ -679,8 +653,6 @@ def vendor_version():
     LIBS = config.environ['LIBS']
     if ('-lmkl' in LIBS):
         mkl_version()
-    elif ('-lacml' in LIBS):
-        acml_version()
     elif ('-lessl' in LIBS):
         essl_version()
     elif ('-lopenblas' in LIBS):
@@ -689,7 +661,6 @@ def vendor_version():
         pass
     else:
         mkl_version()
-        acml_version()
         essl_version()
         openblas_version()
     # end
