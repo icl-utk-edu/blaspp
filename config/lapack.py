@@ -129,12 +129,12 @@ def compile_with_manglings( src, env, manglings, int_sizes ):
 #-------------------------------------------------------------------------------
 def blas():
     '''
-    Searches for BLAS in default libraries, MKL, ESSL, OpenBLAS,
+    Searches for BLAS in default libraries, MKL, BLIS, ESSL, OpenBLAS,
     and Accelerate.
     Checks FORTRAN_ADD_, FORTRAN_LOWER, FORTRAN_UPPER.
     Checks int (LP64) and int64 (ILP64).
     Setting one or more of:
-        blas = {mkl, essl, openblas, accelerate, generic};
+        blas = {mkl, blis, essl, openblas, accelerate, generic};
         blas_int = {int, int64};
         blas_threaded = {y, n};
         blas_fortran = {gfortran, ifort};
@@ -168,6 +168,7 @@ def blas():
     #-------------------- blas
     test_all        = (not blas or blas == 'auto')
     test_accelerate = re.search( r'\b(apple|accelerate)\b',    blas ) is not None
+    test_blis       = re.search( r'\b(aocl|blis)\b',           blas ) is not None
     test_default    = re.search( r'\b(cray|libsci|default)\b', blas ) is not None
     test_essl       = re.search( r'\b(ibm|essl)\b',            blas ) is not None
     test_mkl        = re.search( r'\b(intel|mkl)\b',           blas ) is not None
@@ -177,6 +178,7 @@ def blas():
     if (config.debug()):
         print( "blas                = '" + blas            + "'\n"
              + "test_accelerate     = ", test_accelerate,     "\n"
+             + "test_blis           = ", test_blis,           "\n"
              + "test_default        = ", test_default,        "\n"
              + "test_essl           = ", test_essl,           "\n"
              + "test_mkl            = ", test_mkl,            "\n"
@@ -330,6 +332,10 @@ def blas():
     #-------------------- OpenBLAS
     if (test_all or test_openblas):
         choices.append( ['OpenBLAS', {'LIBS': '-lopenblas'}])
+
+    #-------------------- BLIS (also used by AMD AOCL)
+    if (test_all or test_blis):
+        choices.append( ['BLIS', {'LIBS': '-lflame -lblis'}])
 
     #-------------------- Apple Accelerate
     if (test_all or test_accelerate):
@@ -613,6 +619,21 @@ def mkl_version():
 # end
 
 #-------------------------------------------------------------------------------
+def blis_version():
+    '''
+    Check for BLIS version via bli_info_get_version_str.
+    '''
+    config.print_test( 'BLIS version' )
+    (rc, out, err) = config.compile_run( 'config/blis_version.cc' )
+    s = re.search( r'^BLIS_VERSION=(.*)', out )
+    if (rc == 0 and s):
+        config.environ.append( 'CXXFLAGS', define('HAVE_BLIS') )
+        config.print_result( 'BLIS', rc, '(' + s.group(1) + ')' )
+    else:
+        config.print_result( 'BLIS', rc )
+# end
+
+#-------------------------------------------------------------------------------
 def essl_version():
     '''
     Check for ESSL version via iessl().
@@ -645,14 +666,16 @@ def openblas_version():
 #-------------------------------------------------------------------------------
 def vendor_version():
     '''
-    Check for MKL, ESSL, or OpenBLAS version number in BLAS/LAPACK
+    Check for MKL, BLIS, ESSL, or OpenBLAS version number in BLAS/LAPACK
     libraries.
     '''
-    # If we can, be smart looking for MKL, ESSL, or OpenBLAS version;
+    # If we can, be smart looking for MKL, BLIS, ESSL, or OpenBLAS version;
     # otherwise, check them all.
     LIBS = config.environ['LIBS']
     if ('-lmkl' in LIBS):
         mkl_version()
+    elif ('-lblis' in LIBS):
+        blis_version()
     elif ('-lessl' in LIBS):
         essl_version()
     elif ('-lopenblas' in LIBS):
@@ -661,6 +684,7 @@ def vendor_version():
         pass
     else:
         mkl_version()
+        blis_version()
         essl_version()
         openblas_version()
     # end

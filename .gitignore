@@ -10,6 +10,7 @@ __pycache__
 blaspp-*
 build*
 config/blas
+config/blis_version
 config/cblas
 config/compiler_cxx
 config/cublas
