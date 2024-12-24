@@ -50,9 +50,10 @@ BLAS++ specific options include (all values are case insensitive):
         LibSci          Cray LibSci
         MKL             Intel MKL
         ESSL            IBM ESSL
+        AOCL            AMD AOCL (same as BLIS)
+        BLIS            BLIS and libFLAME
         OpenBLAS        OpenBLAS
         Accelerate      Apple Accelerate framework
-        ACML            AMD ACML (deprecated)
         generic         generic -lblas
 
     blas_int
