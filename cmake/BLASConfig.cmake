@@ -70,6 +70,37 @@ if (NOT found)
     endif()
 endif()
 
+#---------------------------------------- BLIS
+if (NOT found)
+    try_run(
+        run_result compile_result ${CMAKE_CURRENT_BINARY_DIR}
+        SOURCES
+            "${CMAKE_CURRENT_SOURCE_DIR}/config/blis_version.cc"
+        LINK_LIBRARIES
+            ${BLAS_LIBRARIES} ${openmp_lib} # not "..." quoted; screws up OpenMP
+        COMPILE_DEFINITIONS
+            ${blaspp_defs_}
+        COMPILE_OUTPUT_VARIABLE
+            compile_output
+        RUN_OUTPUT_VARIABLE
+            run_output
+    )
+    # For cross-compiling, if it links, assume the run is okay.
+    if (CMAKE_CROSSCOMPILING AND compile_result)
+        message( DEBUG "cross: blis" )
+        set( run_result "0"  CACHE STRING "" FORCE )
+        set( run_output "BLIS_VERSION=unknown" CACHE STRING "" FORCE )
+    endif()
+    debug_try_run( "blis_version.cc" "${compile_result}" "${compile_output}"
+                                     "${run_result}" "${run_output}" )
+
+    if (compile_result AND "${run_output}" MATCHES "BLIS_VERSION")
+        message( "${blue}   ${run_output}${plain}" )
+        list( APPEND blaspp_defs_ "-DBLAS_HAVE_BLIS" )
+        set( found true )
+    endif()
+endif()
+
 #---------------------------------------- IBM ESSL
 if (NOT found)
     try_run(

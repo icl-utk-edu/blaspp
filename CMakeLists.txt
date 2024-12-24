@@ -106,7 +106,7 @@ set( blas "auto" CACHE STRING
      "BLAS library to search for" )
 set_property(
     CACHE blas PROPERTY STRINGS
-    "auto" "Apple Accelerate" "Cray LibSci" "IBM ESSL"
+    "auto" "AMD AOCL" "Apple Accelerate" "BLIS" "Cray LibSci" "IBM ESSL"
     "Intel MKL" "OpenBLAS" "generic" )
 
 set( blas_fortran "auto" CACHE STRING

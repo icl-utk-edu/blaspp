@@ -125,12 +125,13 @@ endif()
 #---------------------------------------- blas
 string( TOLOWER "${blas}" blas_ )
 
+string( REGEX MATCH "auto|apple|accelerate"    test_accelerate "${blas_}" )
+string( REGEX MATCH "auto|aocl|blis"           test_blis       "${blas_}" )
+string( REGEX MATCH "auto|cray|libsci|default" test_default    "${blas_}" )
 string( REGEX MATCH "auto|ibm|essl"  test_essl     "${blas_}" )
 string( REGEX MATCH "auto|intel|mkl" test_mkl      "${blas_}" )
 string( REGEX MATCH "auto|openblas"  test_openblas "${blas_}" )
 string( REGEX MATCH "auto|generic"   test_generic  "${blas_}" )
-string( REGEX MATCH "auto|apple|accelerate"    test_accelerate "${blas_}" )
-string( REGEX MATCH "auto|cray|libsci|default" test_default    "${blas_}" )
 
 message( DEBUG "
 BLAS_LIBRARIES      = '${BLAS_LIBRARIES}'
@@ -138,6 +139,7 @@ blas                = '${blas}'
 blas_               = '${blas_}'
 test_blas_libraries = '${test_blas_libraries}'
 test_accelerate     = '${test_accelerate}'
+test_blis           = '${test_blis}'
 test_default        = '${test_default}'
 test_essl           = '${test_essl}'
 test_mkl            = '${test_mkl}'
@@ -358,6 +360,13 @@ if (test_openblas)
     list( APPEND blas_name_list "OpenBLAS" )
     list( APPEND blas_libs_list "-lopenblas" )
     debug_print_list( "openblas" )
+endif()
+
+#---------------------------------------- BLIS (also used by AMD AOCL)
+if (test_blis)
+    list( APPEND blas_name_list "BLIS" )
+    list( APPEND blas_libs_list "-lflame -lblis" )
+    debug_print_list( "blis" )
 endif()
 
 #---------------------------------------- Apple Accelerate
