@@ -1010,7 +1010,7 @@ def parse_args():
 
     # Parse name=value pairs.
     for arg in opts.options:
-        s = re.search( '^(\w+)=(.*)', arg )
+        s = re.search( r'^(\w+)=(.*)', arg )
         if (s):
             environ[ s.group(1) ] = s.group(2)
         else:
