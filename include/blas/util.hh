@@ -205,6 +205,20 @@ inline const char* side2str( Side value )
 //------------------------------------------------------------------------------
 // Convert LAPACK-style char or string to enum.
 
+inline void from_string( const char* chr, Layout* val )
+{
+    assert( chr != nullptr );
+    if (*chr == 'c' || *chr == 'C')
+        *val = Layout::ColMajor;
+    else if (*chr == 'r' || *chr == 'R')
+        *val = Layout::RowMajor;
+    else {
+        std::string str_("unknown Layout: ?");
+        str_.back() = *chr;
+        throw Error( str_ );
+    }
+}
+
 inline void from_string( std::string const& str, Layout* val )
 {
     std::string str_ = str;
@@ -215,6 +229,22 @@ inline void from_string( std::string const& str, Layout* val )
         *val = Layout::RowMajor;
     else
         throw Error( "unknown Layout: " + str );
+}
+
+inline void from_string( const char* chr, Op* val )
+{
+    assert( chr != nullptr );
+    if (*chr == 'n' || *chr == 'N')
+        *val = Op::NoTrans;
+    else if (*chr == 't' || *chr == 'T')
+        *val = Op::Trans;
+    else if (*chr == 'c' || *chr == 'C')
+        *val = Op::ConjTrans;
+    else {
+        std::string str_("unknown Op: ?");
+        str_.back() = *chr;
+        throw Error( str_ );
+    }
 }
 
 inline void from_string( std::string const& str, Op* val )
@@ -231,6 +261,22 @@ inline void from_string( std::string const& str, Op* val )
         throw Error( "unknown Op: " + str );
 }
 
+inline void from_string( const char* chr, Uplo* val )
+{
+    assert( chr != nullptr );
+    if (*chr == 'l' || *chr == 'L')
+        *val = Uplo::Lower;
+    else if (*chr == 'u' || *chr == 'U')
+        *val = Uplo::Upper;
+    else if (*chr == 'g' || *chr == 'G')
+        *val = Uplo::General;
+    else {
+        std::string str_("unknown Uplo: ?");
+        str_.back() = *chr;
+        throw Error( str_ );
+    }
+}
+
 inline void from_string( std::string const& str, Uplo* val )
 {
     std::string str_ = str;
@@ -245,6 +291,20 @@ inline void from_string( std::string const& str, Uplo* val )
         throw Error( "unknown Uplo: " + str );
 }
 
+inline void from_string( const char* chr, Diag* val )
+{
+    assert( chr != nullptr );
+    if (*chr == 'n' || *chr == 'N')
+        *val = Diag::NonUnit;
+    else if (*chr == 'u' || *chr == 'U')
+        *val = Diag::Unit;
+    else {
+        std::string str_("unknown Diag: ?");
+        str_.back() = *chr;
+        throw Error( str_ );
+    }
+}
+
 inline void from_string( std::string const& str, Diag* val )
 {
     std::string str_ = str;
@@ -255,6 +315,20 @@ inline void from_string( std::string const& str, Diag* val )
         *val = Diag::Unit;
     else
         throw Error( "unknown Diag: " + str );
+}
+
+inline void from_string( const char* chr, Side* val )
+{
+    assert( chr != nullptr );
+    if (*chr == 'l' || *chr == 'L')
+        *val = Side::Left;
+    else if (*chr == 'r' || *chr == 'R')
+        *val = Side::Right;
+    else {
+        std::string str_("unknown Side: ?");
+        str_.back() = *chr;
+        throw Error( str_ );
+    }
 }
 
 inline void from_string( std::string const& str, Side* val )
