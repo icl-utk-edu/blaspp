@@ -278,30 +278,30 @@ void test_real_type()
     printf( "%s\n", __func__ );
 
     // Extra parens needed to avoid confusing preprocessor: require( (...) );
-    require( (std::is_same< blas::real_type< float  >, float  >::value) );
-    require( (std::is_same< blas::real_type< double >, double >::value) );
-    require( (std::is_same< blas::real_type< std::complex<float>  >, float  >::value) );
-    require( (std::is_same< blas::real_type< std::complex<double> >, double >::value) );
+    require( (std::is_same_v< blas::real_type< float  >, float  >) );
+    require( (std::is_same_v< blas::real_type< double >, double >) );
+    require( (std::is_same_v< blas::real_type< std::complex<float>  >, float  >) );
+    require( (std::is_same_v< blas::real_type< std::complex<double> >, double >) );
 
     // pairs
-    require( (std::is_same< blas::real_type< float,  float  >, float  >::value) );
-    require( (std::is_same< blas::real_type< float,  double >, double >::value) );
-    require( (std::is_same< blas::real_type< double, double >, double >::value) );
-    require( (std::is_same< blas::real_type< float,  std::complex<float>  >, float  >::value) );
-    require( (std::is_same< blas::real_type< double, std::complex<float>  >, double >::value) );
-    require( (std::is_same< blas::real_type< float,  std::complex<double> >, double >::value) );
-    require( (std::is_same< blas::real_type< double, std::complex<double> >, double >::value) );
-    require( (std::is_same< blas::real_type< std::complex<float>,  float  >, float  >::value) );
-    require( (std::is_same< blas::real_type< std::complex<double>, float  >, double >::value) );
-    require( (std::is_same< blas::real_type< std::complex<double>, double >, double >::value) );
-    require( (std::is_same< blas::real_type< std::complex<float>, std::complex<double> >, double >::value) );
+    require( (std::is_same_v< blas::real_type< float,  float  >, float  >) );
+    require( (std::is_same_v< blas::real_type< float,  double >, double >) );
+    require( (std::is_same_v< blas::real_type< double, double >, double >) );
+    require( (std::is_same_v< blas::real_type< float,  std::complex<float>  >, float  >) );
+    require( (std::is_same_v< blas::real_type< double, std::complex<float>  >, double >) );
+    require( (std::is_same_v< blas::real_type< float,  std::complex<double> >, double >) );
+    require( (std::is_same_v< blas::real_type< double, std::complex<double> >, double >) );
+    require( (std::is_same_v< blas::real_type< std::complex<float>,  float  >, float  >) );
+    require( (std::is_same_v< blas::real_type< std::complex<double>, float  >, double >) );
+    require( (std::is_same_v< blas::real_type< std::complex<double>, double >, double >) );
+    require( (std::is_same_v< blas::real_type< std::complex<float>, std::complex<double> >, double >) );
 
     // triples
-    require( (std::is_same< blas::real_type< float, float,  float >, float  >::value) );
-    require( (std::is_same< blas::real_type< float, double, float >, double >::value) );
-    require( (std::is_same< blas::real_type< float, float,  std::complex<float>  >, float  >::value) );
-    require( (std::is_same< blas::real_type< float, double, std::complex<double> >, double >::value) );
-    require( (std::is_same< blas::real_type< float, double, std::complex<float>  >, double >::value) );
+    require( (std::is_same_v< blas::real_type< float, float,  float >, float  >) );
+    require( (std::is_same_v< blas::real_type< float, double, float >, double >) );
+    require( (std::is_same_v< blas::real_type< float, float,  std::complex<float>  >, float  >) );
+    require( (std::is_same_v< blas::real_type< float, double, std::complex<double> >, double >) );
+    require( (std::is_same_v< blas::real_type< float, double, std::complex<float>  >, double >) );
 }
 
 // -----------------------------------------------------------------------------
@@ -310,30 +310,30 @@ void test_complex_type()
     printf( "%s\n", __func__ );
 
     // Extra parens needed to avoid confusing preprocessor: require( (...) );
-    require( (std::is_same< blas::complex_type< float  >, std::complex<float>  >::value) );
-    require( (std::is_same< blas::complex_type< double >, std::complex<double> >::value) );
-    require( (std::is_same< blas::complex_type< std::complex<float>  >, std::complex<float>  >::value) );
-    require( (std::is_same< blas::complex_type< std::complex<double> >, std::complex<double> >::value) );
+    require( (std::is_same_v< blas::complex_type< float  >, std::complex<float>  >) );
+    require( (std::is_same_v< blas::complex_type< double >, std::complex<double> >) );
+    require( (std::is_same_v< blas::complex_type< std::complex<float>  >, std::complex<float>  >) );
+    require( (std::is_same_v< blas::complex_type< std::complex<double> >, std::complex<double> >) );
 
     // pairs
-    require( (std::is_same< blas::complex_type< float,  float  >, std::complex<float>  >::value) );
-    require( (std::is_same< blas::complex_type< float,  double >, std::complex<double> >::value) );
-    require( (std::is_same< blas::complex_type< double, double >, std::complex<double> >::value) );
-    require( (std::is_same< blas::complex_type< float,  std::complex<float>  >, std::complex<float>  >::value) );
-    require( (std::is_same< blas::complex_type< double, std::complex<float>  >, std::complex<double> >::value) );
-    require( (std::is_same< blas::complex_type< float,  std::complex<double> >, std::complex<double> >::value) );
-    require( (std::is_same< blas::complex_type< double, std::complex<double> >, std::complex<double> >::value) );
-    require( (std::is_same< blas::complex_type< std::complex<float>,  float  >, std::complex<float>  >::value) );
-    require( (std::is_same< blas::complex_type< std::complex<double>, float  >, std::complex<double> >::value) );
-    require( (std::is_same< blas::complex_type< std::complex<double>, double >, std::complex<double> >::value) );
-    require( (std::is_same< blas::complex_type< std::complex<float>, std::complex<double> >, std::complex<double> >::value) );
+    require( (std::is_same_v< blas::complex_type< float,  float  >, std::complex<float>  >) );
+    require( (std::is_same_v< blas::complex_type< float,  double >, std::complex<double> >) );
+    require( (std::is_same_v< blas::complex_type< double, double >, std::complex<double> >) );
+    require( (std::is_same_v< blas::complex_type< float,  std::complex<float>  >, std::complex<float>  >) );
+    require( (std::is_same_v< blas::complex_type< double, std::complex<float>  >, std::complex<double> >) );
+    require( (std::is_same_v< blas::complex_type< float,  std::complex<double> >, std::complex<double> >) );
+    require( (std::is_same_v< blas::complex_type< double, std::complex<double> >, std::complex<double> >) );
+    require( (std::is_same_v< blas::complex_type< std::complex<float>,  float  >, std::complex<float>  >) );
+    require( (std::is_same_v< blas::complex_type< std::complex<double>, float  >, std::complex<double> >) );
+    require( (std::is_same_v< blas::complex_type< std::complex<double>, double >, std::complex<double> >) );
+    require( (std::is_same_v< blas::complex_type< std::complex<float>, std::complex<double> >, std::complex<double> >) );
 
     // triples
-    require( (std::is_same< blas::complex_type< float, float,  float >, std::complex<float>  >::value) );
-    require( (std::is_same< blas::complex_type< float, double, float >, std::complex<double> >::value) );
-    require( (std::is_same< blas::complex_type< float, float,  std::complex<float>  >, std::complex<float>  >::value) );
-    require( (std::is_same< blas::complex_type< float, double, std::complex<double> >, std::complex<double> >::value) );
-    require( (std::is_same< blas::complex_type< float, double, std::complex<float>  >, std::complex<double> >::value) );
+    require( (std::is_same_v< blas::complex_type< float, float,  float >, std::complex<float>  >) );
+    require( (std::is_same_v< blas::complex_type< float, double, float >, std::complex<double> >) );
+    require( (std::is_same_v< blas::complex_type< float, float,  std::complex<float>  >, std::complex<float>  >) );
+    require( (std::is_same_v< blas::complex_type< float, double, std::complex<double> >, std::complex<double> >) );
+    require( (std::is_same_v< blas::complex_type< float, double, std::complex<float>  >, std::complex<double> >) );
 }
 
 // -----------------------------------------------------------------------------
@@ -342,30 +342,30 @@ void test_scalar_type()
     printf( "%s\n", __func__ );
 
     // Extra parens needed to avoid confusing preprocessor: require( (...) );
-    require( (std::is_same< blas::scalar_type< float  >, float  >::value) );
-    require( (std::is_same< blas::scalar_type< double >, double >::value) );
-    require( (std::is_same< blas::scalar_type< std::complex<float>  >, std::complex<float>  >::value) );
-    require( (std::is_same< blas::scalar_type< std::complex<double> >, std::complex<double> >::value) );
+    require( (std::is_same_v< blas::scalar_type< float  >, float  >) );
+    require( (std::is_same_v< blas::scalar_type< double >, double >) );
+    require( (std::is_same_v< blas::scalar_type< std::complex<float>  >, std::complex<float>  >) );
+    require( (std::is_same_v< blas::scalar_type< std::complex<double> >, std::complex<double> >) );
 
     // pairs
-    require( (std::is_same< blas::scalar_type< float,  float  >, float  >::value) );
-    require( (std::is_same< blas::scalar_type< float,  double >, double >::value) );
-    require( (std::is_same< blas::scalar_type< double, double >, double >::value) );
-    require( (std::is_same< blas::scalar_type< float,  std::complex<float>  >, std::complex<float>  >::value) );
-    require( (std::is_same< blas::scalar_type< double, std::complex<float>  >, std::complex<double> >::value) );
-    require( (std::is_same< blas::scalar_type< float,  std::complex<double> >, std::complex<double> >::value) );
-    require( (std::is_same< blas::scalar_type< double, std::complex<double> >, std::complex<double> >::value) );
-    require( (std::is_same< blas::scalar_type< std::complex<float>,  float  >, std::complex<float>  >::value) );
-    require( (std::is_same< blas::scalar_type< std::complex<double>, float  >, std::complex<double> >::value) );
-    require( (std::is_same< blas::scalar_type< std::complex<double>, double >, std::complex<double> >::value) );
-    require( (std::is_same< blas::scalar_type< std::complex<float>, std::complex<double> >, std::complex<double> >::value) );
+    require( (std::is_same_v< blas::scalar_type< float,  float  >, float  >) );
+    require( (std::is_same_v< blas::scalar_type< float,  double >, double >) );
+    require( (std::is_same_v< blas::scalar_type< double, double >, double >) );
+    require( (std::is_same_v< blas::scalar_type< float,  std::complex<float>  >, std::complex<float>  >) );
+    require( (std::is_same_v< blas::scalar_type< double, std::complex<float>  >, std::complex<double> >) );
+    require( (std::is_same_v< blas::scalar_type< float,  std::complex<double> >, std::complex<double> >) );
+    require( (std::is_same_v< blas::scalar_type< double, std::complex<double> >, std::complex<double> >) );
+    require( (std::is_same_v< blas::scalar_type< std::complex<float>,  float  >, std::complex<float>  >) );
+    require( (std::is_same_v< blas::scalar_type< std::complex<double>, float  >, std::complex<double> >) );
+    require( (std::is_same_v< blas::scalar_type< std::complex<double>, double >, std::complex<double> >) );
+    require( (std::is_same_v< blas::scalar_type< std::complex<float>, std::complex<double> >, std::complex<double> >) );
 
     // triples
-    require( (std::is_same< blas::scalar_type< float, float,  float >, float  >::value) );
-    require( (std::is_same< blas::scalar_type< float, double, float >, double >::value) );
-    require( (std::is_same< blas::scalar_type< float, float,  std::complex<float>  >, std::complex<float>  >::value) );
-    require( (std::is_same< blas::scalar_type< float, double, std::complex<double> >, std::complex<double> >::value) );
-    require( (std::is_same< blas::scalar_type< float, double, std::complex<float>  >, std::complex<double> >::value) );
+    require( (std::is_same_v< blas::scalar_type< float, float,  float >, float  >) );
+    require( (std::is_same_v< blas::scalar_type< float, double, float >, double >) );
+    require( (std::is_same_v< blas::scalar_type< float, float,  std::complex<float>  >, std::complex<float>  >) );
+    require( (std::is_same_v< blas::scalar_type< float, double, std::complex<double> >, std::complex<double> >) );
+    require( (std::is_same_v< blas::scalar_type< float, double, std::complex<float>  >, std::complex<double> >) );
 }
 
 // -----------------------------------------------------------------------------
