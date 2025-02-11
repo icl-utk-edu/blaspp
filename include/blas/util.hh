@@ -354,6 +354,9 @@ struct is_complex< std::complex<T> >:
     std::integral_constant<bool, true>
 {};
 
+template <typename T>
+constexpr bool is_complex_v = is_complex<T>::value;
+
 // -----------------------------------------------------------------------------
 // Previously extended real and imag to real types. Belatedly discovered that
 // C++11 extends std::real and std::imag to float and integer types,
