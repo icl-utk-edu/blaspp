@@ -151,7 +151,7 @@ void gemv(
     scalar_t* x2 = const_cast< scalar_t* >( x );
     Op trans2 = trans;
     if (layout == Layout::RowMajor) {
-        if constexpr (is_complex<scalar_t>::value) {
+        if constexpr (is_complex_v<scalar_t>) {
             if (trans == Op::ConjTrans) {
                 // conjugate alpha, beta, x (in x2), and y (in-place)
                 alpha = conj( alpha );
@@ -182,7 +182,7 @@ void gemv(
     internal::gemv( trans_, m_, n_,
                     alpha, A, lda_, x2, incx_, beta, y, incy_ );
 
-    if constexpr (is_complex<scalar_t>::value) {
+    if constexpr (is_complex_v<scalar_t>) {
         if (x2 != x) {  // RowMajor ConjTrans
             // y = conj( y )
             int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);

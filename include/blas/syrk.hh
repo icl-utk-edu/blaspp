@@ -107,9 +107,9 @@ void syrk(
     // check and interpret argument trans
     if (trans == Op::ConjTrans) {
         blas_error_if_msg(
-                blas::is_complex<TA>::value,
+                blas::is_complex_v<TA>,
                 "trans == Op::ConjTrans && "
-                "blas::is_complex<TA>::value" );
+                "blas::is_complex_v<TA>" );
         trans = Op::Trans;
     }
     else {

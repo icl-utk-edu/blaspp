@@ -96,7 +96,7 @@ void test_syr2k_work( Params& params, bool run )
 
     assert_throw( blas::syr2k( layout,    uplo,    trans,  n,  k, alpha, A, lda, B, ldb, beta, C, n-1 ), blas::Error );
 
-    if (blas::is_complex<scalar_t>::value) {
+    if (blas::is_complex_v<scalar_t>) {
         // complex syr2k doesn't allow ConjTrans, only Trans
         assert_throw( blas::syr2k( layout, uplo, Op::ConjTrans, n, k, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
     }

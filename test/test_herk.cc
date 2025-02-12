@@ -81,7 +81,7 @@ void test_herk_work( Params& params, bool run )
 
     assert_throw( blas::herk( layout,    uplo,    trans,  n,  k, alpha, A, lda, beta, C, n-1 ), blas::Error );
 
-    if (blas::is_complex<scalar_t>::value) {
+    if (blas::is_complex_v<scalar_t>) {
         // complex herk doesn't allow Trans, only ConjTrans
         assert_throw( blas::herk( layout, uplo, Op::Trans, n, k, alpha, A, lda, beta, C, ldc ), blas::Error );
     }

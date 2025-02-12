@@ -126,7 +126,7 @@ void test_axpy_work( Params& params, bool run )
         }
 
         // complex needs extra factor; see Higham, 2002, sec. 3.6.
-        if (blas::is_complex<scalar_t>::value) {
+        if (blas::is_complex_v<scalar_t>) {
             error /= 2*sqrt(2);
         }
 

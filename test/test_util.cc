@@ -190,12 +190,12 @@ void test_is_complex()
 {
     printf( "%s\n", __func__ );
 
-    require( ! blas::is_complex< int >::value );
-    require( ! blas::is_complex< int64_t >::value );
-    require( ! blas::is_complex< float >::value );
-    require( ! blas::is_complex< double >::value );
-    require( blas::is_complex< std::complex<float> >::value );
-    require( blas::is_complex< std::complex<double> >::value );
+    require( ! blas::is_complex_v< int > );
+    require( ! blas::is_complex_v< int64_t > );
+    require( ! blas::is_complex_v< float > );
+    require( ! blas::is_complex_v< double > );
+    require( blas::is_complex_v< std::complex<float> > );
+    require( blas::is_complex_v< std::complex<double> > );
 }
 
 // -----------------------------------------------------------------------------

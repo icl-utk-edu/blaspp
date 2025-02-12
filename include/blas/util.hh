@@ -377,7 +377,7 @@ template <typename T>
 inline T conj( T x )
 {
     static_assert(
-        ! is_complex<T>::value,
+        ! is_complex_v<T>,
         "Usage: using blas::conj; y = conj(x); NOT: y = blas::conj(x);" );
     return x;
 }

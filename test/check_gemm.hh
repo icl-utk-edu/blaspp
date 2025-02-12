@@ -66,7 +66,7 @@ void check_gemm(
     }
 
     // complex needs extra factor; see Higham, 2002, sec. 3.6.
-    if (blas::is_complex<T>::value) {
+    if (blas::is_complex_v<T>) {
         error[0] /= 2*sqrt(2);
     }
 
@@ -149,7 +149,7 @@ void check_herk(
     }
 
     // complex needs extra factor; see Higham, 2002, sec. 3.6.
-    if (blas::is_complex<T>::value) {
+    if (blas::is_complex_v<T>) {
         error[0] /= 2*sqrt(2);
     }
 

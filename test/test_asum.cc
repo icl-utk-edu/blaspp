@@ -96,7 +96,7 @@ void test_asum_work( Params& params, bool run )
         real_t error = abs( (ref - result) / (n * ref) );
 
         // complex needs extra factor; see Higham, 2002, sec. 3.6.
-        if (blas::is_complex<T>::value) {
+        if (blas::is_complex_v<T>) {
             error /= 2*sqrt(2);
         }
 

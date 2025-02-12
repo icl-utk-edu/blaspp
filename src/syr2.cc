@@ -97,7 +97,7 @@ void syr2(
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
     }
 
-    if constexpr (! is_complex<scalar_t>::value) {
+    if constexpr (! is_complex_v<scalar_t>) {
         // call low-level wrapper
         char uplo_ = to_char( uplo );
         internal::syr2( uplo_, n_, alpha, x, incx_, y, incy_, A, lda_ );

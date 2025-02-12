@@ -42,7 +42,7 @@ void syr2k(
                    layout != Layout::RowMajor );
     blas_error_if( uplo != Uplo::Lower &&
                    uplo != Uplo::Upper );
-    if constexpr (is_complex<scalar_t>::value) {
+    if constexpr (is_complex_v<scalar_t>) {
         // [cz]syr2k do not allow ConjTrans
         blas_error_if( trans != Op::NoTrans &&
                        trans != Op::Trans );
