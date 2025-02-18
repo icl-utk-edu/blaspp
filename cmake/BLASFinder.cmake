@@ -21,8 +21,6 @@ message( DEBUG "" )
 
 include( "cmake/util.cmake" )
 
-message( STATUS "${bold}Looking for BLAS libraries and options${not_bold} (blas = ${blas})" )
-
 #-----------------------------------
 # Check if this file has already been run with these settings (see bottom).
 set( run_ true )
@@ -31,11 +29,21 @@ if (BLAS_LIBRARIES
     # Ignore blas, etc. if BLAS_LIBRARIES changes.
     # Set to empty, rather than unset, so when cmake is invoked again
     # they don't force a search.
-    message( DEBUG "clear blas, blas_fortran, blas_int, blas_threaded" )
+    # @todo Why are these INTERNAL (which implies FORCE) instead of just FORCE?
+    message( DEBUG "clear blas, blas_fortran, blas_int" )
     set( blas          "" CACHE INTERNAL "" )
     set( blas_fortran  "" CACHE INTERNAL "" )
-    set( blas_int      "" CACHE INTERNAL "" )
-    set( blas_threaded "" CACHE INTERNAL "" )
+    # Cross compiling requires user to set blas_int.
+    # Otherwise, for a user-provided BLAS_LIBRARIES, it is safer to
+    # ignore blas_int and test both int32 and int64. With the current test,
+    # an int64 library will fail with blas_int=int32 and pass with blas_int=int64,
+    # while an int32 library will pass with both blas_int=int32 and
+    # (erroneously) blas_int=int64.
+    if (NOT CMAKE_CROSSCOMPILING AND NOT "${blas_int}" STREQUAL "auto")
+        message( STATUS "${red}Ignoring blas_int=${blas_int};"
+                 " setting blas_int=auto.${plain}" )
+        set( blas_int "auto" CACHE INTERNAL "" )
+    endif()
 elseif (NOT (    "${blas_cached}"          STREQUAL "${blas}"
              AND "${blas_fortran_cached}"  STREQUAL "${blas_fortran}"
              AND "${blas_int_cached}"      STREQUAL "${blas_int}"
@@ -107,6 +115,7 @@ else()
         "-DBLAS_FORTRAN_UPPER"
     )
 endif()
+message( DEBUG "fortran_mangling_list = ${fortran_mangling_list}" )
 
 #---------------------------------------- integer sizes to test
 set( int_size_list
@@ -166,10 +175,15 @@ set( regex_int32 "(^|[^a-zA-Z0-9_])(auto|lp64|int|int32|int32_t)($|[^a-zA-Z0-9_]
 set( regex_int64 "(^|[^a-zA-Z0-9_])(auto|ilp64|int64|int64_t)($|[^a-zA-Z0-9_])" )
 match( "${regex_int32}" "${blas_int_}" test_int   )
 match( "${regex_int64}" "${blas_int_}" test_int64 )
+if (NOT (test_int OR test_int64))
+    message( FATAL_ERROR,
+             "Expected at least one of test_int=${test_int}"
+             " or test_int64=${test_int64} to be true." )
+endif()
 
 if (CMAKE_CROSSCOMPILING AND test_int AND test_int64)
     message( FATAL_ERROR " ${red}When cross-compiling, one must define either\n"
-             " `blas_int=int32` (usual convention) or\n"
+             " `blas_int=int32` (usual convention) xor\n"
              " `blas_int=int64` (ilp64 convention).${plain}" )
 endif()
 
@@ -177,7 +191,8 @@ message( DEBUG "
 blas_int            = '${blas_int}'
 blas_int_           = '${blas_int_}'
 test_int            = '${test_int}'
-test_int64          = '${test_int64}'")
+test_int64          = '${test_int64}'
+int_size_list       = '${int_size_list}'")
 
 #---------------------------------------- blas_threaded
 string( TOLOWER "${blas_threaded}" blas_threaded_ )
@@ -191,7 +206,9 @@ match( "${regex_thr}" "${blas_threaded_}" test_threaded )
 match( "${regex_seq}" "${blas_threaded_}" test_sequential )
 match( "openmp_aware" "${blas_threaded_}" test_threaded_omp )
 if (NOT (test_threaded OR test_sequential))
-    message( FATAL_ERROR, "Expected one of test_threaded=${test_threaded} or test_sequential=${test_sequential} to be true." )
+    message( FATAL_ERROR,
+             "Expected at least one of test_threaded=${test_threaded}"
+             " or test_sequential=${test_sequential} to be true." )
 endif()
 
 message( DEBUG "

@@ -428,13 +428,30 @@ endif()
 #-------------------------------------------------------------------------------
 # Search for BLAS library.
 message( "" )
+message( STATUS "${bold}Looking for BLAS libraries and options${not_bold}" )
+
 if (BLA_VENDOR OR use_cmake_find_blas)
-    message( DEBUG "Using CMake's FindBLAS" )
+    message( STATUS "Using CMake's FindBLAS (BLA_VENDOR=${BLA_VENDOR})" )
     find_package( BLAS )
+    if (BLAS_FOUND)
+        message( STATUS
+                 "Using BLAS++ BLASFinder to check Fortran binding, int size:\n"
+                 "   BLAS_LIBRARIES=${BLAS_LIBRARIES}" )
+        set( blas "" )
+        include( "cmake/BLASFinder.cmake" )
+    endif()
 else()
-    message( DEBUG "Using BLASFinder" )
+    message( STATUS "Using BLAS++ BLASFinder:\n   "
+             "blas=${blas}, "
+             "blas_int=${blas_int}, "
+             "blas_threaded=${blas_threaded}, "
+             "blas_fortran=${blas_fortran},\n   "
+             "BLAS_LIBRARIES=${BLAS_LIBRARIES}" )
     include( "cmake/BLASFinder.cmake" )
 endif()
+
+message( DEBUG "BLAS_FOUND=${BLAS_FOUND}" )
+message( DEBUG "BLAS_LIBRARIES=${BLAS_LIBRARIES}" )
 
 if (NOT BLAS_FOUND)
     message( FATAL_ERROR "BLAS++ requires a BLAS library and none was found."
