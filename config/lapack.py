@@ -322,7 +322,13 @@ def blas():
 
     #-------------------- BLIS (also used by AMD AOCL)
     if (test_blis):
-        choices.append( ['BLIS', {'LIBS': '-lflame -lblis'}])
+        if (test_threaded):
+            choices.append( ['BLIS and FLAME, multi-threaded',
+                             {'LIBS': '-lflame -lblis-mt'}])
+        if (test_sequential):
+            choices.append( ['BLIS and FLAME',
+                             {'LIBS': '-lflame -lblis'}])
+    # end blis
 
     #-------------------- Apple Accelerate
     if (test_accelerate):
