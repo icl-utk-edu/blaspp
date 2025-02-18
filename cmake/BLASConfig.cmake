@@ -163,7 +163,6 @@ if (NOT found)
     endif()
 endif()
 
-# todo: detect Accelerate
 # todo: detect Cray libsci
 
 #-------------------------------------------------------------------------------
