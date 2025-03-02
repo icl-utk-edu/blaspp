@@ -20,10 +20,10 @@
     #include <cublas_v2.h>
 
 #elif defined(BLAS_HAVE_ROCBLAS)
-    // Default to HCC platform on ROCm
-    #if ! defined(__HIP_PLATFORM_NVCC__) && ! defined(__HIP_PLATFORM_HCC__)
-        #define __HIP_PLATFORM_HCC__
-        #define BLAS_HIP_PLATFORM_HCC
+    // Default to AMD platform on ROCm
+    #if ! defined(__HIP_PLATFORM_NVCC__) && ! defined(__HIP_PLATFORM_AMD__)
+        #define __HIP_PLATFORM_AMD__
+        #define BLAS_HIP_PLATFORM_AMD
     #endif
 
     #include <hip/hip_runtime.h>
@@ -35,10 +35,10 @@
         #include <rocblas.h>
     #endif
 
-    // If we defined __HIP_PLATFORM_HCC__, undef it.
-    #ifdef BLAS_HIP_PLATFORM_HCC
-        #undef __HIP_PLATFORM_HCC__
-        #undef BLAS_HIP_PLATFORM_HCC
+    // If we defined __HIP_PLATFORM_AMD__, undef it.
+    #ifdef BLAS_HIP_PLATFORM_AMD
+        #undef __HIP_PLATFORM_AMD__
+        #undef BLAS_HIP_PLATFORM_AMD
     #endif
 
 #elif defined(BLAS_HAVE_SYCL)
