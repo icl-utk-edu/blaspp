@@ -232,62 +232,159 @@ void dotu(
 // iamax
 //------------------------------------------------------------------------------
 void iamax(
-    device_blas_int n,
-    float const *dx, device_blas_int incdx,
-    device_blas_int* result,
+    int64_t n,
+    float const *dx, int64_t incdx,
+    int64_t* result,
     blas::Queue& queue )
 {
-    blas_dev_call(
-        cublasIsamax(
-            queue.handle(),
-            n,
-            dx, incdx,
-            result));
+    #if CUBLAS_VER_MAJOR >= 12
+        blas_dev_call(
+            cublasIsamax_64(
+                queue.handle(),
+                n,
+                dx, incdx,
+                result));
+    #else
+        // clear memory if allocated on host
+        if (!is_devptr(result, queue)) {
+            *result = 0;
+        }
+        // convert arguments
+        device_blas_int n_    = to_device_blas_int( n );
+        device_blas_int incdx_ = to_device_blas_int( incdx );
+        device_blas_int* result_ = (device_blas_int*) result;
+        blas_dev_call(
+            cublasIsamax(
+                queue.handle(),
+                n_,
+                dx, incdx_,
+                result_));
+    #endif
+
+    if (!is_devptr(result, queue)) {
+        *result -= 1;
+    }
+    else {
+        shift_vec(1, result, -1, 1, queue);
+    }
 }
 
 //------------------------------------------------------------------------------
 void iamax(
-    device_blas_int n,
-    double const *dx, device_blas_int incdx,
-    device_blas_int* result,
+    int64_t n,
+    double const *dx, int64_t incdx,
+    int64_t* result,
     blas::Queue& queue )
 {
-    blas_dev_call(
-        cublasIdamax(
-            queue.handle(),
-            n,
-            dx, incdx,
-            result));
+    #if CUBLAS_VER_MAJOR >= 12
+        blas_dev_call(
+            cublasIsamax_64(
+                queue.handle(),
+                n,
+                dx, incdx,
+                result));
+    #else
+        // clear memory if allocated on host
+        if (!is_devptr(result, queue)) {
+            *result = 0;
+        }
+        // convert arguments
+        device_blas_int n_    = to_device_blas_int( n );
+        device_blas_int incdx_ = to_device_blas_int( incdx );
+        device_blas_int* result_ = (device_blas_int*) result;
+
+        blas_dev_call(
+            cublasIdamax(
+                queue.handle(),
+                n_,
+                dx, incdx_,
+                result_));
+    #endif
+
+    if (!is_devptr(result, queue)) {
+        *result -= 1;
+    }
+    else {
+        shift_vec(1, result, -1, 1, queue);
+    }
 }
 
 //------------------------------------------------------------------------------
 void iamax(
-    device_blas_int n,
-    std::complex<float> const *dx, device_blas_int incdx,
-    device_blas_int* result,
+    int64_t n,
+    std::complex<float> const *dx, int64_t incdx,
+    int64_t* result,
     blas::Queue& queue )
 {
-    blas_dev_call(
-        cublasIcamax(
-            queue.handle(),
-            n,
-            (const cuComplex*) dx, incdx,
-            result));
+    #if CUBLAS_VER_MAJOR >= 12
+        blas_dev_call(
+            cublasIsamax_64(
+                queue.handle(),
+                n,
+                dx, incdx,
+                result));
+    #else
+        // clear memory if allocated on host
+        if (!is_devptr(result, queue)) {
+            *result = 0;
+        }
+        // convert arguments
+        device_blas_int n_    = to_device_blas_int( n );
+        device_blas_int incdx_ = to_device_blas_int( incdx );
+        device_blas_int* result_ = (device_blas_int*) result;
+        blas_dev_call(
+            cublasIcamax(
+                queue.handle(),
+                n_,
+                (const cuComplex*) dx, incdx_,
+                result_));
+    #endif
+
+    if (!is_devptr(result, queue)) {
+        *result -= 1;
+    }
+    else {
+        shift_vec(1, result, -1, 1, queue);
+    }
 }
 
 //------------------------------------------------------------------------------
 void iamax(
-    device_blas_int n,
-    std::complex<double> const *dx, device_blas_int incdx,
-    device_blas_int* result,
+    int64_t n,
+    std::complex<double> const *dx, int64_t incdx,
+    int64_t* result,
     blas::Queue& queue )
 {
-    blas_dev_call(
-        cublasIzamax(
-            queue.handle(),
-            n,
-            (const cuDoubleComplex*) dx, incdx,
-            result));
+    #if CUBLAS_VER_MAJOR >= 12
+        blas_dev_call(
+            cublasIsamax_64(
+                queue.handle(),
+                n,
+                dx, incdx,
+                result));
+    #else
+        // clear memory if allocated on host
+        if (!is_devptr(result, queue)) {
+            *result = 0;
+        }
+        // convert arguments
+        device_blas_int n_    = to_device_blas_int( n );
+        device_blas_int incdx_ = to_device_blas_int( incdx );
+        device_blas_int* result_ = (device_blas_int*) result;
+        blas_dev_call(
+            cublasIzamax(
+                queue.handle(),
+                n_,
+                (const cuDoubleComplex*) dx, incdx_,
+                result_));
+    #endif
+
+    if (!is_devptr(result, queue)) {
+        *result -= 1;
+    }
+    else {
+        shift_vec(1, result, -1, 1, queue);
+    }
 }
 
 // -----------------------------------------------------------------------------

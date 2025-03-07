@@ -387,6 +387,8 @@ void device_free( void* ptr, blas::Queue &queue );
 
 void host_free_pinned( void* ptr, blas::Queue &queue );
 
+bool is_devptr( const void* A, blas::Queue &queue );
+
 // -----------------------------------------------------------------------------
 // Template functions declared here
 // -----------------------------------------------------------------------------
@@ -861,6 +863,13 @@ void Queue::work_ensure_size( size_t lwork )
         work_ = device_malloc<char>( lwork_, *this );
     }
 }
+
+//------------------------------------------------------------------------------
+/// Add a constant c to an n-element vector v.
+///
+
+template <typename scalar_t>
+void shift_vec(int64_t n, scalar_t* v, int64_t c, int64_t batch_count, blas::Queue &queue);
 
 }  // namespace blas
 

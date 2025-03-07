@@ -242,58 +242,102 @@ void dotu(
 // iamax
 //------------------------------------------------------------------------------
 void iamax(
-    device_blas_int n,
-    float const* dx, device_blas_int incdx,
-    device_blas_int* result,
+    int64_t n,
+    float const* dx, int64_t incdx,
+    int64_t* result,
     blas::Queue& queue )
 {
+    // convert arguments
+    device_blas_int n_    = to_device_blas_int( n );
+    device_blas_int incdx_ = to_device_blas_int( incdx );
+    device_blas_int* result_ = (device_blas_int*) result;
     blas_dev_call(
         rocblas_isamax(
             queue.handle(),
-            n, dx, incdx,
-            result));
+            n_, dx, incdx_,
+            result_));
+
+    if (!is_devptr(result_, queue)) {
+        *result_ -= 1;
+    }
+    else {
+        // shift_vec(1, result_, -1, 1, queue);
+    }
 }
 
 //------------------------------------------------------------------------------
 void iamax(
-    device_blas_int n,
-    double const* dx, device_blas_int incdx,
-    device_blas_int* result,
+    int64_t n,
+    double const* dx, int64_t incdx,
+    int64_t* result,
     blas::Queue& queue )
 {
+    // convert arguments
+    device_blas_int n_    = to_device_blas_int( n );
+    device_blas_int incdx_ = to_device_blas_int( incdx );
+    device_blas_int* result_ = (device_blas_int*) result;
     blas_dev_call(
         rocblas_idamax(
             queue.handle(),
-            n, dx, incdx,
-            result));
+            n_, dx, incdx_,
+            result_));
+
+    if (!is_devptr(result_, queue)) {
+        *result_ -= 1;
+    }
+    else {
+        // shift_vec(1, result_, -1, 1, queue);
+    }
 }
 
 //------------------------------------------------------------------------------
 void iamax(
-    device_blas_int n,
-    std::complex<float> const* dx, device_blas_int incdx,
-    device_blas_int* result,
+    int64_t n,
+    std::complex<float> const* dx, int64_t incdx,
+    int64_t* result,
     blas::Queue& queue )
 {
+    // convert arguments
+    device_blas_int n_    = to_device_blas_int( n );
+    device_blas_int incdx_ = to_device_blas_int( incdx );
+    device_blas_int* result_ = (device_blas_int*) result;
     blas_dev_call(
         rocblas_icamax(
             queue.handle(),
-            n, dx, incdx,
-            result));
+            n_, (rocblas_float_complex*) dx, incdx_,
+            result_));
+
+    if (!is_devptr(result_, queue)) {
+        *result_ -= 1;
+    }
+    else {
+        // shift_vec(1, result_, -1, 1, queue);
+    }
 }
 
 //------------------------------------------------------------------------------
 void iamax(
-    device_blas_int n,
-    std::complex<double> const* dx, device_blas_int incdx,
-    device_blas_int* result,
+    int64_t n,
+    std::complex<double> const* dx, int64_t incdx,
+    int64_t* result,
     blas::Queue& queue )
 {
+    // convert arguments
+    device_blas_int n_    = to_device_blas_int( n );
+    device_blas_int incdx_ = to_device_blas_int( incdx );
+    device_blas_int* result_ = (device_blas_int*) result;
     blas_dev_call(
         rocblas_izamax(
             queue.handle(),
-            n, dx, incdx,
-            result));
+            n_, (rocblas_double_complex*) dx, incdx_,
+            result_));
+
+    if (!is_devptr(result_, queue)) {
+        *result_ -= 1;
+    }
+    else {
+        // shift_vec(1, result_, -1, 1, queue);
+    }
 }
 
 // -----------------------------------------------------------------------------

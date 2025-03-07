@@ -92,6 +92,7 @@ void test_iamax_device_work( Params& params, bool run )
     testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
     blas::iamax( n, dx, incx, result, queue );
+    // result_host -= 1;
     queue.sync();
     time = get_wtime() - time;
 
@@ -109,7 +110,7 @@ void test_iamax_device_work( Params& params, bool run )
     queue.sync();
 
     if (verbose >= 1) {
-        printf( "result = %5llx\n", llong( *result ) );
+        printf( "result = %5llx\n", llong( result_host ) );
     }
 
     if (params.check() == 'y') {
@@ -133,6 +134,10 @@ void test_iamax_device_work( Params& params, bool run )
 
         // iamax must be exact!
         params.okay() = (error == 0);
+    // printf("ref (0-based) = %lld\n", llong(ref));
+    // printf("result_host (0-based) = %lld\n", llong(result_host - 1));
+
+
 
 // dev = host + 1
         // test host or dev ptr - add a check
