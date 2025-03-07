@@ -45,9 +45,9 @@ void iamax(
     #endif
 
     // convert arguments
-    device_blas_int n_    = to_device_blas_int( n );
-    device_blas_int incx_ = to_device_blas_int( incx );
-    device_blas_int* result_ = (device_blas_int*) result;
+    // device_blas_int n_    = to_device_blas_int( n );
+    // device_blas_int incx_ = to_device_blas_int( incx );
+    // device_blas_int* result_ = (device_blas_int*) result;
 
     blas::internal_set_device( queue.device() );
 
@@ -61,14 +61,17 @@ void iamax(
             // use preallocated device workspace (resizing if needed)
             queue.work_ensure_size< char >( sizeof(int64_t) );  // syncs if needed
             int64_t* dev_work = (int64_t*)queue.work();
-            internal::iamax( n_, x, incx_, dev_work, queue );
+            internal::iamax( n, x, incx, dev_work, queue );
             blas::device_memcpy( result, dev_work, 1, queue );
         }
         else {
-            internal::iamax( n_, x, incx_, result_, queue );
+            internal::iamax( n, x, incx, result, queue );
         }
-    #else // other devices (CUDA/HIP)
-        internal::iamax( n_, x, incx_, result_, queue );
+    #elif defined( BLAS_HAVE_CUBLAS )
+        internal::iamax( n, x, incx, result, queue );
+
+    #elif defined( BLAS_HAVE_ROCBLAS )
+        internal::iamax( n, x, incx, result, queue );
     #endif
 #endif
 }

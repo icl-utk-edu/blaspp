@@ -372,27 +372,27 @@ void dotu(
 
 //------------------------------------------------------------------------------
 void iamax(
-    device_blas_int n,
-    float const* x, device_blas_int incx,
-    device_blas_int* result,
+    int64_t n,
+    float const* x, int64_t incx,
+    int64_t* result,
     blas::Queue& queue );
 
 void iamax(
-    device_blas_int n,
-    double const* x, device_blas_int incx,
-    device_blas_int* result,
+    int64_t n,
+    double const* x, int64_t incx,
+    int64_t* result,
     blas::Queue& queue );
 
 void iamax(
-    device_blas_int n,
-    std::complex<float> const* x, device_blas_int incx,
-    device_blas_int* result,
+    int64_t n,
+    std::complex<float> const* x, int64_t incx,
+    int64_t* result,
     blas::Queue& queue );
 
 void iamax(
-    device_blas_int n,
-    std::complex<double> const* x, device_blas_int incx,
-    device_blas_int* result,
+    int64_t n,
+    std::complex<double> const* x, int64_t incx,
+    int64_t* result,
     blas::Queue& queue );
 
 //------------------------------------------------------------------------------

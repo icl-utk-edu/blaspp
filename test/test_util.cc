@@ -871,6 +871,36 @@ void test_queue_fork()
     }
 }
 
+void test_is_devptr()
+{
+    printf( "%s\n", __func__ );
+
+    int device_cnt = blas::get_device_count();
+    if (device_cnt == 0)
+        return;
+
+    int dev = 0;
+    int size = 1024;
+    float* devptr;
+    float* hostptr = new float[size];
+
+
+    blas::Queue queue( dev );
+
+    devptr = blas::device_malloc< float >( 1024, queue );
+    queue.sync();
+
+    require(blas::is_devptr(devptr, queue) == 1);
+    require(blas::is_devptr(hostptr, queue) == 0);
+
+    queue.sync();
+    blas::device_free( devptr, queue );
+    delete[] hostptr;
+
+    // queue is destroyed here.
+    printf( "    ~queue\n" );
+}
+
 // -----------------------------------------------------------------------------
 void test_util( Params& params, bool run )
 {
@@ -900,6 +930,7 @@ void test_util( Params& params, bool run )
         test_queue();
         test_queue_from_stream();
         test_queue_fork();
+        test_is_devptr();
         printf( "\n" );
     }
 

@@ -99,6 +99,21 @@ set_property(
     Intel10_32 Intel10_64lp Intel10_64lp_seq Intel10_64ilp Intel10_64ilp_seq
     Intel10_64_dyn Apple NAS Arm Arm_mp Arm_ilp64 Arm_ilp64_mp Generic )
 
+# CUDA architectures required in CMake 3.18
+# Fermi   20        # CUDA 3.2 to 8
+# Kepler  30 35 37  # CUDA 5 to 10; sm_35 and sm_37 deprecated in CUDA 11
+# Maxwell 50 52 53  # CUDA 6 to 11
+# Pascal  60 61 62  # CUDA >= 8
+# Volta   70 72     # CUDA >= 9
+# Turing  75        # CUDA >= 10
+# Ampere  80 86 87  # CUDA >= 11.1
+# Hopper  90        # CUDA >= 12
+# Also -real and -virtual suffixes.
+set( CMAKE_CUDA_ARCHITECTURES "60" CACHE STRING
+     "CUDA architectures, as semi-colon separated list of numbers, e.g., 60;70;80 for Pascal, Volta, Ampere" )
+set_property( CACHE CMAKE_CUDA_ARCHITECTURES PROPERTY STRINGS
+              30 35 50 60 70 75 80 90 )
+
 #-----------------------------------
 # BLAS options
 # todo: Goto, BLIS, FLAME, others?
@@ -273,6 +288,14 @@ if (gpu_backend MATCHES "^(auto|cuda)$")
         target_link_libraries(
             blaspp PUBLIC CUDA::cudart CUDA::cublas )
         message( STATUS "${blue}Building CUDA support${plain}" )
+        
+        enable_language(CUDA)
+
+        target_sources(
+            blaspp
+            PRIVATE
+            src/device_shift_vec.cu
+        )
     else()
         message( STATUS "${red}No CUDA support: CUDA not found${plain}" )
     endif()
