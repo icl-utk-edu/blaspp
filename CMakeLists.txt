@@ -312,6 +312,7 @@ if (NOT CUDAToolkit_FOUND
 
     message( STATUS "${bold}Looking for HIP/ROCm${not_bold} (gpu_backend = ${gpu_backend})" )
     if (gpu_backend STREQUAL "hip")
+        find_package( hip REQUIRED )
         find_package( rocblas REQUIRED )
     else()
         find_package( rocblas QUIET )
@@ -320,6 +321,18 @@ if (NOT CUDAToolkit_FOUND
         set( gpu_backend "hip" )
         set( blaspp_defs_hip_ "-DBLAS_HAVE_ROCBLAS" )
         set( blaspp_use_hip true )
+
+        # For ROCm >= 3.5, wipe hip-clang specific interface options which are propagated
+        set_target_properties( hip::device PROPERTIES INTERFACE_COMPILE_OPTIONS "-fPIC" )
+        set_target_properties( hip::device PROPERTIES INTERFACE_LINK_LIBRARIES "hip::host" )
+
+        enable_language(HIP)
+
+        target_sources(
+            blaspp
+            PRIVATE
+            src/device_shift_vec.hip
+        )
 
         # Some platforms need these to be public libraries.
         target_link_libraries(

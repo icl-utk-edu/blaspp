@@ -247,6 +247,17 @@ void iamax(
     int64_t* result,
     blas::Queue& queue )
 {
+    if (n < 1 || incdx < 1) {
+        if (is_devptr( result )) {
+            int64_t tmp = -1;
+            device_memcpy( result, &tmp, 1, queue );
+            queue.sync();
+        }
+        else {
+            result = -1;
+        }
+        return;
+    }
     blas_dev_call(
         oneapi::mkl::blas::iamax(
             queue.stream(),
@@ -262,6 +273,17 @@ void iamax(
     int64_t* result,
     blas::Queue& queue )
 {
+    if (n < 1 || incdx < 1) {
+        if (is_devptr( result )) {
+            int64_t tmp = -1;
+            device_memcpy( result, &tmp, 1, queue );
+            queue.sync();
+        }
+        else {
+            result = -1;
+        }
+        return;
+    }
     blas_dev_call(
         oneapi::mkl::blas::iamax(
             queue.stream(),
@@ -277,7 +299,17 @@ void iamax(
     int64_t* result,
     blas::Queue& queue )
 {
-
+    if (n < 1 || incdx < 1) {
+        if (is_devptr( result )) {
+            int64_t tmp = -1;
+            device_memcpy( result, &tmp, 1, queue );
+            queue.sync();
+        }
+        else {
+            result = -1;
+        }
+        return;
+    }
     blas_dev_call(
         oneapi::mkl::blas::iamax(
             queue.stream(),
@@ -293,6 +325,17 @@ void iamax(
     int64_t* result,
     blas::Queue& queue )
 {
+    if (n < 1 || incdx < 1) {
+        if (is_devptr( result )) {
+            int64_t tmp = -1;
+            device_memcpy( result, &tmp, 1, queue );
+            queue.sync();
+        }
+        else {
+            result = -1;
+        }
+        return;
+    }
     blas_dev_call(
         oneapi::mkl::blas::iamax(
             queue.stream(),

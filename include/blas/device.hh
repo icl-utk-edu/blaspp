@@ -869,7 +869,10 @@ void Queue::work_ensure_size( size_t lwork )
 ///
 
 template <typename scalar_t>
-void shift_vec(int64_t n, scalar_t* v, int64_t c, int64_t batch_count, blas::Queue &queue);
+void cuda_shift_vec(int64_t n, scalar_t* v, int64_t c, blas::Queue &queue);
+
+template <typename scalar_t>
+void hip_shift_vec(int64_t n, scalar_t* v, int64_t c, blas::Queue &queue);
 
 }  // namespace blas
 
