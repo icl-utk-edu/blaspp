@@ -260,12 +260,12 @@ void iamax(
                 dx, incdx_,
                 result_));
     #endif
-
+    // cublas returns 1-based index
     if (!is_devptr(result, queue)) {
         *result -= 1;
     }
     else {
-        shift_vec(1, result, -1, 1, queue);
+        cuda_shift_vec(1, result, -1, queue);
     }
 }
 
@@ -300,12 +300,12 @@ void iamax(
                 dx, incdx_,
                 result_));
     #endif
-
+    // cublas returns 1-based index
     if (!is_devptr(result, queue)) {
         *result -= 1;
     }
     else {
-        shift_vec(1, result, -1, 1, queue);
+        cuda_shift_vec(1, result, -1, queue);
     }
 }
 
@@ -339,12 +339,12 @@ void iamax(
                 (const cuComplex*) dx, incdx_,
                 result_));
     #endif
-
+    // cublas returns 1-based index
     if (!is_devptr(result, queue)) {
         *result -= 1;
     }
     else {
-        shift_vec(1, result, -1, 1, queue);
+        cuda_shift_vec(1, result, -1, queue);
     }
 }
 
@@ -378,12 +378,12 @@ void iamax(
                 (const cuDoubleComplex*) dx, incdx_,
                 result_));
     #endif
-
+    // cublas returns 1-based index
     if (!is_devptr(result, queue)) {
         *result -= 1;
     }
     else {
-        shift_vec(1, result, -1, 1, queue);
+        cuda_shift_vec(1, result, -1, queue);
     }
 }
 
