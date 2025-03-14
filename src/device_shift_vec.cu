@@ -32,7 +32,7 @@ void cuda_shift_vec(
         n, v, c);
 
     cudaError_t error = cudaGetLastError();
-    // blas error if
+    assert ( error == cudaSuccess );
 }
 
 //------------------------------------------------------------------------------

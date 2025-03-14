@@ -44,11 +44,6 @@ void iamax(
         counter::inc_flop_count( (long long int)gflops );
     #endif
 
-    // convert arguments
-    // device_blas_int n_    = to_device_blas_int( n );
-    // device_blas_int incx_ = to_device_blas_int( incx );
-    // device_blas_int* result_ = (device_blas_int*) result;
-
     blas::internal_set_device( queue.device() );
 
     // call low-level wrapper
@@ -67,10 +62,7 @@ void iamax(
         else {
             internal::iamax( n, x, incx, result, queue );
         }
-    #elif defined( BLAS_HAVE_CUBLAS )
-        internal::iamax( n, x, incx, result, queue );
-
-    #elif defined( BLAS_HAVE_ROCBLAS )
+    #else
         internal::iamax( n, x, incx, result, queue );
     #endif
 #endif

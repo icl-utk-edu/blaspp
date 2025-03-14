@@ -41,6 +41,7 @@ void hip_shift_vec(
         n, v, c);
 
     hipError_t error = hipGetLastError();
+    assert ( error == hipSuccess );
 }
 
 //------------------------------------------------------------------------------
