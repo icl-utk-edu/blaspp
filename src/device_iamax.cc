@@ -31,7 +31,7 @@ void iamax(
 #else
     // check arguments
     blas_error_if( n < 0 );       // standard BLAS returns, doesn't fail
-    blas_error_if( incx <= 0 );  // standard BLAS returns, doesn't fail
+    blas_error_if( incx <= 0 );   // standard BLAS returns, doesn't fail
 
     #ifdef BLAS_HAVE_PAPI
         // PAPI instrumentation

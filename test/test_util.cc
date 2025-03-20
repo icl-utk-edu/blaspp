@@ -882,16 +882,15 @@ void test_is_devptr()
     int dev = 0;
     int size = 1024;
     float* devptr;
-    float* hostptr = new float[size];
-
+    float* hostptr = new float[ size ];
 
     blas::Queue queue( dev );
 
     devptr = blas::device_malloc< float >( 1024, queue );
     queue.sync();
 
-    require(blas::is_devptr(devptr, queue) == 1);
-    require(blas::is_devptr(hostptr, queue) == 0);
+    require(blas::is_devptr( devptr, queue ) == 1);
+    require(blas::is_devptr( hostptr, queue ) == 0);
 
     queue.sync();
     blas::device_free( devptr, queue );

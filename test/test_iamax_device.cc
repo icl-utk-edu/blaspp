@@ -20,10 +20,10 @@ void test_iamax_device_work( Params& params, bool run )
     using std::abs;
 
     // get & mark input values
-    char mode       = params.pointer_mode();
-    int64_t n       = params.dim.n();
-    int64_t incx    = params.incx();
-    int64_t device  = params.device();
+    char mode = params.pointer_mode();
+    int64_t n = params.dim.n();
+    int64_t incx = params.incx();
+    int64_t device = params.device();
     int64_t verbose = params.verbose();
 
     int64_t result_host;
@@ -55,7 +55,7 @@ void test_iamax_device_work( Params& params, bool run )
 
 
     int64_t idist = 1;
-    int iseed[4] = { 0, 0, 0, 1 };
+    int iseed[ 4 ] = { 0, 0, 0, 1 };
     lapack_larnv( idist, iseed, size_x, x );
 
     // device specifics
@@ -69,7 +69,7 @@ void test_iamax_device_work( Params& params, bool run )
     if (mode == 'd') {
         result = blas::device_malloc< int64_t >( 1, queue );
         #if defined( BLAS_HAVE_CUBLAS )
-        cublasSetPointerMode(queue.handle(), CUBLAS_POINTER_MODE_DEVICE);
+        cublasSetPointerMode( queue.handle(), CUBLAS_POINTER_MODE_DEVICE );
         #elif defined( BLAS_HAVE_ROCBLAS )
         rocblas_set_pointer_mode( queue.handle(), rocblas_pointer_mode_device );
         #endif
@@ -92,7 +92,6 @@ void test_iamax_device_work( Params& params, bool run )
     testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
     blas::iamax( n, dx, incx, result, queue );
-    // result_host -= 1;
     queue.sync();
     time = get_wtime() - time;
 
@@ -106,11 +105,11 @@ void test_iamax_device_work( Params& params, bool run )
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
 
-    blas::device_copy_vector(n, dx, std::abs(incx), x, std::abs(incx), queue);
+    blas::device_copy_vector( n, dx, std::abs(incx), x, std::abs(incx), queue );
     queue.sync();
 
     if (verbose >= 1) {
-        printf( "result = %5llx\n", llong( result_host ) );
+        printf( "result = %5lld\n", llong( result_host ) );
     }
 
     if (params.check() == 'y') {
@@ -125,7 +124,7 @@ void test_iamax_device_work( Params& params, bool run )
         params.ref_gbytes() = gbyte / time;
 
         if (verbose >= 1) {
-            printf( "ref    = %5llx\n", llong( ref ) );
+            printf( "ref    = %5lld\n", llong( ref ) );
         }
 
         // check error compared to reference
@@ -134,15 +133,6 @@ void test_iamax_device_work( Params& params, bool run )
 
         // iamax must be exact!
         params.okay() = (error == 0);
-    // printf("ref (0-based) = %lld\n", llong(ref));
-    // printf("result_host (0-based) = %lld\n", llong(result_host - 1));
-
-
-
-// dev = host + 1
-        // test host or dev ptr - add a check
-        // MemotyType device?
-        // magma_is_dev
     }
 
     delete[] x;
