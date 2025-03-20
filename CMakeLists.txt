@@ -326,6 +326,8 @@ if (NOT CUDAToolkit_FOUND
         set_target_properties( hip::device PROPERTIES INTERFACE_COMPILE_OPTIONS "-fPIC" )
         set_target_properties( hip::device PROPERTIES INTERFACE_LINK_LIBRARIES "hip::host" )
 
+        set_property(TARGET blaspp PROPERTY HIP_ARCHITECTURES gfx900)
+
         enable_language(HIP)
 
         target_sources(
