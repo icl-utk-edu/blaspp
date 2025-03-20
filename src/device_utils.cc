@@ -101,38 +101,40 @@ void host_free_pinned( void* ptr, blas::Queue &queue )
     #endif
 }
 
+// -----------------------------------------------------------------------------
+/// Check whether the given pointer is allocated on device.
 bool is_devptr( const void* A, blas::Queue &queue )
 {
-    #if defined(BLAS_HAVE_CUBLAS)
+    #ifdef BLAS_HAVE_CUBLAS
         cudaError_t err;
         cudaPointerAttributes attr;
         err = cudaPointerGetAttributes( &attr, const_cast<void*>( A ) );
         if (! err) {
             #if CUDA_VERSION >= 11000
-                return (attr.type == cudaMemoryTypeDevice);
+                return attr.type == cudaMemoryTypeDevice;
             #else
-                return (attr.memoryType == cudaMemoryTypeDevice);
+                return attr.memoryType == cudaMemoryTypeDevice;
             #endif
         }
         cudaGetLastError();
 
-    #elif defined(BLAS_HAVE_ROCBLAS)
+    #elif defined( BLAS_HAVE_ROCBLAS )
         hipError_t err;
         hipPointerAttribute_t attr;
         err = hipPointerGetAttributes( &attr, const_cast<void*>( A ) );
-        if (!err) {
+        if (! err) {
             #if HIP_VERSION >= 60000
-                return (attr.type == hipMemoryTypeDevice);
+                return attr.type == hipMemoryTypeDevice;
             #else
-                return (attr.memoryType == hipMemoryTypeDevice);
+                return attr.memoryType == hipMemoryTypeDevice;
             #endif
         }
         err = hipGetLastError();
 
-    #elif defined(BLAS_HAVE_SYCL)
+    #elif defined( BLAS_HAVE_SYCL )
             sycl::queue syclq = queue.stream();
             auto ptr_type = sycl::get_pointer_type( A, syclq.get_context() );
-            return (ptr_type == sycl::usm::alloc::device);
+            return ptr_type == sycl::usm::alloc::device;
     #endif
 
     return false;

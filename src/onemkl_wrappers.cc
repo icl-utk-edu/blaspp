@@ -248,7 +248,7 @@ void iamax(
     blas::Queue& queue )
 {
     if (n < 1 || incdx < 1) {
-        if (is_devptr( result )) {
+        if (is_devptr( result, queue )) {
             int64_t tmp = -1;
             device_memcpy( result, &tmp, 1, queue );
             queue.sync();
@@ -274,7 +274,7 @@ void iamax(
     blas::Queue& queue )
 {
     if (n < 1 || incdx < 1) {
-        if (is_devptr( result )) {
+        if (is_devptr( result, queue )) {
             int64_t tmp = -1;
             device_memcpy( result, &tmp, 1, queue );
             queue.sync();
@@ -300,7 +300,7 @@ void iamax(
     blas::Queue& queue )
 {
     if (n < 1 || incdx < 1) {
-        if (is_devptr( result )) {
+        if (is_devptr( result, queue )) {
             int64_t tmp = -1;
             device_memcpy( result, &tmp, 1, queue );
             queue.sync();
@@ -326,7 +326,7 @@ void iamax(
     blas::Queue& queue )
 {
     if (n < 1 || incdx < 1) {
-        if (is_devptr( result )) {
+        if (is_devptr( result, queue )) {
             int64_t tmp = -1;
             device_memcpy( result, &tmp, 1, queue );
             queue.sync();

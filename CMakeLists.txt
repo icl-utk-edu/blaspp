@@ -288,7 +288,7 @@ if (gpu_backend MATCHES "^(auto|cuda)$")
         target_link_libraries(
             blaspp PUBLIC CUDA::cudart CUDA::cublas )
         message( STATUS "${blue}Building CUDA support${plain}" )
-        
+
         enable_language(CUDA)
 
         target_sources(

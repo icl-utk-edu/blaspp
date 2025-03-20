@@ -246,7 +246,7 @@ void iamax(
                 result));
     #else
         // clear memory if allocated on host
-        if (!is_devptr(result, queue)) {
+        if (! is_devptr( result, queue )) {
             *result = 0;
         }
         // convert arguments
@@ -258,14 +258,14 @@ void iamax(
                 queue.handle(),
                 n_,
                 dx, incdx_,
-                result_));
+                result_ ));
     #endif
     // cublas returns 1-based index
-    if (!is_devptr(result, queue)) {
+    if (! is_devptr( result, queue )) {
         *result -= 1;
     }
     else {
-        cuda_shift_vec(1, result, -1, queue);
+        cuda_shift_vec( 1, result, -1, queue );
     }
 }
 
@@ -285,7 +285,7 @@ void iamax(
                 result));
     #else
         // clear memory if allocated on host
-        if (!is_devptr(result, queue)) {
+        if (! is_devptr( result, queue )) {
             *result = 0;
         }
         // convert arguments
@@ -301,11 +301,11 @@ void iamax(
                 result_));
     #endif
     // cublas returns 1-based index
-    if (!is_devptr(result, queue)) {
+    if (! is_devptr( result, queue )) {
         *result -= 1;
     }
     else {
-        cuda_shift_vec(1, result, -1, queue);
+        cuda_shift_vec( 1, result, -1, queue );
     }
 }
 
@@ -325,7 +325,7 @@ void iamax(
                 result));
     #else
         // clear memory if allocated on host
-        if (!is_devptr(result, queue)) {
+        if (! is_devptr( result, queue )) {
             *result = 0;
         }
         // convert arguments
@@ -340,11 +340,11 @@ void iamax(
                 result_));
     #endif
     // cublas returns 1-based index
-    if (!is_devptr(result, queue)) {
+    if (! is_devptr( result, queue )) {
         *result -= 1;
     }
     else {
-        cuda_shift_vec(1, result, -1, queue);
+        cuda_shift_vec( 1, result, -1, queue );
     }
 }
 
@@ -364,7 +364,7 @@ void iamax(
                 result));
     #else
         // clear memory if allocated on host
-        if (!is_devptr(result, queue)) {
+        if (! is_devptr( result, queue )) {
             *result = 0;
         }
         // convert arguments
@@ -379,11 +379,11 @@ void iamax(
                 result_));
     #endif
     // cublas returns 1-based index
-    if (!is_devptr(result, queue)) {
+    if (! is_devptr( result, queue )) {
         *result -= 1;
     }
     else {
-        cuda_shift_vec(1, result, -1, queue);
+        cuda_shift_vec( 1, result, -1, queue );
     }
 }
 

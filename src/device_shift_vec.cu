@@ -10,7 +10,7 @@ __global__ void shift_vec_kernel(
     int64_t c)
 {
     for (int i = threadIdx.x; i < n; i += blockDim.x) {
-        v[i] += c;
+        v[ i ] += c;
     }
 }
 
@@ -28,8 +28,7 @@ void cuda_shift_vec(
 
     cudaSetDevice( queue.device() );
 
-    shift_vec_kernel<<<1, nthreads, 0, queue.stream()>>>(
-        n, v, c);
+    shift_vec_kernel<<<1, nthreads, 0, queue.stream()>>>( n, v, c );
 
     cudaError_t error = cudaGetLastError();
     assert ( error == cudaSuccess );
