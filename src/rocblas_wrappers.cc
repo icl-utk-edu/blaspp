@@ -68,6 +68,64 @@ rocblas_side side2rocblas(blas::Side side)
 //==============================================================================
 // Level 1 BLAS - Device Interfaces
 
+// -----------------------------------------------------------------------------
+// asum
+//------------------------------------------------------------------------------
+void asum(
+    device_blas_int n,
+    float const* dx, device_blas_int incdx,
+    float *result,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        rocblas_sasum(
+            queue.handle(),
+            n, dx, incdx,
+            result));
+}
+
+//------------------------------------------------------------------------------
+void asum(
+    device_blas_int n,
+    double const* dx, device_blas_int incdx,
+    double *result,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        rocblas_dasum(
+            queue.handle(),
+            n, dx, incdx,
+            result));
+}
+
+//------------------------------------------------------------------------------
+void asum(
+    device_blas_int n,
+    std::complex<float> const* dx, device_blas_int incdx,
+    float *result,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        rocblas_scasum(
+            queue.handle(),
+            n, (rocblas_float_complex*) dx, incdx,
+            result));
+}
+
+//------------------------------------------------------------------------------
+void asum(
+    device_blas_int n,
+    std::complex<double> const* dx, device_blas_int incdx,
+    double *result,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        rocblas_dzasum(
+            queue.handle(),
+            n, (rocblas_double_complex*) dx, incdx,
+            result));
+}
+
 //------------------------------------------------------------------------------
 // axpy
 //------------------------------------------------------------------------------

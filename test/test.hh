@@ -236,6 +236,7 @@ void test_batch_trsm  ( Params& params, bool run );
 
 //------------------------------------------------------------------------------
 // Level 1 GPU BLAS
+void test_asum_device  ( Params& params, bool run );
 void test_axpy_device  ( Params& params, bool run );
 void test_dot_device   ( Params& params, bool run );
 void test_iamax_device ( Params& params, bool run );

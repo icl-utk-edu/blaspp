@@ -287,6 +287,7 @@ if (opts.blas1):
 
 if (opts.blas1_device):
     cmds += [
+    [ 'dev-asum',  dtype + n + incx_pos    ],
     [ 'dev-axpy',  dtype + n + incx + incy ],
     [ 'dev-dot',   dtype + n + incx + incy + ptr_mode ],
     [ 'dev-dotu',  dtype + n + incx + incy + ptr_mode ],

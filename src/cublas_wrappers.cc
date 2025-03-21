@@ -59,6 +59,68 @@ cublasSideMode_t side2cublas(blas::Side side)
 // Level 1 BLAS - Device Interfaces
 
 //------------------------------------------------------------------------------
+// asum
+//------------------------------------------------------------------------------
+void asum(
+    device_blas_int n,
+    float const* dx, device_blas_int incdx,
+    float* result,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasSasum(
+            queue.handle(),
+            n,
+            dx, incdx,
+            result));
+}
+
+//------------------------------------------------------------------------------
+void asum(
+    device_blas_int n,
+    double const* dx, device_blas_int incdx,
+    double* result,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasDasum(
+            queue.handle(),
+            n,
+            dx, incdx,
+            result));
+}
+
+//------------------------------------------------------------------------------
+void asum(
+    device_blas_int n,
+    std::complex<float> const* dx, device_blas_int incdx,
+    float* result,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasScasum(
+            queue.handle(),
+            n,
+            (const cuComplex*) dx, incdx,
+            result));
+}
+
+//------------------------------------------------------------------------------
+void asum(
+    device_blas_int n,
+    std::complex<double> const* dx, device_blas_int incdx,
+    double* result,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasDzasum(
+            queue.handle(),
+            n,
+            (const cuDoubleComplex*) dx, incdx,
+            result));
+}
+
+//------------------------------------------------------------------------------
 // axpy
 //------------------------------------------------------------------------------
 void axpy(
