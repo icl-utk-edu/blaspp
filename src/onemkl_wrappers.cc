@@ -254,7 +254,7 @@ void iamax(
             queue.sync();
         }
         else {
-            result = -1;
+            *result = -1;
         }
         return;
     }
@@ -280,7 +280,7 @@ void iamax(
             queue.sync();
         }
         else {
-            result = -1;
+            *result = -1;
         }
         return;
     }
@@ -306,7 +306,7 @@ void iamax(
             queue.sync();
         }
         else {
-            result = -1;
+            *result = -1;
         }
         return;
     }
@@ -332,7 +332,7 @@ void iamax(
             queue.sync();
         }
         else {
-            result = -1;
+            *result = -1;
         }
         return;
     }
