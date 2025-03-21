@@ -14,6 +14,31 @@ namespace blas {
 // Alphabetical order
 
 //------------------------------------------------------------------------------
+void asum(
+    int64_t n,
+    float const* x, int64_t incx,
+    float* result,
+    blas::Queue& queue );
+
+void asum(
+    int64_t n,
+    double const* x, int64_t incx,
+    double* result,
+    blas::Queue& queue );
+
+void asum(
+    int64_t n,
+    std::complex<float> const* x, int64_t incx,
+    float* result,
+    blas::Queue& queue );
+
+void asum(
+    int64_t n,
+    std::complex<double> const* x, int64_t incx,
+    double* result,
+    blas::Queue& queue );
+
+//------------------------------------------------------------------------------
 void axpy(
     int64_t n,
     float alpha,

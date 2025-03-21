@@ -64,6 +64,68 @@ oneapi::mkl::side side2onemkl(blas::Side side)
 //==============================================================================
 // Level 1 BLAS - Device Interfaces
 
+// -----------------------------------------------------------------------------
+// asum
+//------------------------------------------------------------------------------
+void asum(
+    device_blas_int n,
+    float const* dx, device_blas_int incdx,
+    float *result,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::asum(
+            queue.stream(),
+            n,
+            dx, incdx,
+            result));
+}
+
+//------------------------------------------------------------------------------
+void asum(
+    device_blas_int n,
+    double const* dx, device_blas_int incdx,
+    double *result,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::asum(
+            queue.stream(),
+            n,
+            dx, incdx,
+            result));
+}
+
+//------------------------------------------------------------------------------
+void asum(
+    device_blas_int n,
+    std::complex<float> const* dx, device_blas_int incdx,
+    float *result,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::asum(
+            queue.stream(),
+            n,
+            dx, incdx,
+            result));
+}
+
+//------------------------------------------------------------------------------
+void asum(
+    device_blas_int n,
+    std::complex<double> const* dx, device_blas_int incdx,
+    double *result,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::asum(
+            queue.stream(),
+            n,
+            dx, incdx,
+            result));
+}
+
 //------------------------------------------------------------------------------
 // axpy
 //------------------------------------------------------------------------------

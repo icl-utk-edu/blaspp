@@ -299,6 +299,31 @@ namespace internal {
 // Alphabetical order
 
 //------------------------------------------------------------------------------
+void asum(
+    device_blas_int n,
+    float const* dx, device_blas_int incdx,
+    float *result,
+    blas::Queue& queue );
+
+void asum(
+    device_blas_int n,
+    double const* dx, device_blas_int incdx,
+    double *result,
+    blas::Queue& queue );
+
+void asum(
+    device_blas_int n,
+    std::complex<float> const* dx, device_blas_int incdx,
+    float *result,
+    blas::Queue& queue );
+
+void asum(
+    device_blas_int n,
+    std::complex<double> const* dx, device_blas_int incdx,
+    double *result,
+    blas::Queue& queue );
+
+//------------------------------------------------------------------------------
 void axpy(
     device_blas_int n,
     float alpha,
