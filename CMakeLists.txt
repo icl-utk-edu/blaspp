@@ -294,7 +294,7 @@ if (gpu_backend MATCHES "^(auto|cuda)$")
         target_sources(
             blaspp
             PRIVATE
-            src/device_shift_vec.cu
+            src/cuda/device_shift_vec.cu
         )
     else()
         message( STATUS "${red}No CUDA support: CUDA not found${plain}" )
@@ -333,7 +333,7 @@ if (NOT CUDAToolkit_FOUND
         target_sources(
             blaspp
             PRIVATE
-            src/device_shift_vec.hip
+            src/hip/device_shift_vec.hip
         )
 
         # Some platforms need these to be public libraries.
