@@ -1,0 +1,180 @@
+# Tests BLAS library variants.
+name: Variants
+
+# Controls when the workflow will run
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+  schedule:
+    # GitHub disables this if repo has no activity for 60 days.
+    # Run at 4:35 a.m. on 7th of every month.
+    # fields: minute  hour  month-day (1-31)  month (1-12)  weekday (0-6)
+    - cron: "35 4 7 * *"
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  icl_blaspp:
+    timeout-minutes: 120
+    strategy:
+      matrix:
+        maker:  [make, cmake]
+        device: [cpu, gpu_nvidia, gpu_amd, gpu_intel]
+        blas:   [mkl]
+
+        include:
+            # Add `blas_int` to existing configurations.
+            # Most other configurations will choose int32.
+            - maker:    make
+              device:   gpu_nvidia
+              blas_int: int64
+
+            - maker:    cmake
+              device:   gpu_amd
+              blas_int: int64
+
+            # Add new configurations by changing `blas`.
+            # Test only a quick sanity and smoke check, not full testing.
+
+            # For both make and cmake
+            - device: cpu
+              check:  sanity
+              blas:   openblas
+
+            # Ignore `blas` and instead use CMake's `BLA_VENDOR`.
+            # https://cmake.org/cmake/help/latest/module/FindBLAS.html
+            - maker:  cmake
+              device: cpu
+              check:  sanity
+              blas:
+              bla_vendor: Intel10_64lp
+
+            - maker:  cmake
+              device: cpu
+              check:  sanity
+              blas:
+              bla_vendor: Intel10_64ilp
+
+            - maker:  cmake
+              device: cpu
+              check:  sanity
+              blas:
+              bla_vendor: OpenBLAS
+
+            # These ignore `blas` and instead set `BLAS_LIBRARIES`.
+            - maker:  make
+              device: cpu
+              check:  sanity
+              blas:
+              blas_libraries: -lmkl_gf_lp64 -lmkl_gnu_thread -lmkl_core
+
+            - maker:  make
+              device: cpu
+              check:  sanity
+              blas:
+              blas_libraries: -lmkl_gf_ilp64 -lmkl_gnu_thread -lmkl_core
+
+            - maker:  make
+              device: cpu
+              blas:
+              blas_libraries: -lopenblas
+              check:  sanity
+
+            - maker:  cmake
+              device: cpu
+              check:  sanity
+              blas:
+              blas_libraries: -lmkl_gf_lp64 -lmkl_gnu_thread -lmkl_core
+
+            - maker:  cmake
+              device: cpu
+              check:  sanity
+              blas:
+              blas_libraries: -lmkl_gf_ilp64 -lmkl_gnu_thread -lmkl_core
+
+            - maker:  cmake
+              device: cpu
+              check:  sanity
+              blas:
+              blas_libraries: -lopenblas
+
+            # BLIS doesn't currently run on all ICL machines, because the
+            # Spack package doesn't honor the requested architecture.
+            # https://github.com/spack/spack/issues/49376
+            #
+            #- maker:  make
+            #  device: cpu
+            #  check:  sanity
+            #  blas:   blis
+            #
+            #- maker:  cmake
+            #  device: cpu
+            #  check:  sanity
+            #  blas:   blis
+            #
+            #- maker:  cmake
+            #  device: cpu
+            #  check:  sanity
+            #  blas:
+            #  bla_vendor: AOCL
+            #
+            #- maker:  cmake
+            #  device: cpu
+            #  check:  sanity
+            #  blas:
+            #  bla_vendor: AOCL_mt
+            #
+            #- maker:  cmake
+            #  device: cpu
+            #  check:  sanity
+            #  blas:
+            #  bla_vendor: FLAME
+            #
+            #- maker:  make
+            #  device: cpu
+            #  check:  sanity
+            #  blas:
+            #  blas_libraries: -lflame -lblis-mt
+            #
+            #- maker:  cmake
+            #  device: cpu
+            #  check:  sanity
+            #  blas:
+            #  blas_libraries: -lflame -lblis-mt
+            #
+            #- maker:  make
+            #  device: cpu
+            #  check:  sanity
+            #  blas:
+            #  blas_libraries: -lflame -lblis
+            #
+            #- maker:  cmake
+            #  device: cpu
+            #  check:  sanity
+            #  blas:
+            #  blas_libraries: -lflame -lblis
+
+      fail-fast: false
+    runs-on: ${{ matrix.device }}
+    name: BLAS++ ${{matrix.maker}} ${{matrix.device}} ${{matrix.blas}}${{matrix.bla_vendor}}${{matrix.blas_libraries}} ${{matrix.blas_int}}
+
+    env:
+        maker:      ${{matrix.maker}}
+        device:     ${{matrix.device}}
+        check:      ${{matrix.check}}
+        blas:       ${{matrix.blas}}
+        blas_int:   ${{matrix.blas_int}}
+        bla_vendor: ${{matrix.bla_vendor}}
+        BLAS_LIBRARIES: ${{matrix.blas_libraries}}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure
+        run: .github/workflows/configure.sh
+
+      - name: Build
+        run: .github/workflows/build.sh
+
+      - name: Test
+        run: .github/workflows/test.sh

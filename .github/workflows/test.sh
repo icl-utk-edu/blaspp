@@ -1,8 +1,5 @@
 #!/bin/bash -x
 
-maker=$1
-device=$2
-
 mydir=$(dirname $0)
 source ${mydir}/setup_env.sh
 
@@ -21,18 +18,24 @@ if [ "${device}" = "gpu_intel" ]; then
     args+=" --type s,c"
 fi
 
-./run_tests.py ${args} --blas1 --blas2 --blas3
-(( err += $? ))
+if [[ $check = "sanity" ]]; then
+    echo "Running only sanity checks"
+    ./run_tests.py ${args} herk dev-herk
+    (( err += $? ))
+else
+    ./run_tests.py ${args} --blas1 --blas2 --blas3
+    (( err += $? ))
 
-./run_tests.py ${args} --batch-blas3
-(( err += $? ))
+    ./run_tests.py ${args} --batch-blas3
+    (( err += $? ))
 
-# CUDA, HIP, or SYCL. These fail gracefully when GPUs are absent.
-./run_tests.py ${args} --blas1-device --blas3-device
-(( err += $? ))
+    # CUDA, HIP, or SYCL. These fail gracefully when GPUs are absent.
+    ./run_tests.py ${args} --blas1-device --blas3-device
+    (( err += $? ))
 
-./run_tests.py ${args} --batch-blas3-device
-(( err += $? ))
+    ./run_tests.py ${args} --batch-blas3-device
+    (( err += $? ))
+fi
 
 print "======================================== Smoke tests"
 cd ${top}/examples

@@ -1,8 +1,5 @@
 #!/bin/bash -x
 
-maker=$1
-device=$2
-
 if [ "${maker}" = "cmake" ]; then
     rm -rf build
     mkdir -p build
@@ -35,13 +32,41 @@ print "======================================== Setup build"
 rm -rf ${top}/install
 if [ "${maker}" = "make" ]; then
     make distclean
-    make config prefix=${top}/install \
-         || exit 10
+    make config prefix=${top}/install
+    err=$?
+    if [[ $err -ne 0 ]]; then
+        echo "<<<<<<<<<<<<<<<<<<<< begin config/log.txt"
+        cat config/log.txt
+        echo ">>>>>>>>>>>>>>>>>>>> end config/log.txt"
+        exit 10
+    fi
 
 elif [ "${maker}" = "cmake" ]; then
+
+    if [[ $blas != "" ]]; then
+        export cmake_blas="-Dblas=$blas"
+    fi
+    if [[ $blas_int != "" ]]; then
+        export cmake_blas_int="-Dblas_int=$blas_int"
+    fi
+    if [[ $blas_threaded != "" ]]; then
+        export cmake_blas_threaded="-Dblas_threaded=$blas_threaded"
+    fi
+    if [[ $BLAS_LIBRARIES != "" ]]; then
+        export cmake_blas_libraries="-DBLAS_LIBRARIES=$BLAS_LIBRARIES"
+    fi
+    if [[ $bla_vendor != "" ]]; then
+        unset cmake_blas
+        unset cmake_blas_int
+        unset cmake_blas_threaded
+        unset cmake_blas_libraries
+        export cmake_bla_vendor="-DBLA_VENDOR=$bla_vendor"
+    fi
+
     cmake -Dcolor=no \
           -DCMAKE_INSTALL_PREFIX=${top}/install \
-          -Dblas_int=${blas_int} \
+          "$cmake_blas" "$cmake_blas_int" "$cmake_blas_threaded" \
+          "$cmake_blas_libraries" "$cmake_bla_vendor" \
           -Dgpu_backend=${gpu_backend} .. \
           || exit 12
 fi

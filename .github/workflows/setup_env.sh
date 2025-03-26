@@ -23,6 +23,36 @@ echo_and_restore() {
 }
 alias print='{ save_flags="$-"; set +x; } 2> /dev/null; echo_and_restore'
 
+# append-path VAR PATH
+append-path() {
+    var=$1
+    path=$2
+    if [ "${!var}" != "" ]; then
+        eval $var+=:$path
+    else
+        eval $var+=$path
+    fi
+}
+
+# prepend-path VAR PATH
+prepend-path() {
+    var=$1
+    path=$2
+    if [ "${!var}" != "" ]; then
+        eval $var=$path:${!var}
+    else
+        eval $var=$path
+    fi
+}
+
+# remove-path VAR PATH
+remove-path() {
+    var=$1
+    path=$2
+    val=$(echo ${!var} | perl -pe "s%:$path|$path:?%%")
+    eval $var=$val
+}
+
 
 #-------------------------------------------------------------------------------
 quiet source /etc/profile
@@ -32,8 +62,47 @@ export top=$(pwd)
 
 shopt -s expand_aliases
 
-quiet module load intel-oneapi-mkl
-print "MKLROOT=${MKLROOT}"
+print "maker      = '${maker}'"
+print "device     = '${device}'"
+print "blas       = '${blas}'"
+print "blas_int   = '${blas_int}'"
+print "bla_vendor = '${bla_vendor}'"
+print "check      = '${check}'"
+
+export CPATH LIBRARY_PATH LD_LIBRARY_PATH
+
+if [[ $blas = "mkl" ]] \
+    || [[ $bla_vendor = Intel* ]] \
+    || [[ $BLAS_LIBRARIES = *mkl* ]]; then
+    # See also Intel compiler below.
+    quiet module load intel-oneapi-mkl
+    print "MKLROOT=${MKLROOT}"
+
+elif [[ $blas = "openblas" ]] \
+    || [[ $bla_vendor = "OpenBLAS" ]] \
+    || [[ $BLAS_LIBRARIES = *openblas* ]]; then
+    # 2025-04: This is int32 version.
+    # The openblas/0.3.27/gcc-11.4.1-y3rjih module has libopenblas64_.so
+    quiet module load openblas/0.3.27/gcc-11.4.1-jfkp5p
+
+    quiet append-path CPATH           ${ICL_OPENBLAS_ROOT}/include
+    quiet append-path LIBRARY_PATH    ${ICL_OPENBLAS_ROOT}/lib
+    quiet append-path LD_LIBRARY_PATH ${ICL_OPENBLAS_ROOT}/lib
+
+elif [[ $blas = "blis" ]] \
+    || [[ $bla_vendor = "AOCL" ]] \
+    || [[ $bla_vendor = "FLAME" ]] \
+    || [[ $BLAS_LIBRARIES = *blis* ]]; then
+    quiet module load amd-aocl
+
+    quiet append-path CPATH           ${ICL_AMDBLIS_ROOT}/include/blis
+    quiet append-path LIBRARY_PATH    ${ICL_AMDBLIS_ROOT}/lib
+    quiet append-path LD_LIBRARY_PATH ${ICL_AMDBLIS_ROOT}/lib
+
+    quiet append-path CPATH           ${ICL_AMDLIBFLAME_ROOT}/include
+    quiet append-path LIBRARY_PATH    ${ICL_AMDLIBFLAME_ROOT}/lib
+    quiet append-path LD_LIBRARY_PATH ${ICL_AMDLIBFLAME_ROOT}/lib
+fi
 
 quiet module load python
 quiet which python
@@ -49,18 +118,12 @@ export gpu_backend=none
 export color=no
 export CXXFLAGS="-Werror -Wno-unused-command-line-argument"
 
-# Test int64 build with make/cuda and cmake/amd.
-# Test int32 build with cmake/cuda and make/amd and all others.
-if [ "${maker}" = "make" -a "${device}" = "gpu_nvidia" ]; then
-    export blas_int=int64
-elif [ "${maker}" = "cmake" -a "${device}" = "gpu_amd" ]; then
-    export blas_int=int64
-else
-    export blas_int=int32
-fi
-
 #----------------------------------------------------------------- Compiler
-if [ "${device}" = "gpu_intel" ]; then
+if [[ $device = "gpu_intel" ]] \
+    || [[ $bla_vendor = Intel* ]]; then
+    # Re: bla_vendor = Intel*, apparently, CMake can't find MKL using g++,
+    # only using Intel icpx.
+    # This is one reason BLAS++ implements its own BLASFinder.
     print "======================================== Load Intel oneAPI compiler"
     quiet module load intel-oneapi-compilers
 else

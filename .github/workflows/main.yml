@@ -1,6 +1,5 @@
-# This is a basic workflow to help you get started with Actions
-
-name: CI
+# Continuous Testing on every PR.
+name: CT
 
 # Controls when the workflow will run
 on:
@@ -19,15 +18,65 @@ jobs:
     timeout-minutes: 120
     strategy:
       matrix:
-        maker: [make, cmake]
+        maker:  [make, cmake]
         device: [cpu, gpu_nvidia, gpu_amd, gpu_intel]
+
+        include:
+            # Add `blas` and `blas_int` to existing configurations.
+            - maker:    make
+              device:   cpu
+              blas:     openblas
+              name:     make cpu openblas
+
+            - maker:    cmake
+              device:   cpu
+              blas:     mkl
+              name:     cmake cpu openblas
+
+            - maker:    make
+              device:   gpu_nvidia
+              blas:     mkl
+              blas_int: int64
+
+            - maker:    cmake
+              device:   gpu_nvidia
+              blas:     openblas
+
+            - maker:    make
+              device:   gpu_amd
+              blas:     openblas    # todo: aocl/blis
+
+            - maker:    cmake
+              device:   gpu_amd
+              blas:     mkl
+              blas_int: int64
+
+            # For both make, cmake
+            - device:   gpu_intel
+              blas:     mkl
+
       fail-fast: false
     runs-on: ${{ matrix.device }}
+    name: BLAS++ ${{matrix.maker}} ${{matrix.device}} ${{matrix.blas}} ${{matrix.blas_int}}
+
+    # See variants.yml for use of some of these variables.
+    env:
+        maker:      ${{matrix.maker}}
+        device:     ${{matrix.device}}
+        check:      ${{matrix.check}}
+        blas:       ${{matrix.blas}}
+        blas_int:   ${{matrix.blas_int}}
+        bla_vendor: ${{matrix.bla_vendor}}
+        BLAS_LIBRARIES: ${{matrix.blas_libraries}}
+
     steps:
       - uses: actions/checkout@v4
+
       - name: Configure
-        run: .github/workflows/configure.sh ${{matrix.maker}} ${{matrix.device}}
+        run: .github/workflows/configure.sh
+
       - name: Build
-        run: .github/workflows/build.sh ${{matrix.maker}} ${{matrix.device}}
+        run: .github/workflows/build.sh
+
       - name: Test
-        run: .github/workflows/test.sh ${{matrix.maker}} ${{matrix.device}}
+        run: .github/workflows/test.sh
