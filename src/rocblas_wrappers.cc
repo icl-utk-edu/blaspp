@@ -264,7 +264,7 @@ void iamax(
 
     // rocblas returns 1-based index
     if (is_devptr( result, queue )) {
-        hip_shift_vec( 1, result_, -1, queue );
+        shift_vec( 1, result_, (int64_t) -1, queue );
     }
     else {
         *result_ -= 1;
@@ -295,7 +295,7 @@ void iamax(
 
     // rocblas returns 1-based index
     if (is_devptr( result_, queue )) {
-        hip_shift_vec( 1, result, -1, queue );
+        shift_vec( 1, result, (int64_t) -1, queue );
     }
     else {
         *result_ -= 1;
@@ -326,7 +326,7 @@ void iamax(
 
     // rocblas returns 1-based index
     if (is_devptr( result_, queue )) {
-        hip_shift_vec( 1, result_, -1, queue );
+        shift_vec( 1, result_, (int64_t) -1, queue );
     }
     else {
         *result_ -= 1;
@@ -357,7 +357,7 @@ void iamax(
 
     // rocblas returns 1-based index
     if (is_devptr( result_, queue )) {
-        hip_shift_vec( 1, result_, -1, queue );
+        shift_vec( 1, result_, (int64_t) -1, queue );
     }
     else {
         *result_ -= 1;

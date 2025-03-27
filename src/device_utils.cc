@@ -132,9 +132,9 @@ bool is_devptr( const void* A, blas::Queue &queue )
         err = hipGetLastError();
 
     #elif defined( BLAS_HAVE_SYCL )
-            sycl::queue syclq = queue.stream();
-            auto ptr_type = sycl::get_pointer_type( A, syclq.get_context() );
-            return ptr_type == sycl::usm::alloc::device;
+        sycl::queue syclq = queue.stream();
+        auto ptr_type = sycl::get_pointer_type( A, syclq.get_context() );
+        return ptr_type == sycl::usm::alloc::device;
     #endif
 
     return false;

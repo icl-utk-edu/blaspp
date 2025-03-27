@@ -8,7 +8,7 @@ namespace blas {
 template <typename scalar_t>
 __device__ void shift_vec_func(
     int64_t n, scalar_t* v,
-    int64_t c)
+    scalar_t c)
 {
     for (int i = threadIdx.x; i < n; i += blockDim.x) {
         v[ i ] += c;
@@ -18,16 +18,16 @@ __device__ void shift_vec_func(
 template <typename scalar_t>
 __global__ void shift_vec_kernel(
     int64_t n, scalar_t* v,
-    int64_t c)
+    scalar_t c)
 {
     shift_vec_func( n, v, c );
 }
 
 template <typename scalar_t>
-void hip_shift_vec(
+void shift_vec(
     int64_t n, scalar_t* v,
-    int64_t c,
-    blas::Queue &queue)
+    scalar_t c,
+    blas::Queue& queue)
 {
     if (n == 0) {
         return;
@@ -50,13 +50,13 @@ template
 void hip_shift_vec(
     int64_t n, int64_t* v,
     int64_t c,
-    blas::Queue &queue);
+    blas::Queue& queue);
 
 template
 void hip_shift_vec(
     int64_t n, int* v,
-    int64_t c,
-    blas::Queue &queue);
+    int c,
+    blas::Queue& queue);
 
 } // namespace blas
 
