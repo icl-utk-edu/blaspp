@@ -265,7 +265,7 @@ void iamax(
         *result -= 1;
     }
     else {
-        cuda_shift_vec( 1, result, -1, queue );
+        shift_vec( 1, result, (int64_t) -1, queue );
     }
 }
 
@@ -305,7 +305,7 @@ void iamax(
         *result -= 1;
     }
     else {
-        cuda_shift_vec( 1, result, -1, queue );
+        shift_vec( 1, result, (int64_t) -1, queue );
     }
 }
 
@@ -344,7 +344,7 @@ void iamax(
         *result -= 1;
     }
     else {
-        cuda_shift_vec( 1, result, -1, queue );
+        shift_vec( 1, result, (int64_t) -1, queue );
     }
 }
 
@@ -383,7 +383,7 @@ void iamax(
         *result -= 1;
     }
     else {
-        cuda_shift_vec( 1, result, -1, queue );
+        shift_vec( 1, result, (int64_t) -1, queue );
     }
 }
 
