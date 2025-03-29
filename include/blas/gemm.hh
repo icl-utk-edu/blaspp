@@ -146,7 +146,7 @@ void gemm(
     if (m == 0 || n == 0 || k == 0)
         return;
 
-    // alpha == zero
+    // alpha == zero, C = beta C
     if (alpha == zero) {
         if (beta == zero) {
             for (int64_t j = 0; j < n; ++j) {
@@ -166,9 +166,16 @@ void gemm(
     // alpha != zero
     if (transA == Op::NoTrans) {
         if (transB == Op::NoTrans) {
+            // C = alpha A B + beta C
             for (int64_t j = 0; j < n; ++j) {
-                for (int64_t i = 0; i < m; ++i)
-                    C(i, j) *= beta;
+                if (beta == zero) {
+                    for (int64_t i = 0; i < m; ++i)
+                        C(i, j) = zero;
+                }
+                else if (beta != one) {
+                    for (int64_t i = 0; i < m; ++i)
+                        C(i, j) *= beta;
+                }
                 for (int64_t l = 0; l < k; ++l) {
                     scalar_t alpha_Blj = alpha*B(l, j);
                     for (int64_t i = 0; i < m; ++i)
@@ -177,9 +184,16 @@ void gemm(
             }
         }
         else if (transB == Op::Trans) {
+            // C = alpha A B^T + beta C
             for (int64_t j = 0; j < n; ++j) {
-                for (int64_t i = 0; i < m; ++i)
-                    C(i, j) *= beta;
+                if (beta == zero) {
+                    for (int64_t i = 0; i < m; ++i)
+                        C(i, j) = zero;
+                }
+                else if (beta != one) {
+                    for (int64_t i = 0; i < m; ++i)
+                        C(i, j) *= beta;
+                }
                 for (int64_t l = 0; l < k; ++l) {
                     scalar_t alpha_Bjl = alpha*B(j, l);
                     for (int64_t i = 0; i < m; ++i)
@@ -188,9 +202,16 @@ void gemm(
             }
         }
         else { // transB == Op::ConjTrans
+            // C = alpha A B^H + beta C
             for (int64_t j = 0; j < n; ++j) {
-                for (int64_t i = 0; i < m; ++i)
-                    C(i, j) *= beta;
+                if (beta == zero) {
+                    for (int64_t i = 0; i < m; ++i)
+                        C(i, j) = zero;
+                }
+                else if (beta != one) {
+                    for (int64_t i = 0; i < m; ++i)
+                        C(i, j) *= beta;
+                }
                 for (int64_t l = 0; l < k; ++l) {
                     scalar_t alpha_Bjl = alpha*conj(B(j, l));
                     for (int64_t i = 0; i < m; ++i)
@@ -200,65 +221,89 @@ void gemm(
         }
     }
     else if (transA == Op::Trans) {
+        // C = alpha A^T B + beta C
         if (transB == Op::NoTrans) {
             for (int64_t j = 0; j < n; ++j) {
                 for (int64_t i = 0; i < m; ++i) {
                     scalar_t sum = zero;
                     for (int64_t l = 0; l < k; ++l)
                         sum += A(l, i)*B(l, j);
-                    C(i, j) = alpha*sum + beta*C(i, j);
+                    if (beta == zero)
+                        C(i, j) = alpha*sum;
+                    else
+                        C(i, j) = alpha*sum + beta*C(i, j);
                 }
             }
         }
         else if (transB == Op::Trans) {
+            // C = alpha A^T B^T + beta C
             for (int64_t j = 0; j < n; ++j) {
                 for (int64_t i = 0; i < m; ++i) {
                     scalar_t sum = zero;
                     for (int64_t l = 0; l < k; ++l)
                         sum += A(l, i)*B(j, l);
-                    C(i, j) = alpha*sum + beta*C(i, j);
+                    if (beta == zero)
+                        C(i, j) = alpha*sum;
+                    else
+                        C(i, j) = alpha*sum + beta*C(i, j);
                 }
             }
         }
         else { // transB == Op::ConjTrans
+            // C = alpha A^T B^H + beta C
             for (int64_t j = 0; j < n; ++j) {
                 for (int64_t i = 0; i < m; ++i) {
                     scalar_t sum = zero;
                     for (int64_t l = 0; l < k; ++l)
                         sum += A(l, i)*conj(B(j, l));
-                    C(i, j) = alpha*sum + beta*C(i, j);
+                    if (beta == zero)
+                        C(i, j) = alpha*sum;
+                    else
+                        C(i, j) = alpha*sum + beta*C(i, j);
                 }
             }
         }
     }
     else { // transA == Op::ConjTrans
         if (transB == Op::NoTrans) {
+            // C = alpha A^H B + beta C
             for (int64_t j = 0; j < n; ++j) {
                 for (int64_t i = 0; i < m; ++i) {
                     scalar_t sum = zero;
                     for (int64_t l = 0; l < k; ++l)
                         sum += conj(A(l, i))*B(l, j);
-                    C(i, j) = alpha*sum + beta*C(i, j);
+                    if (beta == zero)
+                        C(i, j) = alpha*sum;
+                    else
+                        C(i, j) = alpha*sum + beta*C(i, j);
                 }
             }
         }
         else if (transB == Op::Trans) {
+            // C = alpha A^H B + beta C
             for (int64_t j = 0; j < n; ++j) {
                 for (int64_t i = 0; i < m; ++i) {
                     scalar_t sum = zero;
                     for (int64_t l = 0; l < k; ++l)
                         sum += conj(A(l, i))*B(j, l);
-                    C(i, j) = alpha*sum + beta*C(i, j);
+                    if (beta == zero)
+                        C(i, j) = alpha*sum;
+                    else
+                        C(i, j) = alpha*sum + beta*C(i, j);
                 }
             }
         }
         else { // transB == Op::ConjTrans
+            // C = alpha A^H B^H + beta C
             for (int64_t j = 0; j < n; ++j) {
                 for (int64_t i = 0; i < m; ++i) {
                     scalar_t sum = zero;
                     for (int64_t l = 0; l < k; ++l)
                         sum += A(l, i)*B(j, l); // little improvement here
-                    C(i, j) = alpha*conj(sum) + beta*C(i, j);
+                    if (beta == zero)
+                        C(i, j) = alpha*conj(sum);
+                    else
+                        C(i, j) = alpha*conj(sum) + beta*C(i, j);
                 }
             }
         }

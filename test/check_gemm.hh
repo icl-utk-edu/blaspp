@@ -36,6 +36,7 @@ void check_gemm(
 
     using std::sqrt;
     using std::abs;
+    using blas::max;
     using real_t = blas::real_type<T>;
 
     assert( m >= 0 );
@@ -54,8 +55,8 @@ void check_gemm(
     real_t work[1], Cout_norm;
     Cout_norm = lapack_lange( "f", m, n, C, ldc, work );
     error[0] = Cout_norm
-             / (sqrt( real_t( k ) + 2 ) * abs( alpha ) * Anorm * Bnorm
-                 + 2 * abs( beta ) * Cnorm);
+             / (sqrt( real_t( k ) + 2 ) * max( abs( alpha ), 1.0 ) * Anorm * Bnorm
+                 + 2 * max( abs( beta ), 1.0 ) * Cnorm);
     if (verbose) {
         printf( "error: ||Cout||=%.2e / (sqrt(k=%lld + 2)"
                 " * |alpha|=%.2e * ||A||=%.2e * ||B||=%.2e"
@@ -107,6 +108,7 @@ void check_herk(
 
     using std::sqrt;
     using std::abs;
+    using blas::max;
     typedef blas::real_type<T> real_t;
 
     assert( n >= 0 );
@@ -137,8 +139,8 @@ void check_herk(
     real_t work[1], Cout_norm;
     Cout_norm = lapack_lanhe( "f", to_c_string( uplo ), n, C, ldc, work );
     error[0] = Cout_norm
-             / (sqrt( real_t( k ) + 2 ) * abs( alpha ) * Anorm * Bnorm
-                 + 2 * abs( beta ) * Cnorm);
+             / (sqrt( real_t( k ) + 2 ) * max( abs( alpha ), 1.0 ) * Anorm * Bnorm
+                 + 2 * max( abs( beta ), 1.0 ) * Cnorm);
     if (verbose) {
         printf( "error: ||Cout||=%.2e / (sqrt(k=%lld + 2)"
                 " * |alpha|=%.2e * ||A||=%.2e * ||B||=%.2e"
