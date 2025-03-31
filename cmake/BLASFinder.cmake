@@ -87,7 +87,7 @@ endfunction()
 string( COMPARE EQUAL "${CMAKE_CXX_COMPILER_ID}" "GNU"        gnu_compiler)
 string( COMPARE EQUAL "${CMAKE_CXX_COMPILER_ID}" "IntelLLVM"  intelllvm_compiler )
 string( COMPARE EQUAL "${CMAKE_CXX_COMPILER_ID}" "Intel"      intel_compiler )
-string( REGEX MATCH   "XL|XLClang" ibm_compiler "${CMAKE_CXX_COMPILER_ID}" )
+match( "XL|XLClang" "${CMAKE_CXX_COMPILER_ID}" ibm_compiler )
 
 #---------------------------------------- Fortran manglings to test
 if (ibm_compiler)
@@ -125,13 +125,13 @@ endif()
 #---------------------------------------- blas
 string( TOLOWER "${blas}" blas_ )
 
-string( REGEX MATCH "auto|apple|accelerate"    test_accelerate "${blas_}" )
-string( REGEX MATCH "auto|aocl|blis"           test_blis       "${blas_}" )
-string( REGEX MATCH "auto|cray|libsci|default" test_default    "${blas_}" )
-string( REGEX MATCH "auto|ibm|essl"  test_essl     "${blas_}" )
-string( REGEX MATCH "auto|intel|mkl" test_mkl      "${blas_}" )
-string( REGEX MATCH "auto|openblas"  test_openblas "${blas_}" )
-string( REGEX MATCH "auto|generic"   test_generic  "${blas_}" )
+match( "auto|apple|accelerate"    "${blas_}" test_accelerate )
+match( "auto|aocl|blis"           "${blas_}" test_blis       )
+match( "auto|cray|libsci|default" "${blas_}" test_default    )
+match( "auto|ibm|essl"            "${blas_}" test_essl       )
+match( "auto|intel|mkl"           "${blas_}" test_mkl        )
+match( "auto|openblas"            "${blas_}" test_openblas   )
+match( "auto|generic"             "${blas_}" test_generic    )
 
 message( DEBUG "
 BLAS_LIBRARIES      = '${BLAS_LIBRARIES}'
@@ -149,8 +149,8 @@ test_generic        = '${test_generic}'" )
 #---------------------------------------- blas_fortran
 string( TOLOWER "${blas_fortran}" blas_fortran_ )
 
-string( REGEX MATCH "auto|gfortran" test_gfortran "${blas_fortran_}" )
-string( REGEX MATCH "auto|ifort"    test_ifort    "${blas_fortran_}" )
+match( "auto|gfortran" "${blas_fortran_}" test_gfortran )
+match( "auto|ifort"    "${blas_fortran_}" test_ifort    )
 
 message( DEBUG "
 blas_fortran        = '${blas_fortran}'
@@ -164,8 +164,8 @@ string( TOLOWER "${blas_int}" blas_int_ )
 # This regex is similar to "\b(lp64|int)\b".
 set( regex_int32 "(^|[^a-zA-Z0-9_])(auto|lp64|int|int32|int32_t)($|[^a-zA-Z0-9_])" )
 set( regex_int64 "(^|[^a-zA-Z0-9_])(auto|ilp64|int64|int64_t)($|[^a-zA-Z0-9_])" )
-string( REGEX MATCH ${regex_int32} test_int   "${blas_int_}" )
-string( REGEX MATCH ${regex_int64} test_int64 "${blas_int_}" )
+match( "${regex_int32}" "${blas_int_}" test_int   )
+match( "${regex_int64}" "${blas_int_}" test_int64 )
 
 if (CMAKE_CROSSCOMPILING AND test_int AND test_int64)
     message( FATAL_ERROR " ${red}When cross-compiling, one must define either\n"
@@ -183,16 +183,23 @@ test_int64          = '${test_int64}'")
 string( TOLOWER "${blas_threaded}" blas_threaded_ )
 
 # These regex are similar to "\b(yes|...)\b".
-set( regex_yes "(^|[^a-zA-Z0-9_])(auto|y|yes|true|on|1)($|[^a-zA-Z0-9_])" )
-set( regex_no  "(^|[^a-zA-Z0-9_])(auto|n|no|false|off|0)($|[^a-zA-Z0-9_])" )
-string( REGEX MATCH ${regex_yes} test_threaded   "${blas_threaded_}" )
-string( REGEX MATCH ${regex_no}  test_sequential "${blas_threaded_}" )
+# All sequential BLAS also act sequentially inside OpenMP parallel sections,
+# so `openmp_aware` sets test_sequential = true.
+set( regex_thr "(^|[^a-zA-Z0-9_])(auto|y|yes|true|on|1)($|[^a-zA-Z0-9_])" )
+set( regex_seq "(^|[^a-zA-Z0-9_])(auto|n|no|false|off|0|openmp_aware)($|[^a-zA-Z0-9_])" )
+match( "${regex_thr}" "${blas_threaded_}" test_threaded )
+match( "${regex_seq}" "${blas_threaded_}" test_sequential )
+match( "openmp_aware" "${blas_threaded_}" test_threaded_omp )
+if (NOT (test_threaded OR test_sequential))
+    message( FATAL_ERROR, "Expected one of test_threaded=${test_threaded} or test_sequential=${test_sequential} to be true." )
+endif()
 
 message( DEBUG "
 blas_threaded       = '${blas_threaded}'
 blas_threaded_      = '${blas_threaded_}'
 test_threaded       = '${test_threaded}'
-test_sequential     = '${test_sequential}'")
+test_sequential     = '${test_sequential}'
+test_threaded_omp   = '${test_threaded_omp}'")
 
 #-------------------------------------------------------------------------------
 # Build list of libraries to check.
@@ -221,9 +228,13 @@ if (test_default)
 endif()
 
 #---------------------------------------- Intel MKL
+# MKL is OpenMP aware: inside an application's OpenMP section,
+# MKL does not open a new OpenMP section and spawn new threads, by default.
+# See MKL_DYNAMIC.
+# (I don't think this was always true, but has been true for several years now.)
 if (test_mkl)
     # todo: MKL_?(ROOT|DIR)
-    if (test_threaded AND OpenMP_CXX_FOUND)
+    if ((test_threaded OR test_threaded_omp) AND OpenMP_CXX_FOUND)
         if (test_gfortran AND gnu_compiler)
             # GNU compiler + OpenMP: require gnu_thread library.
             if (test_int)

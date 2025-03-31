@@ -70,6 +70,8 @@ BLAS++ specific options include (all values are case insensitive):
         auto            search for both threaded and sequential BLAS (default)
         yes             multi-threaded BLAS
         no              sequential BLAS
+        openmp_aware    acts as sequential BLAS inside OpenMP parallel
+                        sections; MKL does this.
 
     blas_fortran
         Fortran interface to use. Currently applies only to Intel MKL.

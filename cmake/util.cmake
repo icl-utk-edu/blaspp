@@ -66,3 +66,24 @@ function( assert var )
         message( FATAL_ERROR "\n${red}Assertion failed: ${var} (value is '${${var}}')${default_color}\n" )
     endif()
 endfunction()
+
+#-------------------------------------------------------------------------------
+# match( regex str output )
+# If str matches regular expression in regex,
+# sets output to true, else sets it to false.
+#
+# Contrast this with: string( REGEX MATCH regex output str ),
+# which sets output to the match string itself, which could be false, e.g.,
+#     string( REGEX MATCH "(yes|no)" output "no" )
+# sets output = 'no' (interpreted as false in CMake), rather than true.
+#
+# The order of arguments here matches string( COMPARE EQUAL str1 str2 output ),
+# rather than string( REGEX MATCH regex output str ).
+#
+function( match regex str output )
+    if ("${str}" MATCHES "${regex}")
+        set( ${output} "true"  PARENT_SCOPE )
+    else()
+        set( ${output} "false" PARENT_SCOPE )
+    endif()
+endfunction()
