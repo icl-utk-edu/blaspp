@@ -201,12 +201,13 @@ def blas():
 
     #-------------------- blas_threaded
     test_threaded   = re.search( r'\b(auto|y|yes|true|on|1)\b',  blas_threaded ) is not None
-    test_sequential = re.search( r'\b(auto|n|no|false|off|0)\b', blas_threaded ) is not None
-
+    test_sequential = re.search( r'\b(auto|n|no|false|off|0|openmp_aware)\b', blas_threaded ) is not None
+    test_threaded_omp = re.search( r'\bopenmp_aware\b', blas_threaded ) is not None
     if (config.debug()):
         print( "blas_threaded       = '" + blas_threaded + "'\n"
              + "test_threaded       = ", test_threaded,     "\n"
-             + "test_sequential     = ", test_sequential,   "\n" )
+             + "test_sequential     = ", test_sequential,   "\n"
+             + "test_threaded_omp   = ", test_threaded_omp, "\n" )
 
     #----------------------------------------
     # Build list of libraries to check.
@@ -229,7 +230,7 @@ def blas():
     if (test_mkl):
         choices_ifort    = []
         choices_gfortran = []
-        if (test_threaded and has_openmp):
+        if ((test_threaded or test_threaded_omp) and has_openmp):
             t_core = ' -lmkl_core -lm'
             if (test_gfortran and cxx_actual == 'g++'):
                 # GNU compiler + OpenMP: require gnu_thread library.
