@@ -5,19 +5,22 @@
 #
 # CMake script for BLAS++ library.
 
-cmake_minimum_required( VERSION 3.17 )
+cmake_minimum_required( VERSION 3.18 )
 # 3.1  target_compile_features
 # 3.8  target_compile_features( cxx_std_17 )
 # 3.14 install( LIBRARY DESTINATION lib ) default
 # 3.15 $<$COMPILE_LANG_AND_ID  # optional
 # 3.15 message DEBUG, string REPEAT
 # 3.17 find_package( CUDAToolkit )
+# 3.21 enable_language( HIP ) support
 
 project(
     blaspp
     VERSION 2024.10.26
     LANGUAGES CXX
 )
+
+enable_language( HIP )
 
 # See notes in GNUmakefile about using abi-compliance-checker.
 # soversion is major ABI version.
@@ -113,6 +116,8 @@ set( CMAKE_CUDA_ARCHITECTURES "60" CACHE STRING
      "CUDA architectures, as semi-colon separated list of numbers, e.g., 60;70;80 for Pascal, Volta, Ampere" )
 set_property( CACHE CMAKE_CUDA_ARCHITECTURES PROPERTY STRINGS
               30 35 50 60 70 75 80 90 )
+
+
 
 #-----------------------------------
 # BLAS options
@@ -326,9 +331,7 @@ if (NOT CUDAToolkit_FOUND
         set_target_properties( hip::device PROPERTIES INTERFACE_COMPILE_OPTIONS "-fPIC" )
         set_target_properties( hip::device PROPERTIES INTERFACE_LINK_LIBRARIES "hip::host" )
 
-        set_property(TARGET blaspp PROPERTY HIP_ARCHITECTURES gfx900)
 
-        enable_language(HIP)
 
         target_sources(
             blaspp

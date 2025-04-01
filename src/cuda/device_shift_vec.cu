@@ -14,11 +14,27 @@ __global__ void shift_vec_kernel(
     }
 }
 
+//------------------------------------------------------------------------------
+/// Shifts each element of the vector v by a constant value c.
+///
+/// @param[in] n
+///     Number of elements in the vector. n >= 0.
+///
+/// @param[in,out] v
+///     Pointer to the vector of length n.
+///     On exit, each element v[i] is updated as v[i] += c.
+///
+/// @param[in] c
+///     Scalar value to be added to each element of v.
+///
+/// @param[in] queue
+///     BLAS++ queue to execute in.
+///
 template <typename scalar_t>
 void shift_vec(
     int64_t n, scalar_t* v,
     scalar_t c,
-    blas::Queue &queue)
+    blas::Queue& queue)
 {
     if (n == 0) {
         return;
@@ -26,12 +42,13 @@ void shift_vec(
 
     int64_t nthreads = std::min( int64_t( 1024 ), n );
 
-    cudaSetDevice( queue.device() );
+    blas_dev_call(
+        cudaSetDevice( queue.device() ) );
 
     shift_vec_kernel<<<1, nthreads, 0, queue.stream()>>>( n, v, c );
 
-    cudaError_t error = cudaGetLastError();
-    assert ( error == cudaSuccess );
+    blas_dev_call(
+        cudaGetLastError() );
 }
 
 //------------------------------------------------------------------------------
