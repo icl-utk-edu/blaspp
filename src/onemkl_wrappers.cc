@@ -236,6 +236,8 @@ void dotu(
             dx, incdx,
             dy, incdy,
             result));
+}
+
 //------------------------------------------------------------------------------
 // iamax
 //------------------------------------------------------------------------------
@@ -245,6 +247,7 @@ void iamax(
     int64_t* result,
     blas::Queue& queue )
 {
+    // Return -1 for non-positive n or incx. MKL routine would return 0.
     if (n < 1 || incdx < 1) {
         if (is_devptr( result, queue )) {
             int64_t tmp = -1;
@@ -271,6 +274,7 @@ void iamax(
     int64_t* result,
     blas::Queue& queue )
 {
+    // Return -1 for non-positive n or incx. MKL routine would return 0.
     if (n < 1 || incdx < 1) {
         if (is_devptr( result, queue )) {
             int64_t tmp = -1;
@@ -297,6 +301,7 @@ void iamax(
     int64_t* result,
     blas::Queue& queue )
 {
+    // Return -1 for non-positive n or incx. MKL routine would return 0.
     if (n < 1 || incdx < 1) {
         if (is_devptr( result, queue )) {
             int64_t tmp = -1;
@@ -323,6 +328,7 @@ void iamax(
     int64_t* result,
     blas::Queue& queue )
 {
+    // Return -1 for non-positive n or incx. MKL routine would return 0.
     if (n < 1 || incdx < 1) {
         if (is_devptr( result, queue )) {
             int64_t tmp = -1;

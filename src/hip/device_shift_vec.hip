@@ -35,25 +35,26 @@ void shift_vec(
 
     int64_t nthreads = std::min( int64_t( 1024 ), n );
 
-    hipSetDevice( queue.device() );
+    blas_dev_call(
+        hipSetDevice( queue.device() ) );
 
     shift_vec_kernel<<<1, nthreads, 0, queue.stream()>>>(
         n, v, c);
 
-    hipError_t error = hipGetLastError();
-    assert ( error == hipSuccess );
+    blas_dev_call(
+        hipGetLastError() );
 }
 
 //------------------------------------------------------------------------------
 // Explicit instantiations.
 template
-void hip_shift_vec(
+void shift_vec(
     int64_t n, int64_t* v,
     int64_t c,
     blas::Queue& queue);
 
 template
-void hip_shift_vec(
+void shift_vec(
     int64_t n, int* v,
     int c,
     blas::Queue& queue);

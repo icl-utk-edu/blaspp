@@ -247,9 +247,13 @@ void iamax(
     int64_t* result,
     blas::Queue& queue )
 {
-    // clear memory if allocated on host
+    // clear memory
     if (! is_devptr( result, queue )) {
         *result = 0;
+    }
+    else {
+        blas_dev_call(
+            hipMemsetAsync( result, 0, sizeof( *result ) ));
     }
     // convert arguments
     device_blas_int n_ = to_device_blas_int( n );
@@ -264,7 +268,7 @@ void iamax(
 
     // rocblas returns 1-based index
     if (is_devptr( result, queue )) {
-        shift_vec( 1, result_, (int64_t) -1, queue );
+        shift_vec( 1, result_, -1, queue );
     }
     else {
         *result_ -= 1;
@@ -278,9 +282,13 @@ void iamax(
     int64_t* result,
     blas::Queue& queue )
 {
-    // clear memory if allocated on host
+    // clear memory
     if (! is_devptr( result, queue )) {
         *result = 0;
+    }
+    else {
+        blas_dev_call(
+            hipMemsetAsync( result, 0, sizeof( *result ) ));
     }
     // convert arguments
     device_blas_int n_ = to_device_blas_int( n );
@@ -294,8 +302,8 @@ void iamax(
             result_));
 
     // rocblas returns 1-based index
-    if (is_devptr( result_, queue )) {
-        shift_vec( 1, result, (int64_t) -1, queue );
+    if (is_devptr( result, queue )) {
+        shift_vec( 1, result_, -1, queue );
     }
     else {
         *result_ -= 1;
@@ -309,9 +317,13 @@ void iamax(
     int64_t* result,
     blas::Queue& queue )
 {
-    // clear memory if allocated on host
+    // clear memory
     if (! is_devptr( result, queue )) {
         *result = 0;
+    }
+    else {
+        blas_dev_call(
+            hipMemsetAsync( result, 0, sizeof( *result ) ));
     }
     // convert arguments
     device_blas_int n_ = to_device_blas_int( n );
@@ -325,8 +337,8 @@ void iamax(
             result_));
 
     // rocblas returns 1-based index
-    if (is_devptr( result_, queue )) {
-        shift_vec( 1, result_, (int64_t) -1, queue );
+    if (is_devptr( result, queue )) {
+        shift_vec( 1, result_, -1, queue );
     }
     else {
         *result_ -= 1;
@@ -340,9 +352,13 @@ void iamax(
     int64_t* result,
     blas::Queue& queue )
 {
-    // clear memory if allocated on host
+    // clear memory
     if (! is_devptr( result, queue )) {
         *result = 0;
+    }
+    else {
+        blas_dev_call(
+            hipMemsetAsync( result, 0, sizeof( *result ) ));
     }
     // convert arguments
     device_blas_int n_ = to_device_blas_int( n );
@@ -356,8 +372,8 @@ void iamax(
             result_));
 
     // rocblas returns 1-based index
-    if (is_devptr( result_, queue )) {
-        shift_vec( 1, result_, (int64_t) -1, queue );
+    if (is_devptr( result, queue )) {
+        shift_vec( 1, result_, -1, queue );
     }
     else {
         *result_ -= 1;

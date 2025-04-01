@@ -245,9 +245,13 @@ void iamax(
                 dx, incdx,
                 result));
     #else
-        // clear memory if allocated on host
+        // clear memory
         if (! is_devptr( result, queue )) {
             *result = 0;
+        }
+        else {
+            blas_dev_call(
+                cudaMemsetAsync( result, 0, sizeof( *result ) ));
         }
         // convert arguments
         device_blas_int n_    = to_device_blas_int( n );
@@ -284,9 +288,13 @@ void iamax(
                 dx, incdx,
                 result));
     #else
-        // clear memory if allocated on host
+        // clear memory
         if (! is_devptr( result, queue )) {
             *result = 0;
+        }
+        else {
+            blas_dev_call(
+                cudaMemsetAsync( result, 0, sizeof( *result ) ));
         }
         // convert arguments
         device_blas_int n_    = to_device_blas_int( n );
@@ -324,9 +332,13 @@ void iamax(
                 dx, incdx,
                 result));
     #else
-        // clear memory if allocated on host
+        // clear memory
         if (! is_devptr( result, queue )) {
             *result = 0;
+        }
+        else {
+            blas_dev_call(
+                cudaMemsetAsync( result, 0, sizeof( *result ) ));
         }
         // convert arguments
         device_blas_int n_    = to_device_blas_int( n );
@@ -363,9 +375,13 @@ void iamax(
                 dx, incdx,
                 result));
     #else
-        // clear memory if allocated on host
+        // clear memory
         if (! is_devptr( result, queue )) {
             *result = 0;
+        }
+        else {
+            blas_dev_call(
+                cudaMemsetAsync( result, 0, sizeof( *result ) ));
         }
         // convert arguments
         device_blas_int n_    = to_device_blas_int( n );
