@@ -80,6 +80,8 @@ void test_iamax_work( Params& params, bool run )
         testsweeper::flush_cache( params.cache() );
         time = get_wtime();
         int64_t ref = cblas_iamax( n, x, incx );
+        if (n == 0)
+            ref -= 1;
         time = get_wtime() - time;
 
         params.ref_time()   = time * 1000;  // msec
