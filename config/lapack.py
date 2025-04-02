@@ -340,7 +340,7 @@ def blas():
         inc = ''
         for p in paths:
             if (os.path.exists( p + '/cblas.h' )):
-                inc = '-I' + p + ' ' + define('HAVE_ACCELERATE_CBLAS_H')
+                inc = '-I' + p + ' ' + define('HAVE_ACCELERATE_CBLAS_H') + ' '
                 break
 
         choices.append(
@@ -483,8 +483,8 @@ def lapacke():
     '''
     print_header( 'LAPACKE library' )
     choices = [
-        ['LAPACKE (LAPACKE_dpotrf) in LAPACK library', {}],
-        ['LAPACKE (LAPACKE_dpotrf) in -llapacke',
+        ['LAPACKE (LAPACKE_dpstrf) in LAPACK library', {}],
+        ['LAPACKE (LAPACKE_dpstrf) in -llapacke',
             {'LIBS': '-llapacke'}],
     ]
 
@@ -555,7 +555,8 @@ def lapack_version():
     s = re.search( r'^LAPACK_VERSION=((\d+)\.(\d+)\.(\d+))', out )
     if (rc == 0 and s):
         v = '%d%02d%02d' % (int(s.group(2)), int(s.group(3)), int(s.group(4)))
-        config.environ.append( 'CXXFLAGS', define('LAPACK_VERSION', v) )
+        # Don't use define() which adds second LAPACK_.
+        config.environ.append( 'CXXFLAGS', '-DLAPACK_VERSION=' + v )
         config.print_result( 'LAPACK', rc, '(' + s.group(1) + ')' )
     else:
         config.print_result( 'LAPACK', rc )
