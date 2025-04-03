@@ -105,6 +105,7 @@ add_executable(
     test_axpy_device.cc
     test_dot_device.cc
     test_dotu_device.cc
+    test_iamax_device.cc
     test_nrm2_device.cc
     test_scal_device.cc
     test_swap_device.cc

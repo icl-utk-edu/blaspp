@@ -238,6 +238,116 @@ void dotu(
             result));
 }
 
+//------------------------------------------------------------------------------
+// iamax
+//------------------------------------------------------------------------------
+void iamax(
+    int64_t n,
+    float const* dx, int64_t incdx,
+    int64_t* result,
+    blas::Queue& queue )
+{
+    // Return -1 for non-positive n or incx. MKL routine would return 0.
+    if (n < 1 || incdx < 1) {
+        if (is_devptr( result, queue )) {
+            int64_t tmp = -1;
+            device_memcpy( result, &tmp, 1, queue );
+            queue.sync();
+        }
+        else {
+            *result = -1;
+        }
+        return;
+    }
+    blas_dev_call(
+        oneapi::mkl::blas::iamax(
+            queue.stream(),
+            n,
+            dx, incdx,
+            result));
+}
+
+//------------------------------------------------------------------------------
+void iamax(
+    int64_t n,
+    double const* dx, int64_t incdx,
+    int64_t* result,
+    blas::Queue& queue )
+{
+    // Return -1 for non-positive n or incx. MKL routine would return 0.
+    if (n < 1 || incdx < 1) {
+        if (is_devptr( result, queue )) {
+            int64_t tmp = -1;
+            device_memcpy( result, &tmp, 1, queue );
+            queue.sync();
+        }
+        else {
+            *result = -1;
+        }
+        return;
+    }
+    blas_dev_call(
+        oneapi::mkl::blas::iamax(
+            queue.stream(),
+            n,
+            dx, incdx,
+            result));
+}
+
+//------------------------------------------------------------------------------
+void iamax(
+    int64_t n,
+    std::complex<float> const* dx, int64_t incdx,
+    int64_t* result,
+    blas::Queue& queue )
+{
+    // Return -1 for non-positive n or incx. MKL routine would return 0.
+    if (n < 1 || incdx < 1) {
+        if (is_devptr( result, queue )) {
+            int64_t tmp = -1;
+            device_memcpy( result, &tmp, 1, queue );
+            queue.sync();
+        }
+        else {
+            *result = -1;
+        }
+        return;
+    }
+    blas_dev_call(
+        oneapi::mkl::blas::iamax(
+            queue.stream(),
+            n,
+            dx, incdx,
+            result));
+}
+
+//------------------------------------------------------------------------------
+void iamax(
+    int64_t n,
+    std::complex<double> const* dx, int64_t incdx,
+    int64_t* result,
+    blas::Queue& queue )
+{
+    // Return -1 for non-positive n or incx. MKL routine would return 0.
+    if (n < 1 || incdx < 1) {
+        if (is_devptr( result, queue )) {
+            int64_t tmp = -1;
+            device_memcpy( result, &tmp, 1, queue );
+            queue.sync();
+        }
+        else {
+            *result = -1;
+        }
+        return;
+    }
+    blas_dev_call(
+        oneapi::mkl::blas::iamax(
+            queue.stream(),
+            n,
+            dx, incdx,
+            result));
+}
+
 // -----------------------------------------------------------------------------
 // nrm2
 //------------------------------------------------------------------------------

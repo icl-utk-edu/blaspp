@@ -238,6 +238,196 @@ void dotu(
             (rocblas_double_complex*) result));
 }
 
+//------------------------------------------------------------------------------
+// iamax
+//------------------------------------------------------------------------------
+void iamax(
+    int64_t n,
+    float const* dx, int64_t incdx,
+    int64_t* result,
+    blas::Queue& queue )
+{
+    // Return -1 for non-positive n or incx. rocBLAS returns an unsigned value.
+    if (n < 1 || incdx < 1) {
+        if (is_devptr( result, queue )) {
+            int64_t tmp = -1;
+            device_memcpy( result, &tmp, 1, queue );
+            queue.sync();
+        }
+        else {
+            *result = -1;
+        }
+        return;
+    }
+    // clear memory
+    if (! is_devptr( result, queue )) {
+        *result = 0;
+    }
+    else {
+        blas_dev_call(
+            hipMemsetAsync( result, 0, sizeof( *result ) ));
+    }
+    // convert arguments
+    device_blas_int n_ = to_device_blas_int( n );
+    device_blas_int incdx_ = to_device_blas_int( incdx );
+    device_blas_int* result_ = (device_blas_int*) result;
+
+    blas_dev_call(
+        rocblas_isamax(
+            queue.handle(),
+            n_, dx, incdx_,
+            result_));
+
+    // rocblas returns 1-based index
+    if (is_devptr( result, queue )) {
+        shift_vec( 1, result_, -1, queue );
+    }
+    else {
+        *result_ -= 1;
+    }
+}
+
+//------------------------------------------------------------------------------
+void iamax(
+    int64_t n,
+    double const* dx, int64_t incdx,
+    int64_t* result,
+    blas::Queue& queue )
+{
+    // Return -1 for non-positive n or incx. rocBLAS returns an unsigned value.
+    if (n < 1 || incdx < 1) {
+        if (is_devptr( result, queue )) {
+            int64_t tmp = -1;
+            device_memcpy( result, &tmp, 1, queue );
+            queue.sync();
+        }
+        else {
+            *result = -1;
+        }
+        return;
+    }
+    // clear memory
+    if (! is_devptr( result, queue )) {
+        *result = 0;
+    }
+    else {
+        blas_dev_call(
+            hipMemsetAsync( result, 0, sizeof( *result ) ));
+    }
+    // convert arguments
+    device_blas_int n_ = to_device_blas_int( n );
+    device_blas_int incdx_ = to_device_blas_int( incdx );
+    device_blas_int* result_ = (device_blas_int*) result;
+
+    blas_dev_call(
+        rocblas_idamax(
+            queue.handle(),
+            n_, dx, incdx_,
+            result_));
+
+    // rocblas returns 1-based index
+    if (is_devptr( result, queue )) {
+        shift_vec( 1, result_, -1, queue );
+    }
+    else {
+        *result_ -= 1;
+    }
+}
+
+//------------------------------------------------------------------------------
+void iamax(
+    int64_t n,
+    std::complex<float> const* dx, int64_t incdx,
+    int64_t* result,
+    blas::Queue& queue )
+{
+    // Return -1 for non-positive n or incx. rocBLAS returns an unsigned value.
+    if (n < 1 || incdx < 1) {
+        if (is_devptr( result, queue )) {
+            int64_t tmp = -1;
+            device_memcpy( result, &tmp, 1, queue );
+            queue.sync();
+        }
+        else {
+            *result = -1;
+        }
+        return;
+    }
+    // clear memory
+    if (! is_devptr( result, queue )) {
+        *result = 0;
+    }
+    else {
+        blas_dev_call(
+            hipMemsetAsync( result, 0, sizeof( *result ) ));
+    }
+    // convert arguments
+    device_blas_int n_ = to_device_blas_int( n );
+    device_blas_int incdx_ = to_device_blas_int( incdx );
+    device_blas_int* result_ = (device_blas_int*) result;
+
+    blas_dev_call(
+        rocblas_icamax(
+            queue.handle(),
+            n_, (rocblas_float_complex*) dx, incdx_,
+            result_));
+
+    // rocblas returns 1-based index
+    if (is_devptr( result, queue )) {
+        shift_vec( 1, result_, -1, queue );
+    }
+    else {
+        *result_ -= 1;
+    }
+}
+
+//------------------------------------------------------------------------------
+void iamax(
+    int64_t n,
+    std::complex<double> const* dx, int64_t incdx,
+    int64_t* result,
+    blas::Queue& queue )
+{
+    // Return -1 for non-positive n or incx. rocBLAS returns an unsigned value.
+    if (n < 1 || incdx < 1) {
+        if (is_devptr( result, queue )) {
+            int64_t tmp = -1;
+            device_memcpy( result, &tmp, 1, queue );
+            queue.sync();
+        }
+        else {
+            *result = -1;
+        }
+        return;
+    }
+    // clear memory
+    if (! is_devptr( result, queue )) {
+        *result = 0;
+    }
+    else {
+        blas_dev_call(
+            hipMemsetAsync( result, 0, sizeof( *result ) ));
+    }
+    // convert arguments
+    device_blas_int n_ = to_device_blas_int( n );
+    device_blas_int incdx_ = to_device_blas_int( incdx );
+    device_blas_int* result_ = (device_blas_int*) result;
+
+    blas_dev_call(
+        rocblas_izamax(
+            queue.handle(),
+            n_, (rocblas_double_complex*) dx, incdx_,
+            result_));
+
+    // rocblas returns 1-based index
+    if (is_devptr( result, queue )) {
+        shift_vec( 1, result_, -1, queue );
+    }
+    else {
+        *result_ -= 1;
+    }
+}
+
 // -----------------------------------------------------------------------------
 // nrm2
 //------------------------------------------------------------------------------

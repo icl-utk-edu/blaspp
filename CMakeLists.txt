@@ -5,13 +5,14 @@
 #
 # CMake script for BLAS++ library.
 
-cmake_minimum_required( VERSION 3.17 )
+cmake_minimum_required( VERSION 3.18 )
 # 3.1  target_compile_features
 # 3.8  target_compile_features( cxx_std_17 )
 # 3.14 install( LIBRARY DESTINATION lib ) default
 # 3.15 $<$COMPILE_LANG_AND_ID  # optional
 # 3.15 message DEBUG, string REPEAT
 # 3.17 find_package( CUDAToolkit )
+# 3.21 enable_language( HIP ) support
 
 project(
     blaspp
@@ -159,6 +160,83 @@ soversion              = ${soversion}
 " )
 
 #-------------------------------------------------------------------------------
+# Load the CUDA language and packages.
+message( "" )
+set( blaspp_use_cuda false )  # output in blasppConfig.cmake.in
+if (gpu_backend MATCHES "^(auto|cuda)$")
+    message( STATUS "${bold}Looking for CUDA${not_bold} (gpu_backend = ${gpu_backend})" )
+    if (gpu_backend STREQUAL "cuda")
+        find_package( CUDAToolkit REQUIRED )
+    else()
+        find_package( CUDAToolkit QUIET )
+    endif()
+    if (CUDAToolkit_FOUND)
+        set( gpu_backend "cuda" )
+        set( blaspp_defs_cuda_ "-DBLAS_HAVE_CUBLAS" )
+        set( blaspp_use_cuda true )
+
+        # Set CUDA architecture _before_ enable_language, otherwise we get some
+        # default CMake value seemingly unrelated to the native GPU, e.g., 52.
+        #
+        # See nvcc --help, in section --gpu-architecture
+        # 30  Kepler
+        # 50  Maxwell
+        # 60  Pascal
+        # 70  Volta
+        # 75  Turing
+        # 80  Ampere
+        # 90  Hopper
+        # 100 Blackwell ?
+        #
+        if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.24)
+            set( arch "native" )
+        else()
+            set( arch "70" )  # Volta
+        endif()
+        set( CMAKE_CUDA_ARCHITECTURES "${arch}" CACHE STRING
+            "CUDA architectures, as semi-colon separated list of (mostly) 2-3 digit numbers, e.g., 60;70;80 for Pascal, Volta, Ampere" )
+        set_property( CACHE CMAKE_CUDA_ARCHITECTURES PROPERTY STRINGS
+                    native all all-major 30 50 60 70 75 80 90 )
+        enable_language(CUDA)
+    else()
+        message( STATUS "${red}No CUDA support: CUDA not found${plain}" )
+    endif()
+else()
+    message( STATUS "${red}No CUDA support: gpu_backend = ${gpu_backend}${plain}" )
+endif()
+
+#-------------------------------------------------------------------------------
+# Load HIP language and packages.
+message( "" )
+set( blaspp_use_hip false )  # output in blasppConfig.cmake.in
+if (NOT CUDAToolkit_FOUND
+    AND gpu_backend MATCHES "^(auto|hip)$")
+
+    message( STATUS "${bold}Looking for HIP/ROCm${not_bold} (gpu_backend = ${gpu_backend})" )
+    if (gpu_backend STREQUAL "hip")
+        find_package( hip REQUIRED )
+        find_package( rocblas REQUIRED )
+    else()
+        find_package( rocblas QUIET )
+    endif()
+    if (rocblas_FOUND)
+        set( gpu_backend "hip" )
+        set( blaspp_defs_hip_ "-DBLAS_HAVE_ROCBLAS" )
+        set( blaspp_use_hip true )
+
+        # For ROCm >= 3.5, wipe hip-clang specific interface options which are propagated
+        set_target_properties( hip::device PROPERTIES INTERFACE_COMPILE_OPTIONS "-fPIC" )
+        set_target_properties( hip::device PROPERTIES INTERFACE_LINK_LIBRARIES "hip::host" )
+
+        enable_language( HIP )
+    else()
+        message( STATUS "${red}No HIP/ROCm support: ROCm not found${plain}" )
+    endif()
+else()
+    message( STATUS "${red}No HIP/ROCm support: gpu_backend = ${gpu_backend}${plain}" )
+endif()
+
+#-------------------------------------------------------------------------------
 # Enforce out-of-source build
 string( TOLOWER "${CMAKE_CURRENT_SOURCE_DIR}" source_dir )
 string( TOLOWER "${CMAKE_CURRENT_BINARY_DIR}" binary_dir )
@@ -234,6 +312,7 @@ add_library(
     src/device_hemm.cc
     src/device_her2k.cc
     src/device_herk.cc
+    src/device_iamax.cc
     src/device_queue.cc
     src/device_symm.cc
     src/device_syr2k.cc
@@ -253,59 +332,27 @@ add_library(
 )
 
 #-------------------------------------------------------------------------------
-# CUDA support.
-message( "" )
-set( blaspp_use_cuda false )  # output in blasppConfig.cmake.in
-if (gpu_backend MATCHES "^(auto|cuda)$")
-    message( STATUS "${bold}Looking for CUDA${not_bold} (gpu_backend = ${gpu_backend})" )
-    if (gpu_backend STREQUAL "cuda")
-        find_package( CUDAToolkit REQUIRED )
-    else()
-        find_package( CUDAToolkit QUIET )
-    endif()
-    if (CUDAToolkit_FOUND)
-        set( gpu_backend "cuda" )
-        set( blaspp_defs_cuda_ "-DBLAS_HAVE_CUBLAS" )
-        set( blaspp_use_cuda true )
-
-        # Some platforms need these to be public libraries.
-        target_link_libraries(
-            blaspp PUBLIC CUDA::cudart CUDA::cublas )
-        message( STATUS "${blue}Building CUDA support${plain}" )
-    else()
-        message( STATUS "${red}No CUDA support: CUDA not found${plain}" )
-    endif()
-else()
-    message( STATUS "${red}No CUDA support: gpu_backend = ${gpu_backend}${plain}" )
-endif()
-
-#-------------------------------------------------------------------------------
-# HIP/ROCm support.
-message( "" )
-set( blaspp_use_hip false )  # output in blasppConfig.cmake.in
-if (NOT CUDAToolkit_FOUND
-    AND gpu_backend MATCHES "^(auto|hip)$")
-
-    message( STATUS "${bold}Looking for HIP/ROCm${not_bold} (gpu_backend = ${gpu_backend})" )
-    if (gpu_backend STREQUAL "hip")
-        find_package( rocblas REQUIRED )
-    else()
-        find_package( rocblas QUIET )
-    endif()
-    if (rocblas_FOUND)
-        set( gpu_backend "hip" )
-        set( blaspp_defs_hip_ "-DBLAS_HAVE_ROCBLAS" )
-        set( blaspp_use_hip true )
-
-        # Some platforms need these to be public libraries.
-        target_link_libraries(
-            blaspp PUBLIC roc::rocblas )
-        message( STATUS "${blue}Building HIP/ROCm support${plain}" )
-    else()
-        message( STATUS "${red}No HIP/ROCm support: ROCm not found${plain}" )
-    endif()
-else()
-    message( STATUS "${red}No HIP/ROCm support: gpu_backend = ${gpu_backend}${plain}" )
+# Create CUDA/HIP targets.
+if (CUDAToolkit_FOUND)
+    target_sources(
+        blaspp
+        PRIVATE
+        src/cuda/device_shift_vec.cu
+    )
+    # Some platforms need these to be public libraries.
+    target_link_libraries(
+        blaspp PUBLIC CUDA::cudart CUDA::cublas )
+    message( STATUS "${blue}Building CUDA support${plain}" )
+elseif (rocblas_FOUND)
+    target_sources(
+        blaspp
+        PRIVATE
+        src/hip/device_shift_vec.hip
+    )
+    # Some platforms need these to be public libraries.
+    target_link_libraries(
+        blaspp PUBLIC roc::rocblas )
+    message( STATUS "${blue}Building HIP/ROCm support${plain}" )
 endif()
 
 #-------------------------------------------------------------------------------
