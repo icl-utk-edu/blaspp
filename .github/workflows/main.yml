@@ -44,7 +44,7 @@ jobs:
 
             - maker:    make
               device:   gpu_amd
-              blas:     openblas    # todo: aocl/blis
+              blas:     blis
 
             - maker:    cmake
               device:   gpu_amd

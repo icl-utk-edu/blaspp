@@ -23,6 +23,7 @@ jobs:
         blas:   [mkl]
 
         include:
+            #--------------------
             # Add `blas_int` to existing configurations.
             # Most other configurations will choose int32.
             - maker:    make
@@ -33,6 +34,7 @@ jobs:
               device:   gpu_amd
               blas_int: int64
 
+            #--------------------
             # Add new configurations by changing `blas`.
             # Test only a quick sanity and smoke check, not full testing.
 
@@ -41,7 +43,14 @@ jobs:
               check:  sanity
               blas:   openblas
 
-            # Ignore `blas` and instead use CMake's `BLA_VENDOR`.
+            # For both make and cmake
+            - device: cpu
+              check:  sanity
+              blas:   blis
+
+            #--------------------
+            # Add new configurations that ignore `blas` and instead use
+            # CMake's `BLA_VENDOR`.
             # https://cmake.org/cmake/help/latest/module/FindBLAS.html
             - maker:  cmake
               device: cpu
@@ -61,98 +70,36 @@ jobs:
               blas:
               bla_vendor: OpenBLAS
 
-            # These ignore `blas` and instead set `BLAS_LIBRARIES`.
-            - maker:  make
+            # BLIS also available with bla_vendor = AOCL_mt, FLAME
+            - maker:  cmake
               device: cpu
+              check:  sanity
+              blas:
+              bla_vendor: AOCL
+
+            #--------------------
+            # Add new configurations that ignore `blas` and instead set
+            # `BLAS_LIBRARIES`.
+            # For both make and cmake.
+            - device: cpu
               check:  sanity
               blas:
               blas_libraries: -lmkl_gf_lp64 -lmkl_gnu_thread -lmkl_core
 
-            - maker:  make
-              device: cpu
+            - device: cpu
               check:  sanity
               blas:
               blas_libraries: -lmkl_gf_ilp64 -lmkl_gnu_thread -lmkl_core
 
-            - maker:  make
-              device: cpu
+            - device: cpu
               blas:
               blas_libraries: -lopenblas
               check:  sanity
 
-            - maker:  cmake
-              device: cpu
+            - device: cpu
               check:  sanity
               blas:
-              blas_libraries: -lmkl_gf_lp64 -lmkl_gnu_thread -lmkl_core
-
-            - maker:  cmake
-              device: cpu
-              check:  sanity
-              blas:
-              blas_libraries: -lmkl_gf_ilp64 -lmkl_gnu_thread -lmkl_core
-
-            - maker:  cmake
-              device: cpu
-              check:  sanity
-              blas:
-              blas_libraries: -lopenblas
-
-            # BLIS doesn't currently run on all ICL machines, because the
-            # Spack package doesn't honor the requested architecture.
-            # https://github.com/spack/spack/issues/49376
-            #
-            #- maker:  make
-            #  device: cpu
-            #  check:  sanity
-            #  blas:   blis
-            #
-            #- maker:  cmake
-            #  device: cpu
-            #  check:  sanity
-            #  blas:   blis
-            #
-            #- maker:  cmake
-            #  device: cpu
-            #  check:  sanity
-            #  blas:
-            #  bla_vendor: AOCL
-            #
-            #- maker:  cmake
-            #  device: cpu
-            #  check:  sanity
-            #  blas:
-            #  bla_vendor: AOCL_mt
-            #
-            #- maker:  cmake
-            #  device: cpu
-            #  check:  sanity
-            #  blas:
-            #  bla_vendor: FLAME
-            #
-            #- maker:  make
-            #  device: cpu
-            #  check:  sanity
-            #  blas:
-            #  blas_libraries: -lflame -lblis-mt
-            #
-            #- maker:  cmake
-            #  device: cpu
-            #  check:  sanity
-            #  blas:
-            #  blas_libraries: -lflame -lblis-mt
-            #
-            #- maker:  make
-            #  device: cpu
-            #  check:  sanity
-            #  blas:
-            #  blas_libraries: -lflame -lblis
-            #
-            #- maker:  cmake
-            #  device: cpu
-            #  check:  sanity
-            #  blas:
-            #  blas_libraries: -lflame -lblis
+              blas_libraries: -lflame -lblis
 
       fail-fast: false
     runs-on: ${{ matrix.device }}
