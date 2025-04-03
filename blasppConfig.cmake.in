@@ -4,6 +4,7 @@ set( blaspp_use_openmp "@blaspp_use_openmp@" )
 set( blaspp_use_cuda   "@blaspp_use_cuda@" )
 set( blaspp_use_hip    "@blaspp_use_hip@" )
 set( blaspp_use_sycl   "@blaspp_use_sycl@" )
+set( blaspp_int        "@blaspp_int@" )
 
 include( CMakeFindDependencyMacro )
 if (blaspp_use_openmp)
