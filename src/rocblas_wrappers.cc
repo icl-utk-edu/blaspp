@@ -247,6 +247,18 @@ void iamax(
     int64_t* result,
     blas::Queue& queue )
 {
+    // Return -1 for non-positive n or incx. rocBLAS returns an unsigned value.
+    if (n < 1 || incdx < 1) {
+        if (is_devptr( result, queue )) {
+            int64_t tmp = -1;
+            device_memcpy( result, &tmp, 1, queue );
+            queue.sync();
+        }
+        else {
+            *result = -1;
+        }
+        return;
+    }
     // clear memory
     if (! is_devptr( result, queue )) {
         *result = 0;
@@ -282,6 +294,18 @@ void iamax(
     int64_t* result,
     blas::Queue& queue )
 {
+    // Return -1 for non-positive n or incx. rocBLAS returns an unsigned value.
+    if (n < 1 || incdx < 1) {
+        if (is_devptr( result, queue )) {
+            int64_t tmp = -1;
+            device_memcpy( result, &tmp, 1, queue );
+            queue.sync();
+        }
+        else {
+            *result = -1;
+        }
+        return;
+    }
     // clear memory
     if (! is_devptr( result, queue )) {
         *result = 0;
@@ -317,6 +341,18 @@ void iamax(
     int64_t* result,
     blas::Queue& queue )
 {
+    // Return -1 for non-positive n or incx. rocBLAS returns an unsigned value.
+    if (n < 1 || incdx < 1) {
+        if (is_devptr( result, queue )) {
+            int64_t tmp = -1;
+            device_memcpy( result, &tmp, 1, queue );
+            queue.sync();
+        }
+        else {
+            *result = -1;
+        }
+        return;
+    }
     // clear memory
     if (! is_devptr( result, queue )) {
         *result = 0;
@@ -352,6 +388,18 @@ void iamax(
     int64_t* result,
     blas::Queue& queue )
 {
+    // Return -1 for non-positive n or incx. rocBLAS returns an unsigned value.
+    if (n < 1 || incdx < 1) {
+        if (is_devptr( result, queue )) {
+            int64_t tmp = -1;
+            device_memcpy( result, &tmp, 1, queue );
+            queue.sync();
+        }
+        else {
+            *result = -1;
+        }
+        return;
+    }
     // clear memory
     if (! is_devptr( result, queue )) {
         *result = 0;
