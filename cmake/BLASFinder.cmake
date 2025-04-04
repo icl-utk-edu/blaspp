@@ -26,24 +26,12 @@ include( "cmake/util.cmake" )
 set( run_ true )
 if (BLAS_LIBRARIES
     AND NOT "${blas_libraries_cached}" STREQUAL "${BLAS_LIBRARIES}")
-    # Ignore blas, etc. if BLAS_LIBRARIES changes.
-    # Set to empty, rather than unset, so when cmake is invoked again
-    # they don't force a search.
-    # @todo Why are these INTERNAL (which implies FORCE) instead of just FORCE?
-    message( DEBUG "clear blas, blas_fortran, blas_int" )
-    set( blas          "" CACHE INTERNAL "" )
-    set( blas_fortran  "" CACHE INTERNAL "" )
-    # Cross compiling requires user to set blas_int.
-    # Otherwise, for a user-provided BLAS_LIBRARIES, it is safer to
-    # ignore blas_int and test both int32 and int64. With the current test,
-    # an int64 library will fail with blas_int=int32 and pass with blas_int=int64,
-    # while an int32 library will pass with both blas_int=int32 and
-    # (erroneously) blas_int=int64.
-    if (NOT CMAKE_CROSSCOMPILING AND NOT "${blas_int}" STREQUAL "auto")
-        message( STATUS "${red}Ignoring blas_int=${blas_int};"
-                 " setting blas_int=auto.${plain}" )
-        set( blas_int "auto" CACHE INTERNAL "" )
-    endif()
+    # Ignore blas if BLAS_LIBRARIES changes.
+    # Other settings (blas_fortran, blas_int, blas_threaded) are unused,
+    # except if cross compiling, then blas_int is used.
+    message( DEBUG "clear blas" )
+    set( blas "" CACHE STRING "Ignored due to BLAS_LIBRARIES" FORCE )
+
 elseif (NOT (    "${blas_cached}"          STREQUAL "${blas}"
              AND "${blas_fortran_cached}"  STREQUAL "${blas_fortran}"
              AND "${blas_int_cached}"      STREQUAL "${blas_int}"
@@ -117,12 +105,6 @@ else()
 endif()
 message( DEBUG "fortran_mangling_list = ${fortran_mangling_list}" )
 
-#---------------------------------------- integer sizes to test
-set( int_size_list
-    " "             # int (LP64)
-    "-DBLAS_ILP64"  # int64_t (ILP64)
-)
-
 #-------------------------------------------------------------------------------
 # Parse options: BLAS_LIBRARIES, blas, blas_int, blas_threaded, blas_fortran.
 
@@ -181,10 +163,30 @@ if (NOT (test_int OR test_int64))
              " or test_int64=${test_int64} to be true." )
 endif()
 
-if (CMAKE_CROSSCOMPILING AND test_int AND test_int64)
-    message( FATAL_ERROR " ${red}When cross-compiling, one must define either\n"
-             " `blas_int=int32` (usual convention) xor\n"
-             " `blas_int=int64` (ilp64 convention).${plain}" )
+#---------------------------------------- integer sizes to test
+# blas_int, above, filters which libraries to test, e.g., mkl_lp64 or mkl_ilp64.
+# After filtering, regardless of blas_int, we usually test all libraries
+# with int32, and if that fails, with int64. With the current test,
+# an int64 library will fail with blas_int=int32 and pass with blas_int=int64,
+# an int32 library will pass with blas_int=int32 and pass (erroneously)
+# with blas_int=int64. However, for cross compiling, we must rely on the
+# user setting blas_int correctly.
+
+set( int_size_list
+    " "             # int32 (LP64)
+    "-DBLAS_ILP64"  # int64 (ILP64)
+)
+
+if (CMAKE_CROSSCOMPILING)
+    if (test_int AND test_int64)
+        message( FATAL_ERROR " ${red}When cross-compiling, one must define either\n"
+                 " `blas_int=int32` (usual convention) xor\n"
+                 " `blas_int=int64` (ilp64 convention).${plain}" )
+    elseif (test_int)
+        list( POP_BACK  int_size_list tmp )  # remove int64 entry
+    elseif (test_int64)
+        list( POP_FRONT int_size_list tmp )  # remove int32 entry
+    endif()
 endif()
 
 message( DEBUG "
