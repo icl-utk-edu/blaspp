@@ -21,21 +21,16 @@ message( DEBUG "" )
 
 include( "cmake/util.cmake" )
 
-message( STATUS "${bold}Looking for BLAS libraries and options${not_bold} (blas = ${blas})" )
-
 #-----------------------------------
 # Check if this file has already been run with these settings (see bottom).
 set( run_ true )
 if (BLAS_LIBRARIES
     AND NOT "${blas_libraries_cached}" STREQUAL "${BLAS_LIBRARIES}")
-    # Ignore blas, etc. if BLAS_LIBRARIES changes.
-    # Set to empty, rather than unset, so when cmake is invoked again
-    # they don't force a search.
-    message( DEBUG "clear blas, blas_fortran, blas_int, blas_threaded" )
-    set( blas          "" CACHE INTERNAL "" )
-    set( blas_fortran  "" CACHE INTERNAL "" )
-    set( blas_int      "" CACHE INTERNAL "" )
-    set( blas_threaded "" CACHE INTERNAL "" )
+    # Ignore blas if BLAS_LIBRARIES changes.
+    # Other settings (blas_fortran, blas_int, blas_threaded) are unused,
+    # except if cross compiling, then blas_int is used.
+    message( DEBUG "clear blas" )
+    set( blas "" CACHE FORCE "Ignored due to BLAS_LIBRARIES" )
 elseif (NOT (    "${blas_cached}"          STREQUAL "${blas}"
              AND "${blas_fortran_cached}"  STREQUAL "${blas_fortran}"
              AND "${blas_int_cached}"      STREQUAL "${blas_int}"
@@ -107,12 +102,7 @@ else()
         "-DBLAS_FORTRAN_UPPER"
     )
 endif()
-
-#---------------------------------------- integer sizes to test
-set( int_size_list
-    " "             # int (LP64)
-    "-DBLAS_ILP64"  # int64_t (ILP64)
-)
+message( DEBUG "fortran_mangling_list = ${fortran_mangling_list}" )
 
 #-------------------------------------------------------------------------------
 # Parse options: BLAS_LIBRARIES, blas, blas_int, blas_threaded, blas_fortran.
@@ -166,18 +156,44 @@ set( regex_int32 "(^|[^a-zA-Z0-9_])(auto|lp64|int|int32|int32_t)($|[^a-zA-Z0-9_]
 set( regex_int64 "(^|[^a-zA-Z0-9_])(auto|ilp64|int64|int64_t)($|[^a-zA-Z0-9_])" )
 match( "${regex_int32}" "${blas_int_}" test_int   )
 match( "${regex_int64}" "${blas_int_}" test_int64 )
+if (NOT (test_int OR test_int64))
+    message( FATAL_ERROR,
+             "Expected at least one of test_int=${test_int}"
+             " or test_int64=${test_int64} to be true." )
+endif()
 
-if (CMAKE_CROSSCOMPILING AND test_int AND test_int64)
-    message( FATAL_ERROR " ${red}When cross-compiling, one must define either\n"
-             " `blas_int=int32` (usual convention) or\n"
-             " `blas_int=int64` (ilp64 convention).${plain}" )
+#---------------------------------------- integer sizes to test
+# blas_int, above, filters which libraries to test, e.g., mkl_lp64 or mkl_ilp64.
+# After filtering, regardless of blas_int, we usually test all libraries
+# with int32, and if that fails, with int64. With the current test,
+# an int64 library will fail with blas_int=int32 and pass with blas_int=int64,
+# an int32 library will pass with blas_int=int32 and pass (erroneously)
+# with blas_int=int64. However, for cross compiling, we must rely on the
+# user setting blas_int correctly.
+
+set( int_size_list
+    " "             # int32 (LP64)
+    "-DBLAS_ILP64"  # int64 (ILP64)
+)
+
+if (CMAKE_CROSSCOMPILING)
+    if (test_int AND test_int64)
+        message( FATAL_ERROR " ${red}When cross-compiling, one must define either\n"
+                 " `blas_int=int32` (usual convention) xor\n"
+                 " `blas_int=int64` (ilp64 convention).${plain}" )
+    elseif (test_int)
+        list( POP_BACK  int_size_list tmp )  # remove int64 entry
+    elseif (test_int64)
+        list( POP_FRONT int_size_list tmp )  # remove int32 entry
+    endif()
 endif()
 
 message( DEBUG "
 blas_int            = '${blas_int}'
 blas_int_           = '${blas_int_}'
 test_int            = '${test_int}'
-test_int64          = '${test_int64}'")
+test_int64          = '${test_int64}'
+int_size_list       = '${int_size_list}'")
 
 #---------------------------------------- blas_threaded
 string( TOLOWER "${blas_threaded}" blas_threaded_ )
@@ -191,7 +207,9 @@ match( "${regex_thr}" "${blas_threaded_}" test_threaded )
 match( "${regex_seq}" "${blas_threaded_}" test_sequential )
 match( "openmp_aware" "${blas_threaded_}" test_threaded_omp )
 if (NOT (test_threaded OR test_sequential))
-    message( FATAL_ERROR, "Expected one of test_threaded=${test_threaded} or test_sequential=${test_sequential} to be true." )
+    message( FATAL_ERROR,
+             "Expected at least one of test_threaded=${test_threaded}"
+             " or test_sequential=${test_sequential} to be true." )
 endif()
 
 message( DEBUG "
@@ -375,8 +393,14 @@ endif()
 
 #---------------------------------------- BLIS (also used by AMD AOCL)
 if (test_blis)
-    list( APPEND blas_name_list "BLIS" )
-    list( APPEND blas_libs_list "-lflame -lblis" )
+    if (test_threaded)
+        list( APPEND blas_name_list "BLIS and FLAME, multi-threaded" )
+        list( APPEND blas_libs_list "-lflame -lblis-mt" )
+    endif()
+    if (test_sequential)
+        list( APPEND blas_name_list "BLIS and FLAME" )
+        list( APPEND blas_libs_list "-lflame -lblis" )
+    endif()
     debug_print_list( "blis" )
 endif()
 
@@ -486,6 +510,11 @@ foreach (blas_name IN LISTS blas_name_list)
                 endif()
                 if (int_size MATCHES "[^ ]")  # non-empty
                     list( APPEND blaspp_defs_ "${int_size}" )
+                endif()
+                if (int_size MATCHES "ILP64")
+                    set( blaspp_int "int64" )
+                else()
+                    set( blaspp_int "int32" )
                 endif()
                 break()
             else()
