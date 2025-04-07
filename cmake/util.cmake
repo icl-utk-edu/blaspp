@@ -60,12 +60,15 @@ endfunction()
 
 #-------------------------------------------------------------------------------
 # assert( condition )
-# Aborts if condition is not true.
-function( assert var )
-    if (NOT ${var})
+# Aborts if condition is not true. Condition is evaluated inside an `if`,
+# so it can have boolean operators like EQUAL:
+#     assert( x EQUAL 2 )
+#
+macro( assert )
+    if (NOT (${ARGN}))
         message( FATAL_ERROR "\n${red}Assertion failed: ${var} (value is '${${var}}')${default_color}\n" )
     endif()
-endfunction()
+endmacro()
 
 #-------------------------------------------------------------------------------
 # match( regex str output )

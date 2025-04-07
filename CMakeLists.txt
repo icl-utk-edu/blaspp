@@ -5,7 +5,7 @@
 #
 # CMake script for BLAS++ library.
 
-cmake_minimum_required( VERSION 3.18 )
+cmake_minimum_required( VERSION 3.21 )
 # 3.1  target_compile_features
 # 3.8  target_compile_features( cxx_std_17 )
 # 3.14 install( LIBRARY DESTINATION lib ) default
@@ -536,14 +536,10 @@ endif()
 # BLAS++ doesn't need LAPACKConfig.cmake, which checks version, XBLAS, LAPACKE.
 
 #-------------------------------------------------------------------------------
-# Cache blaspp_defs_ that was built in BLASFinder, BLASConfig, CBLASConfig.
-set( blaspp_defs_ "${blaspp_defs_}"
-     CACHE INTERNAL "Constants defined for BLAS" )
-
-# Concat defines.
+# Cache blaspp_defines that were built in BLASFinder, BLASConfig, etc.
 set( blaspp_defines ${blaspp_defs_} ${blaspp_defs_cuda_}
      ${blaspp_defs_hip_} ${blaspp_defs_sycl_}
-     CACHE INTERNAL "")
+     CACHE INTERNAL "" )
 
 if (true)
     # Extract definitions as #define VAR or #define VAR VALUE.

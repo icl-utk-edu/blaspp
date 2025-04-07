@@ -3,10 +3,6 @@
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
-# Convert to list, as blas_libs is later, to match cached value.
-string( REGEX REPLACE "([^ ])( +|\\\;)" "\\1;"    BLAS_LIBRARIES "${BLAS_LIBRARIES}" )
-string( REGEX REPLACE "-framework;" "-framework " BLAS_LIBRARIES "${BLAS_LIBRARIES}" )
-
 message( DEBUG "BLAS_LIBRARIES '${BLAS_LIBRARIES}'"        )
 message( DEBUG "  cached       '${blas_libraries_cached}'" )
 message( DEBUG "blas           '${blas}'"                  )
@@ -23,30 +19,33 @@ include( "cmake/util.cmake" )
 
 #-----------------------------------
 # Check if this file has already been run with these settings (see bottom).
-set( run_ true )
-if (BLAS_LIBRARIES
-    AND NOT "${blas_libraries_cached}" STREQUAL "${BLAS_LIBRARIES}")
-    # Ignore blas if BLAS_LIBRARIES changes.
-    # Other settings (blas_fortran, blas_int, blas_threaded) are unused,
-    # except if cross compiling, then blas_int is used.
-    message( DEBUG "clear blas" )
-    set( blas "" CACHE STRING "Ignored due to BLAS_LIBRARIES" FORCE )
+if (BLAS_LIBRARIES)
+    # At this point, BLAS_LIBRARIES comes from CMake FindBLAS or
+    # user input (`cmake -DBLAS_LIBRARIES=...`).
+    if (BLAS_LIBRARIES STREQUAL blas_libraries_cached)
+        # Already checked this BLAS_LIBRARIES; load cached results.
+        message( STATUS "Using cached BLAS_LIBRARIES settings" )
+        set( BLAS_FOUND "${blas_found_cached}" )
+        set( run_ false )
+    else()
+        # Need to check BLAS_LIBRARIES.
+        set( run_ true )
+        # Clear blas so test_mkl, etc. later are false.
+        set( blas "" )
+    endif()
 
-elseif (NOT (    "${blas_cached}"          STREQUAL "${blas}"
-             AND "${blas_fortran_cached}"  STREQUAL "${blas_fortran}"
-             AND "${blas_int_cached}"      STREQUAL "${blas_int}"
-             AND "${blas_threaded_cached}" STREQUAL "${blas_threaded}"))
-    # Ignore BLAS_LIBRARIES if blas* changed.
-    message( DEBUG "unset BLAS_LIBRARIES" )
-    set( BLAS_LIBRARIES "" CACHE INTERNAL "" )
-else()
-    message( DEBUG "BLAS search already done for
-    blas           = ${blas}
-    blas_fortran   = ${blas_fortran}
-    blas_int       = ${blas_int}
-    blas_threaded  = ${blas_threaded}
-    BLAS_LIBRARIES = ${BLAS_LIBRARIES}" )
+elseif (    "${blas}"          STREQUAL "${blas_cached}"
+        AND "${blas_fortran}"  STREQUAL "${blas_fortran_cached}"
+        AND "${blas_int}"      STREQUAL "${blas_int_cached}"
+        AND "${blas_threaded}" STREQUAL "${blas_threaded_cached}")
+    # Already checked this blas; load cached results.
+    message( STATUS "Using cached blas settings" )
+    set( BLAS_LIBRARIES "${blas_libraries_cached}" )
+    set( BLAS_FOUND     "${blas_found_cached}" )
     set( run_ false )
+else()
+    # Search blas, blas_int, etc.
+    set( run_ true )
 endif()
 
 #===============================================================================
@@ -108,11 +107,6 @@ message( DEBUG "fortran_mangling_list = ${fortran_mangling_list}" )
 #-------------------------------------------------------------------------------
 # Parse options: BLAS_LIBRARIES, blas, blas_int, blas_threaded, blas_fortran.
 
-#---------------------------------------- BLAS_LIBRARIES
-if (BLAS_LIBRARIES)
-    set( test_blas_libraries true )
-endif()
-
 #---------------------------------------- blas
 string( TOLOWER "${blas}" blas_ )
 
@@ -128,7 +122,6 @@ message( DEBUG "
 BLAS_LIBRARIES      = '${BLAS_LIBRARIES}'
 blas                = '${blas}'
 blas_               = '${blas_}'
-test_blas_libraries = '${test_blas_libraries}'
 test_accelerate     = '${test_accelerate}'
 test_blis           = '${test_blis}'
 test_default        = '${test_default}'
@@ -228,13 +221,13 @@ set( blas_name_list "" )
 set( blas_libs_list "" )
 
 #---------------------------------------- BLAS_LIBRARIES
-if (test_blas_libraries)
-    # Escape ; semi-colons so we can append it as one item to a list.
-    string( REPLACE ";" "\\;" BLAS_LIBRARIES_ESC "${BLAS_LIBRARIES}" )
+if (BLAS_LIBRARIES)
+    # Change ; semi-colons to spaces so we can append it as one item to a list.
+    string( REPLACE ";" " " BLAS_LIBRARIES_ESC "${BLAS_LIBRARIES}" )
     message( DEBUG "BLAS_LIBRARIES ${BLAS_LIBRARIES}" )
     message( DEBUG "   =>          ${BLAS_LIBRARIES_ESC}" )
 
-    list( APPEND blas_name_list "\$BLAS_LIBRARIES" )
+    list( APPEND blas_name_list "BLAS_LIBRARIES" )
     list( APPEND blas_libs_list "${BLAS_LIBRARIES_ESC}" )
     debug_print_list( "BLAS_LIBRARIES" )
 endif()
@@ -422,7 +415,9 @@ endif()
 #-------------------------------------------------------------------------------
 # Check each BLAS library.
 
-unset( BLAS_FOUND CACHE )
+# Reset CMake's FindBLAS status. Consider BLAS found if we can link and
+# run with it below.
+set( BLAS_FOUND false )
 unset( blaspp_defs_ CACHE )
 
 set( i 0 )
@@ -438,11 +433,11 @@ foreach (blas_name IN LISTS blas_name_list)
     message( "   libs:  ${blas_libs}" )
 
     # Strip to deal with default lib being space, " ".
-    # Undo escaping \; semi-colons and split on spaces to make list.
-    # But keep '-framework Accelerate' together as one item.
+    # Split on spaces to make list,
+    # but keep '-framework Accelerate' together as one item.
     message( DEBUG "   blas_libs: '${blas_libs}'" )
     string( STRIP "${blas_libs}" blas_libs )
-    string( REGEX REPLACE "([^ ])( +|\\\;)" "\\1;" blas_libs "${blas_libs}" )
+    string( REGEX REPLACE " +" ";" blas_libs "${blas_libs}" )
     string( REGEX REPLACE "-framework;" "-framework " blas_libs "${blas_libs}" )
     message( DEBUG "   blas_libs: '${blas_libs}' (split)" )
 
@@ -504,8 +499,19 @@ foreach (blas_name IN LISTS blas_name_list)
                 # If it runs and prints ok, we're done, so break all 3 loops.
                 message( "${label} ${blue} yes${plain}" )
 
-                set( BLAS_FOUND true CACHE INTERNAL "" )
-                set( BLAS_LIBRARIES "${blas_libs}" CACHE STRING "" FORCE )
+                set( BLAS_FOUND true )
+                if (BLAS_LIBRARIES)
+                    # BLAS_LIBRARIES from CMake FindBLAS or user input
+                    # shouldn't get changed, except being split into list.
+                    string( REPLACE " " ";" blas_libraries_ "${BLAS_LIBRARIES}" )
+                    if (NOT blas_libraries_ STREQUAL blas_libs)
+                        message( WARNING "Expected BLAS_LIBRARIES = '${BLAS_LIBRARIES}'\n"
+                                         "to match blas_libs      = '${blas_libs}'" )
+                    endif()
+                else()
+                    set( BLAS_LIBRARIES "${blas_libs}" )
+                endif()
+
                 if (mangling MATCHES "[^ ]")  # non-empty
                     list( APPEND blaspp_defs_ "${mangling}" )
                 endif()
@@ -521,29 +527,31 @@ foreach (blas_name IN LISTS blas_name_list)
             else()
                 message( "${label} ${red} no (didn't run: int mismatch, etc.)${plain}" )
             endif()
-        endforeach()
+        endforeach()  # int_size
 
         # Break loops as described above.
         if (NOT link_result OR BLAS_FOUND)
             break()
         endif()
-    endforeach()
+    endforeach()  # mangling
 
     # Break loops as described above.
     if (BLAS_FOUND)
         break()
     endif()
-endforeach()
+endforeach()  # blas_name
+
+# Mark as already run (see top).
+set( blas_libraries_cached "${BLAS_LIBRARIES}" CACHE INTERNAL "" )
+set( blas_found_cached     "${BLAS_FOUND}"     CACHE INTERNAL "" )
+set( blas_cached           "${blas}"           CACHE INTERNAL "" )
+set( blas_fortran_cached   "${blas_fortran}"   CACHE INTERNAL "" )
+set( blas_int_cached       "${blas_int}"       CACHE INTERNAL "" )
+set( blas_threaded_cached  "${blas_threaded}"  CACHE INTERNAL "" )
 
 endif() # run_
 #===============================================================================
 
-# Mark as already run (see top).
-set( blas_libraries_cached ${BLAS_LIBRARIES} CACHE INTERNAL "" )
-set( blas_cached           ${blas}           CACHE INTERNAL "" )
-set( blas_fortran_cached   ${blas_fortran}   CACHE INTERNAL "" )
-set( blas_int_cached       ${blas_int}       CACHE INTERNAL "" )
-set( blas_threaded_cached  ${blas_threaded}  CACHE INTERNAL "" )
 
 #-------------------------------------------------------------------------------
 if (BLAS_FOUND)
