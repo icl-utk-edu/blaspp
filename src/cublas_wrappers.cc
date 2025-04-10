@@ -282,7 +282,7 @@ void iamax(
 {
     #if CUBLAS_VER_MAJOR >= 12
         blas_dev_call(
-            cublasIsamax_64(
+            cublasIdamax_64(
                 queue.handle(),
                 n,
                 dx, incdx,
@@ -326,10 +326,10 @@ void iamax(
 {
     #if CUBLAS_VER_MAJOR >= 12
         blas_dev_call(
-            cublasIsamax_64(
+            cublasIcamax_64(
                 queue.handle(),
                 n,
-                dx, incdx,
+                (const cuComplex*) dx, incdx,
                 result));
     #else
         // clear memory
@@ -369,10 +369,10 @@ void iamax(
 {
     #if CUBLAS_VER_MAJOR >= 12
         blas_dev_call(
-            cublasIsamax_64(
+            cublasIzamax_64(
                 queue.handle(),
                 n,
-                dx, incdx,
+                (const cuDoubleComplex*) dx, incdx,
                 result));
     #else
         // clear memory
