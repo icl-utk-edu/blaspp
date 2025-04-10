@@ -247,18 +247,6 @@ void iamax(
     int64_t* result,
     blas::Queue& queue )
 {
-    // Return -1 for non-positive n or incx. rocBLAS returns an unsigned value.
-    if (n < 1 || incdx < 1) {
-        if (is_devptr( result, queue )) {
-            int64_t tmp = -1;
-            device_memcpy( result, &tmp, 1, queue );
-            queue.sync();
-        }
-        else {
-            *result = -1;
-        }
-        return;
-    }
     // clear memory
     if (! is_devptr( result, queue )) {
         *result = 0;
@@ -279,11 +267,11 @@ void iamax(
             result_));
 
     // rocblas returns 1-based index
-    if (is_devptr( result, queue )) {
-        shift_vec( 1, result_, -1, queue );
+    if (! is_devptr( result, queue )) {
+        *result -= 1;
     }
     else {
-        *result_ -= 1;
+        shift_vec( 1, result, (int64_t) -1, queue );
     }
 }
 
@@ -294,18 +282,6 @@ void iamax(
     int64_t* result,
     blas::Queue& queue )
 {
-    // Return -1 for non-positive n or incx. rocBLAS returns an unsigned value.
-    if (n < 1 || incdx < 1) {
-        if (is_devptr( result, queue )) {
-            int64_t tmp = -1;
-            device_memcpy( result, &tmp, 1, queue );
-            queue.sync();
-        }
-        else {
-            *result = -1;
-        }
-        return;
-    }
     // clear memory
     if (! is_devptr( result, queue )) {
         *result = 0;
@@ -326,11 +302,11 @@ void iamax(
             result_));
 
     // rocblas returns 1-based index
-    if (is_devptr( result, queue )) {
-        shift_vec( 1, result_, -1, queue );
+    if (! is_devptr( result, queue )) {
+        *result -= 1;
     }
     else {
-        *result_ -= 1;
+        shift_vec( 1, result, (int64_t) -1, queue );
     }
 }
 
@@ -341,18 +317,6 @@ void iamax(
     int64_t* result,
     blas::Queue& queue )
 {
-    // Return -1 for non-positive n or incx. rocBLAS returns an unsigned value.
-    if (n < 1 || incdx < 1) {
-        if (is_devptr( result, queue )) {
-            int64_t tmp = -1;
-            device_memcpy( result, &tmp, 1, queue );
-            queue.sync();
-        }
-        else {
-            *result = -1;
-        }
-        return;
-    }
     // clear memory
     if (! is_devptr( result, queue )) {
         *result = 0;
@@ -373,11 +337,11 @@ void iamax(
             result_));
 
     // rocblas returns 1-based index
-    if (is_devptr( result, queue )) {
-        shift_vec( 1, result_, -1, queue );
+    if (! is_devptr( result, queue )) {
+        *result -= 1;
     }
     else {
-        *result_ -= 1;
+        shift_vec( 1, result, (int64_t) -1, queue );
     }
 }
 
@@ -388,18 +352,6 @@ void iamax(
     int64_t* result,
     blas::Queue& queue )
 {
-    // Return -1 for non-positive n or incx. rocBLAS returns an unsigned value.
-    if (n < 1 || incdx < 1) {
-        if (is_devptr( result, queue )) {
-            int64_t tmp = -1;
-            device_memcpy( result, &tmp, 1, queue );
-            queue.sync();
-        }
-        else {
-            *result = -1;
-        }
-        return;
-    }
     // clear memory
     if (! is_devptr( result, queue )) {
         *result = 0;
@@ -420,11 +372,11 @@ void iamax(
             result_));
 
     // rocblas returns 1-based index
-    if (is_devptr( result, queue )) {
-        shift_vec( 1, result_, -1, queue );
+    if (! is_devptr( result, queue )) {
+        *result -= 1;
     }
     else {
-        *result_ -= 1;
+        shift_vec( 1, result, (int64_t) -1, queue );
     }
 }
 

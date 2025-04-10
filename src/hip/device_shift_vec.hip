@@ -53,12 +53,6 @@ void shift_vec(
     int64_t c,
     blas::Queue& queue);
 
-template
-void shift_vec(
-    int64_t n, int* v,
-    int c,
-    blas::Queue& queue);
-
 } // namespace blas
 
 #endif // BLAS_HAVE_ROCBLAS
