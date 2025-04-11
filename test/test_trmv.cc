@@ -15,10 +15,8 @@ template <typename TA, typename TX>
 void test_trmv_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using blas::Uplo;
-    using blas::Op;
-    using blas::Layout;
-    using blas::Diag;
+    using std::abs;
+    using blas::Uplo, blas::Op, blas::Layout, blas::Diag, blas::max;
     using scalar_t = blas::scalar_type< TA, TX >;
     using real_t   = blas::real_type< scalar_t >;
 
@@ -49,9 +47,9 @@ void test_trmv_work( Params& params, bool run )
 
     // ----------
     // setup
-    int64_t lda = roundup( n, align );
+    int64_t lda = max( roundup( n, align ), 1 );
     size_t size_A = size_t(lda)*n;
-    size_t size_x = (n - 1) * std::abs(incx) + 1;
+    size_t size_x = max( (n - 1) * abs( incx ) + 1, 0 );
     TA* A    = new TA[ size_A ];
     TX* x    = new TX[ size_x ];
     TX* xref = new TX[ size_x ];
@@ -85,8 +83,8 @@ void test_trmv_work( Params& params, bool run )
                 llong( n ), llong( incx ), llong( size_x ), Xnorm );
     }
     if (verbose >= 2) {
-        printf( "A = [];\n"    ); print_matrix( n, n, A, lda );
-        printf( "x    = [];\n" ); print_vector( n, x, incx );
+        printf( "A = "    ); print_matrix( n, n, A, lda );
+        printf( "x    = " ); print_vector( n, x, incx );
     }
 
     // run test
@@ -102,7 +100,7 @@ void test_trmv_work( Params& params, bool run )
     params.gbytes() = gbyte / time;
 
     if (verbose >= 2) {
-        printf( "x2   = [];\n" ); print_vector( n, x, incx );
+        printf( "x2   = " ); print_vector( n, x, incx );
     }
 
     if (params.check() == 'y') {
@@ -121,7 +119,7 @@ void test_trmv_work( Params& params, bool run )
         params.ref_gbytes() = gbyte / time;
 
         if (verbose >= 2) {
-            printf( "xref = [];\n" ); print_vector( n, xref, incx );
+            printf( "xref = " ); print_vector( n, xref, incx );
         }
 
         // check error compared to reference

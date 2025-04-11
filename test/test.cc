@@ -105,7 +105,7 @@ std::vector< testsweeper::routines_t > routines = {
     // Level 2 BLAS
     { "gemv",   test_gemv,   Section::blas2   },
     { "ger",    test_ger,    Section::blas2   },
-    { "geru",   test_geru,   Section::blas2   },
+    { "geru",   test_ger,    Section::blas2   },
     { "",       nullptr,     Section::newline },
 
     { "hemv",   test_hemv,   Section::blas2   },

@@ -14,16 +14,13 @@
 template <typename TA, typename TX>
 void test_trsv_work( Params& params, bool run )
 {
-    #define A(i_, j_) (A + (i_) + (j_)*lda)
+    #define A(i_, j_) A[ (i_) + (j_)*lda ]
 
     using namespace testsweeper;
-    using blas::Uplo;
-    using blas::Op;
-    using blas::Layout;
-    using blas::Diag;
+    using blas::Uplo, blas::Op, blas::Layout, blas::Diag, blas::max;
     using scalar_t = blas::scalar_type< TA, TX >;
     using real_t   = blas::real_type< scalar_t >;
-    using std::swap;
+    using std::abs, std::swap;
 
     // get & mark input values
     blas::Layout layout = params.layout();
@@ -51,9 +48,9 @@ void test_trsv_work( Params& params, bool run )
         return;
 
     // setup
-    int64_t lda = roundup( n, align );
+    int64_t lda = max( roundup( n, align ), 1 );
     size_t size_A = size_t(lda)*n;
-    size_t size_x = size_t(n - 1) * std::abs(incx) + 1;
+    size_t size_x = max( (n - 1) * abs( incx ) + 1, 0 );
     TA* A    = new TA[ size_A ];
     TX* x    = new TX[ size_x ];
     TX* xref = new TX[ size_x ];
@@ -68,19 +65,19 @@ void test_trsv_work( Params& params, bool run )
     if (uplo == Uplo::Lower) {
         for (int64_t j = 0; j < n; ++j)
             for (int64_t i = 0; i < j; ++i)  // upper
-                A[ i + j*lda ] = nan("");
+                A( i, j ) = nan("");
     }
     else {
         for (int64_t j = 0; j < n; ++j)
             for (int64_t i = j+1; i < n; ++i)  // lower
-                A[ i + j*lda ] = nan("");
+                A( i, j ) = nan("");
     }
 
     // Factor A into L L^H or U U^H to get a well-conditioned triangular matrix.
     // If diag == Unit, the diagonal is replaced; this is still well-conditioned.
     // First, brute force positive definiteness.
     for (int64_t i = 0; i < n; ++i) {
-        A[ i + i*lda ] += n;
+        A( i, i ) += n;
     }
     int64_t info = 0;
     lapack_potrf( to_c_string( uplo ), n, A, lda, &info );
@@ -96,7 +93,7 @@ void test_trsv_work( Params& params, bool run )
     if (layout == Layout::RowMajor) {
         for (int64_t j = 0; j < n; ++j) {
             for (int64_t i = 0; i < j; ++i) {
-                swap( A[ i + j*lda ], A[ j + i*lda ] );
+                swap( A( i, j ), A( j, i ) );
             }
         }
     }

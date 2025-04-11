@@ -116,8 +116,8 @@ void syr2(
         blas_int ldx_, ldy_;
         if (incx == 1 && incy == 1) {
             trans_ = Op::NoTrans;
-            ldx_ = n_;
-            ldy_ = n_;
+            ldx_ = max( n_, 1 );
+            ldy_ = max( n_, 1 );
         }
         else if (incx >= 1 && incy >= 1) {
             trans_ = Op::Trans;
@@ -136,8 +136,8 @@ void syr2(
                 iy += incy;
             }
             trans_ = Op::NoTrans;
-            ldx_ = n_;
-            ldy_ = n_;
+            ldx_ = max( n_, 1 );
+            ldy_ = max( n_, 1 );
         }
         scalar_t beta = 1;
 

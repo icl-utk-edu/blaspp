@@ -61,7 +61,6 @@ add_executable(
     test_gemm.cc
     test_gemv.cc
     test_ger.cc
-    test_geru.cc
     test_hemm.cc
     test_hemv.cc
     test_her.cc

@@ -201,7 +201,6 @@ void test_swap  ( Params& params, bool run );
 // Level 2 BLAS
 void test_gemv  ( Params& params, bool run );
 void test_ger   ( Params& params, bool run );
-void test_geru  ( Params& params, bool run );
 void test_hemv  ( Params& params, bool run );
 void test_her   ( Params& params, bool run );
 void test_her2  ( Params& params, bool run );
