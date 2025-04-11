@@ -155,7 +155,7 @@ nk       = dim
 
 if (not opts.dim):
     if (opts.quick):
-        n        = ' --dim 100'
+        n        = ' --dim 0,100'
         tall     = ' --dim 100x50'  # 2:1
         wide     = ' --dim 50x100'  # 1:2
         mnk      = ' --dim 25x50x75'
@@ -166,7 +166,7 @@ if (not opts.dim):
         opts.batch = '10'
 
     if (opts.xsmall):
-        n       += ' --dim 10'
+        n       += ' --dim 0,10'
         tall    += ' --dim 20x10'
         wide    += ' --dim 10x20'
         mnk     += ' --dim 10x15x20 --dim 15x10x20' \
@@ -176,7 +176,7 @@ if (not opts.dim):
         nk_wide += ' --dim 1x10x20'
 
     if (opts.small):
-        n       += ' --dim 25:100:25'
+        n       += ' --dim 0:100:25'
         tall    += ' --dim 50:200:50x25:100:25'  # 2:1
         wide    += ' --dim 25:100:25x50:200:50'  # 1:2
         mnk     += ' --dim 25x50x75 --dim 50x25x75' \
@@ -186,7 +186,7 @@ if (not opts.dim):
         nk_wide += ' --dim 1x25:100:25x50:200:50'
 
     if (opts.medium):
-        n       += ' --dim 100:500:100'
+        n       += ' --dim 0:500:100'
         tall    += ' --dim 200:1000:200x100:500:100'  # 2:1
         wide    += ' --dim 100:500:100x200:1000:200'  # 1:2
         mnk     += ' --dim 100x300x600 --dim 300x100x600' \
@@ -196,7 +196,7 @@ if (not opts.dim):
         nk_wide += ' --dim 1x100:500:100x200:1000:200'
 
     if (opts.large):
-        n       += ' --dim 1000:5000:1000'
+        n       += ' --dim 0:5000:1000'
         tall    += ' --dim 2000:10000:2000x1000:5000:1000'  # 2:1
         wide    += ' --dim 1000:5000:1000x2000:10000:2000'  # 1:2
         mnk     += ' --dim 1000x3000x6000 --dim 3000x1000x6000' \

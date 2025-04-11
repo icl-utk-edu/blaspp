@@ -14,6 +14,8 @@ template <typename TX, typename TY>
 void test_copy_device_work( Params& params, bool run )
 {
     using namespace testsweeper;
+    using std::abs;
+    using blas::max;
     using scalar_t = blas::scalar_type< TX, TY >;
     using real_t   = blas::real_type< scalar_t >;
 
@@ -45,10 +47,9 @@ void test_copy_device_work( Params& params, bool run )
     }
 
     // setup
-    size_t size_x = (n - 1) * std::abs(incx) + 1;
-    size_t size_y = (n - 1) * std::abs(incy) + 1;
+    size_t size_x = max( (n - 1) * abs( incx ) + 1, 0 );
+    size_t size_y = max( (n - 1) * abs( incy ) + 1, 0 );
     TX* x    = new TX[ size_x ];
-    TX* xref = new TX[ size_x ];
     TY* y    = new TY[ size_y ];
     TY* yref = new TY[ size_y ];
 
@@ -58,25 +59,24 @@ void test_copy_device_work( Params& params, bool run )
     TY* dy;
 
     // malloc device memory
-    dx = blas::device_malloc<TX>(size_x, queue);
-    dy = blas::device_malloc<TY>(size_y, queue);
+    dx = blas::device_malloc<TX>( size_x, queue );
+    dy = blas::device_malloc<TY>( size_y, queue );
     queue.sync();
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
     lapack_larnv( idist, iseed, size_x, x );
-    cblas_copy( n, x, incx, xref, incx );
+    lapack_larnv( idist, iseed, size_y, y );
+    lapack_larnv( idist, iseed, size_y, yref );
 
-    // todo: should we have different incdx and incdy
-    // todo: setvector assumes one type TX=TY
-    blas::device_copy_vector(n, x, std::abs(incx), dx, std::abs(incx), queue);
-    blas::device_copy_vector(n, y, std::abs(incy), dy, std::abs(incy), queue);
+    blas::device_copy_vector( n, x, abs( incx ), dx, abs( incx ), queue );
+    blas::device_copy_vector( n, y, abs( incy ), dy, abs( incy ), queue );
     queue.sync();
 
     // test error exits
-    assert_throw( blas::copy( -1, dx, incx, dy, incy ), blas::Error );
-    assert_throw( blas::copy(  n, dx,    0, dy, incy ), blas::Error );
-    assert_throw( blas::copy(  n, dx, incx, dy,    0 ), blas::Error );
+    assert_throw( blas::copy( -1, dx, incx, dy, incy, queue ), blas::Error );
+    assert_throw( blas::copy(  n, dx,    0, dy, incy, queue ), blas::Error );
+    assert_throw( blas::copy(  n, dx, incx, dy,    0, queue ), blas::Error );
 
     if (verbose >= 1) {
         printf( "\n"
@@ -103,9 +103,8 @@ void test_copy_device_work( Params& params, bool run )
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
 
-    // todo: should we have different incdx and incdy
-    blas::device_copy_vector(n, dx, std::abs(incx), x, std::abs(incx), queue);
-    blas::device_copy_vector(n, dy, std::abs(incy), y, std::abs(incy), queue);
+    blas::device_copy_vector( n, dx, abs( incx ), x, abs( incx ), queue );
+    blas::device_copy_vector( n, dy, abs( incy ), y, abs( incy ), queue );
     queue.sync();
 
     if (verbose >= 2) {
@@ -117,22 +116,20 @@ void test_copy_device_work( Params& params, bool run )
         // run reference
         testsweeper::flush_cache( params.cache() );
         time = get_wtime();
-        cblas_copy( n, xref, incx, yref, incy );
+        cblas_copy( n, x, incx, yref, incy );
         time = get_wtime() - time;
-        if (verbose >= 2) {
-            printf( "xref = " ); print_vector( n, xref, incx );
-            printf( "yref = " ); print_vector( n, yref, incy );
-        }
 
         params.ref_time()   = time * 1000;  // msec
         params.ref_gflops() = gflop / time;
         params.ref_gbytes() = gbyte / time;
 
-        // error = ||xref - x|| + ||yref - y||
-        cblas_axpy( n, -1.0, x, incx, xref, incx );
+        if (verbose >= 2) {
+            printf( "yref = " ); print_vector( n, yref, incy );
+        }
+
+        // error = ||yref - y||
         cblas_axpy( n, -1.0, y, incy, yref, incy );
-        real_t error = cblas_nrm2( n, xref, std::abs(incx) )
-                     + cblas_nrm2( n, yref, std::abs(incy) );
+        real_t error = cblas_nrm2( n, yref, abs( incy ) );
         params.error() = error;
 
         // copy must be exact!
@@ -141,7 +138,6 @@ void test_copy_device_work( Params& params, bool run )
 
     delete[] x;
     delete[] y;
-    delete[] xref;
     delete[] yref;
 
     blas::device_free( dx, queue );

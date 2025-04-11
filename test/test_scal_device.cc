@@ -15,9 +15,7 @@ void test_scal_device_work( Params& params, bool run )
 {
     using namespace testsweeper;
     using blas::max;
-    using std::abs;
-    using std::real;
-    using std::imag;
+    using std::abs, std::real, std::imag;
     using real_t = blas::real_type< scalar_t >;
 
     // get & mark input values
@@ -48,7 +46,7 @@ void test_scal_device_work( Params& params, bool run )
     }
 
     // setup
-    size_t size_x = (n - 1) * std::abs(incx) + 1;
+    size_t size_x = max( (n - 1) * abs( incx ) + 1, 0 );
     scalar_t* x    = new scalar_t[ size_x ];
     scalar_t* xref = new scalar_t[ size_x ];
 
@@ -56,20 +54,20 @@ void test_scal_device_work( Params& params, bool run )
     blas::Queue queue( device );
     scalar_t* dx;
 
-    dx = blas::device_malloc<scalar_t>(size_x, queue);
+    dx = blas::device_malloc<scalar_t>( size_x, queue );
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
     lapack_larnv( idist, iseed, size_x, x );
     cblas_copy( n, x, incx, xref, incx );
 
-    blas::device_copy_vector(n, x, std::abs(incx), dx, std::abs(incx), queue);
+    blas::device_copy_vector( n, x, abs( incx ), dx, abs( incx ), queue );
     queue.sync();
 
     // test error exits
-    assert_throw( blas::scal( -1, alpha, x, incx, queue ), blas::Error );
-    assert_throw( blas::scal(  n, alpha, x,    0, queue ), blas::Error );
-    assert_throw( blas::scal(  n, alpha, x,   -1, queue ), blas::Error );
+    assert_throw( blas::scal( -1, alpha, dx, incx, queue ), blas::Error );
+    assert_throw( blas::scal(  n, alpha, dx,    0, queue ), blas::Error );
+    assert_throw( blas::scal(  n, alpha, dx,   -1, queue ), blas::Error );
 
     if (verbose >= 1) {
         printf( "\n"
@@ -95,7 +93,7 @@ void test_scal_device_work( Params& params, bool run )
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
 
-    blas::device_copy_vector(n, dx, std::abs(incx), x, std::abs(incx), queue);
+    blas::device_copy_vector( n, dx, abs( incx ), x, abs( incx ), queue );
     queue.sync();
 
     if (verbose >= 2) {

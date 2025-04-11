@@ -14,9 +14,10 @@ template <typename T>
 void test_nrm2_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    typedef T scalar_t;
-    using real_t   = blas::real_type< T >;
     using std::abs;
+    using blas::max;
+    using scalar_t = blas::scalar_type<T>;
+    using real_t   = blas::real_type<scalar_t>;
 
     // get & mark input values
     int64_t n       = params.dim.n();
@@ -39,7 +40,7 @@ void test_nrm2_work( Params& params, bool run )
         return;
 
     // setup
-    size_t size_x = (n - 1) * std::abs(incx) + 1;
+    size_t size_x = max( (n - 1) * abs( incx ) + 1, 0 );
     T* x = new T[ size_x ];
 
     int64_t idist = 1;
@@ -92,7 +93,10 @@ void test_nrm2_work( Params& params, bool run )
         }
 
         // relative forward error
-        real_t error = abs( (ref - result) / (sqrt(n+1) * ref) );
+        real_t error = abs( ref - result );
+        if (ref != 0) {
+            error /= sqrt(n+1) * ref;
+        }
 
         // complex needs extra factor; see Higham, 2002, sec. 3.6.
         if (blas::is_complex_v<scalar_t>) {

@@ -8,7 +8,6 @@
 #include "lapack_wrappers.hh"
 #include "blas/flops.hh"
 #include "print_matrix.hh"
-#include "check_gemm.hh"
 
 // -----------------------------------------------------------------------------
 template <typename T>
@@ -16,6 +15,7 @@ void test_asum_work( Params& params, bool run )
 {
     using namespace testsweeper;
     using std::abs;
+    using blas::max;
     using real_t   = blas::real_type< T >;
 
     // get & mark input values
@@ -39,7 +39,7 @@ void test_asum_work( Params& params, bool run )
         return;
 
     // setup
-    size_t size_x = (n - 1) * std::abs(incx) + 1;
+    size_t size_x = max( (n - 1) * abs( incx ) + 1, 0 );
     T* x = new T[ size_x ];
 
     int64_t idist = 1;
@@ -93,7 +93,10 @@ void test_asum_work( Params& params, bool run )
 
         // relative forward error
         // note: using sqrt(n) here gives failures
-        real_t error = abs( (ref - result) / (n * ref) );
+        real_t error = abs( ref - result );
+        if (ref != 0) {
+            error /= (n * ref);
+        }
 
         // complex needs extra factor; see Higham, 2002, sec. 3.6.
         if (blas::is_complex_v<T>) {

@@ -10,14 +10,13 @@
 #include "print_matrix.hh"
 
 // -----------------------------------------------------------------------------
-template <typename Tx, typename Ty>
+template <typename TX, typename TY>
 void test_axpy_device_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using std::abs;
-    using std::real;
-    using std::imag;
-    using scalar_t = blas::scalar_type< Tx, Ty >;
+    using std::abs, std::real, std::imag;
+    using blas::max;
+    using scalar_t = blas::scalar_type< TX, TY >;
     using real_t   = blas::real_type< scalar_t >;
 
     // get & mark input values
@@ -49,29 +48,30 @@ void test_axpy_device_work( Params& params, bool run )
     }
 
     // setup
-    size_t size_x = (n - 1) * std::abs(incx) + 1;
-    size_t size_y = (n - 1) * std::abs(incy) + 1;
-    Tx* x    = new Tx[ size_x ];
-    Ty* y    = new Ty[ size_y ];
-    Ty* yref = new Ty[ size_y ];
-    Ty* y0   = new Ty[ size_y ];
+    size_t size_x = max( (n - 1) * abs( incx ) + 1, 0 );
+    size_t size_y = max( (n - 1) * abs( incy ) + 1, 0 );
+    TX* x    = new TX[ size_x ];
+    TY* y    = new TY[ size_y ];
+    TY* yref = new TY[ size_y ];
+    TY* y0   = new TY[ size_y ];
 
     // device specifics
     blas::Queue queue( device );
-    Tx* dx;
-    Ty* dy;
+    TX* dx;
+    TY* dy;
 
-    dx = blas::device_malloc<Tx>(size_x, queue);
-    dy = blas::device_malloc<Ty>(size_y, queue);
+    dx = blas::device_malloc<TX>( size_x, queue );
+    dy = blas::device_malloc<TY>( size_y, queue );
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
+    lapack_larnv( idist, iseed, size_x, x );
     lapack_larnv( idist, iseed, size_y, y );
     cblas_copy( n, y, incy, yref, incy );
-    cblas_copy( n, y, incy,   y0, incy );
+    cblas_copy( n, y, incy, y0,   incy );
 
-    blas::device_copy_vector(n, x, std::abs(incx), dx, std::abs(incx), queue);
-    blas::device_copy_vector(n, y, std::abs(incy), dy, std::abs(incy), queue);
+    blas::device_copy_vector( n, x, abs( incx ), dx, abs( incx ), queue );
+    blas::device_copy_vector( n, y, abs( incy ), dy, abs( incy ), queue );
     queue.sync();
 
     // test error exits
@@ -81,12 +81,15 @@ void test_axpy_device_work( Params& params, bool run )
 
     if (verbose >= 1) {
         printf( "\n"
-                "n=%5lld, incx=%5lld, sizex=%10lld, incy=%5lld, sizey=%10lld\n",
-                llong( n ), llong( incx ), llong( size_x ), llong( incy ), llong( size_y ) );
+                "x n=%5lld, inc=%5lld, size=%10lld\n"
+                "y n=%5lld, inc=%5lld, size=%10lld\n",
+                llong( n ), llong( incx ), llong( size_x ),
+                llong( n ), llong( incy ), llong( size_y ) );
     }
     if (verbose >= 2) {
         printf( "alpha = %.4e + %.4ei;\n",
                 real(alpha), imag(alpha) );
+        printf( "x    = " ); print_vector( n, x, incx );
         printf( "y    = " ); print_vector( n, y, incy );
     }
 
@@ -97,13 +100,13 @@ void test_axpy_device_work( Params& params, bool run )
     queue.sync();
     time = get_wtime() - time;
 
-    double gflop = blas::Gflop< Ty >::axpy( n );
-    double gbyte = blas::Gbyte< Ty >::axpy( n );
+    double gflop = blas::Gflop< TY >::axpy( n );
+    double gbyte = blas::Gbyte< TY >::axpy( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
 
-    blas::device_copy_vector(n, dy, std::abs(incy), y, std::abs(incy), queue);
+    blas::device_copy_vector( n, dy, abs( incy ), y, abs( incy ), queue );
     queue.sync();
 
     if (verbose >= 2) {
@@ -126,18 +129,17 @@ void test_axpy_device_work( Params& params, bool run )
         }
 
         // maximum component-wise forward error:
-        // | fl(yi) - yi | / | yi |
+        // | fl(yi) - yi | / (2 |alpha xi| + |y0_i|)
         real_t error = 0;
-        int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
         int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
+        int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
         for (int64_t i = 0; i < n; ++i) {
             y[iy] = abs( y[iy] - yref[iy] )
                   / (2*(abs( alpha * x[ix] ) + abs( y0[iy] )));
+            error = std::max( error, real( y[iy] ) );
             ix += incx;
             iy += incy;
         }
-        params.error() = error;
-
 
         if (verbose >= 2) {
             printf( "err  = " ); print_vector( n, y, incy, "%9.2e" );
@@ -151,7 +153,6 @@ void test_axpy_device_work( Params& params, bool run )
         real_t u = 0.5 * std::numeric_limits< real_t >::epsilon();
         params.error() = error;
         params.okay() = (error < u);
-
     }
 
     delete[] x;

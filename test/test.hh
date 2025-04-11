@@ -188,7 +188,6 @@ void test_asum  ( Params& params, bool run );
 void test_axpy  ( Params& params, bool run );
 void test_copy  ( Params& params, bool run );
 void test_dot   ( Params& params, bool run );
-void test_dotu  ( Params& params, bool run );
 void test_iamax ( Params& params, bool run );
 void test_nrm2  ( Params& params, bool run );
 void test_rot   ( Params& params, bool run );
@@ -240,7 +239,6 @@ void test_batch_trsm  ( Params& params, bool run );
 // Level 1 GPU BLAS
 void test_axpy_device  ( Params& params, bool run );
 void test_dot_device   ( Params& params, bool run );
-void test_dotu_device  ( Params& params, bool run );
 void test_iamax_device ( Params& params, bool run );
 void test_nrm2_device  ( Params& params, bool run );
 void test_scal_device  ( Params& params, bool run );

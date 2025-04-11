@@ -51,7 +51,7 @@ void test_iamax_device_work( Params& params, bool run )
     }
 
     // setup
-    size_t size_x = max( (n - 1) * std::abs(incx) + 1, 0 );
+    size_t size_x = max( (n - 1) * abs( incx ) + 1, 0 );
     T* x = new T[ size_x ];
 
 
