@@ -14,15 +14,16 @@ template <typename TX, typename TY>
 void test_swap_device_work( Params& params, bool run )
 {
     using namespace testsweeper;
+    using blas::max;
     using scalar_t = blas::scalar_type< TX, TY >;
     using real_t   = blas::real_type< scalar_t >;
 
     // get & mark input values
-    int64_t n          = params.dim.n();
-    int64_t incx       = params.incx();
-    int64_t incy       = params.incy();
-    int64_t device     = params.device();
-    int64_t verbose    = params.verbose();
+    int64_t n       = params.dim.n();
+    int64_t incx    = params.incx();
+    int64_t incy    = params.incy();
+    int64_t device  = params.device();
+    int64_t verbose = params.verbose();
 
     // mark non-standard output values
     params.gflops();
@@ -45,8 +46,8 @@ void test_swap_device_work( Params& params, bool run )
     }
 
     // setup
-    size_t size_x = (n - 1) * std::abs(incx) + 1;
-    size_t size_y = (n - 1) * std::abs(incy) + 1;
+    size_t size_x = max( (n - 1) * std::abs(incx) + 1, 0 );
+    size_t size_y = max( (n - 1) * std::abs(incy) + 1, 0 );
     TX* x    = new TX[ size_x ];
     TX* xref = new TX[ size_x ];
     TY* y    = new TY[ size_y ];
@@ -67,9 +68,8 @@ void test_swap_device_work( Params& params, bool run )
     cblas_copy( n, x, incx, xref, incx );
     cblas_copy( n, y, incy, yref, incy );
 
-    // todo: should we have different incdx and incdy
-    blas::device_copy_vector(n, x, std::abs(incx), dx, std::abs(incx), queue);
-    blas::device_copy_vector(n, y, std::abs(incy), dy, std::abs(incy), queue);
+    blas::device_copy_vector( n, x, std::abs(incx), dx, std::abs(incx), queue );
+    blas::device_copy_vector( n, y, std::abs(incy), dy, std::abs(incy), queue );
     queue.sync();
 
     // test error exits
@@ -102,9 +102,8 @@ void test_swap_device_work( Params& params, bool run )
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
 
-    // todo: should we have different incdx and incdy
-    blas::device_copy_vector(n, dx, std::abs(incx), x, std::abs(incx), queue);
-    blas::device_copy_vector(n, dy, std::abs(incy), y, std::abs(incy), queue);
+    blas::device_copy_vector( n, dx, std::abs(incx), x, std::abs(incx), queue );
+    blas::device_copy_vector( n, dy, std::abs(incy), y, std::abs(incy), queue );
     queue.sync();
 
     if (verbose >= 2) {

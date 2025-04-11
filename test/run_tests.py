@@ -222,6 +222,8 @@ if (not opts.dim):
         mnk = mn
 # end
 
+n0 = ' --dim 0' + n
+
 # BLAS and LAPACK
 dtype  = ' --type '   + opts.type   if (opts.type)   else ''
 layout = ' --layout ' + opts.layout if (opts.layout) else ''
@@ -270,19 +272,19 @@ cmds = []
 # Level 1
 if (opts.blas1):
     cmds += [
-    [ 'asum',  dtype      + n + incx_pos ],
-    [ 'axpy',  dtype      + n + incx + incy ],
-    [ 'copy',  dtype      + n + incx + incy ],
-    [ 'dot',   dtype      + n + incx + incy ],
-    [ 'dotu',  dtype      + n + incx + incy ],
-    [ 'iamax', dtype      + n + incx_pos ],
-    [ 'nrm2',  dtype      + n + incx_pos ],
-    [ 'rot',   dtype      + n + incx + incy ],
+    [ 'asum',  dtype      + n0 + incx_pos ],
+    [ 'axpy',  dtype      + n0 + incx + incy ],
+    [ 'copy',  dtype      + n0 + incx + incy ],
+    [ 'dot',   dtype      + n0 + incx + incy ],
+    [ 'dotu',  dtype      + n0 + incx + incy ],
+    [ 'iamax', dtype      + n0 + incx_pos ],
+    [ 'nrm2',  dtype      + n0 + incx_pos ],
+    [ 'rot',   dtype      + n0 + incx + incy ],
     [ 'rotg',  dtype ],
-    [ 'rotm',  dtype_real + n + incx + incy ],
+    [ 'rotm',  dtype_real + n0 + incx + incy ],
     [ 'rotmg', dtype_real ],
-    [ 'scal',  dtype      + n + incx_pos ],
-    [ 'swap',  dtype      + n + incx + incy ],
+    [ 'scal',  dtype      + n0 + incx_pos ],
+    [ 'swap',  dtype      + n0 + incx + incy ],
     ]
 
 if (opts.blas1_device):
