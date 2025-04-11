@@ -57,7 +57,6 @@ add_executable(
     test_batch_trsm.cc
     test_copy.cc
     test_dot.cc
-    test_dotu.cc
     test_error.cc
     test_gemm.cc
     test_gemv.cc
@@ -104,7 +103,6 @@ add_executable(
     test_batch_trsm_device.cc
     test_axpy_device.cc
     test_dot_device.cc
-    test_dotu_device.cc
     test_iamax_device.cc
     test_nrm2_device.cc
     test_scal_device.cc
