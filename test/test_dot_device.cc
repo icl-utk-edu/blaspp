@@ -30,7 +30,7 @@ void test_dot_device_work( Params& params, bool run )
     bool use_dot    = params.routine == "dot";
 
     scalar_t  result_host;
-    scalar_t* result = &result_host;
+    scalar_t* result_ptr = &result_host;
 
     // mark non-standard output values
     params.gflops();
@@ -80,7 +80,7 @@ void test_dot_device_work( Params& params, bool run )
     queue.sync();
 
     if (mode == 'd') {
-        result = blas::device_malloc<scalar_t>( 1, queue );
+        result_ptr = blas::device_malloc<scalar_t>( 1, queue );
         #if defined( BLAS_HAVE_CUBLAS )
             cublasSetPointerMode( queue.handle(), CUBLAS_POINTER_MODE_DEVICE );
         #elif defined( BLAS_HAVE_ROCBLAS )
@@ -90,14 +90,14 @@ void test_dot_device_work( Params& params, bool run )
 
     // test error exits
     if (use_dot) {
-        assert_throw( blas::dot( -1, dx, incx, dy, incy, result, queue ), blas::Error );
-        assert_throw( blas::dot(  n, dx,    0, dy, incy, result, queue ), blas::Error );
-        assert_throw( blas::dot(  n, dx, incx, dy,    0, result, queue ), blas::Error );
+        assert_throw( blas::dot( -1, dx, incx, dy, incy, result_ptr, queue ), blas::Error );
+        assert_throw( blas::dot(  n, dx,    0, dy, incy, result_ptr, queue ), blas::Error );
+        assert_throw( blas::dot(  n, dx, incx, dy,    0, result_ptr, queue ), blas::Error );
     }
     else {
-        assert_throw( blas::dotu( -1, dx, incx, dy, incy, result, queue ), blas::Error );
-        assert_throw( blas::dotu(  n, dx,    0, dy, incy, result, queue ), blas::Error );
-        assert_throw( blas::dotu(  n, dx, incx, dy,    0, result, queue ), blas::Error );
+        assert_throw( blas::dotu( -1, dx, incx, dy, incy, result_ptr, queue ), blas::Error );
+        assert_throw( blas::dotu(  n, dx,    0, dy, incy, result_ptr, queue ), blas::Error );
+        assert_throw( blas::dotu(  n, dx, incx, dy,    0, result_ptr, queue ), blas::Error );
     }
 
     if (verbose >= 1) {
@@ -116,16 +116,16 @@ void test_dot_device_work( Params& params, bool run )
     testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
     if (use_dot) {
-        blas::dot( n, dx, incx, dy, incy, result, queue );
+        blas::dot( n, dx, incx, dy, incy, result_ptr, queue );
     }
     else {
-        blas::dotu( n, dx, incx, dy, incy, result, queue );
+        blas::dotu( n, dx, incx, dy, incy, result_ptr, queue );
     }
     queue.sync();
     time = get_wtime() - time;
 
     if (mode == 'd') {
-        device_memcpy( &result_host, result, 1, queue );
+        device_memcpy( &result_host, result_ptr, 1, queue );
     }
 
     double gflop = blas::Gflop<scalar_t>::dot( n );
@@ -176,7 +176,7 @@ void test_dot_device_work( Params& params, bool run )
     blas::device_free( dx, queue );
     blas::device_free( dy, queue );
     if (mode == 'd')
-        blas::device_free( result, queue );
+        blas::device_free( result_ptr, queue );
 }
 
 // -----------------------------------------------------------------------------

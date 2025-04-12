@@ -27,7 +27,7 @@ void test_nrm2_device_work( Params& params, bool run )
     int64_t verbose = params.verbose();
 
     real_t  result_host;
-    real_t* result = &result_host;
+    real_t* result_ptr = &result_host;
 
     // mark non-standard output values
     params.gflops();
@@ -59,7 +59,7 @@ void test_nrm2_device_work( Params& params, bool run )
 
     dx = blas::device_malloc<T>( size_x, queue );
     if (mode == 'd') {
-        result = blas::device_malloc<real_t>( 1, queue );
+        result_ptr = blas::device_malloc<real_t>( 1, queue );
         #if defined( BLAS_HAVE_CUBLAS )
             cublasSetPointerMode( queue.handle(), CUBLAS_POINTER_MODE_DEVICE );
         #elif defined( BLAS_HAVE_ROCBLAS )
@@ -72,9 +72,9 @@ void test_nrm2_device_work( Params& params, bool run )
     lapack_larnv( idist, iseed, size_x, x );
 
     // test error exits
-    assert_throw( blas::nrm2( -1, dx, incx, result, queue ), blas::Error );
-    assert_throw( blas::nrm2(  n, dx,    0, result, queue ), blas::Error );
-    assert_throw( blas::nrm2(  n, dx,   -1, result, queue ), blas::Error );
+    assert_throw( blas::nrm2( -1, dx, incx, result_ptr, queue ), blas::Error );
+    assert_throw( blas::nrm2(  n, dx,    0, result_ptr, queue ), blas::Error );
+    assert_throw( blas::nrm2(  n, dx,   -1, result_ptr, queue ), blas::Error );
 
     blas::device_copy_vector( n, x, abs( incx ), dx, abs( incx ), queue );
     queue.sync();
@@ -91,12 +91,12 @@ void test_nrm2_device_work( Params& params, bool run )
     // run test
     testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
-    blas::nrm2( n, dx, incx, result, queue );
+    blas::nrm2( n, dx, incx, result_ptr, queue );
     queue.sync();
     time = get_wtime() - time;
 
     if (mode == 'd') {
-        device_memcpy( &result_host, result, 1, queue );
+        device_memcpy( &result_host, result_ptr, 1, queue );
     }
 
     double gflop = blas::Gflop< T >::nrm2( n );
@@ -109,7 +109,7 @@ void test_nrm2_device_work( Params& params, bool run )
     queue.sync();
 
     if (verbose >= 2) {
-        printf( "result = %.4e\n", *result );
+        printf( "result = %.4e\n", result_host );
     }
 
     if (params.check() == 'y') {
@@ -128,7 +128,7 @@ void test_nrm2_device_work( Params& params, bool run )
         }
 
         // relative forward error
-        real_t error = abs( ref - *result );
+        real_t error = abs( ref - result_host );
         if (ref != 0) {
             error /= sqrt(n+1) * ref;
         }
@@ -147,7 +147,7 @@ void test_nrm2_device_work( Params& params, bool run )
 
     blas::device_free( dx, queue );
     if (mode == 'd')
-        blas::device_free( result, queue );
+        blas::device_free( result_ptr, queue );
 }
 
 // -----------------------------------------------------------------------------
