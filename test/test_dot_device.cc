@@ -15,8 +15,8 @@ template <typename TX, typename TY>
 void test_dot_device_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using std::real;
-    using std::imag;
+    using std::real, std::imag;
+    using blas::max;
     using scalar_t = blas::scalar_type< TX, TY >;
     using real_t   = blas::real_type< scalar_t >;
 
@@ -29,7 +29,7 @@ void test_dot_device_work( Params& params, bool run )
     char mode       = params.pointer_mode();
 
     scalar_t  result_host;
-    scalar_t* result = &result_host;
+    scalar_t* result_ptr = &result_host;
 
     // mark non-standard output values
     params.gflops();
@@ -52,8 +52,8 @@ void test_dot_device_work( Params& params, bool run )
     }
 
     // setup
-    size_t size_x = (n - 1) * std::abs(incx) + 1;
-    size_t size_y = (n - 1) * std::abs(incy) + 1;
+    size_t size_x = max( (n - 1) * std::abs(incx) + 1, 0 );
+    size_t size_y = max( (n - 1) * std::abs(incy) + 1, 0 );
     TX* x = new TX[ size_x ];
     TY* y = new TY[ size_y ];
 
@@ -68,29 +68,34 @@ void test_dot_device_work( Params& params, bool run )
 
     // device specifics
     blas::Queue queue( device );
-    TX* dx;
-    TY* dy;
-
-    dx = blas::device_malloc<TX>( size_x, queue );
-    dy = blas::device_malloc<TY>( size_y, queue );
+    TX* dx = blas::device_malloc<TX>( size_x, queue );
+    TY* dy = blas::device_malloc<TY>( size_y, queue );
 
     blas::device_copy_vector( n, x, std::abs(incx), dx, std::abs(incx), queue );
     blas::device_copy_vector( n, y, std::abs(incy), dy, std::abs(incy), queue );
     queue.sync();
 
     if (mode == 'd') {
-        result = blas::device_malloc<scalar_t>( 1, queue );
+        result_ptr = blas::device_malloc<scalar_t>( 1, queue );
         #if defined( BLAS_HAVE_CUBLAS )
-        cublasSetPointerMode( queue.handle(), CUBLAS_POINTER_MODE_DEVICE );
+            cublasSetPointerMode( queue.handle(), CUBLAS_POINTER_MODE_DEVICE );
         #elif defined( BLAS_HAVE_ROCBLAS )
-        rocblas_set_pointer_mode( queue.handle(), rocblas_pointer_mode_device );
+            rocblas_set_pointer_mode( queue.handle(), rocblas_pointer_mode_device );
         #endif
     }
 
     // test error exits
-    assert_throw( blas::dot( -1, x, incx, y, incy, result, queue ), blas::Error );
-    assert_throw( blas::dot(  n, x,    0, y, incy, result, queue ), blas::Error );
-    assert_throw( blas::dot(  n, x, incx, y,    0, result, queue ), blas::Error );
+    bool use_dot = params.routine == "dot";
+    if (use_dot) {
+        assert_throw( blas::dot( -1, dx, incx, dy, incy, result_ptr, queue ), blas::Error );
+        assert_throw( blas::dot(  n, dx,    0, dy, incy, result_ptr, queue ), blas::Error );
+        assert_throw( blas::dot(  n, dx, incx, dy,    0, result_ptr, queue ), blas::Error );
+    }
+    else {
+        assert_throw( blas::dotu( -1, dx, incx, dy, incy, result_ptr, queue ), blas::Error );
+        assert_throw( blas::dotu(  n, dx,    0, dy, incy, result_ptr, queue ), blas::Error );
+        assert_throw( blas::dotu(  n, dx, incx, dy,    0, result_ptr, queue ), blas::Error );
+    }
 
     if (verbose >= 1) {
         printf( "\n"
@@ -107,12 +112,17 @@ void test_dot_device_work( Params& params, bool run )
     // run test
     testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
-    blas::dot( n, dx, incx, dy, incy, result, queue );
+    if (use_dot) {
+        blas::dot( n, dx, incx, dy, incy, result_ptr, queue );
+    }
+    else {
+        blas::dotu( n, dx, incx, dy, incy, result_ptr, queue );
+    }
     queue.sync();
     time = get_wtime() - time;
 
     if (mode == 'd') {
-        device_memcpy( &result_host, result, 1, queue );
+        device_memcpy( &result_host, result_ptr, 1, queue );
     }
 
     double gflop = blas::Gflop<scalar_t>::dot( n );
@@ -129,7 +139,13 @@ void test_dot_device_work( Params& params, bool run )
         // run reference
         testsweeper::flush_cache( params.cache() );
         time = get_wtime();
-        scalar_t ref = cblas_dot( n, x, incx, y, incy );
+        scalar_t ref;
+        if (use_dot) {
+            ref = cblas_dot( n, x, incx, y, incy );
+        }
+        else {
+            ref = cblas_dotu( n, x, incx, y, incy );
+        }
         time = get_wtime() - time;
 
         params.ref_time()   = time * 1000;  // msec
@@ -157,7 +173,7 @@ void test_dot_device_work( Params& params, bool run )
     blas::device_free( dx, queue );
     blas::device_free( dy, queue );
     if (mode == 'd')
-        blas::device_free( result, queue );
+        blas::device_free( result_ptr, queue );
 }
 
 // -----------------------------------------------------------------------------

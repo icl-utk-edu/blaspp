@@ -28,7 +28,7 @@ void test_iamax_device_work( Params& params, bool run )
     int64_t verbose = params.verbose();
 
     int64_t result_host;
-    int64_t* result = &result_host;
+    int64_t* result_ptr = &result_host;
 
     // mark non-standard output values
     params.gflops();
@@ -68,7 +68,7 @@ void test_iamax_device_work( Params& params, bool run )
     queue.sync();
 
     if (mode == 'd') {
-        result = blas::device_malloc< int64_t >( 1, queue );
+        result_ptr = blas::device_malloc< int64_t >( 1, queue );
         #if defined( BLAS_HAVE_CUBLAS )
         cublasSetPointerMode( queue.handle(), CUBLAS_POINTER_MODE_DEVICE );
         #elif defined( BLAS_HAVE_ROCBLAS )
@@ -77,8 +77,8 @@ void test_iamax_device_work( Params& params, bool run )
     }
 
     // test error exits
-    assert_throw( blas::iamax( -1, x, incx, result, queue ), blas::Error );
-    assert_throw( blas::iamax(  n, x,    0, result, queue ), blas::Error );
+    assert_throw( blas::iamax( -1, x, incx, result_ptr, queue ), blas::Error );
+    assert_throw( blas::iamax(  n, x,    0, result_ptr, queue ), blas::Error );
 
     if (verbose >= 1) {
         printf( "\n"
@@ -92,12 +92,12 @@ void test_iamax_device_work( Params& params, bool run )
     // run test
     testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
-    blas::iamax( n, dx, incx, result, queue );
+    blas::iamax( n, dx, incx, result_ptr, queue );
     queue.sync();
     time = get_wtime() - time;
 
     if (mode == 'd') {
-        device_memcpy( &result_host, result, 1, queue );
+        device_memcpy( &result_host, result_ptr, 1, queue );
     }
 
     double gflop = blas::Gflop< T >::iamax( n );
@@ -142,7 +142,7 @@ void test_iamax_device_work( Params& params, bool run )
 
     blas::device_free( dx, queue );
     if (mode == 'd')
-        blas::device_free( result, queue );
+        blas::device_free( result_ptr, queue );
 }
 
 // -----------------------------------------------------------------------------

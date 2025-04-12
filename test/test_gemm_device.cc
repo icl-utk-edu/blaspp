@@ -17,23 +17,22 @@ void test_gemm_device_work( Params& params, bool run )
     using namespace testsweeper;
     using std::real;
     using std::imag;
-    using blas::Op;
-    using blas::Layout;
+    using blas::Op, blas::Layout, blas::max;
     using scalar_t = blas::scalar_type< TA, TB, TC >;
     using real_t   = blas::real_type< scalar_t >;
 
     // get & mark input values
     blas::Layout layout = params.layout();
-    blas::Op transA     = params.transA();
-    blas::Op transB     = params.transB();
-    scalar_t alpha      = params.alpha.get<scalar_t>();
-    scalar_t beta       = params.beta.get<scalar_t>();
-    int64_t m           = params.dim.m();
-    int64_t n           = params.dim.n();
-    int64_t k           = params.dim.k();
-    int64_t device      = params.device();
-    int64_t align       = params.align();
-    int64_t verbose     = params.verbose();
+    blas::Op transA = params.transA();
+    blas::Op transB = params.transB();
+    scalar_t alpha  = params.alpha.get<scalar_t>();
+    scalar_t beta   = params.beta.get<scalar_t>();
+    int64_t m       = params.dim.m();
+    int64_t n       = params.dim.n();
+    int64_t k       = params.dim.k();
+    int64_t device  = params.device();
+    int64_t align   = params.align();
+    int64_t verbose = params.verbose();
 
     // mark non-standard output values
     params.gflops();
@@ -60,9 +59,9 @@ void test_gemm_device_work( Params& params, bool run )
         std::swap( Bm, Bn );
         std::swap( Cm, Cn );
     }
-    int64_t lda = roundup( Am, align );
-    int64_t ldb = roundup( Bm, align );
-    int64_t ldc = roundup( Cm, align );
+    int64_t lda = max( roundup( Am, align ), 1 );
+    int64_t ldb = max( roundup( Bm, align ), 1 );
+    int64_t ldc = max( roundup( Cm, align ), 1 );
     size_t size_A = size_t(lda)*An;
     size_t size_B = size_t(ldb)*Bn;
     size_t size_C = size_t(ldc)*Cn;
@@ -73,13 +72,9 @@ void test_gemm_device_work( Params& params, bool run )
 
     // device specifics
     blas::Queue queue( device );
-    TA* dA;
-    TB* dB;
-    TC* dC;
-
-    dA = blas::device_malloc<TA>( size_A, queue );
-    dB = blas::device_malloc<TB>( size_B, queue );
-    dC = blas::device_malloc<TC>( size_C, queue );
+    TA* dA = blas::device_malloc<TA>( size_A, queue );
+    TB* dB = blas::device_malloc<TB>( size_B, queue );
+    TC* dC = blas::device_malloc<TC>( size_C, queue );
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
@@ -88,9 +83,9 @@ void test_gemm_device_work( Params& params, bool run )
     lapack_larnv( idist, iseed, size_C, C );
     lapack_lacpy( "g", Cm, Cn, C, ldc, Cref, ldc );
 
-    blas::device_copy_matrix(Am, An, A, lda, dA, lda, queue);
-    blas::device_copy_matrix(Bm, Bn, B, ldb, dB, ldb, queue);
-    blas::device_copy_matrix(Cm, Cn, C, ldc, dC, ldc, queue);
+    blas::device_copy_matrix( Am, An, A, lda, dA, lda, queue );
+    blas::device_copy_matrix( Bm, Bn, B, ldb, dB, ldb, queue );
+    blas::device_copy_matrix( Cm, Cn, C, ldc, dC, ldc, queue );
     queue.sync();
 
     // norms for error check
@@ -155,7 +150,7 @@ void test_gemm_device_work( Params& params, bool run )
     double gflop = blas::Gflop< scalar_t >::gemm( m, n, k );
     params.time()   = time;
     params.gflops() = gflop / time;
-    blas::device_copy_matrix(Cm, Cn, dC, ldc, C, ldc, queue);
+    blas::device_copy_matrix( Cm, Cn, dC, ldc, C, ldc, queue );
     queue.sync();
 
     if (verbose >= 2) {
