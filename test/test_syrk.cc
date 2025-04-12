@@ -17,9 +17,7 @@ void test_syrk_work( Params& params, bool run )
     using namespace testsweeper;
     using std::real;
     using std::imag;
-    using blas::Uplo;
-    using blas::Op;
-    using blas::Layout;
+    using blas::Uplo, blas::Op, blas::Layout, blas::max;
     using scalar_t = blas::scalar_type< TA, TC >;
     using real_t   = blas::real_type< scalar_t >;
 
@@ -47,8 +45,8 @@ void test_syrk_work( Params& params, bool run )
     int64_t An = (trans == Op::NoTrans ? k : n);
     if (layout == Layout::RowMajor)
         std::swap( Am, An );
-    int64_t lda = roundup( Am, align );
-    int64_t ldc = roundup(  n, align );
+    int64_t lda = max( roundup( Am, align ), 1 );
+    int64_t ldc = max( roundup(  n, align ), 1 );
     size_t size_A = size_t(lda)*An;
     size_t size_C = size_t(ldc)*n;
     TA* A    = new TA[ size_A ];

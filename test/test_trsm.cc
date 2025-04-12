@@ -15,11 +15,7 @@ template <typename TA, typename TB>
 void test_trsm_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using blas::Uplo;
-    using blas::Side;
-    using blas::Op;
-    using blas::Layout;
-    using blas::Diag;
+    using blas::Uplo, blas::Side, blas::Op, blas::Layout, blas::Diag, blas::max;
     using scalar_t = blas::scalar_type< TA, TB >;
     using real_t   = blas::real_type< scalar_t >;
     using std::swap;
@@ -51,8 +47,8 @@ void test_trsm_work( Params& params, bool run )
     int64_t Bn = n;
     if (layout == Layout::RowMajor)
         swap( Bm, Bn );
-    int64_t lda = roundup( Am, align );
-    int64_t ldb = roundup( Bm, align );
+    int64_t lda = max( roundup( Am, align ), 1 );
+    int64_t ldb = max( roundup( Bm, align ), 1 );
     size_t size_A = size_t(lda)*Am;
     size_t size_B = size_t(ldb)*Bn;
     TA* A    = new TA[ size_A ];
