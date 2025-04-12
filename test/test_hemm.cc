@@ -17,9 +17,7 @@ void test_hemm_work( Params& params, bool run )
     using namespace testsweeper;
     using std::real;
     using std::imag;
-    using blas::Uplo;
-    using blas::Side;
-    using blas::Layout;
+    using blas::Uplo, blas::Side, blas::Layout, blas::max;
     using scalar_t = blas::scalar_type< TA, TB, TC >;
     using real_t   = blas::real_type< scalar_t >;
 
@@ -48,9 +46,9 @@ void test_hemm_work( Params& params, bool run )
     int64_t Cn = n;
     if (layout == Layout::RowMajor)
         std::swap( Cm, Cn );
-    int64_t lda = roundup( An, align );
-    int64_t ldb = roundup( Cm, align );
-    int64_t ldc = roundup( Cm, align );
+    int64_t lda = max( roundup( An, align ), 1 );
+    int64_t ldb = max( roundup( Cm, align ), 1 );
+    int64_t ldc = max( roundup( Cm, align ), 1 );
     size_t size_A = size_t(lda)*An;
     size_t size_B = size_t(ldb)*Cn;
     size_t size_C = size_t(ldc)*Cn;

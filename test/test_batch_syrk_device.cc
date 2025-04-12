@@ -15,8 +15,7 @@ template <typename TA, typename TC>
 void test_batch_syrk_device_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using blas::Op;
-    using blas::Layout;
+    using blas::Op, blas::Layout, blas::max;
     using scalar_t = blas::scalar_type< TA, TC >;
     using real_t   = blas::real_type< scalar_t >;
 
@@ -51,8 +50,8 @@ void test_batch_syrk_device_work( Params& params, bool run )
     int64_t An = (trans_ == Op::NoTrans ? k_ : n_);
     if (layout == Layout::RowMajor)
         std::swap( Am, An );
-    int64_t lda_ = roundup( Am, align );
-    int64_t ldc_ = roundup( n_, align );
+    int64_t lda_ = max( roundup( Am, align ), 1 );
+    int64_t ldc_ = max( roundup( n_, align ), 1 );
     size_t size_A = size_t(lda_)*An;
     size_t size_C = size_t(ldc_)*n_;
     TA* A    = new TA[ batch * size_A ];

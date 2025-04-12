@@ -17,23 +17,21 @@ void test_symm_device_work( Params& params, bool run )
     using namespace testsweeper;
     using std::real;
     using std::imag;
-    using blas::Uplo;
-    using blas::Side;
-    using blas::Layout;
+    using blas::Uplo, blas::Side, blas::Layout, blas::max;
     using scalar_t = blas::scalar_type< TA, TB, TC >;
     using real_t   = blas::real_type< scalar_t >;
 
     // get & mark input values
     blas::Layout layout = params.layout();
-    blas::Side side     = params.side();
-    blas::Uplo uplo     = params.uplo();
-    scalar_t alpha      = params.alpha.get<scalar_t>();
-    scalar_t beta       = params.beta.get<scalar_t>();
-    int64_t m           = params.dim.m();
-    int64_t n           = params.dim.n();
-    int64_t device      = params.device();
-    int64_t align       = params.align();
-    int64_t verbose     = params.verbose();
+    blas::Side side = params.side();
+    blas::Uplo uplo = params.uplo();
+    scalar_t alpha  = params.alpha.get<scalar_t>();
+    scalar_t beta   = params.beta.get<scalar_t>();
+    int64_t m       = params.dim.m();
+    int64_t n       = params.dim.n();
+    int64_t device  = params.device();
+    int64_t align   = params.align();
+    int64_t verbose = params.verbose();
 
     // mark non-standard output values
     params.gflops();
@@ -54,9 +52,9 @@ void test_symm_device_work( Params& params, bool run )
     int64_t Cn = n;
     if (layout == Layout::RowMajor)
         std::swap( Cm, Cn );
-    int64_t lda = roundup( An, align );
-    int64_t ldb = roundup( Cm, align );
-    int64_t ldc = roundup( Cm, align );
+    int64_t lda = max( roundup( An, align ), 1 );
+    int64_t ldb = max( roundup( Cm, align ), 1 );
+    int64_t ldc = max( roundup( Cm, align ), 1 );
     size_t size_A = size_t(lda)*An;
     size_t size_B = size_t(ldb)*Cn;
     size_t size_C = size_t(ldc)*Cn;
@@ -82,9 +80,9 @@ void test_symm_device_work( Params& params, bool run )
     lapack_larnv( idist, iseed, size_C, C );
     lapack_lacpy( "g", Cm, Cn, C, ldc, Cref, ldc );
 
-    blas::device_copy_matrix(An, An, A, lda, dA, lda, queue);
-    blas::device_copy_matrix(Cm, Cn, B, ldb, dB, ldb, queue);
-    blas::device_copy_matrix(Cm, Cn, C, ldc, dC, ldc, queue);
+    blas::device_copy_matrix( An, An, A, lda, dA, lda, queue );
+    blas::device_copy_matrix( Cm, Cn, B, ldb, dB, ldb, queue );
+    blas::device_copy_matrix( Cm, Cn, C, ldc, dC, ldc, queue );
     queue.sync();
 
     // norms for error check
@@ -181,7 +179,6 @@ void test_symm_device_work( Params& params, bool run )
     blas::device_free( dA, queue );
     blas::device_free( dB, queue );
     blas::device_free( dC, queue );
-
 }
 
 // -----------------------------------------------------------------------------

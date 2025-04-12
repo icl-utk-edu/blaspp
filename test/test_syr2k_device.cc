@@ -17,23 +17,21 @@ void test_syr2k_device_work( Params& params, bool run )
     using namespace testsweeper;
     using std::real;
     using std::imag;
-    using blas::Uplo;
-    using blas::Op;
-    using blas::Layout;
+    using blas::Uplo, blas::Op, blas::Layout, blas::max;
     using scalar_t = blas::scalar_type< TA, TC >;
     using real_t   = blas::real_type< scalar_t >;
 
     // get & mark input values
     blas::Layout layout = params.layout();
-    blas::Op trans      = params.trans();
-    blas::Uplo uplo     = params.uplo();
-    scalar_t alpha      = params.alpha.get<scalar_t>();
-    scalar_t beta       = params.beta.get<scalar_t>();
-    int64_t n           = params.dim.n();
-    int64_t k           = params.dim.k();
-    int64_t device      = params.device();
-    int64_t align       = params.align();
-    int64_t verbose     = params.verbose();
+    blas::Op trans  = params.trans();
+    blas::Uplo uplo = params.uplo();
+    scalar_t alpha  = params.alpha.get<scalar_t>();
+    scalar_t beta   = params.beta.get<scalar_t>();
+    int64_t n       = params.dim.n();
+    int64_t k       = params.dim.k();
+    int64_t device  = params.device();
+    int64_t align   = params.align();
+    int64_t verbose = params.verbose();
 
     // mark non-standard output values
     params.gflops();
@@ -53,9 +51,9 @@ void test_syr2k_device_work( Params& params, bool run )
     int64_t An = (trans == Op::NoTrans ? k : n);
     if (layout == Layout::RowMajor)
         std::swap( Am, An );
-    int64_t lda = roundup( Am, align );
-    int64_t ldb = roundup( Am, align );
-    int64_t ldc = roundup(  n, align );
+    int64_t lda = max( roundup( Am, align ), 1 );
+    int64_t ldb = max( roundup( Am, align ), 1 );
+    int64_t ldc = max( roundup(  n, align ), 1 );
     size_t size_A = size_t(lda)*An;
     size_t size_B = size_t(ldb)*An;
     size_t size_C = size_t(ldc)*n;
@@ -81,9 +79,9 @@ void test_syr2k_device_work( Params& params, bool run )
     lapack_larnv( idist, iseed, size_C, C );
     lapack_lacpy( "g", n, n, C, ldc, Cref, ldc );
 
-    blas::device_copy_matrix(Am, An, A, lda, dA, lda, queue);
-    blas::device_copy_matrix(Am, An, B, ldb, dB, ldb, queue);
-    blas::device_copy_matrix(n, n, C, ldc, dC, ldc, queue);
+    blas::device_copy_matrix( Am, An, A, lda, dA, lda, queue );
+    blas::device_copy_matrix( Am, An, B, ldb, dB, ldb, queue );
+    blas::device_copy_matrix( n, n, C, ldc, dC, ldc, queue );
     queue.sync();
 
     // norms for error check
@@ -116,6 +114,11 @@ void test_syr2k_device_work( Params& params, bool run )
     assert_throw( blas::syr2k( Layout::RowMajor, uplo, Op::ConjTrans, n, k, alpha, dA, lda, dB, n-1, beta, dC, ldc, queue ), blas::Error );
 
     assert_throw( blas::syr2k( layout,    uplo,    trans,  n,  k, alpha, dA, lda, dB, ldb, beta, dC, n-1, queue ), blas::Error );
+
+    if (blas::is_complex_v<scalar_t>) {
+        // complex syr2k doesn't allow ConjTrans, only Trans
+        assert_throw( blas::syr2k( layout, uplo, Op::ConjTrans, n, k, alpha, dA, lda, dB, ldb, beta, dC, ldc, queue ), blas::Error );
+    }
 
     if (verbose >= 1) {
         printf( "\n"
@@ -189,7 +192,6 @@ void test_syr2k_device_work( Params& params, bool run )
     blas::device_free( dA, queue );
     blas::device_free( dB, queue );
     blas::device_free( dC, queue );
-
 }
 
 // -----------------------------------------------------------------------------

@@ -16,11 +16,7 @@ void test_device_batch_trsm_work( Params& params, bool run )
 {
     using namespace testsweeper;
     using namespace blas::batch;
-    using blas::Uplo;
-    using blas::Side;
-    using blas::Op;
-    using blas::Layout;
-    using blas::Diag;
+    using blas::Uplo, blas::Side, blas::Op, blas::Layout, blas::Diag, blas::max;
     using scalar_t = blas::scalar_type< TA, TB >;
     using real_t   = blas::real_type< scalar_t >;
     using std::swap;
@@ -59,8 +55,8 @@ void test_device_batch_trsm_work( Params& params, bool run )
     int64_t Bn    = n_;
     if (layout == Layout::RowMajor)
         swap( Bm, Bn );
-    int64_t lda_  = roundup( Am, align );
-    int64_t ldb_  = roundup( Bm, align );
+    int64_t lda_  = max( roundup( Am, align ), 1 );
+    int64_t ldb_  = max( roundup( Bm, align ), 1 );
     size_t size_A = size_t(lda_)*Am;
     size_t size_B = size_t(ldb_)*Bn;
     TA* A         = new TA[ batch * size_A ];

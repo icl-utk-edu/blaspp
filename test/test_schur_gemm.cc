@@ -57,9 +57,7 @@ void test_schur_gemm_work( Params& params, bool run )
 {
     using namespace testsweeper;
     using namespace blas::batch;
-    using blas::Op;
-    using blas::Layout;
-    using blas::Format;
+    using blas::Op, blas::Layout, blas::Format, blas::max;
     using scalar_t = blas::scalar_type< TA, TB, TC >;
     using real_t   = blas::real_type< scalar_t >;
 
@@ -121,9 +119,9 @@ void test_schur_gemm_work( Params& params, bool run )
     int64_t nt = int64_t( n_ / k_ );
     size_t batch = mt*nt;
 
-    int64_t lda_ = roundup( Am, align );
-    int64_t ldb_ = roundup( Bm, align );
-    int64_t ldc_ = roundup( Cm, align );
+    int64_t lda_ = max( roundup( Am, align ), 1 );
+    int64_t ldb_ = max( roundup( Bm, align ), 1 );
+    int64_t ldc_ = max( roundup( Cm, align ), 1 );
     // ld of a tile. For now, there is
     // no padding for tiles.
     int64_t ld_tile = k_;
