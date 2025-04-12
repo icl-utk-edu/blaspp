@@ -202,7 +202,7 @@ if (gpu_backend MATCHES "^(auto|cuda)$")
         message( STATUS "${red}No CUDA support: CUDA not found${plain}" )
     endif()
 else()
-    message( STATUS "${red}No CUDA support: gpu_backend = ${gpu_backend}${plain}" )
+    message( STATUS "${red}Skipping CUDA search: gpu_backend = ${gpu_backend}${plain}" )
 endif()
 
 #-------------------------------------------------------------------------------
@@ -233,7 +233,7 @@ if (NOT CUDAToolkit_FOUND
         message( STATUS "${red}No HIP/ROCm support: ROCm not found${plain}" )
     endif()
 else()
-    message( STATUS "${red}No HIP/ROCm support: gpu_backend = ${gpu_backend}${plain}" )
+    message( STATUS "${red}Skipping HIP/ROCm search: gpu_backend = ${gpu_backend}${plain}" )
 endif()
 
 #-------------------------------------------------------------------------------
@@ -400,7 +400,7 @@ if (gpu_backend MATCHES "^(sycl|auto)$")
         message( STATUS "${red}No oneMKL-SYCL device support: oneMKL or SYCL compiler not found${plain}" )
     endif()
 else()
-    message( STATUS "${red}No oneMKL-SYCL device support: gpu_backend = ${gpu_backend}${plain}" )
+    message( STATUS "${red}Skipping oneMKL-SYCL search: gpu_backend = ${gpu_backend}${plain}" )
 endif()
 
 #-------------------------------------------------------------------------------
