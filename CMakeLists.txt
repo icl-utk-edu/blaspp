@@ -160,6 +160,20 @@ soversion              = ${soversion}
 " )
 
 #-------------------------------------------------------------------------------
+# Enforce out-of-source build
+string( TOLOWER "${CMAKE_CURRENT_SOURCE_DIR}" source_dir )
+string( TOLOWER "${CMAKE_CURRENT_BINARY_DIR}" binary_dir )
+if ("${source_dir}" STREQUAL "${binary_dir}")
+    message( FATAL_ERROR
+    "Compiling BLAS++ with CMake requires an out-of-source build. To proceed:
+    rm -rf CMakeCache.txt CMakeFiles/   # delete files in ${CMAKE_CURRENT_SOURCE_DIR}
+    mkdir build
+    cd build
+    cmake ..
+    make" )
+endif()
+
+#-------------------------------------------------------------------------------
 # Load the CUDA language and packages.
 message( "" )
 set( blaspp_use_cuda false )  # output in blasppConfig.cmake.in
@@ -198,6 +212,7 @@ if (gpu_backend MATCHES "^(auto|cuda)$")
         set_property( CACHE CMAKE_CUDA_ARCHITECTURES PROPERTY STRINGS
                     native all all-major 30 50 60 70 75 80 90 )
         enable_language(CUDA)
+        message( STATUS "${blue}Building CUDA support${plain}" )
     else()
         message( STATUS "${red}No CUDA support: CUDA not found${plain}" )
     endif()
@@ -229,6 +244,7 @@ if (NOT CUDAToolkit_FOUND
         set_target_properties( hip::device PROPERTIES INTERFACE_LINK_LIBRARIES "hip::host" )
 
         enable_language( HIP )
+        message( STATUS "${blue}Building HIP/ROCm support${plain}" )
     else()
         message( STATUS "${red}No HIP/ROCm support: ROCm not found${plain}" )
     endif()
@@ -236,18 +252,50 @@ else()
     message( STATUS "${red}Skipping HIP/ROCm search: gpu_backend = ${gpu_backend}${plain}" )
 endif()
 
+
 #-------------------------------------------------------------------------------
-# Enforce out-of-source build
-string( TOLOWER "${CMAKE_CURRENT_SOURCE_DIR}" source_dir )
-string( TOLOWER "${CMAKE_CURRENT_BINARY_DIR}" binary_dir )
-if ("${source_dir}" STREQUAL "${binary_dir}")
-    message( FATAL_ERROR
-    "Compiling BLAS++ with CMake requires an out-of-source build. To proceed:
-    rm -rf CMakeCache.txt CMakeFiles/   # delete files in ${CMAKE_CURRENT_SOURCE_DIR}
-    mkdir build
-    cd build
-    cmake ..
-    make" )
+# SYCL support.
+message( "" )
+set( blaspp_use_sycl false )  # output in blasppConfig.cmake.in
+# if cuda or hip were found gpu_backend was set appropriately
+if (gpu_backend MATCHES "^(auto|sycl)$")
+
+    message( STATUS "${bold}Looking for oneMKL-SYCL${not_bold} (gpu_backend = ${gpu_backend})" )
+    if (TARGET MKL::MKL_DPCPP) # Search for MKL only if not already been found
+        set( MKL_FOUND true )
+    endif()
+    if (NOT MKL_FOUND) # Search for MKL only if not already been found
+        if (gpu_backend STREQUAL "sycl")
+            find_package( MKL CONFIG REQUIRED QUIET HINTS "$ENV{MKL_ROOT}")
+        else()
+            find_package( MKL CONFIG QUIET HINTS "$ENV{MKL_ROOT}")
+        endif()
+    endif()
+    # message(STATUS "Available targets: ${MKL_IMPORTED_TARGETS}")
+
+    # Check if compiler supports the SYCL flag
+    check_cxx_compiler_flag( "-fsycl" FSYCL_SUPPORT )
+
+    # If oneMKL is found and the compiler supports SYCL then
+    # enable oneMKL-SYCL-device support
+    if (MKL_FOUND AND FSYCL_SUPPORT)
+        set( gpu_backend "sycl" )
+        set( blaspp_defs_sycl_ "-DBLAS_HAVE_SYCL;-DBLAS_FORTRAN_ADD_" )
+        set( blaspp_use_sycl true )
+
+        # Uncomment to use CMake FindBLAS using BLA_VENDOR
+        # if (NOT BLA_VENDOR)
+        #    set( BLA_VENDOR Intel10_64lp )
+        # endif()
+
+        message( STATUS "${blue}Building oneMKL-SYCL device support${plain}" )
+    elseif (gpu_backend STREQUAL "sycl")
+        message( FATAL_ERROR "${red}SYCL compiler not found${plain}" )
+    else()
+        message( STATUS "${red}No oneMKL-SYCL device support: oneMKL or SYCL compiler not found${plain}" )
+    endif()
+else()
+    message( STATUS "${red}Skipping oneMKL-SYCL search: gpu_backend = ${gpu_backend}${plain}" )
 endif()
 
 #-------------------------------------------------------------------------------
@@ -332,7 +380,7 @@ add_library(
 )
 
 #-------------------------------------------------------------------------------
-# Create CUDA/HIP targets.
+# Add CUDA, HIP, or SYCL options.
 if (CUDAToolkit_FOUND)
     target_sources(
         blaspp
@@ -342,7 +390,6 @@ if (CUDAToolkit_FOUND)
     # Some platforms need these to be public libraries.
     target_link_libraries(
         blaspp PUBLIC CUDA::cudart CUDA::cublas )
-    message( STATUS "${blue}Building CUDA support${plain}" )
 elseif (rocblas_FOUND)
     target_sources(
         blaspp
@@ -352,55 +399,10 @@ elseif (rocblas_FOUND)
     # Some platforms need these to be public libraries.
     target_link_libraries(
         blaspp PUBLIC roc::rocblas )
-    message( STATUS "${blue}Building HIP/ROCm support${plain}" )
-endif()
-
-#-------------------------------------------------------------------------------
-# SYCL support.
-message( "" )
-set( blaspp_use_sycl false )  # output in blasppConfig.cmake.in
-# if cuda or hip were found gpu_backend was set appropriately
-if (gpu_backend MATCHES "^(sycl|auto)$")
-
-    message( STATUS "${bold}Looking for oneMKL-SYCL${not_bold} (gpu_backend = ${gpu_backend})" )
-    if (TARGET MKL::MKL_DPCPP) # Search for MKL only if not already been found
-        set( MKL_FOUND true )
-    endif()
-    if (NOT MKL_FOUND) # Search for MKL only if not already been found
-        if (gpu_backend STREQUAL "sycl")
-            find_package( MKL CONFIG REQUIRED QUIET HINTS "$ENV{MKL_ROOT}")
-        else()
-            find_package( MKL CONFIG QUIET HINTS "$ENV{MKL_ROOT}")
-        endif()
-    endif()
-    # message(STATUS "Available targets: ${MKL_IMPORTED_TARGETS}")
-
-    # Check if compiler supports the SYCL flag
-    check_cxx_compiler_flag( "-fsycl" FSYCL_SUPPORT )
-
-    # If oneMKL is found and the compiler supports SYCL then
-    # enable oneMKL-SYCL-device support
-    if (MKL_FOUND AND FSYCL_SUPPORT)
-        set( gpu_backend "sycl" )
-        set( blaspp_defs_sycl_ "-DBLAS_HAVE_SYCL;-DBLAS_FORTRAN_ADD_" )
-        set( blaspp_use_sycl true )
-
-        # Uncomment to use CMake FindBLAS using BLA_VENDOR
-        # if (NOT BLA_VENDOR)
-        #    set( BLA_VENDOR Intel10_64lp )
-        # endif()
-
-        target_compile_options( blaspp PUBLIC -fsycl )
-        target_link_options( blaspp PUBLIC -fsycl )
-        target_link_libraries( blaspp PUBLIC -lmkl_sycl -lsycl -lOpenCL )
-        message( STATUS "${blue}Building oneMKL-SYCL device support${plain}" )
-    elseif (gpu_backend STREQUAL "sycl")
-        message( FATAL_ERROR "${red}SYCL compiler not found${plain}" )
-    else()
-        message( STATUS "${red}No oneMKL-SYCL device support: oneMKL or SYCL compiler not found${plain}" )
-    endif()
-else()
-    message( STATUS "${red}Skipping oneMKL-SYCL search: gpu_backend = ${gpu_backend}${plain}" )
+elseif (blaspp_use_sycl)
+    target_compile_options( blaspp PUBLIC -fsycl )
+    target_link_options( blaspp PUBLIC -fsycl )
+    target_link_libraries( blaspp PUBLIC -lmkl_sycl -lsycl -lOpenCL )
 endif()
 
 #-------------------------------------------------------------------------------
