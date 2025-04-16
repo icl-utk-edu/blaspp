@@ -13,6 +13,31 @@ on:
     - cron: "35 4 7 * *"
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
+#
+#               make        cmake
+# cpu           mkl         mkl
+# nvidia        mkl         mkl-int64
+# amd           mkl-int64   mkl
+# intel         mkl         mkl
+#
+# blas (device = cpu)
+# ------------------------------------
+# openblas      x           x
+# blis          x           x
+#
+# bla_vendor (device = cpu)
+# ------------------------------------
+# Intel10_64lp              x
+# Intel10_64ilp             x
+# OpenBLAS                  x
+# AOCL                      x
+#
+# BLAS_LIBRARIES (device = cpu)
+# ------------------------------------
+# mkl_ilp64     x           x
+# openblas      x           x
+# blis          x           x
+#
 jobs:
   icl_blaspp:
     timeout-minutes: 120
@@ -24,27 +49,39 @@ jobs:
 
         include:
             #--------------------
-            # Add `blas_int` to existing configurations.
+            # Add `blas_int` to 2 existing configurations.
             # Most other configurations will choose int32.
             - maker:    make
-              device:   gpu_nvidia
+              device:   gpu_amd
               blas_int: int64
 
             - maker:    cmake
-              device:   gpu_amd
+              device:   gpu_nvidia
               blas_int: int64
 
             #--------------------
             # Add new configurations by changing `blas`.
             # Test only a quick sanity and smoke check, not full testing.
 
-            # For both make and cmake
-            - device: cpu
+            # OpenBLAS
+            - maker:  make
+              device: cpu
               check:  sanity
               blas:   openblas
 
-            # For both make and cmake
-            - device: cpu
+            - maker:  cmake
+              device: cpu
+              check:  sanity
+              blas:   openblas
+
+            # BLIS
+            - maker:  make
+              device: cpu
+              check:  sanity
+              blas:   blis
+
+            - maker:  cmake
+              device: cpu
               check:  sanity
               blas:   blis
 
@@ -80,30 +117,49 @@ jobs:
             #--------------------
             # Add new configurations that ignore `blas` and instead set
             # `BLAS_LIBRARIES`.
-            # For both make and cmake.
-            - device: cpu
-              check:  sanity
-              blas:
-              blas_libraries: -lmkl_gf_lp64 -lmkl_gnu_thread -lmkl_core
 
-            - device: cpu
+            # MKL ILP64
+            - maker:  make
+              device: cpu
               check:  sanity
               blas:
               blas_libraries: -lmkl_gf_ilp64 -lmkl_gnu_thread -lmkl_core
 
-            - device: cpu
+            - maker:  cmake
+              device: cpu
+              check:  sanity
+              blas:
+              blas_libraries: -lmkl_gf_ilp64 -lmkl_gnu_thread -lmkl_core
+
+            # OpenBLAS
+            - maker:  make
+              device: cpu
               blas:
               blas_libraries: -lopenblas
               check:  sanity
 
-            - device: cpu
+            - maker:  cmake
+              device: cpu
+              blas:
+              blas_libraries: -lopenblas
+              check:  sanity
+
+            # BLIS
+            - maker:  make
+              device: cpu
+              check:  sanity
+              blas:
+              blas_libraries: -lflame -lblis
+
+            - maker:  cmake
+              device: cpu
               check:  sanity
               blas:
               blas_libraries: -lflame -lblis
 
       fail-fast: false
     runs-on: ${{ matrix.device }}
-    name: BLAS++ ${{matrix.maker}} ${{matrix.device}} ${{matrix.blas}}${{matrix.bla_vendor}}${{matrix.blas_libraries}} ${{matrix.blas_int}}
+    name: ${{matrix.maker}} ${{matrix.device}} ${{matrix.blas}}${{matrix.bla_vendor}}${{matrix.blas_libraries}} ${{matrix.blas_int}}
 
     env:
         maker:      ${{matrix.maker}}

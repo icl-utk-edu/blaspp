@@ -63,10 +63,11 @@ elif [ "${maker}" = "cmake" ]; then
         export cmake_bla_vendor="-DBLA_VENDOR=$bla_vendor"
     fi
 
+    # cmake_blas_libraries can have spaces; the rest do not expect spaces.
     cmake -Dcolor=no \
           -DCMAKE_INSTALL_PREFIX=${top}/install \
-          "$cmake_blas" "$cmake_blas_int" "$cmake_blas_threaded" \
-          "$cmake_blas_libraries" "$cmake_bla_vendor" \
+          $cmake_blas $cmake_blas_int $cmake_blas_threaded \
+          "$cmake_blas_libraries" $cmake_bla_vendor \
           -Dgpu_backend=${gpu_backend} .. \
           || exit 12
 fi
