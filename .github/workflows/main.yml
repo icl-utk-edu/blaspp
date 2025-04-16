@@ -13,6 +13,13 @@ on:
   workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
+#
+#               make        cmake
+# cpu           openblas    Intel10_64ilp
+# nvidia        mkl-int64   openblas
+# amd           blis        mkl-int64
+# intel         mkl         mkl
+#
 jobs:
   icl_blaspp:
     timeout-minutes: 120
@@ -26,12 +33,10 @@ jobs:
             - maker:    make
               device:   cpu
               blas:     openblas
-              name:     make cpu openblas
 
             - maker:    cmake
               device:   cpu
-              blas:     mkl
-              name:     cmake cpu openblas
+              bla_vendor: Intel10_64ilp     # MKL int64 using CMake's FindBLAS
 
             - maker:    make
               device:   gpu_nvidia
@@ -57,7 +62,7 @@ jobs:
 
       fail-fast: false
     runs-on: ${{ matrix.device }}
-    name: BLAS++ ${{matrix.maker}} ${{matrix.device}} ${{matrix.blas}} ${{matrix.blas_int}}
+    name: ${{matrix.maker}} ${{matrix.device}} ${{matrix.blas}}${{matrix.bla_vendor}}${{matrix.blas_libraries}} ${{matrix.blas_int}}
 
     # See variants.yml for use of some of these variables.
     env:
