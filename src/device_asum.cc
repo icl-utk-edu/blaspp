@@ -17,7 +17,7 @@ namespace impl {
 //------------------------------------------------------------------------------
 /// Mid-level templated wrapper checks and converts arguments,
 /// then calls low-level wrapper.
-/// @ingroup iamax
+/// @ingroup asum
 ///
 template <typename scalar_t>
 void asum(

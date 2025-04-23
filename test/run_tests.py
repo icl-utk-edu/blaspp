@@ -290,6 +290,7 @@ if (opts.blas1_device):
     [ 'dev-dot',   dtype + n + incx + incy ],
     [ 'dev-dotu',  dtype + n + incx + incy ],
     [ 'dev-nrm2',  dtype + n + incx_pos    ],
+    [ 'dev-rot',   dtype + n + incx + incy ],
     [ 'dev-scal',  dtype + n + incx_pos    ],
     [ 'dev-swap',  dtype + n + incx + incy ],
     [ 'dev-copy',  dtype + n + incx + incy ],
