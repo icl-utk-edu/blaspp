@@ -250,6 +250,50 @@ void rot(
     blas::Queue& queue );
 
 //------------------------------------------------------------------------------
+void rotg(
+    float *a,
+    float *b,
+    float *c,
+    float *s,
+    blas::Queue& queue );
+
+void rotg(
+    double *a,
+    double *b,
+    double *c,
+    double *s,
+    blas::Queue& queue );
+
+void rotg(
+    std::complex<float> *a,
+    std::complex<float> *b,
+    float *c,
+    std::complex<float> *s,
+    blas::Queue& queue );
+
+void rotg(
+    std::complex<double> *a,
+    std::complex<double> *b,
+    double *c,
+    std::complex<double> *s,
+    blas::Queue& queue );
+
+//------------------------------------------------------------------------------
+void rotm(
+    int64_t n,
+    float* x, int64_t incx,
+    float*y, int64_t incy,
+    const float* param,
+    blas::Queue& queue );
+
+void rotm(
+    int64_t n,
+    double* x, int64_t incx,
+    double* y, int64_t incy,
+    const double* param,
+    blas::Queue& queue );
+
+//------------------------------------------------------------------------------
 void scal(
     int64_t n,
     float alpha,

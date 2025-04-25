@@ -11,17 +11,10 @@
 #include "check_gemm.hh"
 
 // -----------------------------------------------------------------------------
-// TX is data [x, y]
-// TS is for sine, which can be real (zdrot) or complex (zrot)
-// cosine is always real
-template <typename TX, typename TS>
-void test_rot_device_work( Params& params, bool run )
+template <typename TX>
+void test_rotm_device_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using std::real;
-    using std::imag;
-    using blas::conj;
-    using scalar_t = blas::scalar_type< TX >;
     using real_t   = blas::real_type< TX >;
 
     // get & mark input values
@@ -59,28 +52,28 @@ void test_rot_device_work( Params& params, bool run )
     TX* y    = new TX[ size_y ];
     TX* yref = new TX[ size_y ];
 
-    // When TX is complex, TS can be real or complex.
-    TS s, data[ 2 ];
-    real_t c;  // real
-
     // device specifics
     blas::Queue queue( device );
     TX* dx;
     TX* dy;
+    TX* dp;
 
     dx = blas::device_malloc<TX>( size_x, queue );
     dy = blas::device_malloc<TX>( size_y, queue );
+    dp = blas::device_malloc<TX>( 5, queue );
 
-    int64_t idist = 2;
+    int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
     lapack_larnv( idist, iseed, size_x, x );
     lapack_larnv( idist, iseed, size_y, y );
     cblas_copy( n, x, incx, xref, incx );
     cblas_copy( n, y, incy, yref, incy );
 
-    // Compute [c, s] to eliminate data[1].
-    lapack_larnv( idist, iseed, 2, data );
-    blas::rotg( &data[0], &data[0], &c, &s );
+    // compute random rotation
+    TX d[4];
+    TX p[5];
+    lapack_larnv( idist, iseed, 4, d );
+    blas::rotmg( &d[0], &d[1], &d[2], d[3], p );
 
     // norms for error check
     real_t Xnorm = cblas_nrm2( n, x, std::abs(incx) );
@@ -89,19 +82,18 @@ void test_rot_device_work( Params& params, bool run )
 
     blas::device_copy_vector( n, x, std::abs(incx), dx, std::abs(incx), queue );
     blas::device_copy_vector( n, y, std::abs(incy), dy, std::abs(incy), queue );
+    blas::device_copy_vector( 5, p, 1, dp, 1, queue );
     queue.sync();
 
     // test error exits
-    assert_throw( blas::rot( -1, x, incx, y, incy, c, s ), blas::Error );
-    assert_throw( blas::rot(  n, x,    0, y, incy, c, s ), blas::Error );
-    assert_throw( blas::rot(  n, x, incx, y,    0, c, s ), blas::Error );
+    assert_throw( blas::rotm( -1, x, incx, y, incy, p ), blas::Error );
+    assert_throw( blas::rotm(  n, x,    0, y, incy, p ), blas::Error );
+    assert_throw( blas::rotm(  n, x, incx, y,    0, p ), blas::Error );
 
     if (verbose >= 1) {
         printf( "\n"
-                "s = %.4f + %.4fi, c = %.4f, s^2 + c^2 = %.4f\n"
                 "x n=%5lld, inc=%5lld, size=%10lld\n"
                 "y n=%5lld, inc=%5lld, size=%10lld\n",
-                real( s ), imag( s ), c, real( s*conj(s) ) + c*c,
                 llong( n ), llong( incx ), llong( size_x ),
                 llong( n ), llong( incy ), llong( size_y ) );
     }
@@ -113,12 +105,12 @@ void test_rot_device_work( Params& params, bool run )
     // run test
     testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
-    blas::rot( n, dx, incx, dy, incy, c, s, queue );
+    blas::rotm( n, dx, incx, dy, incy, dp );
     queue.sync();
     time = get_wtime() - time;
 
-    double gflop = blas::Gflop< scalar_t >::dot( n );
-    double gbyte = blas::Gbyte< scalar_t >::dot( n );
+    double gflop = blas::Gflop< TX >::dot( n );
+    double gbyte = blas::Gbyte< TX >::dot( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
@@ -127,28 +119,29 @@ void test_rot_device_work( Params& params, bool run )
     blas::device_copy_vector(n, dy, std::abs(incy), y, std::abs(incy), queue);
     queue.sync();
 
-    if (verbose >= 2) {
+    if (verbose >= 1) {
         printf( "x2   = " ); print_vector( n, x, incx );
         printf( "y2   = " ); print_vector( n, y, incy );
     }
 
-    if (params.check() == 'y') {
+    if (params.ref() == 'y' || params.check() == 'y') {
         // run reference
         testsweeper::flush_cache( params.cache() );
         time = get_wtime();
-        cblas_rot( n, xref, incx, yref, incy, c, s );
+        cblas_rotm( n, xref, incx, yref, incy, p );  // todo
         time = get_wtime() - time;
-        if (verbose >= 2) {
-            printf( "xref = " ); print_vector( n, xref, incx );
-            printf( "yref = " ); print_vector( n, yref, incy );
-        }
 
         params.ref_time()   = time * 1000;  // msec
         params.ref_gflops() = gflop / time;
         params.ref_gbytes() = gbyte / time;
 
+        if (verbose >= 1) {
+            printf( "xref = " ); print_vector( n, xref, incx );
+            printf( "yref = " ); print_vector( n, yref, incy );
+        }
+
         // check error compared to reference
-        // C = [x y] * R for n x 2 matrix C and 2 x 2 rotation R
+        // C = [x y] * R + C0, for n x 2 matrix C and 2 x 2 rotation R
         // alpha=1, beta=0, C0norm=0
         TX* C    = new TX[ 2*n ];
         TX* Cref = new TX[ 2*n ];
@@ -156,47 +149,37 @@ void test_rot_device_work( Params& params, bool run )
         blas::copy( n, y,    incy, &C[n],    1 );
         blas::copy( n, xref, incx, &Cref[0], 1 );
         blas::copy( n, yref, incy, &Cref[n], 1 );
-        real_t Rnorm = sqrt(2);  // ||R||_F
+        real_t Rnorm = sqrt(2);  // ||R||_F  // todo
         real_t error;
         bool okay;
         check_gemm( n, 2, 2, TX(1), TX(0), Anorm, Rnorm, real_t(0),
                     Cref, n, C, n, verbose, &error, &okay );
         params.error() = error;
         params.okay() = okay;
+
+        delete[] C;
+        delete[] Cref;
     }
 
     delete[] x;
     delete[] y;
     delete[] xref;
     delete[] yref;
-
-    blas::device_free( dx, queue );
-    blas::device_free( dy, queue );
 }
 
 // -----------------------------------------------------------------------------
-void test_rot_device( Params& params, bool run )
+void test_rotm_device( Params& params, bool run )
 {
     switch (params.datatype()) {
         case testsweeper::DataType::Single:
-            test_rot_device_work< float, float >( params, run );
+            test_rotm_device_work< float >( params, run );
             break;
 
         case testsweeper::DataType::Double:
-            test_rot_device_work< double, double >( params, run );
+            test_rotm_device_work< double >( params, run );
             break;
 
-        case testsweeper::DataType::SingleComplex:
-            test_rot_device_work< std::complex<float>, std::complex<float> >
-                ( params, run );
-            break;
-
-        case testsweeper::DataType::DoubleComplex:
-            test_rot_device_work< std::complex<double>, std::complex<double> >
-                ( params, run );
-            break;
-        // todo: real sine
-        // todo: complex sine
+        // modified Givens not available for complex
 
         default:
             throw std::exception();

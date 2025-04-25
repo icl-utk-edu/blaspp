@@ -294,6 +294,8 @@ if (opts.blas1_device):
     [ 'dev-iamax', dtype + n + incx_pos    + ptr_mode ],
     [ 'dev-nrm2',  dtype + n + incx_pos    + ptr_mode ],
     [ 'dev-rot',   dtype + n + incx + incy ],
+    [ 'dev-rotg',  dtype + n + incx + incy ],
+    [ 'dev-rotm',  dtype + n + incx + incy ],
     [ 'dev-scal',  dtype + n + incx_pos    ],
     [ 'dev-swap',  dtype + n + incx + incy ],
     [ 'dev-copy',  dtype + n + incx + incy ],

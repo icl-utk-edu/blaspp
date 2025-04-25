@@ -815,6 +815,112 @@ void rot(
             &c, (cuDoubleComplex*) &s));
 }
 
+//------------------------------------------------------------------------------
+// rotg
+//------------------------------------------------------------------------------
+void rotg(
+    float *da,
+    float *db,
+    float *dc,
+    float *ds,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasSrotg(
+            queue.handle(),
+            da,
+            db,
+            dc,
+            ds));
+}
+
+//------------------------------------------------------------------------------
+void rotg(
+    double *da,
+    double *db,
+    double *dc,
+    double *ds,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasDrotg(
+            queue.handle(),
+            da,
+            db,
+            dc,
+            ds));
+}
+
+//------------------------------------------------------------------------------
+void rotg(
+    std::complex<float> *da,
+    std::complex<float> *db,
+    float *dc,
+    std::complex<float> *ds,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasCrotg(
+            queue.handle(),
+            (cuComplex*) da,
+            (cuComplex*) db,
+            dc,
+            (cuComplex*) ds));
+}
+
+//------------------------------------------------------------------------------
+void rotg(
+    std::complex<double> *da,
+    std::complex<double> *db,
+    double *dc,
+    std::complex<double> *ds,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasZrotg(
+            queue.handle(),
+            (cuDoubleComplex*) da,
+            (cuDoubleComplex*) db,
+            dc,
+            (cuDoubleComplex*) ds));
+}
+
+//------------------------------------------------------------------------------
+// rotm
+//------------------------------------------------------------------------------
+void rotm(
+    device_blas_int n,
+    float *dx, device_blas_int incdx,
+    float *dy, device_blas_int incdy,
+    const float* param,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasSrotm(
+            queue.handle(),
+            n,
+            dx, incdx,
+            dy, incdy,
+            param));
+}
+
+//------------------------------------------------------------------------------
+void rotm(
+    device_blas_int n,
+    double *dx, device_blas_int incdx,
+    double *dy, device_blas_int incdy,
+    const double* param,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasDrotm(
+            queue.handle(),
+            n,
+            dx, incdx,
+            dy, incdy,
+            param));
+}
+
 //==============================================================================
 // Level 2 BLAS - Device Interfaces
 

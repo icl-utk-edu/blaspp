@@ -373,6 +373,8 @@ add_library(
     src/device_swap.cc
     src/device_copy.cc
     src/device_rot.cc
+    src/device_rotg.cc
+    src/device_rotm.cc
     src/device_trmm.cc
     src/device_trsm.cc
     src/device_utils.cc
