@@ -36,6 +36,7 @@ void check_gemm(
 
     using std::sqrt;
     using std::abs;
+    using blas::max;
     using real_t = blas::real_type<T>;
 
     assert( m >= 0 );
@@ -51,22 +52,25 @@ void check_gemm(
         }
     }
 
+    real_t alpha_ = max( abs( alpha ), 1.0 );
+    real_t beta_  = max( abs( beta  ), 1.0 );
+
     real_t work[1], Cout_norm;
     Cout_norm = lapack_lange( "f", m, n, C, ldc, work );
     error[0] = Cout_norm;
-    real_t denom = sqrt( real_t( k ) + 2 ) * abs( alpha ) * Anorm * Bnorm
-                   + 2 * abs( beta ) * Cnorm;
+    real_t denom = sqrt( real_t( k ) + 2 ) * alpha_ * Anorm * Bnorm
+                   + 2 * beta_ * Cnorm;
     if (denom != 0) {
         error[0] /= denom;
     }
 
     if (verbose) {
         printf( "error: ||Cout||=%.2e, denom = (sqrt(k=%lld + 2)"
-                " * |alpha|=%.2e * ||A||=%.2e * ||B||=%.2e"
-                " + 2 * |beta|=%.2e * ||C||=%.2e) = %.2e, error = %.2e\n",
+                " * max(|alpha|, 1)=%.2e * ||A||=%.2e * ||B||=%.2e"
+                " + 2 * max(|beta|, 1)=%.2e * ||C||=%.2e) = %.2e, error = %.2e\n",
                 Cout_norm, llong( k ),
-                abs( alpha ), Anorm, Bnorm,
-                abs( beta ), Cnorm, denom, error[0] );
+                alpha_, Anorm, Bnorm,
+                beta_, Cnorm, denom, error[0] );
     }
 
     // complex needs extra factor; see Higham, 2002, sec. 3.6.
@@ -111,6 +115,7 @@ void check_herk(
 
     using std::sqrt;
     using std::abs;
+    using blas::max;
     typedef blas::real_type<T> real_t;
 
     assert( n >= 0 );
@@ -134,6 +139,9 @@ void check_herk(
         }
     }
 
+    real_t alpha_ = max( abs( alpha ), 1.0 );
+    real_t beta_  = max( abs( beta  ), 1.0 );
+
     // For a rank-2k update, this should be
     // sqrt(k+3) |alpha| (norm(A)*norm(B^T) + norm(B)*norm(A^T))
     //     + 3 |beta| norm(C)
@@ -141,19 +149,19 @@ void check_herk(
     real_t work[1], Cout_norm;
     Cout_norm = lapack_lanhe( "f", to_c_string( uplo ), n, C, ldc, work );
     error[0] = Cout_norm;
-    real_t denom = sqrt( real_t( k ) + 2 ) * abs( alpha ) * Anorm * Bnorm
-                   + 2 * abs( beta ) * Cnorm;
+    real_t denom = sqrt( real_t( k ) + 2 ) * alpha_ * Anorm * Bnorm
+                   + 2 * beta_ * Cnorm;
     if (denom != 0) {
         error[0] /= denom;
     }
 
     if (verbose) {
         printf( "error: ||Cout||=%.2e, denom = (sqrt(k=%lld + 2)"
-                " * |alpha|=%.2e * ||A||=%.2e * ||B||=%.2e"
-                " + 2 * |beta|=%.2e * ||C||=%.2e) = %.2e, error = %.2e\n",
+                " * max(|alpha|,1)=%.2e * ||A||=%.2e * ||B||=%.2e"
+                " + 2 * max(|beta|,1)=%.2e * ||C||=%.2e) = %.2e, error = %.2e\n",
                 Cout_norm, llong( k ),
-                abs( alpha ), Anorm, Bnorm,
-                abs( beta ), Cnorm, denom, error[0] );
+                alpha_, Anorm, Bnorm,
+                beta_, Cnorm, denom, error[0] );
     }
 
     // complex needs extra factor; see Higham, 2002, sec. 3.6.
