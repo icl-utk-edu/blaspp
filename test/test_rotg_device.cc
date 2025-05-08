@@ -57,14 +57,6 @@ void test_rotg_device_work( Params& params, bool run )
 
     // device specifics
     blas::Queue queue( device );
-    TX* da = blas::device_malloc<TX>(n, queue);
-    TX* db = blas::device_malloc<TX>(n, queue);
-    real_t* dc = blas::device_malloc<real_t>(n, queue);
-    TX* ds = blas::device_malloc<TX>(n, queue);
-
-    blas::device_copy_vector(n, a.data(), 1, da, 1, queue);
-    blas::device_copy_vector(n, b.data(), 1, db, 1, queue);
-    queue.sync();
 
     if (verbose >= 2) {
         printf( "a_in  = " );  print_vector( n, &a[0], 1 );
@@ -81,15 +73,11 @@ void test_rotg_device_work( Params& params, bool run )
     testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
     for (int64_t i = 0; i < n; ++i) {
-        blas::rotg( &da[i], &db[i], &dc[i], &ds[i] );
+        blas::rotg( &a[i], &b[i], &c[i], &s[i] );
     }
     time = get_wtime() - time;
     params.time() = time * 1000;  // msec
 
-    blas::device_copy_vector(n, da, 1, a.data(), 1, queue);
-    blas::device_copy_vector(n, db, 1, b.data(), 1, queue);
-    blas::device_copy_vector(n, dc, 1, c.data(), 1, queue);
-    blas::device_copy_vector(n, ds, 1, s.data(), 1, queue);
     queue.sync();
 
     if (verbose >= 2) {
@@ -164,11 +152,6 @@ void test_rotg_device_work( Params& params, bool run )
             printf( "null vector = " );  print_vector( n, &diffNorm2[0], 1 );
         }
     }
-
-    blas::device_free( da, queue );
-    blas::device_free( db, queue );
-    blas::device_free( dc, queue );
-    blas::device_free( ds, queue );
 }
 
 // -----------------------------------------------------------------------------

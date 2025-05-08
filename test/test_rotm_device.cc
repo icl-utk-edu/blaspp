@@ -85,6 +85,12 @@ void test_rotm_device_work( Params& params, bool run )
     blas::device_copy_vector( 5, p, 1, dp, 1, queue );
     queue.sync();
 
+    #if defined( BLAS_HAVE_CUBLAS )
+        cublasSetPointerMode(queue.handle(), CUBLAS_POINTER_MODE_DEVICE);
+    #elif defined( BLAS_HAVE_ROCBLAS )
+        rocblas_set_pointer_mode( queue.handle(), rocblas_pointer_mode_device );
+    #endif
+
     // test error exits
     assert_throw( blas::rotm( -1, x, incx, y, incy, p ), blas::Error );
     assert_throw( blas::rotm(  n, x,    0, y, incy, p ), blas::Error );
@@ -105,7 +111,7 @@ void test_rotm_device_work( Params& params, bool run )
     // run test
     testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
-    blas::rotm( n, dx, incx, dy, incy, dp );
+    blas::rotm( n, dx, incx, dy, incy, dp, queue );
     queue.sync();
     time = get_wtime() - time;
 
