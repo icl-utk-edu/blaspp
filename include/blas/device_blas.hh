@@ -204,7 +204,7 @@ void nrm2(
 void rot(
     int64_t n,
     float* x, int64_t incx,
-    float*y, int64_t incy,
+    float* y, int64_t incy,
     const float c,
     const float s,
     blas::Queue& queue );
@@ -251,38 +251,38 @@ void rot(
 
 //------------------------------------------------------------------------------
 void rotg(
-    float *a,
-    float *b,
-    float *c,
-    float *s,
+    float* a,
+    float* b,
+    float* c,
+    float* s,
     blas::Queue& queue );
 
 void rotg(
-    double *a,
-    double *b,
-    double *c,
-    double *s,
+    double* a,
+    double* b,
+    double* c,
+    double* s,
     blas::Queue& queue );
 
 void rotg(
-    std::complex<float> *a,
-    std::complex<float> *b,
-    float *c,
-    std::complex<float> *s,
+    std::complex<float>* a,
+    std::complex<float>* b,
+    float* c,
+    std::complex<float>* s,
     blas::Queue& queue );
 
 void rotg(
-    std::complex<double> *a,
-    std::complex<double> *b,
-    double *c,
-    std::complex<double> *s,
+    std::complex<double>* a,
+    std::complex<double>* b,
+    double* c,
+    std::complex<double>* s,
     blas::Queue& queue );
 
 //------------------------------------------------------------------------------
 void rotm(
     int64_t n,
     float* x, int64_t incx,
-    float*y, int64_t incy,
+    float* y, int64_t incy,
     const float* param,
     blas::Queue& queue );
 
@@ -291,6 +291,23 @@ void rotm(
     double* x, int64_t incx,
     double* y, int64_t incy,
     const double* param,
+    blas::Queue& queue );
+
+//------------------------------------------------------------------------------
+void rotmg(
+    float* d1,
+    float* d2,
+    float* x1,
+    float* y1,
+    float* param,
+    blas::Queue& queue );
+
+void rotmg(
+    double* d1,
+    double* d2,
+    double* x1,
+    double* y1,
+    double* param,
     blas::Queue& queue );
 
 //------------------------------------------------------------------------------

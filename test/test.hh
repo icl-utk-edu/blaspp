@@ -244,6 +244,7 @@ void test_nrm2_device  ( Params& params, bool run );
 void test_rot_device   ( Params& params, bool run );
 void test_rotg_device  ( Params& params, bool run );
 void test_rotm_device  ( Params& params, bool run );
+void test_rotmg_device ( Params& params, bool run );
 void test_scal_device  ( Params& params, bool run );
 void test_swap_device  ( Params& params, bool run );
 void test_copy_device  ( Params& params, bool run );

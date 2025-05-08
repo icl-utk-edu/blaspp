@@ -108,6 +108,7 @@ add_executable(
     test_rot_device.cc
     test_rotg_device.cc
     test_rotm_device.cc
+    test_rotmg_device.cc
     test_scal_device.cc
     test_swap_device.cc
     test_copy_device.cc

@@ -74,7 +74,7 @@ rocblas_side side2rocblas(blas::Side side)
 void asum(
     device_blas_int n,
     float const* dx, device_blas_int incdx,
-    float *result,
+    float* result,
     blas::Queue& queue )
 {
     blas_dev_call(
@@ -88,7 +88,7 @@ void asum(
 void asum(
     device_blas_int n,
     double const* dx, device_blas_int incdx,
-    double *result,
+    double* result,
     blas::Queue& queue )
 {
     blas_dev_call(
@@ -102,7 +102,7 @@ void asum(
 void asum(
     device_blas_int n,
     std::complex<float> const* dx, device_blas_int incdx,
-    float *result,
+    float* result,
     blas::Queue& queue )
 {
     blas_dev_call(
@@ -116,7 +116,7 @@ void asum(
 void asum(
     device_blas_int n,
     std::complex<double> const* dx, device_blas_int incdx,
-    double *result,
+    double* result,
     blas::Queue& queue )
 {
     blas_dev_call(
@@ -683,8 +683,8 @@ void copy(
 //------------------------------------------------------------------------------
 void rot(
     device_blas_int n,
-    float *dx, device_blas_int incdx,
-    float *dy, device_blas_int incdy,
+    float* dx, device_blas_int incdx,
+    float* dy, device_blas_int incdy,
     const float c,
     const float s,
     blas::Queue& queue )
@@ -701,8 +701,8 @@ void rot(
 //------------------------------------------------------------------------------
 void rot(
     device_blas_int n,
-    double *dx, device_blas_int incdx,
-    double *dy, device_blas_int incdy,
+    double* dx, device_blas_int incdx,
+    double* dy, device_blas_int incdy,
     const double c,
     const double s,
     blas::Queue& queue )
@@ -719,8 +719,8 @@ void rot(
 //------------------------------------------------------------------------------
 void rot(
     device_blas_int n,
-    std::complex<float> *dx, device_blas_int incdx,
-    std::complex<float> *dy, device_blas_int incdy,
+    std::complex<float>* dx, device_blas_int incdx,
+    std::complex<float>* dy, device_blas_int incdy,
     const float c,
     const float s,
     blas::Queue& queue )
@@ -737,8 +737,8 @@ void rot(
 //------------------------------------------------------------------------------
 void rot(
     device_blas_int n,
-    std::complex<double> *dx, device_blas_int incdx,
-    std::complex<double> *dy, device_blas_int incdy,
+    std::complex<double>* dx, device_blas_int incdx,
+    std::complex<double>* dy, device_blas_int incdy,
     const double c,
     const double s,
     blas::Queue& queue )
@@ -755,8 +755,8 @@ void rot(
 //------------------------------------------------------------------------------
 void rot(
     device_blas_int n,
-    std::complex<float> *dx, device_blas_int incdx,
-    std::complex<float> *dy, device_blas_int incdy,
+    std::complex<float>* dx, device_blas_int incdx,
+    std::complex<float>* dy, device_blas_int incdy,
     const float c,
     const std::complex<float> s,
     blas::Queue& queue )
@@ -773,8 +773,8 @@ void rot(
 //------------------------------------------------------------------------------
 void rot(
     device_blas_int n,
-    std::complex<double> *dx, device_blas_int incdx,
-    std::complex<double> *dy, device_blas_int incdy,
+    std::complex<double>* dx, device_blas_int incdx,
+    std::complex<double>* dy, device_blas_int incdy,
     const double c,
     const std::complex<double> s,
     blas::Queue& queue )
@@ -792,10 +792,10 @@ void rot(
 // rotg
 //------------------------------------------------------------------------------
 void rotg(
-    float *da,
-    float *db,
-    float *dc,
-    float *ds,
+    float* da,
+    float* db,
+    float* dc,
+    float* ds,
     blas::Queue& queue )
 {
     blas_dev_call(
@@ -809,10 +809,10 @@ void rotg(
 
 //------------------------------------------------------------------------------
 void rotg(
-    double *da,
-    double *db,
-    double *dc,
-    double *ds,
+    double* da,
+    double* db,
+    double* dc,
+    double* ds,
     blas::Queue& queue )
 {
     blas_dev_call(
@@ -826,10 +826,10 @@ void rotg(
 
 //------------------------------------------------------------------------------
 void rotg(
-    std::complex<float> *da,
-    std::complex<float> *db,
-    float *dc,
-    std::complex<float> *ds,
+    std::complex<float>* da,
+    std::complex<float>* db,
+    float* dc,
+    std::complex<float>* ds,
     blas::Queue& queue )
 {
     blas_dev_call(
@@ -843,10 +843,10 @@ void rotg(
 
 //------------------------------------------------------------------------------
 void rotg(
-    std::complex<double> *da,
-    std::complex<double> *db,
-    double *dc,
-    std::complex<double> *ds,
+    std::complex<double>* da,
+    std::complex<double>* db,
+    double* dc,
+    std::complex<double>* ds,
     blas::Queue& queue )
 {
     blas_dev_call(
@@ -863,8 +863,8 @@ void rotg(
 //------------------------------------------------------------------------------
 void rotm(
     device_blas_int n,
-    float *dx, device_blas_int incdx,
-    float *dy, device_blas_int incdy,
+    float* dx, device_blas_int incdx,
+    float* dy, device_blas_int incdy,
     const float* param,
     blas::Queue& queue )
 {
@@ -880,8 +880,8 @@ void rotm(
 //------------------------------------------------------------------------------
 void rotm(
     device_blas_int n,
-    double *dx, device_blas_int incdx,
-    double *dy, device_blas_int incdy,
+    double* dx, device_blas_int incdx,
+    double* dy, device_blas_int incdy,
     const double* param,
     blas::Queue& queue )
 {
@@ -891,6 +891,46 @@ void rotm(
             n,
             dx, incdx,
             dy, incdy,
+            param));
+}
+
+//------------------------------------------------------------------------------
+// rotmg
+//------------------------------------------------------------------------------
+void rotmg(
+    float* d1,
+    float* d2,
+    float* x1,
+    float* y1,
+    float* param,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        rocblas_srotmg(
+            queue.handle(),
+            d1,
+            d2,
+            x1,
+            y1,
+            param));
+}
+
+//------------------------------------------------------------------------------
+void rotmg(
+    double* d1,
+    double* d2,
+    double* x1,
+    double* y1,
+    double* param,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        rocblas_drotmg(
+            queue.handle(),
+            d1,
+            d2,
+            x1,
+            y1,
             param));
 }
 
