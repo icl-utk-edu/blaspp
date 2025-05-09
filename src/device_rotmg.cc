@@ -47,24 +47,7 @@ void rotmg(
     blas::internal_set_device( queue.device() );
 
     // call low-level wrapper
-    #if defined( BLAS_HAVE_SYCL )
-        sycl::queue syclq = queue.stream();
-        // check how the y1 scalar was allocated
-        auto y1_ptr_type = sycl::get_pointer_type( y1, syclq.get_context() );
-        // if y1 was outside SYCL/USM memory allocation, use device workspace
-        if (y1_ptr_type == sycl::usm::alloc::unknown) {
-            // use preallocated device workspace (resizing if needed)
-            queue.work_ensure_size< char >( sizeof(scalar_t) );  // syncs if needed
-            scalar_t* dev_work = (scalar_t*)queue.work();
-            blas::device_memcpy( dev_work, y1, 1, queue );
-            internal::rotmg( d1, d2, x1, dev_work, param, queue );
-        }
-        else {
-            internal::rotmg( d1, d2, x1, y1, param, queue );
-        }
-    #else // other devices (CUDA/HIP)
     internal::rotmg( d1, d2, x1, y1, param, queue );
-    #endif
 #endif
 }
 
