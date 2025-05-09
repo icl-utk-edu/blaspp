@@ -95,6 +95,7 @@ group_opt.add_argument( '--batch',  action='store', help='default=%(default)s', 
 group_opt.add_argument( '--align',  action='store', help='default=%(default)s', default='32' )
 group_opt.add_argument( '--check',  action='store', help='default=y', default='' )  # default in test.cc
 group_opt.add_argument( '--ref',    action='store', help='default=y', default='' )  # default in test.cc
+group_opt.add_argument( '--pointer-mode', action='store', help='default=%(default)s', default='h,d' )
 
 parser.add_argument( 'tests', nargs=argparse.REMAINDER )
 opts = parser.parse_args()
@@ -154,7 +155,7 @@ nk       = dim
 
 if (not opts.dim):
     if (opts.quick):
-        n        = ' --dim 100'
+        n        = ' --dim 0,100'
         tall     = ' --dim 100x50'  # 2:1
         wide     = ' --dim 50x100'  # 1:2
         mnk      = ' --dim 25x50x75'
@@ -165,7 +166,7 @@ if (not opts.dim):
         opts.batch = '10'
 
     if (opts.xsmall):
-        n       += ' --dim 10'
+        n       += ' --dim 0,10'
         tall    += ' --dim 20x10'
         wide    += ' --dim 10x20'
         mnk     += ' --dim 10x15x20 --dim 15x10x20' \
@@ -175,7 +176,7 @@ if (not opts.dim):
         nk_wide += ' --dim 1x10x20'
 
     if (opts.small):
-        n       += ' --dim 25:100:25'
+        n       += ' --dim 0:100:25'
         tall    += ' --dim 50:200:50x25:100:25'  # 2:1
         wide    += ' --dim 25:100:25x50:200:50'  # 1:2
         mnk     += ' --dim 25x50x75 --dim 50x25x75' \
@@ -185,7 +186,7 @@ if (not opts.dim):
         nk_wide += ' --dim 1x25:100:25x50:200:50'
 
     if (opts.medium):
-        n       += ' --dim 100:500:100'
+        n       += ' --dim 0:500:100'
         tall    += ' --dim 200:1000:200x100:500:100'  # 2:1
         wide    += ' --dim 100:500:100x200:1000:200'  # 1:2
         mnk     += ' --dim 100x300x600 --dim 300x100x600' \
@@ -195,7 +196,7 @@ if (not opts.dim):
         nk_wide += ' --dim 1x100:500:100x200:1000:200'
 
     if (opts.large):
-        n       += ' --dim 1000:5000:1000'
+        n       += ' --dim 0:5000:1000'
         tall    += ' --dim 2000:10000:2000x1000:5000:1000'  # 2:1
         wide    += ' --dim 1000:5000:1000x2000:10000:2000'  # 1:2
         mnk     += ' --dim 1000x3000x6000 --dim 3000x1000x6000' \
@@ -238,6 +239,7 @@ batch  = ' --batch '  + opts.batch  if (opts.batch)  else ''
 align  = ' --align '  + opts.align  if (opts.align)  else ''
 check  = ' --check '  + opts.check  if (opts.check)  else ''
 ref    = ' --ref '    + opts.ref    if (opts.ref)    else ''
+ptr_mode = ' --pointer-mode ' + opts.pointer_mode if (opts.pointer_mode) else ''
 
 # ------------------------------------------------------------------------------
 # filters a comma separated list csv based on items in list values.
@@ -289,6 +291,7 @@ if (opts.blas1_device):
     [ 'dev-axpy',  dtype + n + incx + incy ],
     [ 'dev-dot',   dtype + n + incx + incy ],
     [ 'dev-dotu',  dtype + n + incx + incy ],
+    [ 'dev-iamax', dtype + n + incx_pos    + ptr_mode ],
     [ 'dev-nrm2',  dtype + n + incx_pos ],
     [ 'dev-rot',   dtype + n + incx + incy ],
     [ 'dev-rotg',  dtype ],
@@ -308,8 +311,8 @@ if (opts.blas2):
     [ 'hemv',  dtype      + layout + align + uplo + n + incx + incy ],
     [ 'her',   dtype      + layout + align + uplo + n + incx ],
     [ 'her2',  dtype      + layout + align + uplo + n + incx + incy ],
-    [ 'symv',  dtype_real + layout + align + uplo + n + incx + incy ], # complex is in lapack++
-    [ 'syr',   dtype_real + layout + align + uplo + n + incx ], # complex is in lapack++
+    [ 'symv',  dtype      + layout + align + uplo + n + incx + incy ],
+    [ 'syr',   dtype      + layout + align + uplo + n + incx ],
     [ 'syr2',  dtype      + layout + align + uplo + n + incx + incy ],
     [ 'trmv',  dtype      + layout + align + uplo + trans + diag + n + incx ],
     [ 'trsv',  dtype      + layout + align + uplo + trans + diag + n + incx ],

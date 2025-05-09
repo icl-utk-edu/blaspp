@@ -16,6 +16,7 @@ void test_iamax_work( Params& params, bool run )
     using namespace testsweeper;
     using real_t   = blas::real_type< T >;
     using std::abs;
+    using blas::max;
 
     // get & mark input values
     int64_t n       = params.dim.n();
@@ -38,7 +39,7 @@ void test_iamax_work( Params& params, bool run )
         return;
 
     // setup
-    size_t size_x = (n - 1) * std::abs(incx) + 1;
+    size_t size_x = max( (n - 1) * abs( incx ) + 1, 0 );
     T* x = new T[ size_x ];
 
     int64_t idist = 1;
@@ -80,6 +81,8 @@ void test_iamax_work( Params& params, bool run )
         testsweeper::flush_cache( params.cache() );
         time = get_wtime();
         int64_t ref = cblas_iamax( n, x, incx );
+        if (n == 0)
+            ref -= 1;
         time = get_wtime() - time;
 
         params.ref_time()   = time * 1000;  // msec

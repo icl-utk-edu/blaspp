@@ -137,7 +137,7 @@ void ger(
     scalar_t const* y, int64_t incy,
     scalar_t*       A, int64_t lda )
 {
-    static_assert( is_complex<scalar_t>::value, "complex version" );
+    static_assert( is_complex_v<scalar_t>, "complex version" );
 
     // check arguments
     blas_error_if( layout != Layout::ColMajor &&

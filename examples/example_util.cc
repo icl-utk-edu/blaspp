@@ -40,7 +40,7 @@ void test_util( scalar_type alpha )
     // demo blas::is_complex
     using std::real;
     using std::imag;
-    if (blas::is_complex<scalar_type>::value) {
+    if (blas::is_complex_v<scalar_type>) {
         printf( "alpha %7.4f + %7.4fi\n", real(alpha), imag(alpha) );
         printf( "beta  %7.4f + %7.4fi\n", real(beta),  imag(beta)  );
     }

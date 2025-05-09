@@ -53,20 +53,24 @@ void check_gemm(
 
     real_t work[1], Cout_norm;
     Cout_norm = lapack_lange( "f", m, n, C, ldc, work );
-    error[0] = Cout_norm
-             / (sqrt( real_t( k ) + 2 ) * abs( alpha ) * Anorm * Bnorm
-                 + 2 * abs( beta ) * Cnorm);
+    error[0] = Cout_norm;
+    real_t denom = sqrt( real_t( k ) + 2 ) * abs( alpha ) * Anorm * Bnorm
+                   + 2 * abs( beta ) * Cnorm;
+    if (denom != 0) {
+        error[0] /= denom;
+    }
+
     if (verbose) {
-        printf( "error: ||Cout||=%.2e / (sqrt(k=%lld + 2)"
+        printf( "error: ||Cout||=%.2e, denom = (sqrt(k=%lld + 2)"
                 " * |alpha|=%.2e * ||A||=%.2e * ||B||=%.2e"
-                " + 2 * |beta|=%.2e * ||C||=%.2e) = %.2e\n",
+                " + 2 * |beta|=%.2e * ||C||=%.2e) = %.2e, error = %.2e\n",
                 Cout_norm, llong( k ),
                 abs( alpha ), Anorm, Bnorm,
-                abs( beta ), Cnorm, error[0] );
+                abs( beta ), Cnorm, denom, error[0] );
     }
 
     // complex needs extra factor; see Higham, 2002, sec. 3.6.
-    if (blas::is_complex<T>::value) {
+    if (blas::is_complex_v<T>) {
         error[0] /= 2*sqrt(2);
     }
 
@@ -136,20 +140,24 @@ void check_herk(
     // However, so far using the same bound as rank-k works fine.
     real_t work[1], Cout_norm;
     Cout_norm = lapack_lanhe( "f", to_c_string( uplo ), n, C, ldc, work );
-    error[0] = Cout_norm
-             / (sqrt( real_t( k ) + 2 ) * abs( alpha ) * Anorm * Bnorm
-                 + 2 * abs( beta ) * Cnorm);
+    error[0] = Cout_norm;
+    real_t denom = sqrt( real_t( k ) + 2 ) * abs( alpha ) * Anorm * Bnorm
+                   + 2 * abs( beta ) * Cnorm;
+    if (denom != 0) {
+        error[0] /= denom;
+    }
+
     if (verbose) {
-        printf( "error: ||Cout||=%.2e / (sqrt(k=%lld + 2)"
+        printf( "error: ||Cout||=%.2e, denom = (sqrt(k=%lld + 2)"
                 " * |alpha|=%.2e * ||A||=%.2e * ||B||=%.2e"
-                " + 2 * |beta|=%.2e * ||C||=%.2e) = %.2e\n",
+                " + 2 * |beta|=%.2e * ||C||=%.2e) = %.2e, error = %.2e\n",
                 Cout_norm, llong( k ),
                 abs( alpha ), Anorm, Bnorm,
-                abs( beta ), Cnorm, error[0] );
+                abs( beta ), Cnorm, denom, error[0] );
     }
 
     // complex needs extra factor; see Higham, 2002, sec. 3.6.
-    if (blas::is_complex<T>::value) {
+    if (blas::is_complex_v<T>) {
         error[0] /= 2*sqrt(2);
     }
 

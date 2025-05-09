@@ -503,6 +503,7 @@ cblas_rotg(
 }
 
 // CBLAS lacks [cz]rotg, but they're in Netlib BLAS.
+// (Fixed in LAPACK PR #721, 2022-10)
 // Note c is real.
 void
 cblas_rotg(
@@ -768,7 +769,27 @@ cblas_symv(
 }
 
 // LAPACK provides [cz]symv, CBLAS lacks them
+void
+cblas_symv(
+    CBLAS_LAYOUT layout,
+    CBLAS_UPLO uplo,
+    int n,
+    std::complex<float> alpha,
+    std::complex<float> const* A, int lda,
+    std::complex<float> const* x, int incx,
+    std::complex<float> beta,
+    std::complex<float>* yref, int incy );
 
+void
+cblas_symv(
+    CBLAS_LAYOUT layout,
+    CBLAS_UPLO uplo,
+    int n,
+    std::complex<double> alpha,
+    std::complex<double> const* A, int lda,
+    std::complex<double> const* x, int incx,
+    std::complex<double> beta,
+    std::complex<double>* yref, int incy );
 
 // -----------------------------------------------------------------------------
 inline void
@@ -1060,6 +1081,21 @@ cblas_syr(
 {
     cblas_dsyr( layout, uplo, n, alpha, x, incx, A, lda );
 }
+
+// LAPACK provides [cz]syr, CBLAS lacks them
+void
+cblas_syr(
+    CBLAS_LAYOUT layout, CBLAS_UPLO uplo, int n,
+    std::complex<float> alpha,
+    std::complex<float> const *x, int incx,
+    std::complex<float>* A, int lda );
+
+void
+cblas_syr(
+    CBLAS_LAYOUT layout, CBLAS_UPLO uplo, int n,
+    std::complex<double> alpha,
+    std::complex<double> const *x, int incx,
+    std::complex<double>* A, int lda );
 
 // -----------------------------------------------------------------------------
 inline void

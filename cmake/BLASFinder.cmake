@@ -3,10 +3,6 @@
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
-# Convert to list, as blas_libs is later, to match cached value.
-string( REGEX REPLACE "([^ ])( +|\\\;)" "\\1;"    BLAS_LIBRARIES "${BLAS_LIBRARIES}" )
-string( REGEX REPLACE "-framework;" "-framework " BLAS_LIBRARIES "${BLAS_LIBRARIES}" )
-
 message( DEBUG "BLAS_LIBRARIES '${BLAS_LIBRARIES}'"        )
 message( DEBUG "  cached       '${blas_libraries_cached}'" )
 message( DEBUG "blas           '${blas}'"                  )
@@ -21,36 +17,35 @@ message( DEBUG "" )
 
 include( "cmake/util.cmake" )
 
-message( STATUS "${bold}Looking for BLAS libraries and options${not_bold} (blas = ${blas})" )
-
 #-----------------------------------
 # Check if this file has already been run with these settings (see bottom).
-set( run_ true )
-if (BLAS_LIBRARIES
-    AND NOT "${blas_libraries_cached}" STREQUAL "${BLAS_LIBRARIES}")
-    # Ignore blas, etc. if BLAS_LIBRARIES changes.
-    # Set to empty, rather than unset, so when cmake is invoked again
-    # they don't force a search.
-    message( DEBUG "clear blas, blas_fortran, blas_int, blas_threaded" )
-    set( blas          "" CACHE INTERNAL "" )
-    set( blas_fortran  "" CACHE INTERNAL "" )
-    set( blas_int      "" CACHE INTERNAL "" )
-    set( blas_threaded "" CACHE INTERNAL "" )
-elseif (NOT (    "${blas_cached}"          STREQUAL "${blas}"
-             AND "${blas_fortran_cached}"  STREQUAL "${blas_fortran}"
-             AND "${blas_int_cached}"      STREQUAL "${blas_int}"
-             AND "${blas_threaded_cached}" STREQUAL "${blas_threaded}"))
-    # Ignore BLAS_LIBRARIES if blas* changed.
-    message( DEBUG "unset BLAS_LIBRARIES" )
-    set( BLAS_LIBRARIES "" CACHE INTERNAL "" )
-else()
-    message( DEBUG "BLAS search already done for
-    blas           = ${blas}
-    blas_fortran   = ${blas_fortran}
-    blas_int       = ${blas_int}
-    blas_threaded  = ${blas_threaded}
-    BLAS_LIBRARIES = ${BLAS_LIBRARIES}" )
+if (BLAS_LIBRARIES)
+    # At this point, BLAS_LIBRARIES comes from CMake FindBLAS or
+    # user input (`cmake -DBLAS_LIBRARIES=...`).
+    if (BLAS_LIBRARIES STREQUAL blas_libraries_cached)
+        # Already checked this BLAS_LIBRARIES; load cached results.
+        message( STATUS "Using cached BLAS_LIBRARIES settings" )
+        set( BLAS_FOUND "${blas_found_cached}" )
+        set( run_ false )
+    else()
+        # Need to check BLAS_LIBRARIES.
+        set( run_ true )
+        # Clear blas so test_mkl, etc. later are false.
+        set( blas "" )
+    endif()
+
+elseif (    "${blas}"          STREQUAL "${blas_cached}"
+        AND "${blas_fortran}"  STREQUAL "${blas_fortran_cached}"
+        AND "${blas_int}"      STREQUAL "${blas_int_cached}"
+        AND "${blas_threaded}" STREQUAL "${blas_threaded_cached}")
+    # Already checked this blas; load cached results.
+    message( STATUS "Using cached blas settings" )
+    set( BLAS_LIBRARIES "${blas_libraries_cached}" )
+    set( BLAS_FOUND     "${blas_found_cached}" )
     set( run_ false )
+else()
+    # Search blas, blas_int, etc.
+    set( run_ true )
 endif()
 
 #===============================================================================
@@ -84,21 +79,10 @@ endfunction()
 # Setup.
 
 #---------------------------------------- compiler
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    set( gnu_compiler true )
-endif()
-
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "IntelLLVM")
-    set( intelllvm_compiler true )
-endif()
-
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
-    set( intel_compiler true )
-endif()
-
-if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "XL|XLClang")
-    set( ibm_compiler true )
-endif()
+string( COMPARE EQUAL "${CMAKE_CXX_COMPILER_ID}" "GNU"        gnu_compiler)
+string( COMPARE EQUAL "${CMAKE_CXX_COMPILER_ID}" "IntelLLVM"  intelllvm_compiler )
+string( COMPARE EQUAL "${CMAKE_CXX_COMPILER_ID}" "Intel"      intel_compiler )
+match( "XL|XLClang" "${CMAKE_CXX_COMPILER_ID}" ibm_compiler )
 
 #---------------------------------------- Fortran manglings to test
 if (ibm_compiler)
@@ -118,83 +102,39 @@ else()
         "-DBLAS_FORTRAN_UPPER"
     )
 endif()
-
-#---------------------------------------- integer sizes to test
-set( int_size_list
-    " "             # int (LP64)
-    "-DBLAS_ILP64"  # int64_t (ILP64)
-)
+message( DEBUG "fortran_mangling_list = ${fortran_mangling_list}" )
 
 #-------------------------------------------------------------------------------
 # Parse options: BLAS_LIBRARIES, blas, blas_int, blas_threaded, blas_fortran.
 
-#---------------------------------------- BLAS_LIBRARIES
-if (BLAS_LIBRARIES)
-    set( test_blas_libraries true )
-endif()
-
 #---------------------------------------- blas
 string( TOLOWER "${blas}" blas_ )
 
-if ("${blas_}" MATCHES "auto")
-    set( test_all true )
-endif()
-
-if ("${blas_}" MATCHES "acml")
-    set( test_acml true )
-endif()
-
-if ("${blas_}" MATCHES "apple|accelerate")
-    set( test_accelerate true )
-endif()
-
-if ("${blas_}" MATCHES "cray|libsci|default")
-    set( test_default true )
-endif()
-
-if ("${blas_}" MATCHES "ibm|essl")
-    set( test_essl true )
-endif()
-
-if ("${blas_}" MATCHES "intel|mkl")
-    set( test_mkl true )
-endif()
-
-if ("${blas_}" MATCHES "openblas")
-    set( test_openblas true )
-endif()
-
-if ("${blas_}" MATCHES "generic")
-    set( test_generic true )
-endif()
+match( "auto|apple|accelerate"    "${blas_}" test_accelerate )
+match( "auto|aocl|blis"           "${blas_}" test_blis       )
+match( "auto|cray|libsci|default" "${blas_}" test_default    )
+match( "auto|ibm|essl"            "${blas_}" test_essl       )
+match( "auto|intel|mkl"           "${blas_}" test_mkl        )
+match( "auto|openblas"            "${blas_}" test_openblas   )
+match( "auto|generic"             "${blas_}" test_generic    )
 
 message( DEBUG "
 BLAS_LIBRARIES      = '${BLAS_LIBRARIES}'
 blas                = '${blas}'
 blas_               = '${blas_}'
-test_blas_libraries = '${test_blas_libraries}'
-test_acml           = '${test_acml}'
 test_accelerate     = '${test_accelerate}'
+test_blis           = '${test_blis}'
 test_default        = '${test_default}'
 test_essl           = '${test_essl}'
 test_mkl            = '${test_mkl}'
 test_openblas       = '${test_openblas}'
-test_generic        = '${test_generic}'
-test_all            = '${test_all}'")
+test_generic        = '${test_generic}'" )
 
 #---------------------------------------- blas_fortran
 string( TOLOWER "${blas_fortran}" blas_fortran_ )
 
-if ("${blas_fortran_}" MATCHES "gfortran")
-    set( test_gfortran true )
-endif()
-if ("${blas_fortran_}" MATCHES "ifort")
-    set( test_ifort true )
-endif()
-if ("${blas_fortran_}" MATCHES "auto")
-    set( test_gfortran true )
-    set( test_ifort    true )
-endif()
+match( "auto|gfortran" "${blas_fortran_}" test_gfortran )
+match( "auto|ifort"    "${blas_fortran_}" test_ifort    )
 
 message( DEBUG "
 blas_fortran        = '${blas_fortran}'
@@ -206,49 +146,72 @@ test_ifort          = '${test_ifort}'")
 string( TOLOWER "${blas_int}" blas_int_ )
 
 # This regex is similar to "\b(lp64|int)\b".
-if ("${blas_int_}" MATCHES "(^|[^a-zA-Z0-9_])(lp64|int|int32|int32_t)($|[^a-zA-Z0-9_])")
-    set( test_int true )
-endif()
-if ("${blas_int_}" MATCHES "(^|[^a-zA-Z0-9_])(ilp64|int64|int64_t)($|[^a-zA-Z0-9_])")
-    set( test_int64 true )
-endif()
-if ("${blas_int_}" MATCHES "auto")
-    set( test_int   true )
-    set( test_int64 true )
+set( regex_int32 "(^|[^a-zA-Z0-9_])(auto|lp64|int|int32|int32_t)($|[^a-zA-Z0-9_])" )
+set( regex_int64 "(^|[^a-zA-Z0-9_])(auto|ilp64|int64|int64_t)($|[^a-zA-Z0-9_])" )
+match( "${regex_int32}" "${blas_int_}" test_int   )
+match( "${regex_int64}" "${blas_int_}" test_int64 )
+if (NOT (test_int OR test_int64))
+    message( FATAL_ERROR,
+             "Expected at least one of test_int=${test_int}"
+             " or test_int64=${test_int64} to be true." )
 endif()
 
-if (CMAKE_CROSSCOMPILING AND test_int AND test_int64)
-    message( FATAL_ERROR " ${red}When cross-compiling, one must define either\n"
-             " `blas_int=int32` (usual convention) or\n"
-             " `blas_int=int64` (ilp64 convention).${plain}" )
+#---------------------------------------- integer sizes to test
+# blas_int, above, filters which libraries to test, e.g., mkl_lp64 or mkl_ilp64.
+# After filtering, regardless of blas_int, we usually test all libraries
+# with int32, and if that fails, with int64. With the current test,
+# an int64 library will fail with blas_int=int32 and pass with blas_int=int64,
+# an int32 library will pass with blas_int=int32 and pass (erroneously)
+# with blas_int=int64. However, for cross compiling, we must rely on the
+# user setting blas_int correctly.
+
+set( int_size_list
+    " "             # int32 (LP64)
+    "-DBLAS_ILP64"  # int64 (ILP64)
+)
+
+if (CMAKE_CROSSCOMPILING)
+    if (test_int AND test_int64)
+        message( FATAL_ERROR " ${red}When cross-compiling, one must define either\n"
+                 " `blas_int=int32` (usual convention) xor\n"
+                 " `blas_int=int64` (ilp64 convention).${plain}" )
+    elseif (test_int)
+        list( POP_BACK  int_size_list tmp )  # remove int64 entry
+    elseif (test_int64)
+        list( POP_FRONT int_size_list tmp )  # remove int32 entry
+    endif()
 endif()
 
 message( DEBUG "
 blas_int            = '${blas_int}'
 blas_int_           = '${blas_int_}'
 test_int            = '${test_int}'
-test_int64          = '${test_int64}'")
+test_int64          = '${test_int64}'
+int_size_list       = '${int_size_list}'")
 
 #---------------------------------------- blas_threaded
 string( TOLOWER "${blas_threaded}" blas_threaded_ )
 
-# This regex is similar to "\b(yes|...)\b".
-if ("${blas_threaded_}" MATCHES "(^|[^a-zA-Z0-9_])(y|yes|true|on|1)($|[^a-zA-Z0-9_])")
-    set( test_threaded true )
-endif()
-if ("${blas_threaded_}" MATCHES "(^|[^a-zA-Z0-9_])(n|no|false|off|0)($|[^a-zA-Z0-9_])")
-    set( test_sequential true )
-endif()
-if ("${blas_threaded_}" MATCHES "auto")
-    set( test_threaded   true )
-    set( test_sequential true )
+# These regex are similar to "\b(yes|...)\b".
+# All sequential BLAS also act sequentially inside OpenMP parallel sections,
+# so `openmp_aware` sets test_sequential = true.
+set( regex_thr "(^|[^a-zA-Z0-9_])(auto|y|yes|true|on|1)($|[^a-zA-Z0-9_])" )
+set( regex_seq "(^|[^a-zA-Z0-9_])(auto|n|no|false|off|0|openmp_aware)($|[^a-zA-Z0-9_])" )
+match( "${regex_thr}" "${blas_threaded_}" test_threaded )
+match( "${regex_seq}" "${blas_threaded_}" test_sequential )
+match( "openmp_aware" "${blas_threaded_}" test_threaded_omp )
+if (NOT (test_threaded OR test_sequential))
+    message( FATAL_ERROR,
+             "Expected at least one of test_threaded=${test_threaded}"
+             " or test_sequential=${test_sequential} to be true." )
 endif()
 
 message( DEBUG "
 blas_threaded       = '${blas_threaded}'
 blas_threaded_      = '${blas_threaded_}'
 test_threaded       = '${test_threaded}'
-test_sequential     = '${test_sequential}'")
+test_sequential     = '${test_sequential}'
+test_threaded_omp   = '${test_threaded_omp}'")
 
 #-------------------------------------------------------------------------------
 # Build list of libraries to check.
@@ -258,28 +221,32 @@ set( blas_name_list "" )
 set( blas_libs_list "" )
 
 #---------------------------------------- BLAS_LIBRARIES
-if (test_blas_libraries)
-    # Escape ; semi-colons so we can append it as one item to a list.
-    string( REPLACE ";" "\\;" BLAS_LIBRARIES_ESC "${BLAS_LIBRARIES}" )
+if (BLAS_LIBRARIES)
+    # Change ; semi-colons to spaces so we can append it as one item to a list.
+    string( REPLACE ";" " " BLAS_LIBRARIES_ESC "${BLAS_LIBRARIES}" )
     message( DEBUG "BLAS_LIBRARIES ${BLAS_LIBRARIES}" )
     message( DEBUG "   =>          ${BLAS_LIBRARIES_ESC}" )
 
-    list( APPEND blas_name_list "\$BLAS_LIBRARIES" )
+    list( APPEND blas_name_list "BLAS_LIBRARIES" )
     list( APPEND blas_libs_list "${BLAS_LIBRARIES_ESC}" )
     debug_print_list( "BLAS_LIBRARIES" )
 endif()
 
 #---------------------------------------- default; Cray libsci
-if (test_all OR test_default)
+if (test_default)
     list( APPEND blas_name_list "default (no library)" )
     list( APPEND blas_libs_list " " )  # Use space so APPEND works later.
     debug_print_list( "default" )
 endif()
 
 #---------------------------------------- Intel MKL
-if (test_all OR test_mkl)
+# MKL is OpenMP aware: inside an application's OpenMP section,
+# MKL does not open a new OpenMP section and spawn new threads, by default.
+# See MKL_DYNAMIC.
+# (I don't think this was always true, but has been true for several years now.)
+if (test_mkl)
     # todo: MKL_?(ROOT|DIR)
-    if (test_threaded AND OpenMP_CXX_FOUND)
+    if ((test_threaded OR test_threaded_omp) AND OpenMP_CXX_FOUND)
         if (test_gfortran AND gnu_compiler)
             # GNU compiler + OpenMP: require gnu_thread library.
             if (test_int)
@@ -366,7 +333,7 @@ if (test_all OR test_mkl)
 endif()  # MKL
 
 #---------------------------------------- IBM ESSL
-if (test_all OR test_essl)
+if (test_essl)
     # todo: ESSL_?(ROOT|DIR)
     if (test_threaded)
         #message( "essl OpenMP_CXX_FOUND ${OpenMP_CXX_FOUND}" )
@@ -411,47 +378,46 @@ if (test_all OR test_essl)
 endif()
 
 #---------------------------------------- OpenBLAS
-if (test_all OR test_openblas)
+if (test_openblas)
     # todo: OPENBLAS_?(ROOT|DIR)
     list( APPEND blas_name_list "OpenBLAS" )
     list( APPEND blas_libs_list "-lopenblas" )
     debug_print_list( "openblas" )
 endif()
 
+#---------------------------------------- BLIS (also used by AMD AOCL)
+if (test_blis)
+    if (test_threaded)
+        list( APPEND blas_name_list "BLIS and FLAME, multi-threaded" )
+        list( APPEND blas_libs_list "-lflame -lblis-mt" )
+    endif()
+    if (test_sequential)
+        list( APPEND blas_name_list "BLIS and FLAME" )
+        list( APPEND blas_libs_list "-lflame -lblis" )
+    endif()
+    debug_print_list( "blis" )
+endif()
+
 #---------------------------------------- Apple Accelerate
-if (test_all OR test_accelerate)
+if (test_accelerate)
     list( APPEND blas_name_list "Apple Accelerate" )
     list( APPEND blas_libs_list "-framework Accelerate" )
     debug_print_list( "accelerate" )
 endif()
 
 #---------------------------------------- generic -lblas
-if (test_all OR test_generic)
+if (test_generic)
     list( APPEND blas_name_list "generic" )
     list( APPEND blas_libs_list "-lblas" )
     debug_print_list( "generic" )
 endif()
 
-#---------------------------------------- AMD ACML
-# Deprecated libraries last.
-if (test_all OR test_acml)
-    # todo: ACML_?(ROOT|DIR)
-    if (test_threaded)
-        list( APPEND blas_name_list "AMD ACML threaded" )
-        list( APPEND blas_libs_list "-lacml_mp" )
-    endif()
-
-    if (test_sequential)
-        list( APPEND blas_name_list "AMD ACML sequential" )
-        list( APPEND blas_libs_list "-lacml" )
-    endif()
-    debug_print_list( "acml" )
-endif()
-
 #-------------------------------------------------------------------------------
 # Check each BLAS library.
 
-unset( BLAS_FOUND CACHE )
+# Reset CMake's FindBLAS status. Consider BLAS found if we can link and
+# run with it below.
+set( BLAS_FOUND false )
 unset( blaspp_defs_ CACHE )
 
 set( i 0 )
@@ -467,11 +433,11 @@ foreach (blas_name IN LISTS blas_name_list)
     message( "   libs:  ${blas_libs}" )
 
     # Strip to deal with default lib being space, " ".
-    # Undo escaping \; semi-colons and split on spaces to make list.
-    # But keep '-framework Accelerate' together as one item.
+    # Split on spaces to make list,
+    # but keep '-framework Accelerate' together as one item.
     message( DEBUG "   blas_libs: '${blas_libs}'" )
     string( STRIP "${blas_libs}" blas_libs )
-    string( REGEX REPLACE "([^ ])( +|\\\;)" "\\1;" blas_libs "${blas_libs}" )
+    string( REGEX REPLACE " +" ";" blas_libs "${blas_libs}" )
     string( REGEX REPLACE "-framework;" "-framework " blas_libs "${blas_libs}" )
     message( DEBUG "   blas_libs: '${blas_libs}' (split)" )
 
@@ -533,41 +499,59 @@ foreach (blas_name IN LISTS blas_name_list)
                 # If it runs and prints ok, we're done, so break all 3 loops.
                 message( "${label} ${blue} yes${plain}" )
 
-                set( BLAS_FOUND true CACHE INTERNAL "" )
-                set( BLAS_LIBRARIES "${blas_libs}" CACHE STRING "" FORCE )
+                set( BLAS_FOUND true )
+                if (BLAS_LIBRARIES)
+                    # BLAS_LIBRARIES from CMake FindBLAS or user input
+                    # shouldn't get changed, except being split into list.
+                    string( REPLACE " " ";" blas_libraries_ "${BLAS_LIBRARIES}" )
+                    if (NOT blas_libraries_ STREQUAL blas_libs)
+                        message( WARNING "Expected BLAS_LIBRARIES = '${BLAS_LIBRARIES}'\n"
+                                         "to match blas_libs      = '${blas_libs}'" )
+                    endif()
+                else()
+                    set( BLAS_LIBRARIES "${blas_libs}" )
+                endif()
+
                 if (mangling MATCHES "[^ ]")  # non-empty
                     list( APPEND blaspp_defs_ "${mangling}" )
                 endif()
                 if (int_size MATCHES "[^ ]")  # non-empty
                     list( APPEND blaspp_defs_ "${int_size}" )
                 endif()
+                if (int_size MATCHES "ILP64")
+                    set( blaspp_int "int64" )
+                else()
+                    set( blaspp_int "int32" )
+                endif()
                 break()
             else()
                 message( "${label} ${red} no (didn't run: int mismatch, etc.)${plain}" )
             endif()
-        endforeach()
+        endforeach()  # int_size
 
         # Break loops as described above.
         if (NOT link_result OR BLAS_FOUND)
             break()
         endif()
-    endforeach()
+    endforeach()  # mangling
 
     # Break loops as described above.
     if (BLAS_FOUND)
         break()
     endif()
-endforeach()
+endforeach()  # blas_name
+
+# Mark as already run (see top).
+set( blas_libraries_cached "${BLAS_LIBRARIES}" CACHE INTERNAL "" )
+set( blas_found_cached     "${BLAS_FOUND}"     CACHE INTERNAL "" )
+set( blas_cached           "${blas}"           CACHE INTERNAL "" )
+set( blas_fortran_cached   "${blas_fortran}"   CACHE INTERNAL "" )
+set( blas_int_cached       "${blas_int}"       CACHE INTERNAL "" )
+set( blas_threaded_cached  "${blas_threaded}"  CACHE INTERNAL "" )
 
 endif() # run_
 #===============================================================================
 
-# Mark as already run (see top).
-set( blas_libraries_cached ${BLAS_LIBRARIES} CACHE INTERNAL "" )
-set( blas_cached           ${blas}           CACHE INTERNAL "" )
-set( blas_fortran_cached   ${blas_fortran}   CACHE INTERNAL "" )
-set( blas_int_cached       ${blas_int}       CACHE INTERNAL "" )
-set( blas_threaded_cached  ${blas_threaded}  CACHE INTERNAL "" )
 
 #-------------------------------------------------------------------------------
 if (BLAS_FOUND)

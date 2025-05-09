@@ -3,8 +3,8 @@
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
-#ifndef __HIP_PLATFORM_HCC__
-#define __HIP_PLATFORM_HCC__
+#ifndef __HIP_PLATFORM_AMD__
+#define __HIP_PLATFORM_AMD__
 #endif
 
 #include <hip/hip_runtime.h>

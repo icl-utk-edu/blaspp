@@ -112,36 +112,36 @@ void test_max( Params& params, bool run )
     // error: macro "assert" passed 2 arguments, but takes just 1
     bool okay = true;
 
-    okay = okay && (std::is_same< int,     decltype( max_xi   ) >::value);
-    okay = okay && (std::is_same< int,     decltype( max_xi2  ) >::value);
-    okay = okay && (std::is_same< int,     decltype( max_xi3  ) >::value);
-    okay = okay && (std::is_same< int,     decltype( max_xi4  ) >::value);
-    okay = okay && (std::is_same< int,     decltype( max_xi5  ) >::value);
-    okay = okay && (std::is_same< int64_t, decltype( max_xi64 ) >::value);
-    okay = okay && (std::is_same< double,  decltype( max_xd   ) >::value);
-    okay = okay && (std::is_same< double,  decltype( max_xd2  ) >::value);
-    okay = okay && (std::is_same< double,  decltype( max_xd3  ) >::value);
-    okay = okay && (std::is_same< double,  decltype( max_xd4  ) >::value);
-    okay = okay && (std::is_same< double,  decltype( max_xd5  ) >::value);
-    okay = okay && (std::is_same< float,   decltype( max_xs   ) >::value);
+    okay = okay && (std::is_same_v< int,     decltype( max_xi   ) >);
+    okay = okay && (std::is_same_v< int,     decltype( max_xi2  ) >);
+    okay = okay && (std::is_same_v< int,     decltype( max_xi3  ) >);
+    okay = okay && (std::is_same_v< int,     decltype( max_xi4  ) >);
+    okay = okay && (std::is_same_v< int,     decltype( max_xi5  ) >);
+    okay = okay && (std::is_same_v< int64_t, decltype( max_xi64 ) >);
+    okay = okay && (std::is_same_v< double,  decltype( max_xd   ) >);
+    okay = okay && (std::is_same_v< double,  decltype( max_xd2  ) >);
+    okay = okay && (std::is_same_v< double,  decltype( max_xd3  ) >);
+    okay = okay && (std::is_same_v< double,  decltype( max_xd4  ) >);
+    okay = okay && (std::is_same_v< double,  decltype( max_xd5  ) >);
+    okay = okay && (std::is_same_v< float,   decltype( max_xs   ) >);
 
-    okay = okay && (std::is_same< int,     decltype( max_yi   ) >::value);
-    okay = okay && (std::is_same< int,     decltype( max_yi2  ) >::value);
-    okay = okay && (std::is_same< int64_t, decltype( max_yi64 ) >::value);
-    okay = okay && (std::is_same< double,  decltype( max_yd   ) >::value);
-    okay = okay && (std::is_same< double,  decltype( max_yd2  ) >::value);
+    okay = okay && (std::is_same_v< int,     decltype( max_yi   ) >);
+    okay = okay && (std::is_same_v< int,     decltype( max_yi2  ) >);
+    okay = okay && (std::is_same_v< int64_t, decltype( max_yi64 ) >);
+    okay = okay && (std::is_same_v< double,  decltype( max_yd   ) >);
+    okay = okay && (std::is_same_v< double,  decltype( max_yd2  ) >);
 
-    okay = okay && (std::is_same< int,     decltype( min_xi   ) >::value);
-    okay = okay && (std::is_same< int,     decltype( min_xi2  ) >::value);
-    okay = okay && (std::is_same< int64_t, decltype( min_xi64 ) >::value);
-    okay = okay && (std::is_same< double,  decltype( min_xd   ) >::value);
-    okay = okay && (std::is_same< double,  decltype( min_xd2  ) >::value);
+    okay = okay && (std::is_same_v< int,     decltype( min_xi   ) >);
+    okay = okay && (std::is_same_v< int,     decltype( min_xi2  ) >);
+    okay = okay && (std::is_same_v< int64_t, decltype( min_xi64 ) >);
+    okay = okay && (std::is_same_v< double,  decltype( min_xd   ) >);
+    okay = okay && (std::is_same_v< double,  decltype( min_xd2  ) >);
 
-    okay = okay && (std::is_same< int,     decltype( min_yi   ) >::value);
-    okay = okay && (std::is_same< int,     decltype( min_yi2  ) >::value);
-    okay = okay && (std::is_same< int64_t, decltype( min_yi64 ) >::value);
-    okay = okay && (std::is_same< double,  decltype( min_yd   ) >::value);
-    okay = okay && (std::is_same< double,  decltype( min_yd2  ) >::value);
+    okay = okay && (std::is_same_v< int,     decltype( min_yi   ) >);
+    okay = okay && (std::is_same_v< int,     decltype( min_yi2  ) >);
+    okay = okay && (std::is_same_v< int64_t, decltype( min_yi64 ) >);
+    okay = okay && (std::is_same_v< double,  decltype( min_yd   ) >);
+    okay = okay && (std::is_same_v< double,  decltype( min_yd2  ) >);
 
     params.okay() = okay;
 }

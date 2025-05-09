@@ -20,10 +20,10 @@
     #include <cublas_v2.h>
 
 #elif defined(BLAS_HAVE_ROCBLAS)
-    // Default to HCC platform on ROCm
-    #if ! defined(__HIP_PLATFORM_NVCC__) && ! defined(__HIP_PLATFORM_HCC__)
-        #define __HIP_PLATFORM_HCC__
-        #define BLAS_HIP_PLATFORM_HCC
+    // Default to AMD platform on ROCm
+    #if ! defined(__HIP_PLATFORM_NVCC__) && ! defined(__HIP_PLATFORM_AMD__)
+        #define __HIP_PLATFORM_AMD__
+        #define BLAS_HIP_PLATFORM_AMD
     #endif
 
     #include <hip/hip_runtime.h>
@@ -35,10 +35,10 @@
         #include <rocblas.h>
     #endif
 
-    // If we defined __HIP_PLATFORM_HCC__, undef it.
-    #ifdef BLAS_HIP_PLATFORM_HCC
-        #undef __HIP_PLATFORM_HCC__
-        #undef BLAS_HIP_PLATFORM_HCC
+    // If we defined __HIP_PLATFORM_AMD__, undef it.
+    #ifdef BLAS_HIP_PLATFORM_AMD
+        #undef __HIP_PLATFORM_AMD__
+        #undef BLAS_HIP_PLATFORM_AMD
     #endif
 
 #elif defined(BLAS_HAVE_SYCL)
@@ -386,6 +386,8 @@ int get_device_count();
 void device_free( void* ptr, blas::Queue &queue );
 
 void host_free_pinned( void* ptr, blas::Queue &queue );
+
+bool is_devptr( const void* A, blas::Queue &queue );
 
 // -----------------------------------------------------------------------------
 // Template functions declared here
@@ -861,6 +863,13 @@ void Queue::work_ensure_size( size_t lwork )
         work_ = device_malloc<char>( lwork_, *this );
     }
 }
+
+//------------------------------------------------------------------------------
+/// Add a constant c to an n-element vector v.
+///
+
+template <typename scalar_t>
+void shift_vec( int64_t n, scalar_t* v, scalar_t c, blas::Queue& queue );
 
 }  // namespace blas
 

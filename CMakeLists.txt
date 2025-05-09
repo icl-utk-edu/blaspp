@@ -5,13 +5,14 @@
 #
 # CMake script for BLAS++ library.
 
-cmake_minimum_required( VERSION 3.17 )
+cmake_minimum_required( VERSION 3.21 )
 # 3.1  target_compile_features
 # 3.8  target_compile_features( cxx_std_17 )
 # 3.14 install( LIBRARY DESTINATION lib ) default
 # 3.15 $<$COMPILE_LANG_AND_ID  # optional
 # 3.15 message DEBUG, string REPEAT
 # 3.17 find_package( CUDAToolkit )
+# 3.21 enable_language( HIP ) support
 
 project(
     blaspp
@@ -61,6 +62,7 @@ set_property( CACHE gpu_backend PROPERTY STRINGS
 
 # After color.
 include( "cmake/util.cmake" )
+include( "cmake/config.cmake" )
 
 # Recognize CTest's BUILD_TESTING flag. (Quotes required.)
 if (NOT "${BUILD_TESTING}" STREQUAL "")
@@ -105,8 +107,8 @@ set( blas "auto" CACHE STRING
      "BLAS library to search for" )
 set_property(
     CACHE blas PROPERTY STRINGS
-    "auto" "Apple Accelerate" "Cray LibSci" "IBM ESSL"
-    "Intel MKL" "OpenBLAS" "AMD ACML" "generic" )
+    "auto" "AMD AOCL" "Apple Accelerate" "BLIS" "Cray LibSci" "IBM ESSL"
+    "Intel MKL" "OpenBLAS" "generic" )
 
 set( blas_fortran "auto" CACHE STRING
      "For Intel MKL: use Intel ifort or GNU gfortran conventions?" )
@@ -172,6 +174,131 @@ if ("${source_dir}" STREQUAL "${binary_dir}")
 endif()
 
 #-------------------------------------------------------------------------------
+# Load the CUDA language and packages.
+message( "" )
+set( blaspp_use_cuda false )  # output in blasppConfig.cmake.in
+if (gpu_backend MATCHES "^(auto|cuda)$")
+    message( STATUS "${bold}Looking for CUDA${not_bold} (gpu_backend = ${gpu_backend})" )
+    if (gpu_backend STREQUAL "cuda")
+        find_package( CUDAToolkit REQUIRED )
+    else()
+        find_package( CUDAToolkit QUIET )
+    endif()
+    if (CUDAToolkit_FOUND)
+        set( gpu_backend "cuda" )
+        set( blaspp_defs_cuda_ "-DBLAS_HAVE_CUBLAS" )
+        set( blaspp_use_cuda true )
+
+        # Set CUDA architecture _before_ enable_language, otherwise we get some
+        # default CMake value seemingly unrelated to the native GPU, e.g., 52.
+        #
+        # See nvcc --help, in section --gpu-architecture
+        # 30  Kepler
+        # 50  Maxwell
+        # 60  Pascal
+        # 70  Volta
+        # 75  Turing
+        # 80  Ampere
+        # 90  Hopper
+        # 100 Blackwell ?
+        #
+        if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.24)
+            set( arch "native" )
+        else()
+            set( arch "70" )  # Volta
+        endif()
+        set( CMAKE_CUDA_ARCHITECTURES "${arch}" CACHE STRING
+            "CUDA architectures, as semi-colon separated list of (mostly) 2-3 digit numbers, e.g., 60;70;80 for Pascal, Volta, Ampere" )
+        set_property( CACHE CMAKE_CUDA_ARCHITECTURES PROPERTY STRINGS
+                    native all all-major 30 50 60 70 75 80 90 )
+        enable_language(CUDA)
+        message( STATUS "${blue}Building CUDA support${plain}" )
+    else()
+        message( STATUS "${red}No CUDA support: CUDA not found${plain}" )
+    endif()
+else()
+    message( STATUS "${red}Skipping CUDA search: gpu_backend = ${gpu_backend}${plain}" )
+endif()
+
+#-------------------------------------------------------------------------------
+# Load HIP language and packages.
+message( "" )
+set( blaspp_use_hip false )  # output in blasppConfig.cmake.in
+if (NOT CUDAToolkit_FOUND
+    AND gpu_backend MATCHES "^(auto|hip)$")
+
+    message( STATUS "${bold}Looking for HIP/ROCm${not_bold} (gpu_backend = ${gpu_backend})" )
+    if (gpu_backend STREQUAL "hip")
+        find_package( hip REQUIRED )
+        find_package( rocblas REQUIRED )
+    else()
+        find_package( rocblas QUIET )
+    endif()
+    if (rocblas_FOUND)
+        set( gpu_backend "hip" )
+        set( blaspp_defs_hip_ "-DBLAS_HAVE_ROCBLAS" )
+        set( blaspp_use_hip true )
+
+        # For ROCm >= 3.5, wipe hip-clang specific interface options which are propagated
+        set_target_properties( hip::device PROPERTIES INTERFACE_COMPILE_OPTIONS "-fPIC" )
+        set_target_properties( hip::device PROPERTIES INTERFACE_LINK_LIBRARIES "hip::host" )
+
+        enable_language( HIP )
+        message( STATUS "${blue}Building HIP/ROCm support${plain}" )
+    else()
+        message( STATUS "${red}No HIP/ROCm support: ROCm not found${plain}" )
+    endif()
+else()
+    message( STATUS "${red}Skipping HIP/ROCm search: gpu_backend = ${gpu_backend}${plain}" )
+endif()
+
+
+#-------------------------------------------------------------------------------
+# SYCL support.
+message( "" )
+set( blaspp_use_sycl false )  # output in blasppConfig.cmake.in
+# if cuda or hip were found gpu_backend was set appropriately
+if (gpu_backend MATCHES "^(auto|sycl)$")
+
+    message( STATUS "${bold}Looking for oneMKL-SYCL${not_bold} (gpu_backend = ${gpu_backend})" )
+    if (TARGET MKL::MKL_DPCPP) # Search for MKL only if not already been found
+        set( MKL_FOUND true )
+    endif()
+    if (NOT MKL_FOUND) # Search for MKL only if not already been found
+        if (gpu_backend STREQUAL "sycl")
+            find_package( MKL CONFIG REQUIRED QUIET HINTS "$ENV{MKL_ROOT}")
+        else()
+            find_package( MKL CONFIG QUIET HINTS "$ENV{MKL_ROOT}")
+        endif()
+    endif()
+    # message(STATUS "Available targets: ${MKL_IMPORTED_TARGETS}")
+
+    # Check if compiler supports the SYCL flag
+    check_cxx_compiler_flag( "-fsycl" FSYCL_SUPPORT )
+
+    # If oneMKL is found and the compiler supports SYCL then
+    # enable oneMKL-SYCL-device support
+    if (MKL_FOUND AND FSYCL_SUPPORT)
+        set( gpu_backend "sycl" )
+        set( blaspp_defs_sycl_ "-DBLAS_HAVE_SYCL;-DBLAS_FORTRAN_ADD_" )
+        set( blaspp_use_sycl true )
+
+        # Uncomment to use CMake FindBLAS using BLA_VENDOR
+        # if (NOT BLA_VENDOR)
+        #    set( BLA_VENDOR Intel10_64lp )
+        # endif()
+
+        message( STATUS "${blue}Building oneMKL-SYCL device support${plain}" )
+    elseif (gpu_backend STREQUAL "sycl")
+        message( FATAL_ERROR "${red}SYCL compiler not found${plain}" )
+    else()
+        message( STATUS "${red}No oneMKL-SYCL device support: oneMKL or SYCL compiler not found${plain}" )
+    endif()
+else()
+    message( STATUS "${red}Skipping oneMKL-SYCL search: gpu_backend = ${gpu_backend}${plain}" )
+endif()
+
+#-------------------------------------------------------------------------------
 # Build library.
 add_library(
     blaspp
@@ -233,6 +360,7 @@ add_library(
     src/device_hemm.cc
     src/device_her2k.cc
     src/device_herk.cc
+    src/device_iamax.cc
     src/device_queue.cc
     src/device_symm.cc
     src/device_syr2k.cc
@@ -257,112 +385,33 @@ add_library(
 )
 
 #-------------------------------------------------------------------------------
-# CUDA support.
-message( "" )
-set( blaspp_use_cuda false )  # output in blasppConfig.cmake.in
-if (gpu_backend MATCHES "^(auto|cuda)$")
-    message( STATUS "${bold}Looking for CUDA${not_bold} (gpu_backend = ${gpu_backend})" )
-    if (gpu_backend STREQUAL "cuda")
-        find_package( CUDAToolkit REQUIRED )
-    else()
-        find_package( CUDAToolkit QUIET )
-    endif()
-    if (CUDAToolkit_FOUND)
-        set( gpu_backend "cuda" )
-        set( blaspp_defs_cuda_ "-DBLAS_HAVE_CUBLAS" )
-        set( blaspp_use_cuda true )
-
-        # Some platforms need these to be public libraries.
-        target_link_libraries(
-            blaspp PUBLIC CUDA::cudart CUDA::cublas )
-        message( STATUS "${blue}Building CUDA support${plain}" )
-    else()
-        message( STATUS "${red}No CUDA support: CUDA not found${plain}" )
-    endif()
-else()
-    message( STATUS "${red}No CUDA support: gpu_backend = ${gpu_backend}${plain}" )
-endif()
-
-#-------------------------------------------------------------------------------
-# HIP/ROCm support.
-message( "" )
-set( blaspp_use_hip false )  # output in blasppConfig.cmake.in
-if (NOT CUDAToolkit_FOUND
-    AND gpu_backend MATCHES "^(auto|hip)$")
-
-    message( STATUS "${bold}Looking for HIP/ROCm${not_bold} (gpu_backend = ${gpu_backend})" )
-    if (gpu_backend STREQUAL "hip")
-        find_package( rocblas REQUIRED )
-    else()
-        find_package( rocblas QUIET )
-    endif()
-    if (rocblas_FOUND)
-        set( gpu_backend "hip" )
-        set( blaspp_defs_hip_ "-DBLAS_HAVE_ROCBLAS" )
-        set( blaspp_use_hip true )
-
-        # Some platforms need these to be public libraries.
-        target_link_libraries(
-            blaspp PUBLIC roc::rocblas )
-        message( STATUS "${blue}Building HIP/ROCm support${plain}" )
-    else()
-        message( STATUS "${red}No HIP/ROCm support: ROCm not found${plain}" )
-    endif()
-else()
-    message( STATUS "${red}No HIP/ROCm support: gpu_backend = ${gpu_backend}${plain}" )
-endif()
-
-#-------------------------------------------------------------------------------
-# SYCL support.
-message( "" )
-set( blaspp_use_sycl false )  # output in blasppConfig.cmake.in
-# if cuda or hip were found gpu_backend was set appropriately
-if (gpu_backend MATCHES "^(sycl|auto)$")
-
-    message( STATUS "${bold}Looking for oneMKL-SYCL${not_bold} (gpu_backend = ${gpu_backend})" )
-    if (TARGET MKL::MKL_DPCPP) # Search for MKL only if not already been found
-        set( MKL_FOUND true )
-    endif()
-    if (NOT MKL_FOUND) # Search for MKL only if not already been found
-        if (gpu_backend STREQUAL "sycl")
-            find_package( MKL CONFIG REQUIRED QUIET HINTS "$ENV{MKL_ROOT}")
-        else()
-            find_package( MKL CONFIG QUIET HINTS "$ENV{MKL_ROOT}")
-        endif()
-    endif()
-    # message(STATUS "Available targets: ${MKL_IMPORTED_TARGETS}")
-
-    # Check if compiler supports the SYCL flag
-    check_cxx_compiler_flag( "-fsycl" FSYCL_SUPPORT )
-
-    # If oneMKL is found and the compiler supports SYCL then
-    # enable oneMKL-SYCL-device support
-    if (MKL_FOUND AND FSYCL_SUPPORT)
-        set( gpu_backend "sycl" )
-        set( blaspp_defs_sycl_ "-DBLAS_HAVE_SYCL;-DBLAS_FORTRAN_ADD_" )
-        set( blaspp_use_sycl true )
-
-        # Uncomment to use CMake FindBLAS using BLA_VENDOR
-        # if (NOT BLA_VENDOR)
-        #    set( BLA_VENDOR Intel10_64lp )
-        # endif()
-
-        target_compile_options( blaspp PUBLIC -fsycl )
-        target_link_options( blaspp PUBLIC -fsycl )
-        target_link_libraries( blaspp PUBLIC -lmkl_sycl -lsycl -lOpenCL )
-        message( STATUS "${blue}Building oneMKL-SYCL device support${plain}" )
-    elseif (gpu_backend STREQUAL "sycl")
-        message( FATAL_ERROR "${red}SYCL compiler not found${plain}" )
-    else()
-        message( STATUS "${red}No oneMKL-SYCL device support: oneMKL or SYCL compiler not found${plain}" )
-    endif()
-else()
-    message( STATUS "${red}No oneMKL-SYCL device support: gpu_backend = ${gpu_backend}${plain}" )
+# Add CUDA, HIP, or SYCL options.
+if (CUDAToolkit_FOUND)
+    target_sources(
+        blaspp
+        PRIVATE
+        src/cuda/device_shift_vec.cu
+    )
+    # Some platforms need these to be public libraries.
+    target_link_libraries(
+        blaspp PUBLIC CUDA::cudart CUDA::cublas )
+elseif (rocblas_FOUND)
+    target_sources(
+        blaspp
+        PRIVATE
+        src/hip/device_shift_vec.hip
+    )
+    # Some platforms need these to be public libraries.
+    target_link_libraries(
+        blaspp PUBLIC roc::rocblas )
+elseif (blaspp_use_sycl)
+    target_compile_options( blaspp PUBLIC -fsycl )
+    target_link_options( blaspp PUBLIC -fsycl )
+    target_link_libraries( blaspp PUBLIC -lmkl_sycl -lsycl -lOpenCL )
 endif()
 
 #-------------------------------------------------------------------------------
 # Clean stale defines.h from Makefile-based build.
-message( "" )
 file( REMOVE "${CMAKE_CURRENT_SOURCE_DIR}/include/blas/defines.h" )
 
 # Include directory.
@@ -376,6 +425,8 @@ target_include_directories(
 )
 
 # OpenMP support.
+message( "" )
+message( STATUS "${bold}Looking for OpenMP${not_bold}" )
 set( openmp_lib "" )
 set( blaspp_use_openmp false )  # output in blasppConfig.cmake.in
 if (NOT use_openmp)
@@ -389,7 +440,15 @@ else()
     endif()
 endif()
 
+# If -latomic is required, add as link library to blaspp.
+message( "" )
+check_libatomic()
+if (libatomic_required)
+    target_link_libraries( blaspp PUBLIC "-latomic" )
+endif()
+
 # Get git commit id.
+message( "" )
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
     execute_process( COMMAND git rev-parse --short HEAD
                      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
@@ -423,13 +482,30 @@ endif()
 #-------------------------------------------------------------------------------
 # Search for BLAS library.
 message( "" )
+message( STATUS "${bold}Looking for BLAS libraries and options${not_bold}" )
+
 if (BLA_VENDOR OR use_cmake_find_blas)
-    message( DEBUG "Using CMake's FindBLAS" )
+    message( STATUS "Using CMake's FindBLAS (BLA_VENDOR=${BLA_VENDOR})" )
     find_package( BLAS )
+    if (BLAS_FOUND)
+        message( STATUS
+                 "Using BLAS++ BLASFinder to check Fortran binding, int size:\n"
+                 "   BLAS_LIBRARIES=${BLAS_LIBRARIES}" )
+        set( blas "" )
+        include( "cmake/BLASFinder.cmake" )
+    endif()
 else()
-    message( DEBUG "Using BLASFinder" )
+    message( STATUS "Using BLAS++ BLASFinder:\n   "
+             "blas=${blas}, "
+             "blas_int=${blas_int}, "
+             "blas_threaded=${blas_threaded}, "
+             "blas_fortran=${blas_fortran},\n   "
+             "BLAS_LIBRARIES=${BLAS_LIBRARIES}" )
     include( "cmake/BLASFinder.cmake" )
 endif()
+
+message( DEBUG "BLAS_FOUND=${BLAS_FOUND}" )
+message( DEBUG "BLAS_LIBRARIES=${BLAS_LIBRARIES}" )
 
 if (NOT BLAS_FOUND)
     message( FATAL_ERROR "BLAS++ requires a BLAS library and none was found."
@@ -460,22 +536,17 @@ else()
 endif()
 
 if (NOT LAPACK_FOUND)
-    message( "For [cz]rot, [cz]syr, and [cz]symv, BLAS++ requires a LAPACK library and none was found."
-             " Ensure that it is accessible in environment variables"
-             " $CPATH, $LIBRARY_PATH, and $LD_LIBRARY_PATH." )
+    message( FATAL_ERROR
+             "BLAS++ requires LAPACK for [cz]rot, [cz]syr, [cz]symv." )
 endif()
 
 # BLAS++ doesn't need LAPACKConfig.cmake, which checks version, XBLAS, LAPACKE.
 
 #-------------------------------------------------------------------------------
-# Cache blaspp_defs_ that was built in BLASFinder, BLASConfig, CBLASConfig.
-set( blaspp_defs_ "${blaspp_defs_}"
-     CACHE INTERNAL "Constants defined for BLAS" )
-
-# Concat defines.
+# Cache blaspp_defines that were built in BLASFinder, BLASConfig, etc.
 set( blaspp_defines ${blaspp_defs_} ${blaspp_defs_cuda_}
      ${blaspp_defs_hip_} ${blaspp_defs_sycl_}
-     CACHE INTERNAL "")
+     CACHE INTERNAL "" )
 
 if (true)
     # Extract definitions as #define VAR or #define VAR VALUE.

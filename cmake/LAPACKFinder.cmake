@@ -53,17 +53,8 @@ endif()
 #---------------------------------------- lapack
 string( TOLOWER "${lapack}" lapack_ )
 
-if ("${lapack_}" MATCHES "auto")
-    set( test_all true )
-endif()
-
-if ("${lapack_}" MATCHES "default")
-    set( test_default true )
-endif()
-
-if ("${lapack_}" MATCHES "generic")
-    set( test_generic true )
-endif()
+string( REGEX MATCH "auto|default" test_default "${lapack_}" )
+string( REGEX MATCH "auto|generic" test_generic "${lapack_}" )
 
 message( DEBUG "
 LAPACK_LIBRARIES      = '${LAPACK_LIBRARIES}'
@@ -71,8 +62,7 @@ lapack                = '${lapack}'
 lapack_               = '${lapack_}'
 test_lapack_libraries = '${test_lapack_libraries}'
 test_default          = '${test_default}'
-test_generic          = '${test_generic}'
-test_all              = '${test_all}'")
+test_generic          = '${test_generic}'" )
 
 #-------------------------------------------------------------------------------
 # Build list of libraries to check.
@@ -91,12 +81,12 @@ if (test_lapack_libraries)
 endif()
 
 #---------------------------------------- default (in BLAS library)
-if (test_all OR test_default)
+if (test_default)
     list( APPEND lapack_libs_list " " )
 endif()
 
 #---------------------------------------- generic -llapack
-if (test_all OR test_generic)
+if (test_generic)
     list( APPEND lapack_libs_list "-llapack" )
 endif()
 
@@ -104,10 +94,10 @@ message( DEBUG "lapack_libs_list ${lapack_libs_list}" )
 
 #-------------------------------------------------------------------------------
 # Check each LAPACK library.
-# BLAS++ needs only a limited subset of LAPACK, so check for potrf (Cholesky).
-# LAPACK++ checks for pstrf (Cholesky with pivoting) to make sure it is
+# Checks for pstrf (Cholesky with pivoting) to make sure it is
 # a complete LAPACK library, since some BLAS libraries (ESSL, ATLAS)
 # contain only an optimized subset of LAPACK routines.
+# ESSL lacks [cz]symv, [cz]syr.
 
 unset( LAPACK_FOUND CACHE )
 unset( lapackpp_defs_ CACHE )
@@ -124,7 +114,7 @@ foreach (lapack_libs IN LISTS lapack_libs_list)
     try_run(
         run_result compile_result ${CMAKE_CURRENT_BINARY_DIR}
         SOURCES
-            "${CMAKE_CURRENT_SOURCE_DIR}/config/lapack_potrf.cc"
+            "${CMAKE_CURRENT_SOURCE_DIR}/config/lapack_pstrf.cc"
         LINK_LIBRARIES
             # Use blaspp_libraries instead of blaspp, when SLATE includes
             # blaspp and lapackpp, so the blaspp library doesn't exist yet.
@@ -139,11 +129,11 @@ foreach (lapack_libs IN LISTS lapack_libs_list)
     )
     # For cross-compiling, if it links, assume the run is okay.
     if (CMAKE_CROSSCOMPILING AND compile_result)
-        message( DEBUG "cross: lapack_potrf" )
+        message( DEBUG "cross: lapack_pstrf" )
         set( run_result "0"  CACHE STRING "" FORCE )
         set( run_output "ok" CACHE STRING "" FORCE )
     endif()
-    debug_try_run( "lapack_potrf.cc" "${compile_result}" "${compile_output}"
+    debug_try_run( "lapack_pstrf.cc" "${compile_result}" "${compile_output}"
                                      "${run_result}" "${run_output}" )
 
     if (NOT compile_result)

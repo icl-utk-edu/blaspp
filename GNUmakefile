@@ -34,6 +34,8 @@ make.inc:
 	${python} configure.py
 
 # Defaults if not given in make.inc. GNU make doesn't have defaults for these.
+NVCC     ?= nvcc
+HIPCC    ?= hipcc
 RANLIB   ?= ranlib
 prefix   ?= /opt/slate
 
@@ -94,10 +96,22 @@ ifeq (${papi},1)
 endif
 
 #-------------------------------------------------------------------------------
+# Detect CUDA or HIP from make.inc LIBS.
+cuda = 0
+hip  = 0
+ifneq (,${findstring cublas,${LIBS}})
+    cuda = 1
+else ifneq (,${findstring rocblas,${LIBS}})
+    hip  = 1
+endif
+
+#-------------------------------------------------------------------------------
 # if shared
 ifneq (${static},1)
-    CXXFLAGS += -fPIC
-    LDFLAGS  += -fPIC
+    CXXFLAGS   += -fPIC
+    NVCCFLAGS  += --compiler-options -fPIC
+    HIPCCFLAGS += -fPIC
+    LDFLAGS    += -fPIC
     lib_ext = ${so}
 else
     lib_ext = a
@@ -107,6 +121,13 @@ endif
 # Files
 
 lib_src  = ${wildcard src/*.cc}
+ifeq (${cuda},1)
+    lib_src += ${wildcard src/cuda/*.cu}
+endif
+ifeq (${hip},1)
+    lib_src += ${wildcard src/hip/*.hip}
+endif
+
 lib_obj  = ${addsuffix .o, ${basename ${lib_src}}}
 dep     += ${addsuffix .d, ${basename ${lib_src}}}
 
@@ -164,7 +185,9 @@ src/version.o: .id
 
 #-------------------------------------------------------------------------------
 # BLAS++ specific flags and libraries
-CXXFLAGS += -I./include
+CXXFLAGS   += -I./include
+NVCCFLAGS  += -I./include
+HIPCCFLAGS += -I./include
 
 # additional flags and libraries for testers
 ${tester_obj}: CXXFLAGS += -I${testsweeper_dir}
@@ -346,6 +369,12 @@ hooks: ${hooks}
 		cp $< $@ ; \
 	fi
 
+%.o: %.hip
+	${HIPCC} ${HIPCCFLAGS} -c $< -o $@
+
+%.o: %.cu
+	${NVCC} ${NVCCFLAGS} -c $< -o $@
+
 %.o: %.cc
 	${CXX} ${CXXFLAGS} -c $< -o $@
 
@@ -386,6 +415,9 @@ echo:
 	@echo "last_id       = '${last_id}'"
 	@echo "abi_version   = '${abi_version}'"
 	@echo "soversion     = '${soversion}'"
+	@echo "cuda          = '${cuda}'"
+	@echo "hip           = '${hip}'"
+	@echo "sycl          = '${sycl}'"
 	@echo
 	@echo "---------- Libraries"
 	@echo "lib_name      = ${lib_name}"

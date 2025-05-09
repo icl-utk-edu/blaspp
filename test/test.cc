@@ -91,7 +91,7 @@ std::vector< testsweeper::routines_t > routines = {
     { "axpy",   test_axpy,   Section::blas1   },
     { "copy",   test_copy,   Section::blas1   },
     { "dot",    test_dot,    Section::blas1   },
-    { "dotu",   test_dotu,   Section::blas1   },
+    { "dotu",   test_dot,    Section::blas1   },
     { "iamax",  test_iamax,  Section::blas1   },
     { "nrm2",   test_nrm2,   Section::blas1   },
     { "rot",    test_rot,    Section::blas1   },
@@ -105,7 +105,7 @@ std::vector< testsweeper::routines_t > routines = {
     // Level 2 BLAS
     { "gemv",   test_gemv,   Section::blas2   },
     { "ger",    test_ger,    Section::blas2   },
-    { "geru",   test_geru,   Section::blas2   },
+    { "geru",   test_ger,    Section::blas2   },
     { "",       nullptr,     Section::newline },
 
     { "hemv",   test_hemv,   Section::blas2   },
@@ -161,7 +161,8 @@ std::vector< testsweeper::routines_t > routines = {
     { "dev-asum",         test_asum_device,         Section::device_blas1   },
     { "dev-axpy",         test_axpy_device,         Section::device_blas1   },
     { "dev-dot",          test_dot_device,          Section::device_blas1   },
-    { "dev-dotu",         test_dotu_device,         Section::device_blas1   },
+    { "dev-dotu",         test_dot_device,          Section::device_blas1   },
+    { "dev-iamax",        test_iamax_device,        Section::device_blas1   },
     { "dev-nrm2",         test_nrm2_device,         Section::device_blas1   },
     { "dev-rot",          test_rot_device,          Section::device_blas1   },
     { "dev-rotg",         test_rotg_device,         Section::device_blas1   },

@@ -97,7 +97,7 @@ void syr2(
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
     }
 
-    if constexpr (! is_complex<scalar_t>::value) {
+    if constexpr (! is_complex_v<scalar_t>) {
         // call low-level wrapper
         char uplo_ = to_char( uplo );
         internal::syr2( uplo_, n_, alpha, x, incx_, y, incy_, A, lda_ );
@@ -116,8 +116,8 @@ void syr2(
         blas_int ldx_, ldy_;
         if (incx == 1 && incy == 1) {
             trans_ = Op::NoTrans;
-            ldx_ = n_;
-            ldy_ = n_;
+            ldx_ = max( n_, 1 );
+            ldy_ = max( n_, 1 );
         }
         else if (incx >= 1 && incy >= 1) {
             trans_ = Op::Trans;
@@ -136,8 +136,8 @@ void syr2(
                 iy += incy;
             }
             trans_ = Op::NoTrans;
-            ldx_ = n_;
-            ldy_ = n_;
+            ldx_ = max( n_, 1 );
+            ldy_ = max( n_, 1 );
         }
         scalar_t beta = 1;
 

@@ -120,11 +120,11 @@ void syr2k(
     // check and interpret argument trans
     if (trans == Op::ConjTrans) {
         blas_error_if_msg(
-                ( blas::is_complex<TA>::value ||
-                  blas::is_complex<TB>::value ),
+                ( blas::is_complex_v<TA> ||
+                  blas::is_complex_v<TB> ),
                 "trans == Op::ConjTrans && "
-                "( blas::is_complex<TA>::value ||"
-                "  blas::is_complex<TB>::value )" );
+                "( blas::is_complex_v<TA> ||"
+                "  blas::is_complex_v<TB> )" );
         trans = Op::Trans;
     }
     else {

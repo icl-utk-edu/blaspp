@@ -77,7 +77,7 @@ void hemv(
     scalar_t beta,
     scalar_t*       y, int64_t incy )
 {
-    static_assert( is_complex<scalar_t>::value, "complex version" );
+    static_assert( is_complex_v<scalar_t>, "complex version" );
 
     // check arguments
     blas_error_if( layout != Layout::ColMajor &&

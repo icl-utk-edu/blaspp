@@ -296,6 +296,148 @@ void dotu(
             (rocblas_double_complex*) result));
 }
 
+//------------------------------------------------------------------------------
+// iamax
+//------------------------------------------------------------------------------
+void iamax(
+    int64_t n,
+    float const* dx, int64_t incdx,
+    int64_t* result,
+    blas::Queue& queue )
+{
+    // clear memory
+    if (! is_devptr( result, queue )) {
+        *result = 0;
+    }
+    else {
+        blas_dev_call(
+            hipMemsetAsync( result, 0, sizeof( *result ) ));
+    }
+    // convert arguments
+    device_blas_int n_ = to_device_blas_int( n );
+    device_blas_int incdx_ = to_device_blas_int( incdx );
+    device_blas_int* result_ = (device_blas_int*) result;
+
+    blas_dev_call(
+        rocblas_isamax(
+            queue.handle(),
+            n_, dx, incdx_,
+            result_));
+
+    // rocblas returns 1-based index
+    if (! is_devptr( result, queue )) {
+        *result -= 1;
+    }
+    else {
+        shift_vec( 1, result, (int64_t) -1, queue );
+    }
+}
+
+//------------------------------------------------------------------------------
+void iamax(
+    int64_t n,
+    double const* dx, int64_t incdx,
+    int64_t* result,
+    blas::Queue& queue )
+{
+    // clear memory
+    if (! is_devptr( result, queue )) {
+        *result = 0;
+    }
+    else {
+        blas_dev_call(
+            hipMemsetAsync( result, 0, sizeof( *result ) ));
+    }
+    // convert arguments
+    device_blas_int n_ = to_device_blas_int( n );
+    device_blas_int incdx_ = to_device_blas_int( incdx );
+    device_blas_int* result_ = (device_blas_int*) result;
+
+    blas_dev_call(
+        rocblas_idamax(
+            queue.handle(),
+            n_, dx, incdx_,
+            result_));
+
+    // rocblas returns 1-based index
+    if (! is_devptr( result, queue )) {
+        *result -= 1;
+    }
+    else {
+        shift_vec( 1, result, (int64_t) -1, queue );
+    }
+}
+
+//------------------------------------------------------------------------------
+void iamax(
+    int64_t n,
+    std::complex<float> const* dx, int64_t incdx,
+    int64_t* result,
+    blas::Queue& queue )
+{
+    // clear memory
+    if (! is_devptr( result, queue )) {
+        *result = 0;
+    }
+    else {
+        blas_dev_call(
+            hipMemsetAsync( result, 0, sizeof( *result ) ));
+    }
+    // convert arguments
+    device_blas_int n_ = to_device_blas_int( n );
+    device_blas_int incdx_ = to_device_blas_int( incdx );
+    device_blas_int* result_ = (device_blas_int*) result;
+
+    blas_dev_call(
+        rocblas_icamax(
+            queue.handle(),
+            n_, (rocblas_float_complex*) dx, incdx_,
+            result_));
+
+    // rocblas returns 1-based index
+    if (! is_devptr( result, queue )) {
+        *result -= 1;
+    }
+    else {
+        shift_vec( 1, result, (int64_t) -1, queue );
+    }
+}
+
+//------------------------------------------------------------------------------
+void iamax(
+    int64_t n,
+    std::complex<double> const* dx, int64_t incdx,
+    int64_t* result,
+    blas::Queue& queue )
+{
+    // clear memory
+    if (! is_devptr( result, queue )) {
+        *result = 0;
+    }
+    else {
+        blas_dev_call(
+            hipMemsetAsync( result, 0, sizeof( *result ) ));
+    }
+    // convert arguments
+    device_blas_int n_ = to_device_blas_int( n );
+    device_blas_int incdx_ = to_device_blas_int( incdx );
+    device_blas_int* result_ = (device_blas_int*) result;
+
+    blas_dev_call(
+        rocblas_izamax(
+            queue.handle(),
+            n_, (rocblas_double_complex*) dx, incdx_,
+            result_));
+
+    // rocblas returns 1-based index
+    if (! is_devptr( result, queue )) {
+        *result -= 1;
+    }
+    else {
+        shift_vec( 1, result, (int64_t) -1, queue );
+    }
+}
+
 // -----------------------------------------------------------------------------
 // nrm2
 //------------------------------------------------------------------------------

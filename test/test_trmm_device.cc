@@ -15,26 +15,22 @@ template <typename TA, typename TB>
 void test_trmm_device_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using blas::Uplo;
-    using blas::Side;
-    using blas::Op;
-    using blas::Layout;
-    using blas::Diag;
+    using blas::Uplo, blas::Side, blas::Op, blas::Layout, blas::Diag, blas::max;
     using scalar_t = blas::scalar_type< TA, TB >;
     using real_t   = blas::real_type< scalar_t >;
 
     // get & mark input values
     blas::Layout layout = params.layout();
-    blas::Side side     = params.side();
-    blas::Uplo uplo     = params.uplo();
-    blas::Op trans      = params.trans();
-    blas::Diag diag     = params.diag();
-    scalar_t alpha      = params.alpha.get<scalar_t>();
-    int64_t m           = params.dim.m();
-    int64_t n           = params.dim.n();
-    int64_t device      = params.device();
-    int64_t align       = params.align();
-    int64_t verbose     = params.verbose();
+    blas::Side side = params.side();
+    blas::Uplo uplo = params.uplo();
+    blas::Op trans  = params.trans();
+    blas::Diag diag = params.diag();
+    scalar_t alpha  = params.alpha.get<scalar_t>();
+    int64_t m       = params.dim.m();
+    int64_t n       = params.dim.n();
+    int64_t device  = params.device();
+    int64_t align   = params.align();
+    int64_t verbose = params.verbose();
 
     // mark non-standard output values
     params.gflops();
@@ -56,8 +52,8 @@ void test_trmm_device_work( Params& params, bool run )
     int64_t Bn = n;
     if (layout == Layout::RowMajor)
         std::swap( Bm, Bn );
-    int64_t lda = roundup( Am, align );
-    int64_t ldb = roundup( Bm, align );
+    int64_t lda = max( roundup( Am, align ), 1 );
+    int64_t ldb = max( roundup( Bm, align ), 1 );
     size_t size_A = size_t(lda)*Am;
     size_t size_B = size_t(ldb)*Bn;
     TA* A    = new TA[ size_A ];
@@ -78,8 +74,8 @@ void test_trmm_device_work( Params& params, bool run )
     lapack_larnv( idist, iseed, size_B, B );  // TODO
     lapack_lacpy( "g", Bm, Bn, B, ldb, Bref, ldb );
 
-    blas::device_copy_matrix(Am, Am, A, lda, dA, lda, queue);
-    blas::device_copy_matrix(Bm, Bn, B, ldb, dB, ldb, queue);
+    blas::device_copy_matrix( Am, Am, A, lda, dA, lda, queue );
+    blas::device_copy_matrix( Bm, Bn, B, ldb, dB, ldb, queue );
     queue.sync();
 
     // norms for error check

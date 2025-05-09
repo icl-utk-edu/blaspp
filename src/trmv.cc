@@ -133,7 +133,7 @@ void trmv(
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
         trans2 = (trans == Op::NoTrans ? Op::Trans : Op::NoTrans);
 
-        if constexpr (is_complex<scalar_t>::value) {
+        if constexpr (is_complex_v<scalar_t>) {
             if (trans == Op::ConjTrans) {
                 // conjugate x (in-place)
                 int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
@@ -151,7 +151,7 @@ void trmv(
     // call low-level wrapper
     internal::trmv( uplo_, trans_, diag_, n_, A, lda_, x, incx_ );
 
-    if constexpr (is_complex<scalar_t>::value) {
+    if constexpr (is_complex_v<scalar_t>) {
         if (layout == Layout::RowMajor && trans == Op::ConjTrans) {
             // conjugate x (in-place)
             int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);

@@ -14,6 +14,8 @@ template <typename TX, typename TY>
 void test_swap_work( Params& params, bool run )
 {
     using namespace testsweeper;
+    using std::abs;
+    using blas::max;
     using scalar_t = blas::scalar_type< TX, TY >;
     using real_t   = blas::real_type< scalar_t >;
 
@@ -39,8 +41,8 @@ void test_swap_work( Params& params, bool run )
         return;
 
     // setup
-    size_t size_x = (n - 1) * std::abs(incx) + 1;
-    size_t size_y = (n - 1) * std::abs(incy) + 1;
+    size_t size_x = max( (n - 1) * abs( incx ) + 1, 0 );
+    size_t size_y = max( (n - 1) * abs( incy ) + 1, 0 );
     TX* x    = new TX[ size_x ];
     TX* xref = new TX[ size_x ];
     TY* y    = new TY[ size_y ];

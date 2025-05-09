@@ -15,10 +15,8 @@ template <typename TA, typename TX, typename TY>
 void test_gemv_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using std::real;
-    using std::imag;
-    using blas::Op;
-    using blas::Layout;
+    using std::abs, std::real, std::imag;
+    using blas::Op, blas::Layout, blas::max;
     using scalar_t = blas::scalar_type< TA, TX, TY >;
     using real_t   = blas::real_type< scalar_t >;
 
@@ -52,12 +50,12 @@ void test_gemv_work( Params& params, bool run )
     // setup
     int64_t Am = (layout == Layout::ColMajor ? m : n);
     int64_t An = (layout == Layout::ColMajor ? n : m);
-    int64_t lda = roundup( Am, align );
+    int64_t lda = max( roundup( Am, align ), 1 );
     int64_t Xm = (trans == Op::NoTrans ? n : m);
     int64_t Ym = (trans == Op::NoTrans ? m : n);
     size_t size_A = size_t(lda)*An;
-    size_t size_x = (Xm - 1) * std::abs(incx) + 1;
-    size_t size_y = (Ym - 1) * std::abs(incy) + 1;
+    size_t size_x = max( (Xm - 1) * abs( incx ) + 1, 0 );
+    size_t size_y = max( (Ym - 1) * abs( incy ) + 1, 0 );
     TA* A    = new TA[ size_A ];
     TX* x    = new TX[ size_x ];
     TY* y    = new TY[ size_y ];

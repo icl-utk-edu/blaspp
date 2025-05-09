@@ -15,10 +15,8 @@ template <typename TA, typename TX>
 void test_syr_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using std::real;
-    using std::imag;
-    using blas::Uplo;
-    using blas::Layout;
+    using std::abs, std::real, std::imag;
+    using blas::Uplo, blas::Layout, blas::max;
     using scalar_t = blas::scalar_type< TA, TX >;
     using real_t   = blas::real_type< scalar_t >;
 
@@ -47,9 +45,9 @@ void test_syr_work( Params& params, bool run )
         return;
 
     // setup
-    int64_t lda = roundup( n, align );
+    int64_t lda = max( roundup( n, align ), 1 );
     size_t size_A = size_t(lda)*n;
-    size_t size_x = (n - 1) * std::abs(incx) + 1;
+    size_t size_x = max( (n - 1) * abs( incx ) + 1, 0 );
     TA* A    = new TA[ size_A ];
     TA* Aref = new TA[ size_A ];
     TX* x    = new TX[ size_x ];
@@ -146,8 +144,11 @@ void test_syr( Params& params, bool run )
             break;
 
         case testsweeper::DataType::SingleComplex:
+            test_syr_work< std::complex<float>, std::complex<float> >( params, run );
+            break;
+
         case testsweeper::DataType::DoubleComplex:
-            throw blas::Error( "See syr< complex > in LAPACK++", __func__ );
+            test_syr_work< std::complex<double>, std::complex<double> >( params, run );
             break;
 
         default:

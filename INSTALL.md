@@ -50,9 +50,10 @@ BLAS++ specific options include (all values are case insensitive):
         LibSci          Cray LibSci
         MKL             Intel MKL
         ESSL            IBM ESSL
+        AOCL            AMD AOCL (same as BLIS)
+        BLIS            BLIS and libFLAME
         OpenBLAS        OpenBLAS
         Accelerate      Apple Accelerate framework
-        ACML            AMD ACML (deprecated)
         generic         generic -lblas
 
     blas_int
@@ -69,6 +70,8 @@ BLAS++ specific options include (all values are case insensitive):
         auto            search for both threaded and sequential BLAS (default)
         yes             multi-threaded BLAS
         no              sequential BLAS
+        openmp_aware    acts as sequential BLAS inside OpenMP parallel
+                        sections; MKL does this.
 
     blas_fortran
         Fortran interface to use. Currently applies only to Intel MKL.

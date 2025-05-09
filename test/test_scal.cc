@@ -15,9 +15,7 @@ void test_scal_work( Params& params, bool run )
 {
     using namespace testsweeper;
     using blas::max;
-    using std::abs;
-    using std::real;
-    using std::imag;
+    using std::abs, std::real, std::imag;
     using real_t = blas::real_type< scalar_t >;
 
     // get & mark input values
@@ -42,7 +40,7 @@ void test_scal_work( Params& params, bool run )
         return;
 
     // setup
-    size_t size_x = (n - 1) * std::abs(incx) + 1;
+    size_t size_x = max( (n - 1) * abs( incx ) + 1, 0 );
     scalar_t* x    = new scalar_t[ size_x ];
     scalar_t* xref = new scalar_t[ size_x ];
 
@@ -109,7 +107,7 @@ void test_scal_work( Params& params, bool run )
         params.error() = error;
 
         // complex needs extra factor; see Higham, 2002, sec. 3.6.
-        if (blas::is_complex<scalar_t>::value) {
+        if (blas::is_complex_v<scalar_t>) {
             error /= 2*sqrt(2);
         }
 

@@ -1,8 +1,5 @@
 #!/bin/bash -x
 
-maker=$1
-device=$2
-
 mydir=$(dirname $0)
 source ${mydir}/setup_env.sh
 
@@ -27,6 +24,19 @@ elif [ "${device}" = "gpu_amd" ]; then
 else
     # CPU-only not linked with cublas or rocblas.
     echo "${ldd_result}" | grep -P "cublas|rocblas" && exit 15
+fi
+
+# Verify that tester linked with intended CPU BLAS.
+echo "${ldd_result}" | grep -P "lib\S*${blas}" || exit 16
+
+# Verify that tester linked with intended ilp64 library, or not.
+if [[ $blas_int = "int64" ]] \
+    || [[ $bla_vendor = *64ilp* ]] \
+    || [[ $bla_vendor = *ilp64* ]] \
+    || [[ $BLAS_LIBRARIES = *ilp64* ]]; then
+    echo "${ldd_result}" | grep -P "libmkl_\S+_ilp64" || exit 17
+else
+    echo "${ldd_result}" | grep -P "libmkl_\S+_ilp64" && exit 18
 fi
 
 print "======================================== Finished build"

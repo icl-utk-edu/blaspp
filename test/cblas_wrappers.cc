@@ -8,14 +8,15 @@
 // get BLAS_FORTRAN_NAME and blas_int
 #include "blas/fortran.h"
 
-// Including a variant of <cblas.h> can cause conflicts in BLAS_*rot[g]
-// Fortran prototypes, e.g., on macOS Ventura. So we define these without
-// including their prototypes.
-//#include "cblas_wrappers.hh"
+// Circa 2022-12-22, there was a conflict in BLAS_*rot[g] when including
+// both fortran.h and cblas.h (via cblas_wrappers.hh) on macOS Ventura.
+// Can't replicate it now, and we need lapack_uplo_const() from
+// cblas_wrappers.hh
+#include "cblas_wrappers.hh"
 
 #include <complex>
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void
 cblas_rotg(
     std::complex<float> *a, std::complex<float> *b,
@@ -40,7 +41,7 @@ cblas_rotg(
         (blas_complex_double*) s );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void
 cblas_rot(
     int n,
@@ -53,10 +54,8 @@ cblas_rot(
     blas_int incy_ = incy;
     BLAS_crot(
         &n_,
-        (blas_complex_float*) x,
-        &incx_,
-        (blas_complex_float*) y,
-        &incy_,
+        (blas_complex_float*) x, &incx_,
+        (blas_complex_float*) y, &incy_,
         &c,
         (blas_complex_float*) &s );
 }
@@ -73,10 +72,114 @@ cblas_rot(
     blas_int incy_ = incy;
     BLAS_zrot(
         &n_,
-        (blas_complex_double*) x,
-        &incx_,
-        (blas_complex_double*) y,
-        &incy_,
+        (blas_complex_double*) x, &incx_,
+        (blas_complex_double*) y, &incy_,
         &c,
         (blas_complex_double*) &s );
+}
+
+//------------------------------------------------------------------------------
+void
+cblas_symv(
+    CBLAS_LAYOUT layout,
+    CBLAS_UPLO uplo,
+    int n,
+    std::complex<float> alpha,
+    std::complex<float> const* A, int lda,
+    std::complex<float> const* x, int incx,
+    std::complex<float> beta,
+    std::complex<float>* yref, int incy )
+{
+    blas_int n_    = blas_int( n );
+    blas_int incx_ = blas_int( incx );
+    blas_int incy_ = blas_int( incy );
+    blas_int lda_  = blas_int( lda );
+    char uplo_ = lapack_uplo_const( uplo );
+    if (layout == CblasRowMajor) {
+        uplo_ = (uplo == CblasUpper ? 'l' : 'u');  // switch upper <=> lower
+    }
+    BLAS_csymv(
+        &uplo_, &n_,
+        (blas_complex_float*) &alpha,
+        (blas_complex_float*) A, &lda_,
+        (blas_complex_float*) x, &incx_,
+        (blas_complex_float*) &beta,
+        (blas_complex_float*) yref, &incy_
+    );
+}
+
+//------------------------------------------------------------------------------
+void
+cblas_symv(
+    CBLAS_LAYOUT layout,
+    CBLAS_UPLO uplo,
+    int n,
+    std::complex<double> alpha,
+    std::complex<double> const* A, int lda,
+    std::complex<double> const* x, int incx,
+    std::complex<double> beta,
+    std::complex<double>* yref, int incy )
+{
+    blas_int n_    = blas_int( n );
+    blas_int incx_ = blas_int( incx );
+    blas_int incy_ = blas_int( incy );
+    blas_int lda_  = blas_int( lda );
+    char uplo_ = lapack_uplo_const( uplo );
+    if (layout == CblasRowMajor) {
+        uplo_ = (uplo == CblasUpper ? 'l' : 'u');  // switch upper <=> lower
+    }
+    BLAS_zsymv(
+        &uplo_, &n_,
+        (blas_complex_double*) &alpha,
+        (blas_complex_double*) A, &lda_,
+        (blas_complex_double*) x, &incx_,
+        (blas_complex_double*) &beta,
+        (blas_complex_double*) yref, &incy_
+    );
+}
+
+//------------------------------------------------------------------------------
+void
+cblas_syr(
+    CBLAS_LAYOUT layout, CBLAS_UPLO uplo, int n,
+    std::complex<float> alpha,
+    std::complex<float> const *x, int incx,
+    std::complex<float>* A, int lda )
+{
+    blas_int n_    = blas_int( n );
+    blas_int incx_ = blas_int( incx );
+    blas_int lda_  = blas_int( lda );
+    char uplo_ = lapack_uplo_const( uplo );
+    if (layout == CblasRowMajor) {
+        uplo_ = (uplo == CblasUpper ? 'l' : 'u');  // switch upper <=> lower
+    }
+    BLAS_csyr(
+        &uplo_, &n_,
+        (blas_complex_float*) &alpha,
+        (blas_complex_float*) x, &incx_,
+        (blas_complex_float*) A, &lda_
+    );
+}
+
+//------------------------------------------------------------------------------
+void
+cblas_syr(
+    CBLAS_LAYOUT layout, CBLAS_UPLO uplo, int n,
+    std::complex<double> alpha,
+    std::complex<double> const *x, int incx,
+    std::complex<double>* A, int lda )
+{
+    blas_int n_    = blas_int( n );
+    blas_int incx_ = blas_int( incx );
+    blas_int lda_  = blas_int( lda );
+    char uplo_ = lapack_uplo_const( uplo );
+    if (layout == CblasRowMajor) {
+        uplo_ = (uplo == CblasUpper ? 'l' : 'u');  // switch upper <=> lower
+    }
+    BLAS_zsyr(
+        &uplo_, &n_,
+        (blas_complex_double*) &alpha,
+        (blas_complex_double*) x, &incx_,
+        (blas_complex_double*) A, &lda_
+    );
 }

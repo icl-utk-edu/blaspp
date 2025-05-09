@@ -15,8 +15,8 @@ template <typename TX, typename TY>
 void test_dot_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using std::real;
-    using std::imag;
+    using std::abs, std::real, std::imag;
+    using blas::max;
     using scalar_t = blas::scalar_type< TX, TY >;
     using real_t   = blas::real_type< scalar_t >;
 
@@ -25,6 +25,7 @@ void test_dot_work( Params& params, bool run )
     int64_t incx    = params.incx();
     int64_t incy    = params.incy();
     int64_t verbose = params.verbose();
+    bool use_dot    = params.routine == "dot";
 
     // mark non-standard output values
     params.gflops();
@@ -42,8 +43,8 @@ void test_dot_work( Params& params, bool run )
         return;
 
     // setup
-    size_t size_x = (n - 1) * std::abs(incx) + 1;
-    size_t size_y = (n - 1) * std::abs(incy) + 1;
+    size_t size_x = max( (n - 1) * abs( incx ) + 1, 0 );
+    size_t size_y = max( (n - 1) * abs( incy ) + 1, 0 );
     TX* x = new TX[ size_x ];
     TY* y = new TY[ size_y ];
 
@@ -57,9 +58,16 @@ void test_dot_work( Params& params, bool run )
     real_t Ynorm = cblas_nrm2( n, y, std::abs(incy) );
 
     // test error exits
-    assert_throw( blas::dot( -1, x, incx, y, incy ), blas::Error );
-    assert_throw( blas::dot(  n, x,    0, y, incy ), blas::Error );
-    assert_throw( blas::dot(  n, x, incx, y,    0 ), blas::Error );
+    if (use_dot) {
+        assert_throw( blas::dot( -1, x, incx, y, incy ), blas::Error );
+        assert_throw( blas::dot(  n, x,    0, y, incy ), blas::Error );
+        assert_throw( blas::dot(  n, x, incx, y,    0 ), blas::Error );
+    }
+    else {
+        assert_throw( blas::dotu( -1, x, incx, y, incy ), blas::Error );
+        assert_throw( blas::dotu(  n, x,    0, y, incy ), blas::Error );
+        assert_throw( blas::dotu(  n, x, incx, y,    0 ), blas::Error );
+    }
 
     if (verbose >= 1) {
         printf( "\n"
@@ -76,7 +84,13 @@ void test_dot_work( Params& params, bool run )
     // run test
     testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
-    scalar_t result = blas::dot( n, x, incx, y, incy );
+    scalar_t result;
+    if (use_dot) {
+        result = blas::dot( n, x, incx, y, incy );
+    }
+    else {
+        result = blas::dotu( n, x, incx, y, incy );
+    }
     time = get_wtime() - time;
 
     double gflop = blas::Gflop< scalar_t >::dot( n );
@@ -93,7 +107,13 @@ void test_dot_work( Params& params, bool run )
         // run reference
         testsweeper::flush_cache( params.cache() );
         time = get_wtime();
-        scalar_t ref = cblas_dot( n, x, incx, y, incy );
+        scalar_t ref;
+        if (use_dot) {
+            ref = cblas_dot( n, x, incx, y, incy );
+        }
+        else {
+            ref = cblas_dotu( n, x, incx, y, incy );
+        }
         time = get_wtime() - time;
 
         params.ref_time()   = time * 1000;  // msec

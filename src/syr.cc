@@ -42,6 +42,38 @@ inline void syr(
     BLAS_dsyr( &uplo, &n, &alpha, x, &incx, A, &lda );
 }
 
+//------------------------------------------------------------------------------
+/// Low-level overload wrapper calls Fortran, complex<float> version.
+/// @ingroup syr_internal
+inline void syr(
+    char uplo,
+    blas_int n,
+    std::complex<float> alpha,
+    std::complex<float> const* x, blas_int incx,
+    std::complex<float>*       A, blas_int lda )
+{
+    BLAS_csyr( &uplo, &n,
+               (blas_complex_float*) &alpha,
+               (blas_complex_float*) x, &incx,
+               (blas_complex_float*) A, &lda );
+}
+
+//------------------------------------------------------------------------------
+/// Low-level overload wrapper calls Fortran, complex<double> version.
+/// @ingroup syr_internal
+inline void syr(
+    char uplo,
+    blas_int n,
+    std::complex<double> alpha,
+    std::complex<double> const* x, blas_int incx,
+    std::complex<double>*       A, blas_int lda )
+{
+    BLAS_zsyr( &uplo, &n,
+               (blas_complex_double*) &alpha,
+               (blas_complex_double*) x, &incx,
+               (blas_complex_double*) A, &lda );
+}
+
 }  // namespace internal
 
 //==============================================================================
@@ -128,6 +160,36 @@ void syr(
     double alpha,
     double const* x, int64_t incx,
     double*       A, int64_t lda )
+{
+    impl::syr( layout, uplo, n,
+               alpha, x, incx, A, lda );
+}
+
+//------------------------------------------------------------------------------
+/// CPU, complex<float> version.
+/// @ingroup syr
+void syr(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    int64_t n,
+    std::complex<float> alpha,
+    std::complex<float> const* x, int64_t incx,
+    std::complex<float>*       A, int64_t lda )
+{
+    impl::syr( layout, uplo, n,
+               alpha, x, incx, A, lda );
+}
+
+//------------------------------------------------------------------------------
+/// CPU, complex<double> version.
+/// @ingroup syr
+void syr(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    int64_t n,
+    std::complex<double> alpha,
+    std::complex<double> const* x, int64_t incx,
+    std::complex<double>*       A, int64_t lda )
 {
     impl::syr( layout, uplo, n,
                alpha, x, incx, A, lda );

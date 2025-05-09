@@ -15,9 +15,8 @@ template <typename TA, typename TX, typename TY>
 void test_ger_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using std::real;
-    using std::imag;
-    using blas::Layout;
+    using std::abs, std::real, std::imag;
+    using blas::Layout, blas::max;
     using scalar_t = blas::scalar_type< TA, TX, TY >;
     using real_t   = blas::real_type< scalar_t >;
 
@@ -30,6 +29,7 @@ void test_ger_work( Params& params, bool run )
     int64_t incy    = params.incy();
     int64_t align   = params.align();
     int64_t verbose = params.verbose();
+    bool use_ger    = params.routine == "ger";
 
     // mark non-standard output values
     params.gflops();
@@ -49,10 +49,10 @@ void test_ger_work( Params& params, bool run )
     // setup
     int64_t Am = (layout == Layout::ColMajor ? m : n);
     int64_t An = (layout == Layout::ColMajor ? n : m);
-    int64_t lda = roundup( Am, align );
+    int64_t lda = max( roundup( Am, align ), 1 );
     size_t size_A = size_t(lda)*An;
-    size_t size_x = (m - 1) * std::abs(incx) + 1;
-    size_t size_y = (n - 1) * std::abs(incy) + 1;
+    size_t size_x = max( (m - 1) * abs( incx ) + 1, 0 );
+    size_t size_y = max( (n - 1) * abs( incy ) + 1, 0 );
     TA* A    = new TA[ size_A ];
     TA* Aref = new TA[ size_A ];
     TX* x    = new TX[ size_x ];
@@ -72,15 +72,28 @@ void test_ger_work( Params& params, bool run )
     real_t Ynorm = cblas_nrm2( n, y, std::abs(incy) );
 
     // test error exits
-    assert_throw( blas::ger( Layout(0),  m,  n, alpha, A, lda, x, incx, y, incy ), blas::Error );
-    assert_throw( blas::ger( layout,    -1,  n, alpha, A, lda, x, incx, y, incy ), blas::Error );
-    assert_throw( blas::ger( layout,     m, -1, alpha, A, lda, x, incx, y, incy ), blas::Error );
+    if (use_ger) {
+        assert_throw( blas::ger( Layout(0),  m,  n, alpha, x, incx, y, incy, A, lda ), blas::Error );
+        assert_throw( blas::ger( layout,    -1,  n, alpha, x, incx, y, incy, A, lda ), blas::Error );
+        assert_throw( blas::ger( layout,     m, -1, alpha, x, incx, y, incy, A, lda ), blas::Error );
 
-    assert_throw( blas::ger( Layout::ColMajor,  m,  n, alpha, A, m-1, x, incx, y, incy ), blas::Error );
-    assert_throw( blas::ger( Layout::RowMajor,  m,  n, alpha, A, n-1, x, incx, y, incy ), blas::Error );
+        assert_throw( blas::ger( Layout::ColMajor, m, n, alpha, x, incx, y, incy, A, m-1 ), blas::Error );
+        assert_throw( blas::ger( Layout::RowMajor, m, n, alpha, x, incx, y, incy, A, n-1 ), blas::Error );
 
-    assert_throw( blas::ger( layout,     m,  n, alpha, A, lda, x, 0,    y, incy ), blas::Error );
-    assert_throw( blas::ger( layout,     m,  n, alpha, A, lda, x, incx, y, 0    ), blas::Error );
+        assert_throw( blas::ger( layout,     m,  n, alpha, x, 0,    y, incy, A, lda ), blas::Error );
+        assert_throw( blas::ger( layout,     m,  n, alpha, x, incx, y, 0,    A, lda ), blas::Error );
+    }
+    else {
+        assert_throw( blas::geru( Layout(0),  m,  n, alpha, x, incx, y, incy, A, lda ), blas::Error );
+        assert_throw( blas::geru( layout,    -1,  n, alpha, x, incx, y, incy, A, lda ), blas::Error );
+        assert_throw( blas::geru( layout,     m, -1, alpha, x, incx, y, incy, A, lda ), blas::Error );
+
+        assert_throw( blas::geru( Layout::ColMajor, m, n, alpha, x, incx, y, incy, A, m-1 ), blas::Error );
+        assert_throw( blas::geru( Layout::RowMajor, m, n, alpha, x, incx, y, incy, A, n-1 ), blas::Error );
+
+        assert_throw( blas::geru( layout,     m,  n, alpha, x, 0,    y, incy, A, lda ), blas::Error );
+        assert_throw( blas::geru( layout,     m,  n, alpha, x, incx, y, 0,    A, lda ), blas::Error );
+    }
 
     if (verbose >= 1) {
         printf( "\n"
@@ -102,7 +115,12 @@ void test_ger_work( Params& params, bool run )
     // run test
     testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
-    blas::ger( layout, m, n, alpha, x, incx, y, incy, A, lda );
+    if (use_ger) {
+        blas::ger( layout, m, n, alpha, x, incx, y, incy, A, lda );
+    }
+    else {
+        blas::geru( layout, m, n, alpha, x, incx, y, incy, A, lda );
+    }
     time = get_wtime() - time;
 
     double gflop = blas::Gflop< scalar_t >::ger( m, n );
@@ -119,7 +137,12 @@ void test_ger_work( Params& params, bool run )
         // run reference
         testsweeper::flush_cache( params.cache() );
         time = get_wtime();
-        cblas_ger( cblas_layout_const(layout), m, n, alpha, x, incx, y, incy, Aref, lda );
+        if (use_ger) {
+            cblas_ger( cblas_layout_const(layout), m, n, alpha, x, incx, y, incy, Aref, lda );
+        }
+        else {
+            cblas_geru( cblas_layout_const(layout), m, n, alpha, x, incx, y, incy, Aref, lda );
+        }
         time = get_wtime() - time;
 
         params.ref_time()   = time * 1000;  // msec

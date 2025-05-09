@@ -15,10 +15,8 @@ template <typename TA, typename TX, typename TY>
 void test_symv_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using std::real;
-    using std::imag;
-    using blas::Uplo;
-    using blas::Layout;
+    using std::abs, std::real, std::imag;
+    using blas::Uplo, blas::Layout, blas::max;
     using scalar_t = blas::scalar_type< TA, TX, TY >;
     using real_t   = blas::real_type< scalar_t >;
 
@@ -49,10 +47,10 @@ void test_symv_work( Params& params, bool run )
         return;
 
     // setup
-    int64_t lda = roundup( n, align );
+    int64_t lda = max( roundup( n, align ), 1 );
     size_t size_A = size_t(lda)*n;
-    size_t size_x = (n - 1) * std::abs(incx) + 1;
-    size_t size_y = (n - 1) * std::abs(incy) + 1;
+    size_t size_x = max( (n - 1) * abs( incx ) + 1, 0 );
+    size_t size_y = max( (n - 1) * abs( incy ) + 1, 0 );
     TA* A    = new TA[ size_A ];
     TX* x    = new TX[ size_x ];
     TY* y    = new TY[ size_y ];
@@ -158,8 +156,13 @@ void test_symv( Params& params, bool run )
             break;
 
         case testsweeper::DataType::SingleComplex:
+            test_symv_work< std::complex<float>, std::complex<float>,
+                            std::complex<float> >( params, run );
+            break;
+
         case testsweeper::DataType::DoubleComplex:
-            throw blas::Error( "See symv< complex > in LAPACK++", __func__ );
+            test_symv_work< std::complex<double>, std::complex<double>,
+                            std::complex<double> >( params, run );
             break;
 
         default:
