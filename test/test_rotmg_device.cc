@@ -21,7 +21,6 @@ void test_rotmg_device_work( Params& params, bool run )
     // get & mark input values
     int64_t n = params.dim.n();
     int64_t device  = params.device();
-    int verbose     = params.verbose();
 
     // mark non-standard output values
     params.ref_time();
