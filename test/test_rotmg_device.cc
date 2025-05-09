@@ -40,35 +40,64 @@ void test_rotmg_device_work( Params& params, bool run )
     }
 
     // setup
-    std::vector<T> d1( n ), d1_ref( n );
-    std::vector<T> d2( n ), d2_ref( n );
-    std::vector<T> x1( n ), x1_ref( n );
-    std::vector<T> y1( n ), y1_ref( n );
-    std::vector<T> ps( 5*n ), ps_ref( 5*n );
+    T* d1 = new T[ n ];
+    T* d1_ref = new T[ n ];
+    T* d2 = new T[ n ];
+    T* d2_ref = new T[ n ];
+    T* x1 = new T[ n ];
+    T* x1_ref = new T[ n ];
+    T* y1 = new T[ n ];
+    T* y1_ref = new T[ n ];
+    T* ps = new T[ 5*n ];
+    T* ps_ref = new T[ 5*n ];
 
     int64_t idist = 3;
     int iseed[4] = { 0, 0, 0, 1 };
-    lapack_larnv( idist, iseed, n, &d1[0] );
-    lapack_larnv( idist, iseed, n, &d2[0] );
-    lapack_larnv( idist, iseed, n, &x1[0] );
-    lapack_larnv( idist, iseed, n, &y1[0] );
-    lapack_larnv( idist, iseed, 5*n, &ps[0] );
+    lapack_larnv( idist, iseed, n, d1 );
+    lapack_larnv( idist, iseed, n, d2 );
+    lapack_larnv( idist, iseed, n, x1 );
+    lapack_larnv( idist, iseed, n, y1 );
+    lapack_larnv( idist, iseed, 5*n, ps );
 
     // device specifics
     blas::Queue queue( device );
+    T* d_d1;
+    T* d_d2;
+    T* d_x1;
+    T* d_y1;
+    T* d_ps;
 
-    d1_ref = d1;
-    d2_ref = d2;
-    x1_ref = x1;
-    y1_ref = y1;
-    ps_ref = ps;
+    d_d1 = blas::device_malloc<T>( n, queue );
+    d_d2 = blas::device_malloc<T>( n, queue );
+    d_x1 = blas::device_malloc<T>( n, queue );
+    d_y1 = blas::device_malloc<T>( n, queue );
+    d_ps = blas::device_malloc<T>( 5*n, queue );
+
+    device_memcpy( d_d1, d1, n, queue );
+    device_memcpy( d_d2, d2, n, queue );
+    device_memcpy( d_x1, x1, n, queue );
+    device_memcpy( d_y1, y1, n, queue );
+    device_memcpy( d_ps, ps, 5*n, queue );
+
+    #if defined( BLAS_HAVE_CUBLAS )
+        cublasSetPointerMode(queue.handle(), CUBLAS_POINTER_MODE_DEVICE);
+    #elif defined( BLAS_HAVE_ROCBLAS )
+        rocblas_set_pointer_mode( queue.handle(), rocblas_pointer_mode_device );
+    #endif
+
+    cblas_copy( n, d1, 1, d1_ref, 1 );
+    cblas_copy( n, d2, 1, d2_ref, 1 );
+    cblas_copy( n, x1, 1, x1_ref, 1 );
+    cblas_copy( n, y1, 1, y1_ref, 1 );
+    cblas_copy( 5*n, ps, 1, ps_ref, 1 );
 
     // run test
     testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
     for (int64_t i = 0; i < n; ++i) {
-        blas::rotmg( &d1[i], &d2[i], &x1[i], &y1[i], &ps[5*i], queue );
+        blas::rotmg( d_d1 + i, d_d2 + i, d_x1 + i, d_y1 + i, d_ps + 5*i, queue );
     }
+    queue.sync();
     time = get_wtime() - time;
     params.time() = time * 1000;  // msec
 
@@ -81,6 +110,12 @@ void test_rotmg_device_work( Params& params, bool run )
         }
         time = get_wtime() - time;
         params.ref_time() = time * 1000;  // msec
+
+        device_memcpy( d1, d_d1, n, queue );
+        device_memcpy( d2, d_d2, n, queue );
+        device_memcpy( x1, d_x1, n, queue );
+        device_memcpy( ps, d_ps, 5*n, queue );
+        queue.sync();
 
         // get max error of all outputs
         cblas_axpy(   n, -1.0, &d1[0], 1, &d1_ref[0], 1 );
@@ -105,6 +140,23 @@ void test_rotmg_device_work( Params& params, bool run )
         params.error() = error;
         params.okay() = (error < 10*u);
     }
+
+    delete[] d1;
+    delete[] d1_ref;
+    delete[] d2;
+    delete[] d2_ref;
+    delete[] x1;
+    delete[] x1_ref;
+    delete[] y1;
+    delete[] y1_ref;
+    delete[] ps;
+    delete[] ps_ref;
+
+    blas::device_free( d_d1, queue );
+    blas::device_free( d_d2, queue );
+    blas::device_free( d_x1, queue );
+    blas::device_free( d_y1, queue );
+    blas::device_free( d_ps, queue );
 }
 
 // -----------------------------------------------------------------------------
