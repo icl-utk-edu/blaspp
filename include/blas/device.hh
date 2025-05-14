@@ -43,7 +43,7 @@
 
 #elif defined(BLAS_HAVE_SYCL)
     #include <sycl/detail/cl.h>  // For CL version
-    #include <sycl.hpp>
+    #include <sycl/sycl.hpp>
 
 #endif
 

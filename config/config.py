@@ -723,8 +723,7 @@ def sycl_onemkl_library():
     root = environ['CMPLR_ROOT'] or environ['CMPROOT']
     inc = ''
     if (root):
-        inc = '-I' + root + '/linux/include ' \
-            + '-I' + root + '/linux/include/sycl '
+        inc = '-I' + root + '/linux/include '  # space at end for concat
     env = {'LIBS': libs,
            'CXXFLAGS': inc + define('HAVE_SYCL')
            + ' -fsycl -Wno-deprecated-declarations'}
