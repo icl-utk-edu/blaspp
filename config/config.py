@@ -597,7 +597,7 @@ def prog_cxx_flag( flags ):
 # end
 
 #-------------------------------------------------------------------------------
-def openmp( flags=['-fopenmp', '-qopenmp', '-openmp', '-omp', ''] ):
+def openmp( flags=['-qopenmp', '-fopenmp', '-openmp', '-omp', ''] ):
     '''
     Tests for OpenMP support with one of the given flags.
     If a flag works, it is added to both CXXFLAGS and LDFLAGS.
