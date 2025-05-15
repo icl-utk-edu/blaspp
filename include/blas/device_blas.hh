@@ -14,6 +14,31 @@ namespace blas {
 // Alphabetical order
 
 //------------------------------------------------------------------------------
+void asum(
+    int64_t n,
+    float const* x, int64_t incx,
+    float* result,
+    blas::Queue& queue );
+
+void asum(
+    int64_t n,
+    double const* x, int64_t incx,
+    double* result,
+    blas::Queue& queue );
+
+void asum(
+    int64_t n,
+    std::complex<float> const* x, int64_t incx,
+    float* result,
+    blas::Queue& queue );
+
+void asum(
+    int64_t n,
+    std::complex<double> const* x, int64_t incx,
+    double* result,
+    blas::Queue& queue );
+
+//------------------------------------------------------------------------------
 void axpy(
     int64_t n,
     float alpha,
@@ -173,6 +198,116 @@ void nrm2(
     int64_t n,
     std::complex<double> const* x, int64_t incx,
     double* result,
+    blas::Queue& queue );
+
+//------------------------------------------------------------------------------
+void rot(
+    int64_t n,
+    float* x, int64_t incx,
+    float* y, int64_t incy,
+    const float c,
+    const float s,
+    blas::Queue& queue );
+
+void rot(
+    int64_t n,
+    double* x, int64_t incx,
+    double* y, int64_t incy,
+    const double c,
+    const double s,
+    blas::Queue& queue );
+
+void rot(
+    int64_t n,
+    std::complex<float>* x, int64_t incx,
+    std::complex<float>* y, int64_t incy,
+    const float c,
+    const float s,
+    blas::Queue& queue );
+
+void rot(
+    int64_t n,
+    std::complex<double>* x, int64_t incx,
+    std::complex<double>* y, int64_t incy,
+    const double c,
+    const double s,
+    blas::Queue& queue );
+
+void rot(
+    int64_t n,
+    std::complex<float>* x, int64_t incx,
+    std::complex<float>* y, int64_t incy,
+    const float c,
+    const std::complex<float> s,
+    blas::Queue& queue );
+
+void rot(
+    int64_t n,
+    std::complex<double>* x, int64_t incx,
+    std::complex<double>* y, int64_t incy,
+    const double c,
+    const std::complex<double> s,
+    blas::Queue& queue );
+
+//------------------------------------------------------------------------------
+void rotg(
+    float* a,
+    float* b,
+    float* c,
+    float* s,
+    blas::Queue& queue );
+
+void rotg(
+    double* a,
+    double* b,
+    double* c,
+    double* s,
+    blas::Queue& queue );
+
+void rotg(
+    std::complex<float>* a,
+    std::complex<float>* b,
+    float* c,
+    std::complex<float>* s,
+    blas::Queue& queue );
+
+void rotg(
+    std::complex<double>* a,
+    std::complex<double>* b,
+    double* c,
+    std::complex<double>* s,
+    blas::Queue& queue );
+
+//------------------------------------------------------------------------------
+void rotm(
+    int64_t n,
+    float* x, int64_t incx,
+    float* y, int64_t incy,
+    const float* param,
+    blas::Queue& queue );
+
+void rotm(
+    int64_t n,
+    double* x, int64_t incx,
+    double* y, int64_t incy,
+    const double* param,
+    blas::Queue& queue );
+
+//------------------------------------------------------------------------------
+void rotmg(
+    float* d1,
+    float* d2,
+    float* x1,
+    float* y1,
+    float* param,
+    blas::Queue& queue );
+
+void rotmg(
+    double* d1,
+    double* d2,
+    double* x1,
+    double* y1,
+    double* param,
     blas::Queue& queue );
 
 //------------------------------------------------------------------------------

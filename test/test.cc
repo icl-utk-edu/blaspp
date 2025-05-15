@@ -158,11 +158,16 @@ std::vector< testsweeper::routines_t > routines = {
     { "",              nullptr,          Section::newline },
 
     // Device Level 1 BLAS
+    { "dev-asum",         test_asum_device,         Section::device_blas1   },
     { "dev-axpy",         test_axpy_device,         Section::device_blas1   },
     { "dev-dot",          test_dot_device,          Section::device_blas1   },
     { "dev-dotu",         test_dot_device,          Section::device_blas1   },
     { "dev-iamax",        test_iamax_device,        Section::device_blas1   },
     { "dev-nrm2",         test_nrm2_device,         Section::device_blas1   },
+    { "dev-rot",          test_rot_device,          Section::device_blas1   },
+    { "dev-rotg",         test_rotg_device,         Section::device_blas1   },
+    { "dev-rotm",         test_rotm_device,         Section::device_blas1   },
+    { "dev-rotmg",        test_rotmg_device,        Section::device_blas1   },
     { "dev-scal",         test_scal_device,         Section::device_blas1   },
     { "dev-swap",         test_swap_device,         Section::device_blas1   },
     { "dev-copy",         test_copy_device,         Section::device_blas1   },
