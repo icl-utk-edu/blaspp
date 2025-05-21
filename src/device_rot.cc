@@ -13,18 +13,24 @@
 
 namespace blas {
 
-// =============================================================================
-// Overloaded wrappers for s, d, c, z precisions.
+//==============================================================================
+namespace impl {
 
 //------------------------------------------------------------------------------
-/// GPU device, float version.
-/// @ingroup rot
+/// Mid-level templated wrapper checks and converts arguments,
+/// then calls low-level wrapper.
+/// TX is data [x, y]
+/// TS is for sine, which can be real (zdrot) or complex (zrot)
+/// cosine is always real
+/// @ingroup rot_internal
+///
+template <typename TX, typename TS>
 void rot(
     int64_t n,
-    float* x, int64_t incx,
-    float* y, int64_t incy,
-    const float c,
-    const float s,
+    TX* x, int64_t incx,
+    TX* y, int64_t incy,
+    const real_type<TX> c,
+    const TS s,
     blas::Queue& queue )
 {
 #ifndef BLAS_HAVE_DEVICE
@@ -58,6 +64,25 @@ void rot(
 #endif
 }
 
+}  // namespace impl
+
+//==============================================================================
+// High-level overloaded wrappers call mid-level templated wrapper.
+
+//------------------------------------------------------------------------------
+/// GPU device, float version.
+/// @ingroup rot
+void rot(
+    int64_t n,
+    float* x, int64_t incx,
+    float* y, int64_t incy,
+    const float c,
+    const float s,
+    blas::Queue& queue )
+{
+    impl::rot( n, x, incx, y, incy, c, s, queue );
+}
+
 //------------------------------------------------------------------------------
 /// GPU device, double version.
 /// @ingroup rot
@@ -69,35 +94,7 @@ void rot(
     const double s,
     blas::Queue& queue )
 {
-#ifndef BLAS_HAVE_DEVICE
-    throw blas::Error( "device BLAS not available", __func__ );
-#else
-    // check arguments
-    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
-    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    blas_error_if( incy == 0 );
-
-    #ifdef BLAS_HAVE_PAPI
-        // PAPI instrumentation
-        counter::dev_rot_type element;
-        memset( &element, 0, sizeof( element ) );
-        element = { n };
-        counter::insert( element, counter::Id::dev_rot );
-
-        double gflops = 1e9 * blas::Gflop< double >::rot( n );
-        counter::inc_flop_count( (long long int)gflops );
-    #endif
-
-    // convert arguments
-    device_blas_int n_    = to_device_blas_int( n );
-    device_blas_int incx_ = to_device_blas_int( incx );
-    device_blas_int incy_ = to_device_blas_int( incy );
-
-    blas::internal_set_device( queue.device() );
-
-    // call low-level wrapper
-    internal::rot( n_, x, incx_, y, incy_, c, s, queue );
-#endif
+    impl::rot( n, x, incx, y, incy, c, s, queue );
 }
 
 //------------------------------------------------------------------------------
@@ -116,35 +113,7 @@ void rot(
     const float s,
     blas::Queue& queue )
 {
-#ifndef BLAS_HAVE_DEVICE
-    throw blas::Error( "device BLAS not available", __func__ );
-#else
-    // check arguments
-    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
-    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    blas_error_if( incy == 0 );
-
-    #ifdef BLAS_HAVE_PAPI
-        // PAPI instrumentation
-        counter::dev_rot_type element;
-        memset( &element, 0, sizeof( element ) );
-        element = { n };
-        counter::insert( element, counter::Id::dev_rot );
-
-        double gflops = 1e9 * blas::Gflop< std::complex<float> >::rot( n );
-        counter::inc_flop_count( (long long int)gflops );
-    #endif
-
-    // convert arguments
-    device_blas_int n_    = to_device_blas_int( n );
-    device_blas_int incx_ = to_device_blas_int( incx );
-    device_blas_int incy_ = to_device_blas_int( incy );
-
-    blas::internal_set_device( queue.device() );
-
-    // call low-level wrapper
-    internal::rot( n_, x, incx_, y, incy_, c, s, queue );
-#endif
+    impl::rot( n, x, incx, y, incy, c, s, queue );
 }
 
 //------------------------------------------------------------------------------
@@ -159,35 +128,7 @@ void rot(
     const double s,
     blas::Queue& queue )
 {
-#ifndef BLAS_HAVE_DEVICE
-    throw blas::Error( "device BLAS not available", __func__ );
-#else
-    // check arguments
-    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
-    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    blas_error_if( incy == 0 );
-
-    #ifdef BLAS_HAVE_PAPI
-        // PAPI instrumentation
-        counter::dev_rot_type element;
-        memset( &element, 0, sizeof( element ) );
-        element = { n };
-        counter::insert( element, counter::Id::dev_rot );
-
-        double gflops = 1e9 * blas::Gflop< std::complex<double> >::rot( n );
-        counter::inc_flop_count( (long long int)gflops );
-    #endif
-
-    // convert arguments
-    device_blas_int n_    = to_device_blas_int( n );
-    device_blas_int incx_ = to_device_blas_int( incx );
-    device_blas_int incy_ = to_device_blas_int( incy );
-
-    blas::internal_set_device( queue.device() );
-
-    // call low-level wrapper
-    internal::rot( n_, x, incx_, y, incy_, c, s, queue );
-#endif
+    impl::rot( n, x, incx, y, incy, c, s, queue );
 }
 
 //------------------------------------------------------------------------------
@@ -205,35 +146,7 @@ void rot(
     const std::complex<float> s,
     blas::Queue& queue )
 {
-#ifndef BLAS_HAVE_DEVICE
-    throw blas::Error( "device BLAS not available", __func__ );
-#else
-    // check arguments
-    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
-    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    blas_error_if( incy == 0 );
-
-    #ifdef BLAS_HAVE_PAPI
-        // PAPI instrumentation
-        counter::dev_rot_type element;
-        memset( &element, 0, sizeof( element ) );
-        element = { n };
-        counter::insert( element, counter::Id::dev_rot );
-
-        double gflops = 1e9 * blas::Gflop< std::complex<float> >::rot( n );
-        counter::inc_flop_count( (long long int)gflops );
-    #endif
-
-    // convert arguments
-    device_blas_int n_    = to_device_blas_int( n );
-    device_blas_int incx_ = to_device_blas_int( incx );
-    device_blas_int incy_ = to_device_blas_int( incy );
-
-    blas::internal_set_device( queue.device() );
-
-    // call low-level wrapper
-    internal::rot( n_, x, incx_, y, incy_, c, s, queue );
-#endif
+    impl::rot( n, x, incx, y, incy, c, s, queue );
 }
 
 //------------------------------------------------------------------------------
@@ -248,35 +161,7 @@ void rot(
     const std::complex<double> s,
     blas::Queue& queue )
 {
-#ifndef BLAS_HAVE_DEVICE
-    throw blas::Error( "device BLAS not available", __func__ );
-#else
-    // check arguments
-    blas_error_if( n < 0 );      // standard BLAS returns, doesn't fail
-    blas_error_if( incx == 0 );  // standard BLAS doesn't detect inc[xy] == 0
-    blas_error_if( incy == 0 );
-
-    #ifdef BLAS_HAVE_PAPI
-        // PAPI instrumentation
-        counter::dev_rot_type element;
-        memset( &element, 0, sizeof( element ) );
-        element = { n };
-        counter::insert( element, counter::Id::dev_rot );
-
-        double gflops = 1e9 * blas::Gflop< std::complex<double> >::rot( n );
-        counter::inc_flop_count( (long long int)gflops );
-    #endif
-
-    // convert arguments
-    device_blas_int n_    = to_device_blas_int( n );
-    device_blas_int incx_ = to_device_blas_int( incx );
-    device_blas_int incy_ = to_device_blas_int( incy );
-
-    blas::internal_set_device( queue.device() );
-
-    // call low-level wrapper
-    internal::rot( n_, x, incx_, y, incy_, c, s, queue );
-#endif
+    impl::rot( n, x, incx, y, incy, c, s, queue );
 }
 
 }  // namespace blas
