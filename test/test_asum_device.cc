@@ -14,9 +14,9 @@ template <typename Tx>
 void test_asum_device_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using scalar_t = blas::scalar_type<Tx>;
-    using real_t   = blas::real_type<scalar_t>;
+    using real_t   = blas::real_type< Tx >;
     using std::abs;
+    using blas::max;
 
     // get & mark input values
     char mode       = params.pointer_mode();
@@ -26,8 +26,7 @@ void test_asum_device_work( Params& params, bool run )
     int64_t verbose = params.verbose();
 
     real_t  result_host;
-    real_t* result = &result_host;
-    real_t  result_cblas;
+    real_t* result_ptr = &result_host;
 
     // mark non-standard output values
     params.gflops();
@@ -50,9 +49,8 @@ void test_asum_device_work( Params& params, bool run )
     }
 
     // setup
-    size_t size_x = (n - 1) * std::abs(incx) + 1;
+    size_t size_x = max( (n - 1) * abs( incx ) + 1, 0 );
     Tx* x    = new Tx[ size_x ];
-    Tx* xref = new Tx[ size_x ];
 
     // device specifics
     blas::Queue queue( device );
@@ -60,22 +58,22 @@ void test_asum_device_work( Params& params, bool run )
 
     dx = blas::device_malloc<Tx>(size_x, queue);
     if (mode == 'd') {
-        result = blas::device_malloc<real_t>(1, queue);
+        result_ptr = blas::device_malloc< real_t >( 1, queue );
         #if defined( BLAS_HAVE_CUBLAS )
-        cublasSetPointerMode(queue.handle(), CUBLAS_POINTER_MODE_DEVICE);
+        cublasSetPointerMode( queue.handle(), CUBLAS_POINTER_MODE_DEVICE );
         #elif defined( BLAS_HAVE_ROCBLAS )
         rocblas_set_pointer_mode( queue.handle(), rocblas_pointer_mode_device );
         #endif
     }
 
     // test error exits
-    assert_throw( blas::asum( -1, x, incx, result, queue ), blas::Error );
-    assert_throw( blas::asum(  n, x,    0, result, queue ), blas::Error );
+    assert_throw( blas::asum( -1, x, incx, result_ptr, queue ), blas::Error );
+    assert_throw( blas::asum(  n, x,    0, result_ptr, queue ), blas::Error );
+    assert_throw( blas::asum(  n, x,   -1, result_ptr, queue ), blas::Error );
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
     lapack_larnv( idist, iseed, size_x, x );
-    cblas_copy( n, x, incx, xref, incx );
 
     blas::device_copy_vector(n, x, std::abs(incx), dx, std::abs(incx), queue);
     queue.sync();
@@ -86,60 +84,57 @@ void test_asum_device_work( Params& params, bool run )
                 llong( n ), llong( incx ), llong( size_x ) );
     }
     if (verbose >= 2) {
-        printf( "x    = " ); print_vector( n, x, incx );
+        printf( "x = " ); print_vector( n, x, incx );
     }
 
     // run test
     testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
-    blas::asum( n, dx, incx, result, queue );
+    blas::asum( n, dx, incx, result_ptr, queue );
     queue.sync();
     time = get_wtime() - time;
 
     if (mode == 'd') {
-        device_memcpy( &result_host, result, 1, queue );
+        device_memcpy( &result_host, result_ptr, 1, queue );
     }
 
-    double gflop = blas::Gflop< Tx >::nrm2( n );
-    double gbyte = blas::Gbyte< Tx >::nrm2( n );
+    double gflop = blas::Gflop< Tx >::asum( n );
+    double gbyte = blas::Gbyte< Tx >::asum( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
 
-    blas::device_copy_vector(n, dx, std::abs(incx), x, std::abs(incx), queue);
+    blas::device_copy_vector( n, dx, std::abs(incx), x, std::abs(incx), queue );
     queue.sync();
 
-    if (verbose >= 2) {
-        printf( "x2   = " ); print_vector( n, x, incx );
+    if (verbose >= 1) {
+        printf( "result = %.4e\n", result_host );
     }
 
     if (params.check() == 'y') {
         // run reference
         testsweeper::flush_cache( params.cache() );
         time = get_wtime();
-        result_cblas = cblas_asum( n, xref, incx );
+        real_t ref = cblas_asum( n, x, incx );
         time = get_wtime() - time;
 
         params.ref_time()   = time * 1000;  // msec
         params.ref_gflops() = gflop / time;
         params.ref_gbytes() = gbyte / time;
 
-        if (verbose >= 2) {
-            printf( "result0 = %.2e\n", result_cblas );
+        if (verbose >= 1) {
+            printf( "ref    = %.4e\n", ref );
         }
 
-        // relative forward error:
-        real_t error = abs( (result_cblas - result_host)
-                           / (sqrt(n+1) * result_cblas) );
-        params.error() = error;
-
-
-        if (verbose >= 2) {
-            printf( "err  = " ); print_vector( n, x, incx, "%9.2e" );
+        // relative forward error
+        // note: using sqrt(n) here gives failures
+        real_t error = abs( ref - result_host );
+        if (ref != 0) {
+            error /= (n * ref);
         }
 
         // complex needs extra factor; see Higham, 2002, sec. 3.6.
-        if (blas::is_complex<scalar_t>::value) {
+        if (blas::is_complex_v<Tx>) {
             error /= 2*sqrt(2);
         }
 
@@ -149,11 +144,10 @@ void test_asum_device_work( Params& params, bool run )
     }
 
     delete[] x;
-    delete[] xref;
 
     blas::device_free( dx, queue );
     if (mode == 'd')
-        blas::device_free( result, queue );
+        blas::device_free( result_ptr, queue );
 }
 
 // -----------------------------------------------------------------------------
