@@ -18,11 +18,9 @@ template <typename TX, typename TS>
 void test_rot_device_work( Params& params, bool run )
 {
     using namespace testsweeper;
-    using std::real;
-    using std::imag;
-    using blas::conj;
-    using scalar_t = blas::scalar_type< TX >;
-    using real_t   = blas::real_type< TX >;
+    using std::abs, std::real, std::imag;
+    using blas::conj, blas::max;
+    using real_t = blas::real_type< TX >;
 
     // get & mark input values
     int64_t n          = params.dim.n();
@@ -52,8 +50,8 @@ void test_rot_device_work( Params& params, bool run )
     }
 
     // setup
-    size_t size_x = (n - 1) * std::abs(incx) + 1;
-    size_t size_y = (n - 1) * std::abs(incy) + 1;
+    size_t size_x = max( (n - 1) * abs( incx ) + 1, 0 );
+    size_t size_y = max( (n - 1) * abs( incy ) + 1, 0 );
     TX* x    = new TX[ size_x ];
     TX* xref = new TX[ size_x ];
     TX* y    = new TX[ size_y ];
@@ -117,8 +115,8 @@ void test_rot_device_work( Params& params, bool run )
     queue.sync();
     time = get_wtime() - time;
 
-    double gflop = blas::Gflop< scalar_t >::dot( n );
-    double gbyte = blas::Gbyte< scalar_t >::dot( n );
+    double gflop = blas::Gflop< TX >::dot( n );
+    double gbyte = blas::Gbyte< TX >::dot( n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
@@ -127,18 +125,23 @@ void test_rot_device_work( Params& params, bool run )
     blas::device_copy_vector(n, dy, std::abs(incy), y, std::abs(incy), queue);
     queue.sync();
 
-    if (verbose >= 2) {
+    if (verbose >= 1) {
         printf( "x2   = " ); print_vector( n, x, incx );
         printf( "y2   = " ); print_vector( n, y, incy );
     }
 
-    if (params.check() == 'y') {
+    if (params.ref() == 'y' || params.check() == 'y') {
         // run reference
         testsweeper::flush_cache( params.cache() );
         time = get_wtime();
         cblas_rot( n, xref, incx, yref, incy, c, s );
         time = get_wtime() - time;
-        if (verbose >= 2) {
+
+        params.ref_time()   = time * 1000;  // msec
+        params.ref_gflops() = gflop / time;
+        params.ref_gbytes() = gbyte / time;
+
+        if (verbose >= 1) {
             printf( "xref = " ); print_vector( n, xref, incx );
             printf( "yref = " ); print_vector( n, yref, incy );
         }
@@ -163,6 +166,9 @@ void test_rot_device_work( Params& params, bool run )
                     Cref, n, C, n, verbose, &error, &okay );
         params.error() = error;
         params.okay() = okay;
+
+        delete[] C;
+        delete[] Cref;
     }
 
     delete[] x;
