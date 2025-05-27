@@ -201,6 +201,55 @@ void nrm2(
     blas::Queue& queue );
 
 //------------------------------------------------------------------------------
+void rot(
+    int64_t n,
+    float* x, int64_t incx,
+    float*y, int64_t incy,
+    const float c,
+    const float s,
+    blas::Queue& queue );
+
+void rot(
+    int64_t n,
+    double* x, int64_t incx,
+    double* y, int64_t incy,
+    const double c,
+    const double s,
+    blas::Queue& queue );
+
+void rot(
+    int64_t n,
+    std::complex<float>* x, int64_t incx,
+    std::complex<float>* y, int64_t incy,
+    const float c,
+    const float s,
+    blas::Queue& queue );
+
+void rot(
+    int64_t n,
+    std::complex<double>* x, int64_t incx,
+    std::complex<double>* y, int64_t incy,
+    const double c,
+    const double s,
+    blas::Queue& queue );
+
+void rot(
+    int64_t n,
+    std::complex<float>* x, int64_t incx,
+    std::complex<float>* y, int64_t incy,
+    const float c,
+    const std::complex<float> s,
+    blas::Queue& queue );
+
+void rot(
+    int64_t n,
+    std::complex<double>* x, int64_t incx,
+    std::complex<double>* y, int64_t incy,
+    const double c,
+    const std::complex<double> s,
+    blas::Queue& queue );
+
+//------------------------------------------------------------------------------
 void scal(
     int64_t n,
     float alpha,

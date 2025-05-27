@@ -678,6 +678,116 @@ void copy(
             (rocblas_double_complex*) dy, incdy) );
 }
 
+//------------------------------------------------------------------------------
+// rot
+//------------------------------------------------------------------------------
+void rot(
+    device_blas_int n,
+    float *dx, device_blas_int incdx,
+    float *dy, device_blas_int incdy,
+    const float c,
+    const float s,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        rocblas_srot(
+            queue.handle(),
+            n,
+            dx, incdx,
+            dy, incdy,
+            &c, &s));
+}
+
+//------------------------------------------------------------------------------
+void rot(
+    device_blas_int n,
+    double *dx, device_blas_int incdx,
+    double *dy, device_blas_int incdy,
+    const double c,
+    const double s,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        rocblas_drot(
+            queue.handle(),
+            n,
+            dx, incdx,
+            dy, incdy,
+            &c, &s));
+}
+
+//------------------------------------------------------------------------------
+void rot(
+    device_blas_int n,
+    std::complex<float> *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy,
+    const float c,
+    const float s,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        rocblas_csrot(
+            queue.handle(),
+            n,
+            (rocblas_float_complex*) dx, incdx,
+            (rocblas_float_complex*) dy, incdy,
+            &c, &s));
+}
+
+//------------------------------------------------------------------------------
+void rot(
+    device_blas_int n,
+    std::complex<double> *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy,
+    const double c,
+    const double s,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        rocblas_zdrot(
+            queue.handle(),
+            n,
+            (rocblas_double_complex*) dx, incdx,
+            (rocblas_double_complex*) dy, incdy,
+            &c, &s));
+}
+
+//------------------------------------------------------------------------------
+void rot(
+    device_blas_int n,
+    std::complex<float> *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy,
+    const float c,
+    const std::complex<float> s,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        rocblas_crot(
+            queue.handle(),
+            n,
+            (rocblas_float_complex*) dx, incdx,
+            (rocblas_float_complex*) dy, incdy,
+            &c, (rocblas_float_complex*) &s));
+}
+
+//------------------------------------------------------------------------------
+void rot(
+    device_blas_int n,
+    std::complex<double> *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy,
+    const double c,
+    const std::complex<double> s,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        rocblas_zrot(
+            queue.handle(),
+            n,
+            (rocblas_double_complex*) dx, incdx,
+            (rocblas_double_complex*) dy, incdy,
+            &c, (rocblas_double_complex*) &s));
+}
+
 //==============================================================================
 // Level 2 BLAS - Device Interfaces
 

@@ -372,6 +372,7 @@ add_library(
     src/device_scal.cc
     src/device_swap.cc
     src/device_copy.cc
+    src/device_rot.cc
     src/device_trmm.cc
     src/device_trsm.cc
     src/device_utils.cc

@@ -446,6 +446,55 @@ void nrm2(
     blas::Queue& queue );
 
 //------------------------------------------------------------------------------
+void rot(
+    device_blas_int n,
+    float *dx, device_blas_int incdx,
+    float *dy, device_blas_int incdy,
+    const float c,
+    const float s,
+    blas::Queue& queue );
+
+void rot(
+    device_blas_int n,
+    double *dx, device_blas_int incdx,
+    double *dy, device_blas_int incdy,
+    const double c,
+    const double s,
+    blas::Queue& queue );
+
+void rot(
+    device_blas_int n,
+    std::complex<float> *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy,
+    const float c,
+    const float s,
+    blas::Queue& queue );
+
+void rot(
+    device_blas_int n,
+    std::complex<double> *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy,
+    const double c,
+    const double s,
+    blas::Queue& queue );
+
+void rot(
+    device_blas_int n,
+    std::complex<float> *dx, device_blas_int incdx,
+    std::complex<float> *dy, device_blas_int incdy,
+    const float c,
+    const std::complex<float> s,
+    blas::Queue& queue );
+
+void rot(
+    device_blas_int n,
+    std::complex<double> *dx, device_blas_int incdx,
+    std::complex<double> *dy, device_blas_int incdy,
+    const double c,
+    const std::complex<double> s,
+    blas::Queue& queue );
+
+//------------------------------------------------------------------------------
 void scal(
     device_blas_int n,
     float alpha,

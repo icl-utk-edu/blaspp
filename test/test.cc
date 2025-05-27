@@ -164,6 +164,7 @@ std::vector< testsweeper::routines_t > routines = {
     { "dev-dotu",         test_dot_device,          Section::device_blas1   },
     { "dev-iamax",        test_iamax_device,        Section::device_blas1   },
     { "dev-nrm2",         test_nrm2_device,         Section::device_blas1   },
+    { "dev-rot",          test_rot_device,          Section::device_blas1   },
     { "dev-scal",         test_scal_device,         Section::device_blas1   },
     { "dev-swap",         test_swap_device,         Section::device_blas1   },
     { "dev-copy",         test_copy_device,         Section::device_blas1   },
