@@ -1,9 +1,22 @@
-2024.10.26
-  - Added PAPI SDE that counts flops.
-  - Use to_blas_int to convert int32 to int64.
+2025.05.28 (ABI 2.0.0)
+  - Added Level 1 BLAS GPU wrappers
+  - Added is_complex_v
+  - Added support for BLIS and libFLAME (hence AOCL)
+  - Removed support for ACML
+  - Removed deprecated enum, memcpy routines
+  - Moved [cz]symv and [cz]syr to BLAS++ from LAPACK++, since they
+    logically fit in BLAS. Requires linking with an LAPACK library
+  - Tester prints stats with --repeat
+  - Fixed SYCL include path
+  - Fixed testers for n = 0 case
+  - Fixed template gemm for beta = 0 to not propagate NaN/Inf (strong zero)
 
-2024.05.31
-  - Added shared library version (ABI version 1.0.0)
+2024.10.26 (ABI 1.0.0)
+  - Added PAPI SDE that counts flops
+  - Use to_blas_int to convert int32 to int64
+
+2024.05.31 (ABI 1.0.0)
+  - Added shared library ABI version
   - Updated enum parameters to have `to_string`, `from_string`;
     deprecate `<enum>2str`, `str2<enum>`
   - Removed some deprecated functions. Deprecated MemcpyKind
