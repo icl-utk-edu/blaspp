@@ -63,66 +63,6 @@ namespace blas {
 #endif
 
 // -----------------------------------------------------------------------------
-/// Direction to copy, one of:
-///
-/// - MemcpyKind::Default:        [recommended] determine direction to copy
-///                               based on virtual addresses where src
-///                               and dst are allocated.
-/// - MemcpyKind::HostToHost:     both src and dst on CPU host.
-/// - MemcpyKind::HostToDevice:   src on CPU host, dst on GPU device.
-/// - MemcpyKind::DeviceToHost:   src on GPU device, dst on CPU host.
-/// - MemcpyKind::DeviceToDevice: both src and dst on GPU devices,
-///                               which may be 2 different devices.
-///
-/// @deprecated use memcpy without kind. To be removed 2025-05.
-/// Can't use [[deprecated]] because other deprecated functions here still use this.
-enum class MemcpyKind : device_blas_int {
-    HostToHost     = 0,
-    HostToDevice   = 1,
-    DeviceToHost   = 2,
-    DeviceToDevice = 3,
-    Default        = 4,
-};
-
-// -----------------------------------------------------------------------------
-#if defined(BLAS_HAVE_CUBLAS)
-    /// @return the corresponding cuda memcpy kind constant
-    /// @deprecated use memcpy without kind. To be removed 2025-05.
-    inline cudaMemcpyKind memcpy2cuda( MemcpyKind kind )
-    {
-        switch (kind) {
-            case MemcpyKind::HostToHost:     return cudaMemcpyHostToHost;     break;
-            case MemcpyKind::HostToDevice:   return cudaMemcpyHostToDevice;   break;
-            case MemcpyKind::DeviceToHost:   return cudaMemcpyDeviceToHost;   break;
-            case MemcpyKind::DeviceToDevice: return cudaMemcpyDeviceToDevice; break;
-            case MemcpyKind::Default:        return cudaMemcpyDefault;
-            default: throw blas::Error( "unknown memcpy direction" );
-        }
-    }
-#elif defined(BLAS_HAVE_ROCBLAS)
-    /// @return the corresponding hip memcpy kind constant
-    /// @deprecated use memcpy without kind. To be removed 2025-05.
-    inline hipMemcpyKind memcpy2hip( MemcpyKind kind )
-    {
-        switch (kind) {
-            case MemcpyKind::HostToHost:     return hipMemcpyHostToHost;     break;
-            case MemcpyKind::HostToDevice:   return hipMemcpyHostToDevice;   break;
-            case MemcpyKind::DeviceToHost:   return hipMemcpyDeviceToHost;   break;
-            case MemcpyKind::DeviceToDevice: return hipMemcpyDeviceToDevice; break;
-            case MemcpyKind::Default:        return hipMemcpyDefault;
-            default: throw blas::Error( "unknown memcpy direction" );
-        }
-    }
-#elif defined(BLAS_HAVE_SYCL)
-    /// @return the corresponding sycl memcpy kind constant
-    /// The memcpy method in the sycl::queue class does not accept
-    /// a direction (i.e. always operates in default mode).
-    /// For interface compatibility with cuda/hip, return a default value
-    /// @deprecated use memcpy without kind. To be removed 2025-05.
-    inline int64_t memcpy2sycl( MemcpyKind kind ) { return 0; }
-#endif
-
-// -----------------------------------------------------------------------------
 // constants
 const int MaxBatchChunk = 50000;
 
@@ -516,50 +456,6 @@ void device_memset(
 }
 
 //------------------------------------------------------------------------------
-/// @deprecated: recommend using
-///     blas::device_memcpy( dst, src, nelements, queue )
-/// instead, which sets kind = MemcpyKind::Default.
-///
-/// @copydoc device_memcpy(T*,T const*,int64_t,Queue&)
-///
-/// @param[in] kind
-/// @copydoc MemcpyKind
-///
-/// @see device_memcpy(T*,T const*,int64_t,Queue&)
-///
-template <typename T>
-[[deprecated("Use device_memcpy without kind. To be removed 2025-05.")]]
-void device_memcpy(
-    T*       dst,
-    T const* src,
-    int64_t nelements, MemcpyKind kind, Queue& queue)
-{
-    blas_error_if( nelements < 0 );
-
-    #ifdef BLAS_HAVE_CUBLAS
-        blas::internal_set_device( queue.device() );
-        blas_dev_call(
-            cudaMemcpyAsync(
-                dst, src, sizeof(T)*nelements,
-                memcpy2cuda(kind), queue.stream() ) );
-
-    #elif defined(BLAS_HAVE_ROCBLAS)
-        blas::internal_set_device( queue.device() );
-        blas_dev_call(
-            hipMemcpyAsync(
-                dst, src, sizeof(T)*nelements,
-                memcpy2hip(kind), queue.stream() ) );
-
-    #elif defined(BLAS_HAVE_SYCL)
-        blas_dev_call(
-            queue.stream().memcpy( dst, src, sizeof(T)*nelements ) );
-
-    #else
-        throw blas::Error( "device BLAS not available", __func__ );
-    #endif
-}
-
-//------------------------------------------------------------------------------
 /// Copy nelements of type T from src to dst memory region.
 /// src and dst regions must not overlap.
 /// May be asynchronous with respect to host, depending on memory types;
@@ -603,67 +499,6 @@ void device_memcpy(
         blas_dev_call(
             queue.stream().memcpy( dst, src, sizeof(T)*nelements ) );
 
-    #else
-        throw blas::Error( "device BLAS not available", __func__ );
-    #endif
-}
-
-//------------------------------------------------------------------------------
-/// @deprecated: recommend using
-///     device_memcpy_2d( dst, dst_pitch, src, src_pitch, width, height, queue )
-/// instead, which sets kind = MemcpyKind::Default.
-///
-/// @copydoc device_memcpy_2d(T*,int64_t,T const*,int64_t,int64_t,int64_t,Queue&)
-///
-/// @param[in] kind
-/// @copydoc MemcpyKind
-///
-/// @see device_memcpy_2d(T*,int64_t,T const*,int64_t,int64_t,int64_t,Queue&)
-///
-template <typename T>
-[[deprecated("Use device_memcpy_2d without kind. To be removed 2025-05.")]]
-void device_memcpy_2d(
-    T*       dst, int64_t dst_pitch,
-    T const* src, int64_t src_pitch,
-    int64_t width, int64_t height, MemcpyKind kind, Queue& queue)
-{
-    blas_error_if( width  < 0 );
-    blas_error_if( height < 0 );
-    blas_error_if( dst_pitch < width );
-    blas_error_if( src_pitch < width );
-
-    #ifdef BLAS_HAVE_CUBLAS
-        blas::internal_set_device( queue.device() );
-        blas_dev_call(
-            cudaMemcpy2DAsync(
-                dst, sizeof(T)*dst_pitch,
-                src, sizeof(T)*src_pitch,
-                sizeof(T)*width, height, memcpy2cuda(kind), queue.stream() ) );
-
-    #elif defined(BLAS_HAVE_ROCBLAS)
-        blas::internal_set_device( queue.device() );
-        blas_dev_call(
-            hipMemcpy2DAsync(
-                dst, sizeof(T)*dst_pitch,
-                src, sizeof(T)*src_pitch,
-                sizeof(T)*width, height, memcpy2hip(kind), queue.stream() ) );
-
-    #elif defined(BLAS_HAVE_SYCL)
-        if (dst_pitch == width && src_pitch == width) {
-            // one contiguous memcpy
-            blas_dev_call(
-                queue.stream().memcpy( dst, src, width * height * sizeof(T) ) );
-        }
-        else {
-            // Copy each contiguous image row (matrix column).
-            // SYCL does not support set/get/lacpy matrix.
-            for (int64_t i = 0; i < height; ++i) {
-                T*       dst_row = dst + i*dst_pitch;
-                T const* src_row = src + i*src_pitch;
-                blas_dev_call(
-                    queue.stream().memcpy( dst_row, src_row, width*sizeof(T) ) );
-            }
-        }
     #else
         throw blas::Error( "device BLAS not available", __func__ );
     #endif

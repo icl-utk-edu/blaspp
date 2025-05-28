@@ -204,7 +204,7 @@ inline void stream_wait_event(
 #elif defined( BLAS_HAVE_ROCBLAS )
 
 //------------------------------------------------------------------------------
-/// Creates stream on current device. [[deprecated]]
+/// Creates stream on current device.
 inline hipStream_t stream_create()
 {
     hipStream_t stream;

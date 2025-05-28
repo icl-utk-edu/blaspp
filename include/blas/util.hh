@@ -76,21 +76,6 @@ inline char to_char( Uplo   value ) { return char( value ); }
 inline char to_char( Diag   value ) { return char( value ); }
 inline char to_char( Side   value ) { return char( value ); }
 
-[[deprecated("use to_char. To be removed 2025-05.")]]
-inline char layout2char( Layout value ) { return char( value ); }
-
-[[deprecated("use to_char. To be removed 2025-05.")]]
-inline char     op2char( Op     value ) { return char( value ); }
-
-[[deprecated("use to_char. To be removed 2025-05.")]]
-inline char   uplo2char( Uplo   value ) { return char( value ); }
-
-[[deprecated("use to_char. To be removed 2025-05.")]]
-inline char   diag2char( Diag   value ) { return char( value ); }
-
-[[deprecated("use to_char. To be removed 2025-05.")]]
-inline char   side2char( Side   value ) { return char( value ); }
-
 //------------------------------------------------------------------------------
 // Convert enum to LAPACK-style C string (const char*).
 
@@ -170,39 +155,6 @@ inline std::string to_string( Side value )
 }
 
 //------------------------------------------------------------------------------
-// Convert enum to LAPACK-style C string.
-
-[[deprecated("use to_string or to_c_string. To be removed 2025-05.")]]
-inline const char* layout2str( Layout value )
-{
-    return to_c_string( value );
-}
-
-[[deprecated("use to_string or to_c_string. To be removed 2025-05.")]]
-inline const char* op2str( Op value )
-{
-    return to_c_string( value );
-}
-
-[[deprecated("use to_string or to_c_string. To be removed 2025-05.")]]
-inline const char* uplo2str( Uplo value )
-{
-    return to_c_string( value );
-}
-
-[[deprecated("use to_string or to_c_string. To be removed 2025-05.")]]
-inline const char* diag2str( Diag value )
-{
-    return to_c_string( value );
-}
-
-[[deprecated("use to_string or to_c_string. To be removed 2025-05.")]]
-inline const char* side2str( Side value )
-{
-    return to_c_string( value );
-}
-
-//------------------------------------------------------------------------------
 // Convert LAPACK-style char or string to enum.
 
 inline void from_string( std::string const& str, Layout* val )
@@ -267,49 +219,6 @@ inline void from_string( std::string const& str, Side* val )
         *val = Side::Right;
     else
         throw Error( "unknown Side: " + str );
-}
-
-///-----------------------------------------------------------------------------
-// Convert LAPACK-style char to enum.
-
-[[deprecated("use from_string. To be removed 2025-05.")]]
-inline Layout char2layout( char layout )
-{
-    layout = (char) toupper( layout );
-    assert( layout == 'C' || layout == 'R' );
-    return Layout( layout );
-}
-
-[[deprecated("use from_string. To be removed 2025-05.")]]
-inline Op char2op( char op )
-{
-    op = (char) toupper( op );
-    assert( op == 'N' || op == 'T' || op == 'C' );
-    return Op( op );
-}
-
-[[deprecated("use from_string. To be removed 2025-05.")]]
-inline Uplo char2uplo( char uplo )
-{
-    uplo = (char) toupper( uplo );
-    assert( uplo == 'L' || uplo == 'U' || uplo == 'G' );
-    return Uplo( uplo );
-}
-
-[[deprecated("use from_string. To be removed 2025-05.")]]
-inline Diag char2diag( char diag )
-{
-    diag = (char) toupper( diag );
-    assert( diag == 'N' || diag == 'U' );
-    return Diag( diag );
-}
-
-[[deprecated("use from_string. To be removed 2025-05.")]]
-inline Side char2side( char side )
-{
-    side = (char) toupper( side );
-    assert( side == 'L' || side == 'R' );
-    return Side( side );
 }
 
 // -----------------------------------------------------------------------------
