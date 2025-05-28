@@ -74,6 +74,7 @@ public:
     testsweeper::ParamChar   check;
     testsweeper::ParamChar   ref;
     testsweeper::ParamChar   papi;
+    testsweeper::ParamDouble tol;
     testsweeper::ParamInt    repeat;
     testsweeper::ParamInt    verbose;
     testsweeper::ParamInt    cache;

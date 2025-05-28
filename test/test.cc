@@ -244,6 +244,7 @@ Params::Params():
     papi      ( "papi",       0, PT_Value, 'n', "ny", "run papi instrumentation" ),
 
     //          name,         w, p, type, default,  min,  max, help
+    tol       ( "tol",        0, 0, PT_Value,  20,    1, 1000, "tolerance (e.g., error < tol*epsilon to pass)" ),
     repeat    ( "repeat",     0,    PT_Value,   1,    1, 1000, "times to repeat each test" ),
     verbose   ( "verbose",    0,    PT_Value,   0,    0,   10, "verbose level" ),
     cache     ( "cache",      0,    PT_Value,  20,    1, 1024, "total cache size, in MiB" ),

@@ -18,8 +18,12 @@ void test_rotmg_work( Params& params, bool run )
     using std::imag;
     using real_t   = blas::real_type< T >;
 
+    // Constants
+    const real_t epsilon = std::numeric_limits< real_t >::epsilon();
+
     // get & mark input values
     int64_t n = params.dim.n();
+    double tol      = params.tol() * epsilon;
 
     // mark non-standard output values
     params.ref_time();
@@ -91,9 +95,8 @@ void test_rotmg_work( Params& params, bool run )
         );
 
         // error is normally 0, but allow for some rounding just in case.
-        real_t u = 0.5 * std::numeric_limits< real_t >::epsilon();
         params.error() = error;
-        params.okay() = (error < 10*u);
+        params.okay() = (error < tol);
     }
 }
 
