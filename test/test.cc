@@ -466,6 +466,7 @@ int main( int argc, char** argv )
 
         // run tests
         int repeat = params.repeat();
+        std::vector<double> times( repeat ), gflops( repeat );
         testsweeper::DataType last = params.datatype();
         params.header();
         do {
@@ -482,6 +483,10 @@ int main( int argc, char** argv )
                              ansi_bold, ansi_red, ex.what(), ansi_normal );
                     params.okay() = false;
                 }
+
+                // Collect stats.
+                times [ iter ] = params.time();
+                gflops[ iter ] = params.gflops();
 
                 params.print();
                 fflush( stdout );
@@ -500,6 +505,8 @@ int main( int argc, char** argv )
                 params.reset_output();
             }
             if (repeat > 1) {
+                testsweeper::print_stats( params.time,   times  );
+                testsweeper::print_stats( params.gflops, gflops );
                 printf( "\n" );
             }
         } while(params.next());
