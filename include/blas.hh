@@ -11,8 +11,8 @@
 #include "blas/counter.hh"
 
 // Version is updated by make_release.py; DO NOT EDIT.
-// Version 2024.10.26
-#define BLASPP_VERSION 20241026
+// Version 2025.05.28
+#define BLASPP_VERSION 20250528
 
 namespace blas {
 
