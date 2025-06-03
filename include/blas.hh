@@ -58,7 +58,7 @@ const char* blaspp_id();
 // =============================================================================
 // Level 3 BLAS template implementations
 
-#include "blas/gemm.hh"
+//#include "blas/gemm.hh"
 #include "blas/hemm.hh"
 #include "blas/herk.hh"
 #include "blas/her2k.hh"
