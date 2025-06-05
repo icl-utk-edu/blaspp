@@ -14,6 +14,7 @@
 #include <algorithm>
 
 #include <assert.h>
+#include <stdint.h>
 
 namespace blas {
 
