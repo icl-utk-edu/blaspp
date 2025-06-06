@@ -918,6 +918,90 @@ void rotmg(
 // Level 2 BLAS - Device Interfaces
 
 //------------------------------------------------------------------------------
+// gemv
+//------------------------------------------------------------------------------
+void gemv(
+    blas::Op trans,
+    device_blas_int m, device_blas_int n,
+    float alpha,
+    float const* dA, device_blas_int ldda,
+    float const* dx, device_blas_int incdx,
+    float beta,
+    float*       dy, device_blas_int incdy,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::gemv(
+            queue.stream(),
+            op2onemkl( trans ),
+            m, n,
+            alpha, dA, ldda,
+                    dx, incdx,
+            beta,  dy, incdy ) );
+}
+
+//------------------------------------------------------------------------------
+void gemv(
+    blas::Op trans,
+    device_blas_int m, device_blas_int n,
+    double alpha,
+    double const* dA, device_blas_int ldda,
+    double const* dx, device_blas_int incdx,
+    double beta,
+    double*       dy, device_blas_int incdy,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::gemv(
+            queue.stream(),
+            op2onemkl( trans ),
+            m, n,
+            alpha, dA, ldda,
+                    dx, incdx,
+            beta,  dy, incdy ) );
+}
+
+//------------------------------------------------------------------------------
+void gemv(
+    blas::Op trans,
+    device_blas_int m, device_blas_int n,
+    std::complex<float> alpha,
+    std::complex<float> const* dA, device_blas_int ldda,
+    std::complex<float> const* dx, device_blas_int incdx,
+    std::complex<float> beta,
+    std::complex<float>*       dy, device_blas_int incdy,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::gemv(
+            queue.stream(),
+            op2onemkl( trans ),
+            m, n,
+            alpha, dA, ldda,
+                   dx, incdx,
+            beta,  dy, incdy ) );
+}
+
+//------------------------------------------------------------------------------
+void gemv(
+    blas::Op trans,
+    device_blas_int m, device_blas_int n,
+    std::complex<double> alpha,
+    std::complex<double> const* dA, device_blas_int ldda,
+    std::complex<double> const* dx, device_blas_int incdx,
+    std::complex<double> beta,
+    std::complex<double>*       dy, device_blas_int incdy,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::gemv(
+            queue.stream(),
+            op2onemkl( trans ),
+            m, n,
+            alpha, dA, ldda,
+                   dx, incdx,
+            beta,  dy, incdy ) );
+}
 
 //==============================================================================
 // Level 3 BLAS - Device Interfaces

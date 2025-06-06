@@ -363,6 +363,51 @@ void swap(
 //==============================================================================
 // Level 2 BLAS
 
+//------------------------------------------------------------------------------
+void gemv(
+    blas::Layout layout,
+    blas::Op trans,
+    int64_t m, int64_t n,
+    float alpha,
+    float const* A, int64_t lda,
+    float const* x, int64_t incx,
+    float beta,
+    float*       y, int64_t incy,
+    blas::Queue& queue );
+
+void gemv(
+    blas::Layout layout,
+    blas::Op trans,
+    int64_t m, int64_t n,
+    double alpha,
+    double const* A, int64_t lda,
+    double const* x, int64_t incx,
+    double beta,
+    double*       y, int64_t incy,
+    blas::Queue& queue );
+
+void gemv(
+    blas::Layout layout,
+    blas::Op trans,
+    int64_t m, int64_t n,
+    std::complex<float> alpha,
+    std::complex<float> const* A, int64_t lda,
+    std::complex<float> const* x, int64_t incx,
+    std::complex<float> beta,
+    std::complex<float>*       y, int64_t incy,
+    blas::Queue& queue );
+
+void gemv(
+    blas::Layout layout,
+    blas::Op trans,
+    int64_t m, int64_t n,
+    std::complex<double> alpha,
+    std::complex<double> const* A, int64_t lda,
+    std::complex<double> const* x, int64_t incx,
+    std::complex<double> beta,
+    std::complex<double>*       y, int64_t incy,
+    blas::Queue& queue );
+
 //==============================================================================
 // Level 3 BLAS
 

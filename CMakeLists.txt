@@ -357,6 +357,7 @@ add_library(
     src/device_batch_trsm.cc
     src/device_error.cc
     src/device_gemm.cc
+    src/device_gemv.cc
     src/device_hemm.cc
     src/device_her2k.cc
     src/device_herk.cc
