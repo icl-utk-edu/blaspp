@@ -317,6 +317,11 @@ if (opts.blas2):
     [ 'trmv',  dtype      + layout + align + uplo + trans + diag + n + incx ],
     [ 'trsv',  dtype      + layout + align + uplo + trans + diag + n + incx ],
     ]
+    
+if (opts.blas2_device):
+    cmds += [
+    [ 'dev-gemv',  dtype      + layout + align + trans + mn + incx + incy ]
+    ]
 
 # Level 3
 if (opts.blas3):
