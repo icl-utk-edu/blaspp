@@ -635,8 +635,6 @@ void copy(
 // Level 2 BLAS - Device Interfaces
 
 //------------------------------------------------------------------------------
-// gemv
-//------------------------------------------------------------------------------
 void gemv(
     blas::Op trans,
     device_blas_int m, device_blas_int n,
@@ -647,7 +645,6 @@ void gemv(
     float*       dy, device_blas_int incdy,
     blas::Queue& queue );
 
-//------------------------------------------------------------------------------
 void gemv(
     blas::Op trans,
     device_blas_int m, device_blas_int n,
@@ -658,7 +655,6 @@ void gemv(
     double*       dy, device_blas_int incdy,
     blas::Queue& queue );
 
-//------------------------------------------------------------------------------
 void gemv(
     blas::Op trans,
     device_blas_int m, device_blas_int n,
@@ -669,7 +665,6 @@ void gemv(
     std::complex<float>*       dy, device_blas_int incdy,
     blas::Queue& queue );
 
-//------------------------------------------------------------------------------
 void gemv(
     blas::Op trans,
     device_blas_int m, device_blas_int n,
@@ -678,6 +673,47 @@ void gemv(
     std::complex<double> const* dx, device_blas_int incdx,
     std::complex<double> beta,
     std::complex<double>*       dy, device_blas_int incdy,
+    blas::Queue& queue );
+
+//------------------------------------------------------------------------------
+void symv(
+    blas::Uplo uplo,
+    int64_t n,
+    float alpha,
+    float const* dA, int64_t ldda,
+    float const* dx, int64_t incdx,
+    float beta,
+    float*       dy, int64_t incdy,
+    blas::Queue& queue );
+
+void symv(
+    blas::Uplo uplo,
+    int64_t n,
+    double alpha,
+    double const* dA, int64_t ldda,
+    double const* dx, int64_t incdx,
+    double beta,
+    double*       dy, int64_t incdy,
+    blas::Queue& queue );
+
+void symv(
+    blas::Uplo uplo,
+    int64_t n,
+    std::complex<float> alpha,
+    std::complex<float> const* dA, int64_t ldda,
+    std::complex<float> const* dx, int64_t incdx,
+    std::complex<float> beta,
+    std::complex<float>*       dy, int64_t incdy,
+    blas::Queue& queue );
+
+void symv(
+    blas::Uplo uplo,
+    int64_t n,
+    std::complex<double> alpha,
+    std::complex<double> const* dA, int64_t ldda,
+    std::complex<double> const* dx, int64_t incdx,
+    std::complex<double> beta,
+    std::complex<double>*       dy, int64_t incdy,
     blas::Queue& queue );
 
 //==============================================================================
