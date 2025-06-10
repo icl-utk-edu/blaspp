@@ -66,6 +66,7 @@ categories = [
     group_cat.add_argument( '--host', action='store_true', help='run all CPU host routines' ),
 
     group_cat.add_argument( '--blas1-device', action='store_true', help='run Level 1 BLAS on devices (GPUs)' ),
+    group_cat.add_argument( '--blas2-device', action='store_true', help='run Level 2 BLAS on devices (GPUs)' ),
     group_cat.add_argument( '--blas3-device', action='store_true', help='run Level 3 BLAS on devices (GPUs)' ),
     group_cat.add_argument( '--batch-blas3-device', action='store_true', help='run Level 3 Batch BLAS on devices (GPUs)' ),
 
@@ -317,6 +318,9 @@ if (opts.blas2):
     [ 'trmv',  dtype      + layout + align + uplo + trans + diag + n + incx ],
     [ 'trsv',  dtype      + layout + align + uplo + trans + diag + n + incx ],
     ]
+    
+if (opts.blas2_device):
+    cmds += []
 
 # Level 3
 if (opts.blas3):
