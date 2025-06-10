@@ -174,6 +174,7 @@ std::vector< testsweeper::routines_t > routines = {
     { "",                 nullptr,                  Section::newline },
 
     // Device Level 2 BLAS
+    { "dev-hemv",         test_symv_device,         Section::device_blas2   },
     { "dev-symv",         test_symv_device,         Section::device_blas2   },
     { "",                 nullptr,                  Section::newline },
 

@@ -321,6 +321,7 @@ if (opts.blas2):
     
 if (opts.blas2_device):
     cmds += [
+    [ 'dev-hemv',  dtype      + layout + align + uplo + n + incx + incy ],
     [ 'dev-symv',  dtype      + layout + align + uplo + n + incx + incy ],
     ]
 

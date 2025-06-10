@@ -252,6 +252,7 @@ void test_copy_device  ( Params& params, bool run );
 
 //------------------------------------------------------------------------------
 // Level 2 GPU BLAS
+void test_hemv_device  ( Params& params, bool run );
 void test_symv_device  ( Params& params, bool run );
 
 //------------------------------------------------------------------------------

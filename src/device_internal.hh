@@ -635,6 +635,27 @@ void copy(
 // Level 2 BLAS - Device Interfaces
 
 //------------------------------------------------------------------------------
+void hemv(
+    blas::Uplo uplo,
+    int64_t n,
+    std::complex<float> alpha,
+    std::complex<float> const* dA, int64_t ldda,
+    std::complex<float> const* dx, int64_t incdx,
+    std::complex<float> beta,
+    std::complex<float>*       dy, int64_t incdy,
+    blas::Queue& queue );
+
+void hemv(
+    blas::Uplo uplo,
+    int64_t n,
+    std::complex<double> alpha,
+    std::complex<double> const* dA, int64_t ldda,
+    std::complex<double> const* dx, int64_t incdx,
+    std::complex<double> beta,
+    std::complex<double>*       dy, int64_t incdy,
+    blas::Queue& queue );
+
+//------------------------------------------------------------------------------
 void symv(
     blas::Uplo uplo,
     int64_t n,

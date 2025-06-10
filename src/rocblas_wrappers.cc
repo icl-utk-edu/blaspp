@@ -938,6 +938,54 @@ void rotmg(
 // Level 2 BLAS - Device Interfaces
 
 //------------------------------------------------------------------------------
+// hemv
+//------------------------------------------------------------------------------
+void hemv(
+    blas::Uplo uplo,
+    int64_t n,
+    std::complex<float> alpha,
+    std::complex<float> const* dA, int64_t ldda,
+    std::complex<float> const* dx, int64_t incdx,
+    std::complex<float> beta,
+    std::complex<float>*       dy, int64_t incdy,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        rocblas_chemv(
+            queue.handle(),
+            uplo2rocblas( uplo ),
+            n,
+            (rocblas_float_complex*) &alpha,
+            (rocblas_float_complex*) dA, ldda,
+            (rocblas_float_complex*) dx, incdx,
+            (rocblas_float_complex*) &beta,
+            (rocblas_float_complex*) dy, incdy ) );
+}
+
+//------------------------------------------------------------------------------
+void hemv(
+    blas::Uplo uplo,
+    int64_t n,
+    std::complex<double> alpha,
+    std::complex<double> const* dA, int64_t ldda,
+    std::complex<double> const* dx, int64_t incdx,
+    std::complex<double> beta,
+    std::complex<double>*       dy, int64_t incdy,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        rocblas_zhemv(
+            queue.handle(),
+            uplo2rocblas( uplo ),
+            n,
+            (rocblas_double_complex*) &alpha,
+            (rocblas_double_complex*) dA, ldda,
+            (rocblas_double_complex*) dx, incdx,
+            (rocblas_double_complex*) &beta,
+            (rocblas_double_complex*) dy, incdy ) );
+}
+
+//------------------------------------------------------------------------------
 // symv
 //------------------------------------------------------------------------------
 void symv(

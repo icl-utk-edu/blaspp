@@ -965,6 +965,54 @@ void rotmg(
 // Level 2 BLAS - Device Interfaces
 
 //------------------------------------------------------------------------------
+// hemv
+//------------------------------------------------------------------------------
+void hemv(
+    blas::Uplo uplo,
+    int64_t n,
+    std::complex<float> alpha,
+    std::complex<float> const* dA, int64_t ldda,
+    std::complex<float> const* dx, int64_t incdx,
+    std::complex<float> beta,
+    std::complex<float>*       dy, int64_t incdy,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasChemv(
+            queue.handle(),
+            uplo2cublas( uplo ),
+            n,
+            (cuComplex*) &alpha,
+            (cuComplex*) dA, ldda,
+            (cuComplex*) dx, incdx,
+            (cuComplex*) &beta,
+            (cuComplex*) dy, incdy ) );
+}
+
+//------------------------------------------------------------------------------
+void hemv(
+    blas::Uplo uplo,
+    int64_t n,
+    std::complex<double> alpha,
+    std::complex<double> const* dA, int64_t ldda,
+    std::complex<double> const* dx, int64_t incdx,
+    std::complex<double> beta,
+    std::complex<double>*       dy, int64_t incdy,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasZhemv(
+            queue.handle(),
+            uplo2cublas( uplo ),
+            n,
+            (cuDoubleComplex*) &alpha,
+            (cuDoubleComplex*) dA, ldda,
+            (cuDoubleComplex*) dx, incdx,
+            (cuDoubleComplex*) &beta,
+            (cuDoubleComplex*) dy, incdy ) );
+}
+
+//------------------------------------------------------------------------------
 // symv
 //------------------------------------------------------------------------------
 void symv(
