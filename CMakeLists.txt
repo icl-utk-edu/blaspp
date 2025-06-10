@@ -363,6 +363,7 @@ add_library(
     src/device_iamax.cc
     src/device_queue.cc
     src/device_symm.cc
+    src/device_symv.cc
     src/device_syr2k.cc
     src/device_syrk.cc
     src/device_asum.cc
