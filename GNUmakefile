@@ -96,7 +96,7 @@ ifeq (${papi},1)
 endif
 
 #-------------------------------------------------------------------------------
-# Detect CUDA or HIP from make.inc LIBS.
+# Detect CUDA, HIP, or SYCL/oneMKL from make.inc LIBS.
 cuda = 0
 hip  = 0
 ifneq (,${findstring cublas,${LIBS}})

@@ -391,6 +391,7 @@ if (CUDAToolkit_FOUND)
         blaspp
         PRIVATE
         src/cuda/device_shift_vec.cu
+        src/cuda/device_conj.cu
     )
     # Some platforms need these to be public libraries.
     target_link_libraries(
@@ -400,6 +401,7 @@ elseif (rocblas_FOUND)
         blaspp
         PRIVATE
         src/hip/device_shift_vec.hip
+        src/hip/device_conj.hip
     )
     # Some platforms need these to be public libraries.
     target_link_libraries(

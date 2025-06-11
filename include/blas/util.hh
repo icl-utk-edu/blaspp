@@ -640,6 +640,16 @@ inline void abort_if( bool cond, const char* func,  const char* format, ... )
 
 #endif
 
+//------------------------------------------------------------------------------
+/// Integer division rounding up instead of down
+/// @return ceil( x / y ), for integer types T1, T2.
+template <typename T1, typename T2>
+inline constexpr std::common_type_t<T1, T2> ceildiv( T1 x, T2 y )
+{
+    using T = std::common_type_t<T1, T2>;
+    return T((x + y - 1) / y);
+}
+
 }  // namespace blas
 
 #endif        //  #ifndef BLAS_UTIL_HH
