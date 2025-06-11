@@ -27,6 +27,7 @@
     #endif
 
     #include <hip/hip_runtime.h>
+    #include <hip/hip_complex.h>
 
     // Headers moved in ROCm 5.2
     #if HIP_VERSION >= 50200000
@@ -699,12 +700,42 @@ void Queue::work_ensure_size( size_t lwork )
     }
 }
 
-//------------------------------------------------------------------------------
-/// Add a constant c to an n-element vector v.
-///
-
 template <typename scalar_t>
 void shift_vec( int64_t n, scalar_t* v, scalar_t c, blas::Queue& queue );
+
+template <typename TS, typename TD>
+void conj(
+    int64_t n,
+    TS const* src, int64_t inc_src,
+    TD* dst, int64_t inc_dst,
+    blas::Queue& queue );
+
+#if defined(BLAS_HAVE_SYCL)
+
+template <typename TS, typename TD>
+void conj(
+    int64_t n,
+    TS const* src, int64_t inc_src,
+    TD* dst, int64_t inc_dst,
+    blas::Queue& queue )
+{
+    using std::conj;
+
+    if (n <= 0) {
+        return;
+    }
+
+    int64_t i_src = (inc_src > 0 ? 0 : (1 - n) * inc_src);
+    int64_t i_dst = (inc_dst > 0 ? 0 : (1 - n) * inc_dst);
+
+    queue.stream().submit( [&]( sycl::handler& h ) {
+        h.parallel_for( sycl::range<1>(n), [=]( sycl::id<1> i ) {
+            dst[ i*inc_dst + i_dst ] = conj( src[ i*inc_src + i_src ] );
+        } );
+    } );
+}
+
+#endif // BLAS_HAVE_SYCL
 
 }  // namespace blas
 

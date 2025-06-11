@@ -715,16 +715,18 @@ def sycl_onemkl_library():
     Does not actually run the resulting exe, to allow compiling on a
     machine without GPUs.
     '''
-    libs = '-lmkl_sycl -lsycl -lOpenCL'
+    ldflags = '-fsycl'
+    libs    = '-lmkl_sycl -lsycl -lOpenCL'
     print_subhead( 'SYCL and oneMKL libraries' )
-    print_test( '    ' + libs )
+    print_test( '    ' + ldflags + ' ' + libs )
 
     # Intel compiler vars.sh defines $CMPLR_ROOT
     root = environ['CMPLR_ROOT'] or environ['CMPROOT']
     inc = ''
     if (root):
         inc = '-I' + root + '/linux/include '  # space at end for concat
-    env = {'LIBS': libs,
+    env = {'LDFLAGS': ldflags,
+           'LIBS': libs,
            'CXXFLAGS': inc + define('HAVE_SYCL')
            + ' -fsycl -Wno-deprecated-declarations'}
     (rc, out, err) = compile_exe( 'config/onemkl.cc', env )
