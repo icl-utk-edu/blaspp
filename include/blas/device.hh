@@ -706,6 +706,18 @@ void Queue::work_ensure_size( size_t lwork )
 template <typename scalar_t>
 void shift_vec( int64_t n, scalar_t* v, scalar_t c, blas::Queue& queue );
 
+//------------------------------------------------------------------------------
+/// Conjugates n-element vector src and stores in dst
+///
+///
+
+template <typename TS, typename TD>
+void conj(
+    int64_t n,
+    TS const* src, int64_t inc_src,
+    TD* dst, int64_t inc_dst,
+    blas::Queue& queue );
+
 }  // namespace blas
 
 #endif        //  #ifndef BLAS_DEVICE_HH
