@@ -68,6 +68,10 @@ void test_hemv_device_work( Params& params, bool run )
     TX* dx;
     TY* dy;
 
+    dA = blas::device_malloc<TA>( size_A, queue );
+    dx = blas::device_malloc<TX>( size_x, queue );
+    dy = blas::device_malloc<TY>( size_y, queue );
+
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
     lapack_larnv( idist, iseed, size_A, A );
@@ -78,6 +82,7 @@ void test_hemv_device_work( Params& params, bool run )
     blas::device_copy_matrix( size_A, size_A, A, lda, dA, lda, queue );
     blas::device_copy_vector( size_x, x, abs( incx ), dx, abs( incx ), queue );
     blas::device_copy_vector( size_y, y, abs( incy ), dy, abs( incy ), queue );
+    queue.sync();
 
     // norms for error check
     real_t work[1];
@@ -114,7 +119,7 @@ void test_hemv_device_work( Params& params, bool run )
     // run test
     testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
-    blas::hemv( layout, uplo, n, alpha, A, lda, x, incx, beta, y, incy );
+    blas::hemv( layout, uplo, n, alpha, dA, lda, dx, incx, beta, dy, incy );
     queue.sync();
     time = get_wtime() - time;
 

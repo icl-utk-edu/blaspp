@@ -82,6 +82,7 @@ void test_symv_device_work( Params& params, bool run )
     blas::device_copy_matrix( n, n, A, lda, dA, lda, queue );
     blas::device_copy_vector( size_x, x, abs( incx ), dx, abs( incx ), queue );
     blas::device_copy_vector( size_y, y, abs( incy ), dy, abs( incy ), queue );
+    queue.sync();
 
     // norms for error check
     real_t work[1];

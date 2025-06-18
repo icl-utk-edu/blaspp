@@ -76,20 +76,13 @@ void hemv(
         alpha = conj( alpha );
         beta  = conj( beta );
 
-        x2 = new scalar_t[ n ];
-        int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
-        for (int64_t i = 0; i < n; ++i) {
-            x2[ i ] = conj( x[ ix ] );
-            ix += incx;
-        }
+        x2 = blas::device_malloc<scalar_t>( n, queue );
+        blas::conj( n, x, incx, x2, 1, queue );
         incx_ = 1;
 
-        int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
-        for (int64_t i = 0; i < n; ++i) {
-            y[ iy ] = conj( y[ iy ] );
-            iy += incy;
-        }
+        blas::conj( n, y, incy, y, incy, queue );
     }
+    queue.sync();
 
     blas::internal_set_device( queue.device() );
 
@@ -99,12 +92,9 @@ void hemv(
 
     if (layout == Layout::RowMajor) {
         // y = conj( y )
-        int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
-        for (int64_t i = 0; i < n; ++i) {
-            y[ iy ] = conj( y[ iy ] );
-            iy += incy;
-        }
-        delete[] x2;
+        blas::conj( n, y, abs( incy ), y, abs( incy ), queue );
+        queue.sync();
+        blas::device_free( x2, queue );
     }
 #endif
 }
