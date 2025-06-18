@@ -79,17 +79,28 @@ public:
         dev_copy,
         dev_dot,
         dev_gemm,
+        dev_gemv,
+        dev_ger,
+        dev_geru,
         dev_hemm,
+        dev_hemv,
+        dev_her,
+        dev_her2,
         dev_her2k,
         dev_herk,
         dev_nrm2,
         dev_scal,
         dev_swap,
         dev_symm,
+        dev_symv,
+        dev_syr,
+        dev_syr2,
         dev_syr2k,
         dev_syrk,
         dev_trmm,
+        dev_trmv,
         dev_trsm,
+        dev_trsv,
 
         // Device batch BLAS
         dev_batch_gemm,
@@ -203,6 +214,24 @@ public:
     typedef axpy_type dev_scal_type;
     typedef axpy_type dev_swap_type;
 
+    //------------------------------------------------------------------------------
+    typedef gemv_type dev_gemv_type;
+
+    typedef hemv_type dev_hemv_type;
+    typedef hemv_type dev_symv_type;
+    typedef hemv_type dev_her_type;
+    typedef hemv_type dev_her2_type;
+    typedef hemv_type dev_syr_type;
+    typedef hemv_type dev_syr2_type;
+
+    typedef trmv_type dev_trmv_type;
+    typedef trmv_type dev_trsv_type;
+
+    typedef ger_type dev_ger_type;
+    typedef ger_type dev_geru_type;
+    typedef ger_type dev_gerc_type;
+
+    //------------------------------------------------------------------------------
     typedef gemm_type dev_gemm_type;
 
     typedef hemm_type dev_hemm_type;
@@ -606,12 +635,61 @@ public:
                         totalflops += flop;
                         break;
                     }
+                    case Id::dev_gemv: {
+                        auto *ptr = static_cast<dev_gemv_type *>( iter->ptr );
+                        double flop = Gflop<double>::gemv( ptr->m, ptr->n ) * 1e9 * iter->count;
+                        printf( "dev_gemv( %c, %lld, %lld ) count %d, flop count %.2e\n",
+                                op2char( ptr->trans ), llong( ptr->m ), llong( ptr->n ),
+                                iter->count, flop );
+                        totalflops += flop;
+                        break;
+                    }
+                    case Id::dev_ger: {
+                        auto *ptr = static_cast<dev_ger_type *>( iter->ptr );
+                        double flop = Gflop<double>::ger( ptr->m, ptr->n ) * 1e9 * iter->count;
+                        printf( "dev_ger( %lld, %lld ) count %d, flop count %.2e\n",
+                                llong( ptr->m ), llong( ptr->n ), iter->count, flop );
+                        totalflops += flop;
+                        break;
+                    }
+                    case Id::dev_geru: {
+                        auto *ptr = static_cast<dev_geru_type *>( iter->ptr );
+                        double flop = Gflop<double>::ger( ptr->m, ptr->n ) * 1e9 * iter->count;
+                        printf( "dev_geru( %lld, %lld ) count %d, flop count %.2e\n",
+                                llong( ptr->m ), llong( ptr->n ), iter->count, flop );
+                        totalflops += flop;
+                        break;
+                    }
                     case Id::dev_hemm: {
                         auto *ptr = static_cast<dev_hemm_type *>( iter->ptr );
                         double flop = Gflop<double>::hemm( ptr->side, ptr->m, ptr->n ) * 1e9 * iter->count;
                         printf( "dev_hemm( %c, %c, %lld, %lld ) count %d, flop count %.2e\n",
                                 side2char( ptr->side ), uplo2char( ptr->uplo ),
                                 llong( ptr->m ), llong( ptr->n ), iter->count, flop );
+                        totalflops += flop;
+                        break;
+                    }
+                    case Id::dev_hemv: {
+                        auto *ptr = static_cast<dev_hemv_type *>( iter->ptr );
+                        double flop = Gflop<double>::hemv( ptr->n ) * 1e9 * iter->count;
+                        printf( "dev_hemv( %c, %lld ) count %d, flop count %.2e\n",
+                                uplo2char( ptr->uplo ),llong( ptr->n ), iter->count, flop );
+                        totalflops += flop;
+                        break;
+                    }
+                    case Id::dev_her: {
+                        auto *ptr = static_cast<dev_her_type *>( iter->ptr );
+                        double flop = Gflop<double>::her( ptr->n ) * 1e9 * iter->count;
+                        printf( "dev_her( %c, %lld ) count %d, flop count %.2e\n",
+                                uplo2char( ptr->uplo ),llong( ptr->n ), iter->count, flop );
+                        totalflops += flop;
+                        break;
+                    }
+                    case Id::dev_her2: {
+                        auto *ptr = static_cast<dev_her_type *>( iter->ptr );
+                        double flop = Gflop<double>::her2( ptr->n ) * 1e9 * iter->count;
+                        printf( "dev_her2( %c, %lld ) count %d, flop count %.2e\n",
+                                uplo2char( ptr->uplo ),llong( ptr->n ), iter->count, flop );
                         totalflops += flop;
                         break;
                     }
@@ -666,6 +744,30 @@ public:
                         totalflops += flop;
                         break;
                     }
+                    case Id::dev_symv: {
+                        auto *ptr = static_cast<dev_symv_type *>( iter->ptr );
+                        double flop = Gflop<double>::symv( ptr->n ) * 1e9 * iter->count;
+                        printf( "dev_symv( %c, %lld ) count %d, flop count %.2e\n",
+                                uplo2char( ptr->uplo ),llong( ptr->n ), iter->count, flop );
+                        totalflops += flop;
+                        break;
+                    }
+                    case Id::dev_syr: {
+                        auto *ptr = static_cast<dev_syr_type *>( iter->ptr );
+                        double flop = Gflop<double>::syr( ptr->n ) * 1e9 * iter->count;
+                        printf( "dev_syr( %c, %lld ) count %d, flop count %.2e\n",
+                                uplo2char( ptr->uplo ),llong( ptr->n ), iter->count, flop );
+                        totalflops += flop;
+                        break;
+                    }
+                    case Id::dev_syr2: {
+                        auto *ptr = static_cast<dev_syr2_type *>( iter->ptr );
+                        double flop = Gflop<double>::syr2( ptr->n ) * 1e9 * iter->count;
+                        printf( "dev_syr2( %c, %lld ) count %d, flop count %.2e\n",
+                                uplo2char( ptr->uplo ),llong( ptr->n ), iter->count, flop );
+                        totalflops += flop;
+                        break;
+                    }
                     case Id::dev_syr2k: {
                         auto *ptr = static_cast<dev_syr2k_type *>( iter->ptr );
                         double flop = Gflop<double>::syr2k( ptr->n, ptr->k ) * 1e9 * iter->count;
@@ -694,6 +796,15 @@ public:
                         totalflops += flop;
                         break;
                     }
+                    case Id::dev_trmv: {
+                        auto *ptr = static_cast<dev_trmv_type *>( iter->ptr );
+                        double flop = Gflop<double>::trmv( ptr->n ) * 1e9 * iter->count;
+                        printf( "dev_trmv( %c, %c, %c, %lld ) count %d, flop count %.2e\n",
+                                uplo2char( ptr->uplo ), op2char( ptr->trans ),
+                                diag2char( ptr->diag), llong( ptr->n ), iter->count, flop );
+                        totalflops += flop;
+                        break;
+                    }
                     case Id::dev_trsm: {
                         auto *ptr = static_cast<dev_trsm_type *>( iter->ptr );
                         double flop = Gflop<double>::trsm( ptr->side, ptr->m, ptr->n ) * 1e9 * iter->count;
@@ -701,6 +812,15 @@ public:
                                 side2char( ptr->side ), uplo2char( ptr->uplo ),
                                 op2char( ptr->transA ), diag2char( ptr->diag ),
                                 llong( ptr->m ), llong( ptr->n ), iter->count, flop );
+                        totalflops += flop;
+                        break;
+                    }
+                    case Id::dev_trsv: {
+                        auto *ptr = static_cast<dev_trsv_type *>( iter->ptr );
+                        double flop = Gflop<double>::trsv( ptr->n ) * 1e9 * iter->count;
+                        printf( "dev_trsv( %c, %c, %c, %lld ) count %d, flop count %.2e\n",
+                                uplo2char( ptr->uplo ), op2char( ptr->trans ),
+                                diag2char( ptr->diag), llong( ptr->n ), iter->count, flop );
                         totalflops += flop;
                         break;
                     }
