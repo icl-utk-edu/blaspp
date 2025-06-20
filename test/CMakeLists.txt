@@ -114,9 +114,11 @@ add_executable(
     test_copy_device.cc
     test_gemm_device.cc
     test_hemm_device.cc
+    test_hemv_device.cc
     test_her2k_device.cc
     test_herk_device.cc
     test_symm_device.cc
+    test_symv_device.cc
     test_syr2k_device.cc
     test_syrk_device.cc
     test_trmm_device.cc

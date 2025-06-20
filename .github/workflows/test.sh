@@ -30,7 +30,7 @@ else
     (( err += $? ))
 
     # CUDA, HIP, or SYCL. These fail gracefully when GPUs are absent.
-    ./run_tests.py ${args} --blas1-device --blas3-device
+    ./run_tests.py ${args} --blas1-device --blas2-device --blas3-device
     (( err += $? ))
 
     ./run_tests.py ${args} --batch-blas3-device
