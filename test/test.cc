@@ -173,6 +173,10 @@ std::vector< testsweeper::routines_t > routines = {
     { "dev-copy",         test_copy_device,         Section::device_blas1   },
     { "",                 nullptr,                  Section::newline },
 
+    // Device Level 2 BLAS
+    { "dev-gemv",         test_gemv_device,         Section::device_blas2   },
+    { "",                 nullptr,                  Section::newline },
+
     // Device Level 3 BLAS
     { "dev-gemm",         test_gemm_device,         Section::device_blas3   },
     { "",                 nullptr,                  Section::newline },

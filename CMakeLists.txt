@@ -357,6 +357,7 @@ add_library(
     src/device_batch_trsm.cc
     src/device_error.cc
     src/device_gemm.cc
+    src/device_gemv.cc
     src/device_hemm.cc
     src/device_her2k.cc
     src/device_herk.cc
@@ -391,6 +392,7 @@ if (CUDAToolkit_FOUND)
         blaspp
         PRIVATE
         src/cuda/device_shift_vec.cu
+        src/cuda/device_conj.cu
     )
     # Some platforms need these to be public libraries.
     target_link_libraries(
@@ -400,6 +402,7 @@ elseif (rocblas_FOUND)
         blaspp
         PRIVATE
         src/hip/device_shift_vec.hip
+        src/hip/device_conj.hip
     )
     # Some platforms need these to be public libraries.
     target_link_libraries(
