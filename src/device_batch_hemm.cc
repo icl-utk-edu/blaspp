@@ -65,7 +65,7 @@ void hemm(
         element = { batch_size };
         counter::insert( element, counter::Id::dev_batch_hemm );
 
-        double gflops = 1e9 * blas::Gflop< scalar_t >::hemm( side, m, n );
+        double gflops = 1e9 * blas::Gflop< scalar_t >::hemm( side[0], m[0], n[0] );
         counter::inc_flop_count( (long long int)gflops );
     #endif
 

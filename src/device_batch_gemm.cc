@@ -91,7 +91,7 @@ void gemm(
             element = { transA_, transB_, m_, n_, k_, batch_size };
             counter::insert( element, counter::Id::dev_batch_gemm );
 
-            double gflops = 1e9 * blas::Gflop< scalar_t >::gemm( m, n, k );
+            double gflops = 1e9 * blas::Gflop< scalar_t >::gemm( m_, n_, k_ );
             counter::inc_flop_count( (long long int)gflops );
         #endif
 
