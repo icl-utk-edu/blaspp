@@ -324,6 +324,8 @@ if (opts.blas2_device):
     [ 'dev-gemv',  dtype      + layout + align + trans + mn + incx + incy ],
     [ 'dev-hemv',  dtype      + layout + align + uplo + n + incx + incy ],
     [ 'dev-symv',  dtype      + layout + align + uplo + n + incx + incy ],
+    [ 'dev-trmv',  dtype      + layout + align + uplo + trans + diag + n + incx ],
+    [ 'dev-trsv',  dtype      + layout + align + uplo + trans + diag + n + incx ],
     ]
 
 # Level 3

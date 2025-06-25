@@ -1133,6 +1133,162 @@ void symv(
             beta,  dy, incdy ) );
 }
 
+//------------------------------------------------------------------------------
+// trmv
+//------------------------------------------------------------------------------
+void trmv(
+    blas::Uplo uplo,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t n,
+    float const* dA, int64_t ldda,
+    float*       dx, int64_t incdx,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::trmv(
+            queue.stream(),
+            uplo2onemkl( uplo ), op2onemkl( trans ), diag2onemkl( diag ),
+            n,
+            dA, ldda,
+            dx, incdx ) );
+}
+
+//------------------------------------------------------------------------------
+void trmv(
+    blas::Uplo uplo,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t n,
+    double const* dA, int64_t ldda,
+    double*       dx, int64_t incdx,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::trmv(
+            queue.stream(),
+            uplo2onemkl( uplo ), op2onemkl( trans ), diag2onemkl( diag ),
+            n,
+            dA, ldda,
+            dx, incdx ) );
+}
+
+//------------------------------------------------------------------------------
+void trmv(
+    blas::Uplo uplo,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t n,
+    std::complex<float> const* dA, int64_t ldda,
+    std::complex<float>*       dx, int64_t incdx,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::trmv(
+            queue.stream(),
+            uplo2onemkl( uplo ), op2onemkl( trans ), diag2onemkl( diag ),
+            n,
+            dA, ldda,
+            dx, incdx ) );
+}
+
+//------------------------------------------------------------------------------
+void trmv(
+    blas::Uplo uplo,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t n,
+    std::complex<double> const* dA, int64_t ldda,
+    std::complex<double>*       dx, int64_t incdx,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::trmv(
+            queue.stream(),
+            uplo2onemkl( uplo ), op2onemkl( trans ), diag2onemkl( diag ),
+            n,
+            dA, ldda,
+            dx, incdx ) );
+}
+
+//------------------------------------------------------------------------------
+// trsv
+//------------------------------------------------------------------------------
+void trsv(
+    blas::Uplo uplo,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t n,
+    float const* dA, int64_t ldda,
+    float*       dx, int64_t incdx,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::trsv(
+            queue.stream(),
+            uplo2onemkl( uplo ), op2onemkl( trans ), diag2onemkl( diag ),
+            n,
+            dA, ldda,
+            dx, incdx ) );
+}
+
+//------------------------------------------------------------------------------
+void trsv(
+    blas::Uplo uplo,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t n,
+    double const* dA, int64_t ldda,
+    double*       dx, int64_t incdx,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::trsv(
+            queue.stream(),
+            uplo2onemkl( uplo ), op2onemkl( trans ), diag2onemkl( diag ),
+            n,
+            dA, ldda,
+            dx, incdx ) );
+}
+
+//------------------------------------------------------------------------------
+void trsv(
+    blas::Uplo uplo,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t n,
+    std::complex<float> const* dA, int64_t ldda,
+    std::complex<float>*       dx, int64_t incdx,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::trsv(
+            queue.stream(),
+            uplo2onemkl( uplo ), op2onemkl( trans ), diag2onemkl( diag ),
+            n,
+            dA, ldda,
+            dx, incdx ) );
+}
+
+//------------------------------------------------------------------------------
+void trsv(
+    blas::Uplo uplo,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t n,
+    std::complex<double> const* dA, int64_t ldda,
+    std::complex<double>*       dx, int64_t incdx,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::trsv(
+            queue.stream(),
+            uplo2onemkl( uplo ), op2onemkl( trans ), diag2onemkl( diag ),
+            n,
+            dA, ldda,
+            dx, incdx ) );
+}
+
 //==============================================================================
 // Level 3 BLAS - Device Interfaces
 

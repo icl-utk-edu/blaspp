@@ -255,6 +255,8 @@ void test_copy_device  ( Params& params, bool run );
 void test_gemv_device  ( Params& params, bool run );
 void test_hemv_device  ( Params& params, bool run );
 void test_symv_device  ( Params& params, bool run );
+void test_trmv_device  ( Params& params, bool run );
+void test_trsv_device  ( Params& params, bool run );
 
 //------------------------------------------------------------------------------
 // Level 3 GPU BLAS

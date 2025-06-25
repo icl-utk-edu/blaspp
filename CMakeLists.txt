@@ -380,7 +380,9 @@ add_library(
     src/device_rotm.cc
     src/device_rotmg.cc
     src/device_trmm.cc
+    src/device_trmv.cc
     src/device_trsm.cc
+    src/device_trsv.cc
     src/device_utils.cc
     src/cublas_wrappers.cc
     src/rocblas_wrappers.cc

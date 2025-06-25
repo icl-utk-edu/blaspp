@@ -498,6 +498,88 @@ void symv(
     std::complex<double>* y, int64_t incy,
     blas::Queue& queue );
 
+//------------------------------------------------------------------------------
+void trmv(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t n,
+    float const* A, int64_t lda,
+    float*       x, int64_t incx,
+    blas::Queue& queue );
+
+void trmv(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t n,
+    double const* A, int64_t lda,
+    double* x, int64_t incx,
+    blas::Queue& queue );
+
+void trmv(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t n,
+    std::complex<float> const* A, int64_t lda,
+    std::complex<float>*       x, int64_t incx,
+    blas::Queue& queue );
+
+void trmv(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t n,
+    std::complex<double> const* A, int64_t lda,
+    std::complex<double>*       x, int64_t incx,
+    blas::Queue& queue );
+
+//------------------------------------------------------------------------------
+void trsv(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t n,
+    float const* A, int64_t lda,
+    float*       x, int64_t incx,
+    blas::Queue& queue );
+
+void trsv(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t n,
+    double const* A, int64_t lda,
+    double*       x, int64_t incx,
+    blas::Queue& queue );
+
+void trsv(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t n,
+    std::complex<float> const* A, int64_t lda,
+    std::complex<float>*       x, int64_t incx,
+    blas::Queue& queue );
+
+void trsv(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t n,
+    std::complex<double> const* A, int64_t lda,
+    std::complex<double>*       x, int64_t incx,
+    blas::Queue& queue );
+
 //==============================================================================
 // Level 3 BLAS
 

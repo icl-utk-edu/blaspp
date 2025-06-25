@@ -1165,6 +1165,162 @@ void symv(
             (rocblas_double_complex*) dy, incdy ) );
 }
 
+//------------------------------------------------------------------------------
+// trmv
+//------------------------------------------------------------------------------
+void trmv(
+    blas::Uplo uplo,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t n,
+    float const* dA, int64_t ldda,
+    float*       dx, int64_t incdx,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        rocblas_strmv(
+            queue.handle(),
+            uplo2rocblas( uplo ), op2rocblas( trans ), diag2rocblas( diag ),
+            n,
+            dA, ldda,
+            dx, incdx ) );
+}
+
+//------------------------------------------------------------------------------
+void trmv(
+    blas::Uplo uplo,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t n,
+    double const* dA, int64_t ldda,
+    double*       dx, int64_t incdx,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        rocblas_dtrmv(
+            queue.handle(),
+            uplo2rocblas( uplo ), op2rocblas( trans ), diag2rocblas( diag ),
+            n,
+            dA, ldda,
+            dx, incdx ) );
+}
+
+//------------------------------------------------------------------------------
+void trmv(
+    blas::Uplo uplo,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t n,
+    std::complex<float> const* dA, int64_t ldda,
+    std::complex<float>*       dx, int64_t incdx,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        rocblas_ctrmv(
+            queue.handle(),
+            uplo2rocblas( uplo ), op2rocblas( trans ), diag2rocblas( diag ),
+            n,
+            (rocblas_float_complex*) dA, ldda,
+            (rocblas_float_complex*) dx, incdx ) );
+}
+
+//------------------------------------------------------------------------------
+void trmv(
+    blas::Uplo uplo,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t n,
+    std::complex<double> const* dA, int64_t ldda,
+    std::complex<double>*       dx, int64_t incdx,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        rocblas_ztrmv(
+            queue.handle(),
+            uplo2rocblas( uplo ), op2rocblas( trans ), diag2rocblas( diag ),
+            n,
+            (rocblas_double_complex*) dA, ldda,
+            (rocblas_double_complex*) dx, incdx ) );
+}
+
+//------------------------------------------------------------------------------
+// trsv
+//------------------------------------------------------------------------------
+void trsv(
+    blas::Uplo uplo,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t n,
+    float const* dA, int64_t ldda,
+    float*       dx, int64_t incdx,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        rocblas_strsv(
+            queue.handle(),
+            uplo2rocblas( uplo ), op2rocblas( trans ), diag2rocblas( diag ),
+            n,
+            dA, ldda,
+            dx, incdx ) );
+}
+
+//------------------------------------------------------------------------------
+void trsv(
+    blas::Uplo uplo,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t n,
+    double const* dA, int64_t ldda,
+    double*       dx, int64_t incdx,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        rocblas_dtrsv(
+            queue.handle(),
+            uplo2rocblas( uplo ), op2rocblas( trans ), diag2rocblas( diag ),
+            n,
+            dA, ldda,
+            dx, incdx ) );
+}
+
+//------------------------------------------------------------------------------
+void trsv(
+    blas::Uplo uplo,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t n,
+    std::complex<float> const* dA, int64_t ldda,
+    std::complex<float>*       dx, int64_t incdx,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        rocblas_ctrsv(
+            queue.handle(),
+            uplo2rocblas( uplo ), op2rocblas( trans ), diag2rocblas( diag ),
+            n,
+            (rocblas_float_complex*) dA, ldda,
+            (rocblas_float_complex*) dx, incdx ) );
+}
+
+//------------------------------------------------------------------------------
+void trsv(
+    blas::Uplo uplo,
+    blas::Op trans,
+    blas::Diag diag,
+    int64_t n,
+    std::complex<double> const* dA, int64_t ldda,
+    std::complex<double>*       dx, int64_t incdx,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        rocblas_ztrsv(
+            queue.handle(),
+            uplo2rocblas( uplo ), op2rocblas( trans ), diag2rocblas( diag ),
+            n,
+            (rocblas_double_complex*) dA, ldda,
+            (rocblas_double_complex*) dx, incdx ) );
+}
+
 //==============================================================================
 // Level 3 BLAS - Device Interfaces
 
