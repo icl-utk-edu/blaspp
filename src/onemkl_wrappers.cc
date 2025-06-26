@@ -1289,6 +1289,160 @@ void trsv(
             dx, incdx ) );
 }
 
+//------------------------------------------------------------------------------
+// ger
+//------------------------------------------------------------------------------
+void ger(
+    int64_t m, int64_t n,
+    float alpha,
+    float const* dx, int64_t incdx,
+    float const* dy, int64_t incdy,
+    float*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::ger(
+            queue.stream(),
+            m, n,
+            alpha,
+            dx, incdx,
+            dy, incdy,
+            dA, ldda ) );
+}
+
+//------------------------------------------------------------------------------
+void ger(
+    int64_t m, int64_t n,
+    double alpha,
+    double const* dx, int64_t incdx,
+    double const* dy, int64_t incdy,
+    double*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::ger(
+            queue.stream(),
+            m, n,
+            alpha,
+            dx, incdx,
+            dy, incdy,
+            dA, ldda ) );
+}
+
+//------------------------------------------------------------------------------
+void ger(
+    int64_t m, int64_t n,
+    std::complex<float> alpha,
+    std::complex<float> const* dx, int64_t incdx,
+    std::complex<float> const* dy, int64_t incdy,
+    std::complex<float>*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::gerc(
+            queue.stream(),
+            m, n,
+            alpha,
+            dx, incdx,
+            dy, incdy,
+            dA, ldda ) );
+}
+
+//------------------------------------------------------------------------------
+void ger(
+    int64_t m, int64_t n,
+    std::complex<double> alpha,
+    std::complex<double> const* dx, int64_t incdx,
+    std::complex<double> const* dy, int64_t incdy,
+    std::complex<double>*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::gerc(
+            queue.stream(),
+            m, n,
+            alpha,
+            dx, incdx,
+            dy, incdy,
+            dA, ldda ) );
+}
+
+//------------------------------------------------------------------------------
+void geru(
+    int64_t m, int64_t n,
+    float alpha,
+    float const* dx, int64_t incdx,
+    float const* dy, int64_t incdy,
+    float*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::ger(
+            queue.stream(),
+            m, n,
+            alpha,
+            dx, incdx,
+            dy, incdy,
+            dA, ldda ) );
+}
+
+//------------------------------------------------------------------------------
+void geru(
+    int64_t m, int64_t n,
+    double alpha,
+    double const* dx, int64_t incdx,
+    double const* dy, int64_t incdy,
+    double*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::ger(
+            queue.stream(),
+            m, n,
+            alpha,
+            dx, incdx,
+            dy, incdy,
+            dA, ldda ) );
+}
+
+//------------------------------------------------------------------------------
+void geru(
+    int64_t m, int64_t n,
+    std::complex<float> alpha,
+    std::complex<float> const* dx, int64_t incdx,
+    std::complex<float> const* dy, int64_t incdy,
+    std::complex<float>*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::geru(
+            queue.stream(),
+            m, n,
+            alpha,
+            dx, incdx,
+            dy, incdy,
+            dA, ldda ) );
+}
+
+//------------------------------------------------------------------------------
+void geru(
+    int64_t m, int64_t n,
+    std::complex<double> alpha,
+    std::complex<double> const* dx, int64_t incdx,
+    std::complex<double> const* dy, int64_t incdy,
+    std::complex<double>*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::geru(
+            queue.stream(),
+            m, n,
+            alpha,
+            dx, incdx,
+            dy, incdy,
+            dA, ldda ) );
+}
+
 //==============================================================================
 // Level 3 BLAS - Device Interfaces
 

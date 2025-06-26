@@ -580,6 +580,80 @@ void trsv(
     std::complex<double>*       x, int64_t incx,
     blas::Queue& queue );
 
+//------------------------------------------------------------------------------
+void ger(
+    blas::Layout layout,
+    int64_t m, int64_t n,
+    float alpha,
+    float const* x, int64_t incx,
+    float const* y, int64_t incy,
+    float*       A, int64_t lda,
+    blas::Queue& queue );
+
+void ger(
+    blas::Layout layout,
+    int64_t m, int64_t n,
+    double alpha,
+    double const* x, int64_t incx,
+    double const* y, int64_t incy,
+    double*       A, int64_t lda,
+    blas::Queue& queue );
+
+void ger(
+    blas::Layout layout,
+    int64_t m, int64_t n,
+    std::complex<float> alpha,
+    std::complex<float> const* x, int64_t incx,
+    std::complex<float> const* y, int64_t incy,
+    std::complex<float>*       A, int64_t lda,
+    blas::Queue& queue );
+
+void ger(
+    blas::Layout layout,
+    int64_t m, int64_t n,
+    std::complex<double> alpha,
+    std::complex<double> const* x, int64_t incx,
+    std::complex<double> const* y, int64_t incy,
+    std::complex<double>*       A, int64_t lda,
+    blas::Queue& queue );
+
+//------------------------------------------------------------------------------
+void geru(
+    blas::Layout layout,
+    int64_t m, int64_t n,
+    float alpha,
+    float const* x, int64_t incx,
+    float const* y, int64_t incy,
+    float*       A, int64_t lda,
+    blas::Queue& queue );
+
+void geru(
+    blas::Layout layout,
+    int64_t m, int64_t n,
+    double alpha,
+    double const* x, int64_t incx,
+    double const* y, int64_t incy,
+    double*       A, int64_t lda,
+    blas::Queue& queue );
+
+void geru(
+    blas::Layout layout,
+    int64_t m, int64_t n,
+    std::complex<float> alpha,
+    std::complex<float> const* x, int64_t incx,
+    std::complex<float> const* y, int64_t incy,
+    std::complex<float>*       A, int64_t lda,
+    blas::Queue& queue );
+
+void geru(
+    blas::Layout layout,
+    int64_t m, int64_t n,
+    std::complex<double> alpha,
+    std::complex<double> const* x, int64_t incx,
+    std::complex<double> const* y, int64_t incy,
+    std::complex<double>*       A, int64_t lda,
+    blas::Queue& queue );
+
 //==============================================================================
 // Level 3 BLAS
 

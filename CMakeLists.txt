@@ -358,6 +358,7 @@ add_library(
     src/device_error.cc
     src/device_gemm.cc
     src/device_gemv.cc
+    src/device_ger.cc
     src/device_hemm.cc
     src/device_hemv.cc
     src/device_her2k.cc

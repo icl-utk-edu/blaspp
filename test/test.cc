@@ -175,6 +175,8 @@ std::vector< testsweeper::routines_t > routines = {
 
     // Device Level 2 BLAS
     { "dev-gemv",         test_gemv_device,         Section::device_blas2   },
+    { "dev-ger",          test_ger_device,          Section::device_blas2   },
+    { "dev-geru",         test_ger_device,          Section::device_blas2   },
     { "",                 nullptr,                  Section::newline },
 
     { "dev-hemv",         test_symv_device,         Section::device_blas2   },

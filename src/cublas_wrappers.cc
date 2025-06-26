@@ -1348,6 +1348,162 @@ void trsv(
             (cuDoubleComplex*) dx, incdx ) );
 }
 
+//------------------------------------------------------------------------------
+// ger
+//------------------------------------------------------------------------------
+void ger(
+    int64_t m, int64_t n,
+    float alpha,
+    float const* dx, int64_t incdx,
+    float const* dy, int64_t incdy,
+    float*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasSger(
+            queue.handle(),
+            m, n,
+            &alpha,
+            dx, incdx,
+            dy, incdy,
+            dA, ldda ) );
+}
+
+//------------------------------------------------------------------------------
+void ger(
+    int64_t m, int64_t n,
+    double alpha,
+    double const* dx, int64_t incdx,
+    double const* dy, int64_t incdy,
+    double*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasDger(
+            queue.handle(),
+            m, n,
+            &alpha,
+            dx, incdx,
+            dy, incdy,
+            dA, ldda ) );
+}
+
+//------------------------------------------------------------------------------
+void ger(
+    int64_t m, int64_t n,
+    std::complex<float> alpha,
+    std::complex<float> const* dx, int64_t incdx,
+    std::complex<float> const* dy, int64_t incdy,
+    std::complex<float>*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasCgerc(
+            queue.handle(),
+            m, n,
+            (cuComplex*) &alpha,
+            (cuComplex*) dx, incdx,
+            (cuComplex*) dy, incdy,
+            (cuComplex*) dA, ldda ) );
+}
+
+//------------------------------------------------------------------------------
+void ger(
+    int64_t m, int64_t n,
+    std::complex<double> alpha,
+    std::complex<double> const* dx, int64_t incdx,
+    std::complex<double> const* dy, int64_t incdy,
+    std::complex<double>*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasZgerc(
+            queue.handle(),
+            m, n,
+            (cuDoubleComplex*) &alpha,
+            (cuDoubleComplex*) dx, incdx,
+            (cuDoubleComplex*) dy, incdy,
+            (cuDoubleComplex*) dA, ldda ) );
+}
+
+//------------------------------------------------------------------------------
+// geru
+//------------------------------------------------------------------------------
+void geru(
+    int64_t m, int64_t n,
+    float alpha,
+    float const* dx, int64_t incdx,
+    float const* dy, int64_t incdy,
+    float*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasSger(
+            queue.handle(),
+            m, n,
+            &alpha,
+            dx, incdx,
+            dy, incdy,
+            dA, ldda ) );
+}
+
+//------------------------------------------------------------------------------
+void geru(
+    int64_t m, int64_t n,
+    double alpha,
+    double const* dx, int64_t incdx,
+    double const* dy, int64_t incdy,
+    double*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasDger(
+            queue.handle(),
+            m, n,
+            &alpha,
+            dx, incdx,
+            dy, incdy,
+            dA, ldda ) );
+}
+
+//------------------------------------------------------------------------------
+void geru(
+    int64_t m, int64_t n,
+    std::complex<float> alpha,
+    std::complex<float> const* dx, int64_t incdx,
+    std::complex<float> const* dy, int64_t incdy,
+    std::complex<float>*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasCgeru(
+            queue.handle(),
+            m, n,
+            (cuComplex*) &alpha,
+            (cuComplex*) dx, incdx,
+            (cuComplex*) dy, incdy,
+            (cuComplex*) dA, ldda ) );
+}
+
+//------------------------------------------------------------------------------
+void geru(
+    int64_t m, int64_t n,
+    std::complex<double> alpha,
+    std::complex<double> const* dx, int64_t incdx,
+    std::complex<double> const* dy, int64_t incdy,
+    std::complex<double>*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        cublasZgeru(
+            queue.handle(),
+            m, n,
+            (cuDoubleComplex*) &alpha,
+            (cuDoubleComplex*) dx, incdx,
+            (cuDoubleComplex*) dy, incdy,
+            (cuDoubleComplex*) dA, ldda ) );
+}
+
 //==============================================================================
 // Level 3 BLAS - Device Interfaces
 
