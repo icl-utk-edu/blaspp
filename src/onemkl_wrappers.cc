@@ -1443,6 +1443,254 @@ void geru(
             dA, ldda ) );
 }
 
+//------------------------------------------------------------------------------
+// her
+//------------------------------------------------------------------------------
+void her(
+    blas::Uplo uplo,
+    int64_t n,
+    float alpha,
+    std::complex<float> const* dx, int64_t incdx,
+    std::complex<float>*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::her(
+            queue.stream(),
+            uplo2onemkl( uplo ),
+            n,
+            alpha,
+            dx, incdx,
+            dA, ldda ) );
+}
+
+//------------------------------------------------------------------------------
+void her(
+    blas::Uplo uplo,
+    int64_t n,
+    double alpha,
+    std::complex<double> const* dx, int64_t incdx,
+    std::complex<double>*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::her(
+            queue.stream(),
+            uplo2onemkl( uplo ),
+            n,
+            alpha,
+            dx, incdx,
+            dA, ldda ) );
+}
+
+//------------------------------------------------------------------------------
+// her2
+//------------------------------------------------------------------------------
+void her2(
+    blas::Uplo uplo,
+    int64_t n,
+    std::complex<float> alpha,
+    std::complex<float> const* dx, int64_t incdx,
+    std::complex<float> const* dy, int64_t incdy,
+    std::complex<float>*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::her2(
+            queue.stream(),
+            uplo2onemkl( uplo ),
+            n,
+            alpha,
+            dx, incdx,
+            dy, incdy,
+            dA, ldda ) );
+}
+
+//------------------------------------------------------------------------------
+void her2(
+    blas::Uplo uplo,
+    int64_t n,
+    std::complex<double> alpha,
+    std::complex<double> const* dx, int64_t incdx,
+    std::complex<double> const* dy, int64_t incdy,
+    std::complex<double>*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::her2(
+            queue.stream(),
+            uplo2onemkl( uplo ),
+            n,
+            alpha,
+            dx, incdx,
+            dy, incdy,
+            dA, ldda ) );
+}
+
+//------------------------------------------------------------------------------
+// syr
+//------------------------------------------------------------------------------
+void syr(
+    blas::Uplo uplo,
+    int64_t n,
+    float alpha,
+    float const* dx, int64_t incdx,
+    float*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::syr(
+            queue.stream(),
+            uplo2onemkl( uplo ),
+            n,
+            alpha,
+            dx, incdx,
+            dA, ldda ) );
+}
+
+//------------------------------------------------------------------------------
+void syr(
+    blas::Uplo uplo,
+    int64_t n,
+    double alpha,
+    double const* dx, int64_t incdx,
+    double*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::syr(
+            queue.stream(),
+            uplo2onemkl( uplo ),
+            n,
+            alpha,
+            dx, incdx,
+            dA, ldda ) );
+}
+
+//------------------------------------------------------------------------------
+void syr(
+    blas::Uplo uplo,
+    int64_t n,
+    std::complex<float> alpha,
+    std::complex<float> const* dx, int64_t incdx,
+    std::complex<float>*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::syr(
+            queue.stream(),
+            uplo2onemkl( uplo ),
+            n,
+            alpha,
+            dx, incdx,
+            dA, ldda ) );
+}
+
+//------------------------------------------------------------------------------
+void syr(
+    blas::Uplo uplo,
+    int64_t n,
+    std::complex<double> alpha,
+    std::complex<double> const* dx, int64_t incdx,
+    std::complex<double>*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::syr(
+            queue.stream(),
+            uplo2onemkl( uplo ),
+            n,
+            alpha,
+            dx, incdx,
+            dA, ldda ) );
+}
+
+//------------------------------------------------------------------------------
+// syr2
+//------------------------------------------------------------------------------
+void syr2(
+    blas::Uplo uplo,
+    int64_t n,
+    float alpha,
+    float const* dx, int64_t incdx,
+    float const* dy, int64_t incdy,
+    float*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::syr2(
+            queue.stream(),
+            uplo2onemkl( uplo ),
+            n,
+            alpha,
+            dx, incdx,
+            dy, incdy,
+            dA, ldda ) );
+}
+
+//------------------------------------------------------------------------------
+void syr2(
+    blas::Uplo uplo,
+    int64_t n,
+    double alpha,
+    double const* dx, int64_t incdx,
+    double const* dy, int64_t incdy,
+    double*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::syr2(
+            queue.stream(),
+            uplo2onemkl( uplo ),
+            n,
+            alpha,
+            dx, incdx,
+            dy, incdy,
+            dA, ldda ) );
+}
+
+//------------------------------------------------------------------------------
+void syr2(
+    blas::Uplo uplo,
+    int64_t n,
+    std::complex<float> alpha,
+    std::complex<float> const* dx, int64_t incdx,
+    std::complex<float> const* dy, int64_t incdy,
+    std::complex<float>*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::syr2(
+            queue.stream(),
+            uplo2onemkl( uplo ),
+            n,
+            alpha,
+            dx, incdx,
+            dy, incdy,
+            dA, ldda ) );
+}
+
+//------------------------------------------------------------------------------
+void syr2(
+    blas::Uplo uplo,
+    int64_t n,
+    std::complex<double> alpha,
+    std::complex<double> const* dx, int64_t incdx,
+    std::complex<double> const* dy, int64_t incdy,
+    std::complex<double>*       dA, int64_t ldda,
+    blas::Queue& queue )
+{
+    blas_dev_call(
+        oneapi::mkl::blas::syr2(
+            queue.stream(),
+            uplo2onemkl( uplo ),
+            n,
+            alpha,
+            dx, incdx,
+            dy, incdy,
+            dA, ldda ) );
+}
+
 //==============================================================================
 // Level 3 BLAS - Device Interfaces
 

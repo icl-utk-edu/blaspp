@@ -361,12 +361,16 @@ add_library(
     src/device_ger.cc
     src/device_hemm.cc
     src/device_hemv.cc
+    src/device_her.cc
+    src/device_her2.cc
     src/device_her2k.cc
     src/device_herk.cc
     src/device_iamax.cc
     src/device_queue.cc
     src/device_symm.cc
     src/device_symv.cc
+    src/device_syr.cc
+    src/device_syr2.cc
     src/device_syr2k.cc
     src/device_syrk.cc
     src/device_asum.cc

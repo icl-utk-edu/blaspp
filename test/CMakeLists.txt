@@ -117,10 +117,14 @@ add_executable(
     test_ger_device.cc
     test_hemm_device.cc
     test_hemv_device.cc
+    test_her_device.cc
+    test_her2_device.cc
     test_her2k_device.cc
     test_herk_device.cc
     test_symm_device.cc
     test_symv_device.cc
+    test_syr_device.cc
+    test_syr2_device.cc
     test_syr2k_device.cc
     test_syrk_device.cc
     test_trmm_device.cc

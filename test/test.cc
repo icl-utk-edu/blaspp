@@ -180,9 +180,13 @@ std::vector< testsweeper::routines_t > routines = {
     { "",                 nullptr,                  Section::newline },
 
     { "dev-hemv",         test_symv_device,         Section::device_blas2   },
+    { "dev-her",          test_her_device,          Section::device_blas2   },
+    { "dev-her2",         test_her2_device,         Section::device_blas2   },
     { "",                 nullptr,                  Section::newline },
 
     { "dev-symv",         test_symv_device,         Section::device_blas2   },
+    { "dev-syr",          test_syr_device,          Section::device_blas2   },
+    { "dev-syr2",         test_syr2_device,         Section::device_blas2   },
     { "",                 nullptr,                  Section::newline },
 
     { "dev-trmv",         test_trmv_device,         Section::device_blas2   },

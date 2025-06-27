@@ -325,7 +325,11 @@ if (opts.blas2_device):
     [ 'dev-ger',   dtype      + layout + align + mn + incx + incy ],
     [ 'dev-geru',  dtype      + layout + align + mn + incx + incy ],
     [ 'dev-hemv',  dtype      + layout + align + uplo + n + incx + incy ],
+    [ 'dev-her',   dtype      + layout + align + uplo + n + incx ],
+    [ 'dev-her2',  dtype      + layout + align + uplo + n + incx + incy ],
     [ 'dev-symv',  dtype      + layout + align + uplo + n + incx + incy ],
+    [ 'dev-syr',   dtype      + layout + align + uplo + n + incx ],
+    [ 'dev-syr2',  dtype      + layout + align + uplo + n + incx + incy ],
     [ 'dev-trmv',  dtype      + layout + align + uplo + trans + diag + n + incx ],
     [ 'dev-trsv',  dtype      + layout + align + uplo + trans + diag + n + incx ],
     ]

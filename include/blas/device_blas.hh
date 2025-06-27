@@ -654,6 +654,162 @@ void geru(
     std::complex<double>*       A, int64_t lda,
     blas::Queue& queue );
 
+//------------------------------------------------------------------------------
+void her(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    int64_t n,
+    float alpha,
+    float const* x, int64_t incx,
+    float*       A, int64_t lda,
+    blas::Queue& queue );
+
+void her(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    int64_t n,
+    double alpha,
+    double const* x, int64_t incx,
+    double*       A, int64_t lda,
+    blas::Queue& queue );
+
+void her(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    int64_t n,
+    float alpha,
+    std::complex<float> const* x, int64_t incx,
+    std::complex<float>*       A, int64_t lda,
+    blas::Queue& queue );
+
+void her(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    int64_t n,
+    double alpha,
+    std::complex<double> const* x, int64_t incx,
+    std::complex<double>*       A, int64_t lda,
+    blas::Queue& queue );
+
+//------------------------------------------------------------------------------
+void her2(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    int64_t n,
+    float alpha,
+    float const* x, int64_t incx,
+    float const* y, int64_t incy,
+    float*       A, int64_t lda,
+    blas::Queue& queue );
+
+void her2(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    int64_t n,
+    double alpha,
+    double const* x, int64_t incx,
+    double const* y, int64_t incy,
+    double*       A, int64_t lda,
+    blas::Queue& queue );
+
+void her2(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    int64_t n,
+    std::complex<float> alpha,
+    std::complex<float> const* x, int64_t incx,
+    std::complex<float> const* y, int64_t incy,
+    std::complex<float>*       A, int64_t lda,
+    blas::Queue& queue );
+
+void her2(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    int64_t n,
+    std::complex<double> alpha,
+    std::complex<double> const* x, int64_t incx,
+    std::complex<double> const* y, int64_t incy,
+    std::complex<double>*       A, int64_t lda,
+    blas::Queue& queue );
+
+//------------------------------------------------------------------------------
+void syr(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    int64_t n,
+    float alpha,
+    float const* x, int64_t incx,
+    float*       A, int64_t lda,
+    blas::Queue& queue );
+
+void syr(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    int64_t n,
+    double alpha,
+    double const* x, int64_t incx,
+    double*       A, int64_t lda,
+    blas::Queue& queue );
+
+void syr(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    int64_t n,
+    std::complex<float> alpha,
+    std::complex<float> const* x, int64_t incx,
+    std::complex<float>*       A, int64_t lda,
+    blas::Queue& queue );
+
+void syr(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    int64_t n,
+    std::complex<double> alpha,
+    std::complex<double> const* x, int64_t incx,
+    std::complex<double>*       A, int64_t lda,
+    blas::Queue& queue );
+
+//------------------------------------------------------------------------------
+void syr2(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    int64_t n,
+    float alpha,
+    float const* x, int64_t incx,
+    float const* y, int64_t incy,
+    float*       A, int64_t lda,
+    blas::Queue& queue );
+
+void syr2(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    int64_t n,
+    double alpha,
+    double const* x, int64_t incx,
+    double const* y, int64_t incy,
+    double*       A, int64_t lda,
+    blas::Queue& queue );
+
+void syr2(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    int64_t n,
+    std::complex<float> alpha,
+    std::complex<float> const* x, int64_t incx,
+    std::complex<float> const* y, int64_t incy,
+    std::complex<float>*       A, int64_t lda,
+    blas::Queue& queue );
+
+void syr2(
+    blas::Layout layout,
+    blas::Uplo uplo,
+    int64_t n,
+    std::complex<double> alpha,
+    std::complex<double> const* x, int64_t incx,
+    std::complex<double> const* y, int64_t incy,
+    std::complex<double>*       A, int64_t lda,
+    blas::Queue& queue );
+
 //==============================================================================
 // Level 3 BLAS
 
