@@ -67,14 +67,14 @@ private:
 
 // -----------------------------------------------------------------------------
 /// @brief Matrix storage layout.
-/// @ingroup util
+/// @ingroup enum
 enum class Layout : char { 
     ColMajor = 'C',  ///< Column-major storage (Fortran style)
     RowMajor = 'R'   ///< Row-major storage (C style)
 };
 
 /// @brief Matrix transpose operation.
-/// @ingroup util
+/// @ingroup enum
 enum class Op : char { 
     NoTrans  = 'N',  ///< No transpose: $op(A) = A$
     Trans    = 'T',  ///< Transpose: $op(A) = A^T$
@@ -82,7 +82,7 @@ enum class Op : char {
 };
 
 /// @brief Upper or lower triangle of a matrix.
-/// @ingroup util
+/// @ingroup enum
 enum class Uplo : char { 
     Upper    = 'U',  ///< Upper triangle
     Lower    = 'L',  ///< Lower triangle
@@ -90,14 +90,14 @@ enum class Uplo : char {
 };
 
 /// @brief Matrix diagonal type.
-/// @ingroup util
+/// @ingroup enum
 enum class Diag : char { 
     NonUnit  = 'N',  ///< Non-unit diagonal
     Unit     = 'U'   ///< Unit diagonal (all 1's)
 };
 
 /// @brief Matrix multiplication side.
-/// @ingroup util
+/// @ingroup enum
 enum class Side : char { 
     Left     = 'L',  ///< Multiply from the left
     Right    = 'R'   ///< Multiply from the right
