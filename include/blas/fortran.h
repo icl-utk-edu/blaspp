@@ -3,6 +3,26 @@
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
+/// @file
+/// C prototypes for Fortran BLAS library functions.
+///
+/// This file provides C-compatible function prototypes for calling Fortran BLAS
+/// libraries (such as OpenBLAS, Intel MKL, ATLAS, or reference Netlib BLAS).
+/// It handles platform-specific calling conventions and type mappings:
+///
+/// - Name mangling via BLAS_FORTRAN_NAME macro (see mangling.h)
+/// - String length handling (BLAS_FORTRAN_STRLEN_END for most compilers)
+/// - Complex return values (BLAS_COMPLEX_RETURN_ARGUMENT for Intel icc)
+/// - Float return types (blas_float_return for some platforms)
+///
+/// Type mappings:
+/// - blas_int: Fortran INTEGER (32-bit or 64-bit depending on build)
+/// - blas_complex_float/double: Fortran COMPLEX/COMPLEX*16
+///
+/// @note This is a C header file - use extern "C" when including from C++.
+/// @see mangling.h for name mangling details
+/// @see config.h for type definitions (blas_int, blas_complex_float, etc.)
+
 #ifndef BLAS_FORTRAN_H
 #define BLAS_FORTRAN_H
 

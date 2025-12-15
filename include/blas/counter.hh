@@ -19,9 +19,29 @@
 namespace blas {
 
 //==============================================================================
-/// Initialize PAPI counters for BLAS++.
-/// Uses thread-safe Scott Meyers Singleton.
-/// This class acts like a namespace -- all public functions are static.
+/// @brief Performance counter integration for BLAS++.
+///
+/// This class provides integration with PAPI (Performance API) for counting
+/// BLAS operations and computing floating-point operation counts. Uses the
+/// Scott Meyers Singleton pattern for thread-safe initialization.
+///
+/// The counter system tracks:
+/// - Number of calls to each BLAS routine
+/// - Dimensions and parameters for each call
+/// - Total floating-point operations performed
+///
+/// Usage (when PAPI is available):
+/// @code
+///     // Insert operation into counting set
+///     counter::gemm_type op = {transA, transB, m, n, k};
+///     counter::insert(op, counter::Id::gemm);
+///     
+///     // Get total flop count
+///     long long flops = counter::get_flop_count(&atomic_var);
+/// @endcode
+///
+/// @note This is essentially a namespace - all public functions are static.
+/// @ingroup util
 class counter
 {
 public:
@@ -34,97 +54,106 @@ public:
 
 public:
     //------------------------------------------------------------------------------
-    /// ID to differentiate routines in the counter set.
+    /// @brief Operation identifiers for the counter set.
+    ///
+    /// These IDs differentiate BLAS routines in the counter. Separate IDs
+    /// exist for CPU (host) and device (GPU) versions of each routine.
+    ///
+    /// @ingroup util
     enum class Id {
         // Level 1 BLAS
-        asum,
-        axpy,
-        copy,
-        dot,
-        dotu,
-        iamax,
-        nrm2,
-        rot,
-        rotg,
-        rotm,
-        rotmg,
-        scal,
-        swap,
+        asum,    ///< Sum of absolute values
+        axpy,    ///< Y = alpha*X + Y
+        copy,    ///< Copy vector
+        dot,     ///< Dot product (conjugated)
+        dotu,    ///< Dot product (unconjugated)
+        iamax,   ///< Index of maximum absolute value
+        nrm2,    ///< Euclidean norm
+        rot,     ///< Givens rotation
+        rotg,    ///< Generate Givens rotation
+        rotm,    ///< Modified Givens rotation
+        rotmg,   ///< Generate modified Givens rotation
+        scal,    ///< Scale vector
+        swap,    ///< Swap vectors
 
         // Level 2 BLAS
-        gemv,
-        ger,
-        geru,
-        hemv,
-        her,
-        her2,
-        symv,
-        syr,
-        syr2,
-        trmv,
-        trsv,
+        gemv,    ///< General matrix-vector multiply
+        ger,     ///< General rank-1 update (conjugated)
+        geru,    ///< General rank-1 update (unconjugated)
+        hemv,    ///< Hermitian matrix-vector multiply
+        her,     ///< Hermitian rank-1 update
+        her2,    ///< Hermitian rank-2 update
+        symv,    ///< Symmetric matrix-vector multiply
+        syr,     ///< Symmetric rank-1 update
+        syr2,    ///< Symmetric rank-2 update
+        trmv,    ///< Triangular matrix-vector multiply
+        trsv,    ///< Triangular solve
 
         // Level 3 BLAS
-        gemm,
-        hemm,
-        herk,
-        her2k,
-        symm,
-        syrk,
-        syr2k,
-        trmm,
-        trsm,
+        gemm,    ///< General matrix-matrix multiply
+        hemm,    ///< Hermitian matrix-matrix multiply
+        herk,    ///< Hermitian rank-k update
+        her2k,   ///< Hermitian rank-2k update
+        symm,    ///< Symmetric matrix-matrix multiply
+        syrk,    ///< Symmetric rank-k update
+        syr2k,   ///< Symmetric rank-2k update
+        trmm,    ///< Triangular matrix-matrix multiply
+        trsm,    ///< Triangular solve with multiple RHS
 
-        // Level 1 BLAS
-        dev_asum,
-        dev_axpy,
-        dev_copy,
-        dev_dot,
-        dev_dotu,
-        dev_iamax,
-        dev_nrm2,
-        dev_rot,
-        dev_rotg,
-        dev_rotm,
-        dev_rotmg,
-        dev_scal,
-        dev_swap,
+        // Device (GPU) Level 1 BLAS
+        dev_asum,   ///< Device asum
+        dev_axpy,   ///< Device axpy
+        dev_copy,   ///< Device copy
+        dev_dot,    ///< Device dot
+        dev_dotu,   ///< Device dotu
+        dev_iamax,  ///< Device iamax
+        dev_nrm2,   ///< Device nrm2
+        dev_rot,    ///< Device rotation
+        dev_rotg,   ///< Device rotation generation
+        dev_rotm,   ///< Device modified rotation
+        dev_rotmg,  ///< Device modified rotation generation
+        dev_scal,   ///< Device scale
+        dev_swap,   ///< Device swap
 
-        // Level 2 BLAS
-        dev_gemv,
-        dev_ger,
-        dev_geru,
-        dev_hemv,
-        dev_her,
-        dev_her2,
-        dev_symv,
-        dev_syr,
-        dev_syr2,
-        dev_trmv,
-        dev_trsv,
+        // Device (GPU) Level 2 BLAS
+        dev_gemv,   ///< Device gemv
+        dev_ger,    ///< Device ger
+        dev_geru,   ///< Device geru
+        dev_hemv,   ///< Device hemv
+        dev_her,    ///< Device her
+        dev_her2,   ///< Device her2
+        dev_symv,   ///< Device symv
+        dev_syr,    ///< Device syr
+        dev_syr2,   ///< Device syr2
+        dev_trmv,   ///< Device trmv
+        dev_trsv,   ///< Device trsv
 
-        // Level 3 BLAS
-        dev_gemm,
-        dev_hemm,
-        dev_herk,
-        dev_her2k,
-        dev_symm,
-        dev_syrk,
-        dev_syr2k,
-        dev_trmm,
-        dev_trsm,
+        // Device (GPU) Level 3 BLAS
+        dev_gemm,    ///< Device gemm
+        dev_hemm,    ///< Device hemm
+        dev_herk,    ///< Device herk
+        dev_her2k,   ///< Device her2k
+        dev_symm,    ///< Device symm
+        dev_syrk,    ///< Device syrk
+        dev_syr2k,   ///< Device syr2k
+        dev_trmm,    ///< Device trmm
+        dev_trsm,    ///< Device trsm
 
         // Device batch BLAS
-        dev_batch_gemm,
-        dev_batch_hemm,
+        dev_batch_gemm,  ///< Device batch gemm
+        dev_batch_hemm,  ///< Device batch hemm
 
     };
 
     //==============================================================================
-    // Level 1 BLAS
-
+    // Operation parameter structures
+    // These structs store the dimensions and parameters for each BLAS call.
+    
+    /// @brief Parameters for Level 1 BLAS operations (vector length only).
+    /// Used by: axpy, scal, copy, swap, dot, dotu, nrm2, asum, iamax, rot, rotm.
+    /// @ingroup util
     struct axpy_type {
-        int64_t n;
+        int64_t n;  ///< Vector length
     };
 
     typedef axpy_type scal_type;
@@ -143,15 +172,20 @@ public:
     //==============================================================================
     // Level 2 BLAS
 
+    /// @brief Parameters for gemv (general matrix-vector multiply).
+    /// @ingroup util
     struct gemv_type {
-        blas::Op trans;
-        int64_t m, n;
+        blas::Op trans;  ///< Transpose operation
+        int64_t m, n;    ///< Matrix dimensions
     };
 
     //------------------------------------------------------------------------------
+    /// @brief Parameters for Hermitian/symmetric matrix-vector operations.
+    /// Used by: hemv, symv, her, her2, syr, syr2.
+    /// @ingroup util
     struct hemv_type {
-        blas::Uplo uplo;
-        int64_t n;
+        blas::Uplo uplo;  ///< Upper or lower triangle
+        int64_t n;        ///< Matrix dimension
     };
 
     typedef hemv_type symv_type;
@@ -161,45 +195,59 @@ public:
     typedef hemv_type syr2_type;
 
     //------------------------------------------------------------------------------
+    /// @brief Parameters for triangular matrix-vector operations.
+    /// Used by: trmv, trsv.
+    /// @ingroup util
     struct trmv_type {
-        blas::Uplo uplo;
-        blas::Op trans;
-        blas::Diag diag;
-        int64_t n;
+        blas::Uplo uplo;  ///< Upper or lower triangle
+        blas::Op trans;   ///< Transpose operation
+        blas::Diag diag;  ///< Unit or non-unit diagonal
+        int64_t n;        ///< Matrix dimension
     };
 
     typedef trmv_type trsv_type;
 
     //------------------------------------------------------------------------------
+    /// @brief Parameters for rank-1 update operations.
+    /// Used by: ger, geru, gerc.
+    /// @ingroup util
     struct ger_type {
-        int64_t m, n;
+        int64_t m, n;  ///< Matrix dimensions
     };
 
     typedef ger_type geru_type;
     typedef ger_type gerc_type;
 
     //==============================================================================
-    // Level 3 BLAS
+    // Level 3 BLAS parameter structures
 
+    /// @brief Parameters for gemm (general matrix-matrix multiply).
+    /// @ingroup util
     struct gemm_type {
-        blas::Op transA, transB;
-        int64_t m, n, k;
+        blas::Op transA, transB;  ///< Transpose operations for A and B
+        int64_t m, n, k;          ///< Matrix dimensions
     };
 
     //------------------------------------------------------------------------------
+    /// @brief Parameters for Hermitian/symmetric matrix-matrix multiply.
+    /// Used by: hemm, symm.
+    /// @ingroup util
     struct hemm_type {
-        blas::Side side;
-        blas::Uplo uplo;
-        int64_t m, n;
+        blas::Side side;  ///< Side where Hermitian/symmetric matrix appears
+        blas::Uplo uplo;  ///< Upper or lower triangle
+        int64_t m, n;     ///< Matrix dimensions
     };
 
     typedef hemm_type symm_type;
 
     //------------------------------------------------------------------------------
+    /// @brief Parameters for Hermitian/symmetric rank-k and rank-2k updates.
+    /// Used by: herk, syrk, syr2k, her2k.
+    /// @ingroup util
     struct herk_type {
-        blas::Uplo uplo;
-        blas::Op trans;
-        int64_t n, k;
+        blas::Uplo uplo;  ///< Upper or lower triangle of result
+        blas::Op trans;   ///< Transpose operation
+        int64_t n, k;     ///< Matrix dimensions
     };
 
     typedef herk_type syrk_type;
@@ -207,20 +255,24 @@ public:
     typedef herk_type her2k_type;
 
     //------------------------------------------------------------------------------
+    /// @brief Parameters for triangular matrix-matrix operations.
+    /// Used by: trmm, trsm.
+    /// @ingroup util
     struct trmm_type {
-        blas::Side side;
-        blas::Uplo uplo;
-        blas::Op transA;
-        blas::Diag diag;
-        int64_t m, n;
+        blas::Side side;  ///< Side where triangular matrix appears
+        blas::Uplo uplo;  ///< Upper or lower triangle
+        blas::Op transA;  ///< Transpose operation
+        blas::Diag diag;  ///< Unit or non-unit diagonal
+        int64_t m, n;     ///< Matrix dimensions
     };
 
     typedef trmm_type trsm_type;
 
     //==============================================================================
-    // Device BLAS
-
-    typedef axpy_type dev_axpy_type;
+    // Device BLAS parameter structures
+    // Type aliases for device operations (same parameters as host versions)
+    
+    typedef axpy_type dev_axpy_type;  ///< Device axpy parameters
     typedef axpy_type dev_scal_type;
     typedef axpy_type dev_copy_type;
     typedef axpy_type dev_swap_type;
@@ -266,22 +318,34 @@ public:
     typedef trmm_type dev_trsm_type;
 
     //==============================================================================
-    // Device batch BLAS
+    // Device batch BLAS parameter structures
 
+    /// @brief Parameters for batch gemm on device.
+    /// @ingroup util
     struct dev_batch_gemm_type {
-        blas::Op transA, transB;
-        int64_t m, n, k;
-        size_t batch_size;
+        blas::Op transA, transB;  ///< Transpose operations
+        int64_t m, n, k;          ///< Matrix dimensions
+        size_t batch_size;        ///< Number of matrices in batch
     };
 
     //------------------------------------------------------------------------------
+    /// @brief Parameters for batch hemm on device.
+    /// @ingroup util
     struct dev_batch_hemm_type {
-        size_t batch_size;
+        size_t batch_size;  ///< Number of matrices in batch
     };
 
+    //==============================================================================
+    // Public API for counter operations
+    
     //--------------------------------------------------------------------------
-    /// Initializes PAPI counters on first call.
-    /// @return reference to counter class.
+    /// @brief Get singleton instance of counter.
+    ///
+    /// Initializes PAPI counters on first call using Scott Meyers singleton pattern.
+    /// Thread-safe initialization guaranteed by C++11.
+    ///
+    /// @return Reference to counter singleton
+    /// @ingroup util
     static counter &get()
     {
         static counter s_cnt;
@@ -289,8 +353,21 @@ public:
     }
 
     //--------------------------------------------------------------------------
-    /// Inserts element into the PAPI counting set.
-    /// Without PAPI, does nothing.
+    /// @brief Insert operation into the PAPI counting set.
+    ///
+    /// Records an operation with its parameters for later analysis. When PAPI
+    /// is not available, this is a no-op.
+    ///
+    /// Example:
+    /// @code
+    ///     counter::gemm_type op = {transA, transB, m, n, k};
+    ///     counter::insert(op, counter::Id::gemm);
+    /// @endcode
+    ///
+    /// @param[in] element Operation parameters (e.g., gemm_type, axpy_type)
+    /// @param[in] id Operation identifier from Id enum
+    /// @tparam T Parameter structure type
+    /// @ingroup util
     template <typename T>
     static void insert( T element, Id id )
     {
@@ -300,9 +377,17 @@ public:
     }
 
     //--------------------------------------------------------------------------
-    /// Inserts element with hashable_size into the PAPI counting set.
-    /// hashable_size <= sizeof(element).
-    /// Without PAPI, does nothing.
+    /// @brief Insert operation with custom hashable size.
+    ///
+    /// Advanced version allowing control over which portion of the parameter
+    /// structure is used for hashing. Useful when some fields should not
+    /// affect operation grouping.
+    ///
+    /// @param[in] hashable_size Number of bytes to use for hashing (≤ sizeof(element))
+    /// @param[in] element Operation parameters
+    /// @param[in] id Operation identifier from Id enum
+    /// @tparam T Parameter structure type
+    /// @ingroup util
     template <typename T>
     static void insert( size_t hashable_size, T element, Id id )
     {
@@ -312,8 +397,14 @@ public:
     }
 
     //--------------------------------------------------------------------------
-    /// Get the current flop count.
-    /// Without PAPI, returns zero.
+    /// @brief Get current total FLOP count.
+    ///
+    /// Returns cumulative floating-point operations across all recorded BLAS calls.
+    /// When PAPI is not available, returns 0.
+    ///
+    /// @param[in] atmc_var Pointer to atomic variable holding flop count
+    /// @return Total FLOP count
+    /// @ingroup util
     static long long int get_flop_count(std::atomic<long long> *atmc_var)
     {
         long long int fp = 0;
@@ -324,8 +415,13 @@ public:
     }
 
     //--------------------------------------------------------------------------
-    /// Increment the current flop count.
-    /// Without PAPI, does nothing.
+    /// @brief Increment total FLOP count.
+    ///
+    /// Adds to the cumulative FLOP counter. Thread-safe via atomic operations.
+    /// When PAPI is not available, this is a no-op.
+    ///
+    /// @param[in] fp Number of FLOPs to add
+    /// @ingroup util
     static void inc_flop_count(long long int fp)
     {
         #ifdef BLAS_HAVE_PAPI
@@ -335,9 +431,18 @@ public:
     }
 
     //--------------------------------------------------------------------------
-    /// TODO
-    /// Prints out all elements in the BLAS++ counting set.
-    /// Without PAPI, does nothing.
+    /// @brief Print detailed operation statistics.
+    ///
+    /// Outputs comprehensive listing of all recorded operations with:
+    /// - Operation parameters
+    /// - Number of calls
+    /// - FLOP count per operation type
+    /// - Total cumulative FLOPs
+    ///
+    /// When PAPI is not available, this is a no-op.
+    ///
+    /// @param[in] list Linked list of counting set objects from PAPI
+    /// @ingroup util
     static void print( cset_list_object_t* list )
     {
         #ifdef BLAS_HAVE_PAPI
@@ -936,7 +1041,10 @@ public:
 
 private:
     //--------------------------------------------------------------------------
-    /// Constructor initializes SDEs on first call to get().
+    /// @brief Private constructor for singleton pattern.
+    ///
+    /// Initializes PAPI Software Defined Events (SDEs) on first call.
+    /// Creates counting set and registers FLOP counter callback.
     counter()
     {
         set_ = nullptr;

@@ -11,10 +11,29 @@
 #include <vector>
 
 namespace blas {
+/// @defgroup batch Batch BLAS Operations
+/// @brief Utilities for batch BLAS operations that perform multiple
+///        independent BLAS calls in a single API call.
+///
+/// Batch operations allow efficient execution of many small BLAS operations
+/// with reduced kernel launch overhead and improved parallelism.
+
 namespace batch {
 
+/// @brief Internal default error code for batch operations.
+/// @ingroup batch
 #define INTERNAL_INFO_DEFAULT    (-1000)
 
+/// @brief Extract value from vector, handling scalar and vector cases.
+///
+/// If the vector has size 1, returns that single value for all indices.
+/// Otherwise returns the value at the specified index.
+///
+/// @param[in] ivector Vector to extract from
+/// @param[in] index Index to extract (ignored if vector size is 1)
+/// @return Value at index, or the single value if vector size is 1
+/// @tparam T Element type
+/// @ingroup batch
 template <typename T>
 T extract(std::vector<T> const &ivector, const int64_t index)
 {
@@ -22,7 +41,40 @@ T extract(std::vector<T> const &ivector, const int64_t index)
 }
 
 // -----------------------------------------------------------------------------
-// batch gemm check
+/// @brief Validate parameters for batch gemm operation.
+///
+/// Performs comprehensive error checking on all input parameters for batch
+/// general matrix-matrix multiply. Supports both uniform (single value applies
+/// to all operations) and variable (per-operation values) parameter arrays.
+///
+/// Checks:
+/// - Array sizes are either 1 (scalar) or batchCount (per-batch)
+/// - Matrix dimensions are non-negative
+/// - Leading dimensions satisfy BLAS requirements
+/// - Transpose operations are valid
+/// - Consistency between array sizes
+///
+/// @param[in] layout Matrix storage layout (ColMajor or RowMajor)
+/// @param[in] transA Transpose operations for matrices A
+/// @param[in] transB Transpose operations for matrices B
+/// @param[in] m Number of rows of C
+/// @param[in] n Number of columns of C
+/// @param[in] k Inner dimension
+/// @param[in] alpha Scaling factors for A*B
+/// @param[in] A Array of pointers to A matrices
+/// @param[in] lda Leading dimensions of A matrices
+/// @param[in] B Array of pointers to B matrices
+/// @param[in] ldb Leading dimensions of B matrices
+/// @param[in] beta Scaling factors for C
+/// @param[in] C Array of pointers to C matrices
+/// @param[in] ldc Leading dimensions of C matrices
+/// @param[in] batchCount Number of operations in batch
+/// @param[in,out] info Error information per operation (output if size > 1)
+///
+/// @throws Error if validation fails (when info size is 1)
+///
+/// @tparam T Scalar type
+/// @ingroup batch
 template <typename T>
 void gemm_check(
         blas::Layout                 layout,
@@ -142,7 +194,30 @@ void gemm_check(
 }
 
 // -----------------------------------------------------------------------------
-// batch trsm check
+/// @brief Validate parameters for batch trsm operation.
+///
+/// Performs error checking for batch triangular solve with multiple right-hand sides.
+/// Validates matrix dimensions, leading dimensions, and triangular matrix parameters.
+///
+/// @param[in] layout Matrix storage layout
+/// @param[in] side Side where triangular matrix appears (Left or Right)
+/// @param[in] uplo Upper or lower triangular
+/// @param[in] trans Transpose operation for A
+/// @param[in] diag Unit or non-unit diagonal
+/// @param[in] m Number of rows of B
+/// @param[in] n Number of columns of B
+/// @param[in] alpha Scaling factors
+/// @param[in] A Array of pointers to triangular matrices
+/// @param[in] lda Leading dimensions of A
+/// @param[in] B Array of pointers to B matrices
+/// @param[in] ldb Leading dimensions of B
+/// @param[in] batchCount Number of operations in batch
+/// @param[in,out] info Error information per operation
+///
+/// @throws Error if validation fails
+///
+/// @tparam T Scalar type
+/// @ingroup batch
 template <typename T>
 void trsm_check(
         blas::Layout                   layout,
@@ -257,7 +332,29 @@ void trsm_check(
 }
 
 // -----------------------------------------------------------------------------
-// batch trmm check
+/// @brief Validate parameters for batch trmm operation.
+///
+/// Performs error checking for batch triangular matrix-matrix multiply.
+///
+/// @param[in] layout Matrix storage layout
+/// @param[in] side Side where triangular matrix appears
+/// @param[in] uplo Upper or lower triangular
+/// @param[in] trans Transpose operation for A
+/// @param[in] diag Unit or non-unit diagonal
+/// @param[in] m Number of rows of B
+/// @param[in] n Number of columns of B
+/// @param[in] alpha Scaling factors
+/// @param[in] A Array of pointers to triangular matrices
+/// @param[in] lda Leading dimensions of A
+/// @param[in] B Array of pointers to B matrices
+/// @param[in] ldb Leading dimensions of B
+/// @param[in] batchCount Number of operations in batch
+/// @param[in,out] info Error information per operation
+///
+/// @throws Error if validation fails
+///
+/// @tparam T Scalar type
+/// @ingroup batch
 template <typename T>
 void trmm_check(
         blas::Layout                   layout,
@@ -372,7 +469,30 @@ void trmm_check(
 }
 
 // -----------------------------------------------------------------------------
-// batch hemm check
+/// @brief Validate parameters for batch hemm operation.
+///
+/// Performs error checking for batch Hermitian matrix-matrix multiply.
+///
+/// @param[in] layout Matrix storage layout
+/// @param[in] side Side where Hermitian matrix appears
+/// @param[in] uplo Upper or lower triangle stored
+/// @param[in] m Number of rows of C
+/// @param[in] n Number of columns of C
+/// @param[in] alpha Scaling factors for A*B
+/// @param[in] A Array of pointers to Hermitian matrices
+/// @param[in] lda Leading dimensions of A
+/// @param[in] B Array of pointers to B matrices
+/// @param[in] ldb Leading dimensions of B
+/// @param[in] beta Scaling factors for C
+/// @param[in] C Array of pointers to C matrices
+/// @param[in] ldc Leading dimensions of C
+/// @param[in] batchCount Number of operations in batch
+/// @param[in,out] info Error information per operation
+///
+/// @throws Error if validation fails
+///
+/// @tparam T Scalar type
+/// @ingroup batch
 template <typename T>
 void hemm_check(
         blas::Layout                   layout,
@@ -497,7 +617,30 @@ void hemm_check(
 }
 
 // -----------------------------------------------------------------------------
-// batch herk check
+/// @brief Validate parameters for batch herk operation.
+///
+/// Performs error checking for batch Hermitian rank-k update.
+/// Note that alpha and beta are real-valued for Hermitian operations.
+///
+/// @param[in] layout Matrix storage layout
+/// @param[in] uplo Upper or lower triangle of C stored
+/// @param[in] trans Transpose operation for A
+/// @param[in] n Dimension of Hermitian matrix C
+/// @param[in] k Inner dimension
+/// @param[in] alpha Real scaling factors for A*A^H
+/// @param[in] A Array of pointers to A matrices
+/// @param[in] lda Leading dimensions of A
+/// @param[in] beta Real scaling factors for C
+/// @param[in] C Array of pointers to Hermitian matrices C
+/// @param[in] ldc Leading dimensions of C
+/// @param[in] batchCount Number of operations in batch
+/// @param[in,out] info Error information per operation
+///
+/// @throws Error if validation fails
+///
+/// @tparam T Complex scalar type
+/// @tparam scalarT Real scalar type
+/// @ingroup batch
 template <typename T, typename scalarT>
 void herk_check(
         blas::Layout                   layout,
@@ -608,7 +751,13 @@ void herk_check(
 }
 
 // -----------------------------------------------------------------------------
-// batch hemm check
+/// @brief Validate parameters for batch symm operation.
+///
+/// Wrapper around hemm_check for symmetric matrix-matrix multiply.
+/// Symmetric and Hermitian operations have identical parameter validation.
+///
+/// @tparam T Scalar type
+/// @ingroup batch
 template <typename T>
 void symm_check(
         blas::Layout                   layout,
@@ -627,7 +776,28 @@ void symm_check(
 }
 
 // -----------------------------------------------------------------------------
-// batch syrk check
+/// @brief Validate parameters for batch syrk operation.
+///
+/// Performs error checking for batch symmetric rank-k update.
+///
+/// @param[in] layout Matrix storage layout
+/// @param[in] uplo Upper or lower triangle of C stored
+/// @param[in] trans Transpose operation for A
+/// @param[in] n Dimension of symmetric matrix C
+/// @param[in] k Inner dimension
+/// @param[in] alpha Scaling factors for A*A^T
+/// @param[in] A Array of pointers to A matrices
+/// @param[in] lda Leading dimensions of A
+/// @param[in] beta Scaling factors for C
+/// @param[in] C Array of pointers to symmetric matrices C
+/// @param[in] ldc Leading dimensions of C
+/// @param[in] batchCount Number of operations in batch
+/// @param[in,out] info Error information per operation
+///
+/// @throws Error if validation fails
+///
+/// @tparam T Scalar type
+/// @ingroup batch
 template <typename T>
 void syrk_check(
         blas::Layout                   layout,
@@ -738,7 +908,32 @@ void syrk_check(
 }
 
 // -----------------------------------------------------------------------------
-// batch her2k check
+/// @brief Validate parameters for batch her2k operation.
+///
+/// Performs error checking for batch Hermitian rank-2k update.
+/// Note that beta is real-valued for Hermitian operations.
+///
+/// @param[in] layout Matrix storage layout
+/// @param[in] uplo Upper or lower triangle of C stored
+/// @param[in] trans Transpose operation for A and B
+/// @param[in] n Dimension of Hermitian matrix C
+/// @param[in] k Inner dimension
+/// @param[in] alpha Complex scaling factors
+/// @param[in] A Array of pointers to A matrices
+/// @param[in] lda Leading dimensions of A
+/// @param[in] B Array of pointers to B matrices
+/// @param[in] ldb Leading dimensions of B
+/// @param[in] beta Real scaling factors for C
+/// @param[in] C Array of pointers to Hermitian matrices C
+/// @param[in] ldc Leading dimensions of C
+/// @param[in] batchCount Number of operations in batch
+/// @param[in,out] info Error information per operation
+///
+/// @throws Error if validation fails
+///
+/// @tparam T Complex scalar type
+/// @tparam scalarT Real scalar type
+/// @ingroup batch
 template <typename T, typename scalarT>
 void her2k_check(
         blas::Layout                   layout,
@@ -863,7 +1058,30 @@ void her2k_check(
 }
 
 // -----------------------------------------------------------------------------
-// batch syr2k check
+/// @brief Validate parameters for batch syr2k operation.
+///
+/// Performs error checking for batch symmetric rank-2k update.
+///
+/// @param[in] layout Matrix storage layout
+/// @param[in] uplo Upper or lower triangle of C stored
+/// @param[in] trans Transpose operation for A and B
+/// @param[in] n Dimension of symmetric matrix C
+/// @param[in] k Inner dimension
+/// @param[in] alpha Scaling factors
+/// @param[in] A Array of pointers to A matrices
+/// @param[in] lda Leading dimensions of A
+/// @param[in] B Array of pointers to B matrices
+/// @param[in] ldb Leading dimensions of B
+/// @param[in] beta Scaling factors for C
+/// @param[in] C Array of pointers to symmetric matrices C
+/// @param[in] ldc Leading dimensions of C
+/// @param[in] batchCount Number of operations in batch
+/// @param[in,out] info Error information per operation
+///
+/// @throws Error if validation fails
+///
+/// @tparam T Scalar type
+/// @ingroup batch
 template <typename T>
 void syr2k_check(
         blas::Layout                   layout,
