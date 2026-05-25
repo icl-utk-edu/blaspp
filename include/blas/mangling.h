@@ -14,13 +14,33 @@
 // define FORTRAN_LOWER for lowercase (IBM xlf),
 // else the default is lowercase with appended underscore
 // (GNU gcc, Intel icc, PGI pgfortan, Cray ftn).
+//
+// BLAS_FORTRAN_SUFFIX, if defined, is appended to every mangled symbol.
+// Used to link against BLAS libraries that suffix their symbols, e.g.,
+// OpenBLAS built with INTERFACE64=1 SYMBOLSUFFIX=64_ exports `dgemm_64_`.
+// Pass via CMake's `blas_symbol_suffix` option.
 #ifndef BLAS_FORTRAN_NAME
-    #if defined(BLAS_FORTRAN_UPPER)
-        #define BLAS_FORTRAN_NAME( lower, UPPER ) UPPER
-    #elif defined(BLAS_FORTRAN_LOWER)
-        #define BLAS_FORTRAN_NAME( lower, UPPER ) lower
+    #ifdef BLAS_FORTRAN_SUFFIX
+        #define BLAS_FORTRAN_CONCAT_( a, b ) a##b
+        #define BLAS_FORTRAN_CONCAT(  a, b ) BLAS_FORTRAN_CONCAT_( a, b )
+        #if defined(BLAS_FORTRAN_UPPER)
+            #define BLAS_FORTRAN_NAME( lower, UPPER ) \
+                BLAS_FORTRAN_CONCAT( UPPER, BLAS_FORTRAN_SUFFIX )
+        #elif defined(BLAS_FORTRAN_LOWER)
+            #define BLAS_FORTRAN_NAME( lower, UPPER ) \
+                BLAS_FORTRAN_CONCAT( lower, BLAS_FORTRAN_SUFFIX )
+        #else
+            #define BLAS_FORTRAN_NAME( lower, UPPER ) \
+                BLAS_FORTRAN_CONCAT( lower##_, BLAS_FORTRAN_SUFFIX )
+        #endif
     #else
-        #define BLAS_FORTRAN_NAME( lower, UPPER ) lower##_
+        #if defined(BLAS_FORTRAN_UPPER)
+            #define BLAS_FORTRAN_NAME( lower, UPPER ) UPPER
+        #elif defined(BLAS_FORTRAN_LOWER)
+            #define BLAS_FORTRAN_NAME( lower, UPPER ) lower
+        #else
+            #define BLAS_FORTRAN_NAME( lower, UPPER ) lower##_
+        #endif
     #endif
 #endif
 

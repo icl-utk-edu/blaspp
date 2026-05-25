@@ -1,3 +1,11 @@
+Unreleased
+  - Added `blas_symbol_suffix` CMake option (and `BLAS_FORTRAN_SUFFIX`
+    compile define) for linking against BLAS libraries whose Fortran
+    symbols carry a suffix, e.g. OpenBLAS built with `INTERFACE64=1
+    SYMBOLSUFFIX=64_` exports `dgemm_64_`. Empty (default) preserves
+    existing behavior. When set, the OpenBLAS search probe links
+    `-lopenblas${blas_symbol_suffix}`.
+
 2025.05.28 (ABI 2.0.0)
   - Added Level 1 BLAS GPU wrappers
   - Added is_complex_v

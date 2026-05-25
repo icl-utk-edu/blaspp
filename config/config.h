@@ -15,7 +15,15 @@
     #define FORTRAN_NAME( lower, UPPER ) lower
 #else
     // default is ADD_
-    #define FORTRAN_NAME( lower, UPPER ) lower ## _
+    #ifdef BLAS_FORTRAN_SUFFIX
+        // Suffix-aware variant for libraries like OpenBLAS with SYMBOLSUFFIX=64_.
+        #define FORTRAN_CONCAT_( a, b ) a##b
+        #define FORTRAN_CONCAT(  a, b ) FORTRAN_CONCAT_( a, b )
+        #define FORTRAN_NAME( lower, UPPER ) \
+            FORTRAN_CONCAT( lower##_, BLAS_FORTRAN_SUFFIX )
+    #else
+        #define FORTRAN_NAME( lower, UPPER ) lower ## _
+    #endif
 #endif
 
 //------------------------------------------------------------------------------
