@@ -319,6 +319,19 @@ def blas():
     #-------------------- OpenBLAS
     if (test_openblas):
         choices.append( ['OpenBLAS', {'LIBS': '-lopenblas'}])
+        # Debian/Ubuntu ship the ILP64 build as libopenblas64, with standard
+        # (unsuffixed) dgemm_ symbols, so it needs only the -lopenblas64 name.
+        choices.append( ['OpenBLAS (ILP64, -lopenblas64)',
+                         {'LIBS': '-lopenblas64'}])
+        # OpenBLAS built with SYMBOLSUFFIX (e.g. conda-forge's libopenblas64_,
+        # exporting dgemm_64_) needs both the suffixed name and the matching
+        # BLAS_FORTRAN_SUFFIX so blaspp mangles its calls to dgemm_64_.
+        blas_symbol_suffix = config.environ['blas_symbol_suffix']
+        if (blas_symbol_suffix):
+            choices.append(
+                ['OpenBLAS (symbol suffix ' + blas_symbol_suffix + ')',
+                 {'LIBS': '-lopenblas' + blas_symbol_suffix,
+                  'CXXFLAGS': define( 'FORTRAN_SUFFIX', blas_symbol_suffix )}])
 
     #-------------------- BLIS (also used by AMD AOCL)
     if (test_blis):
