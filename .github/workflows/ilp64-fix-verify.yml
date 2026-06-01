@@ -109,6 +109,10 @@ jobs:
           ln -sf libopenblas64_.so.0 "$CONDA_PREFIX/lib/libopenblas64_.so"
           export CXX="$CXX" CPATH="$CONDA_PREFIX/include" LIBRARY_PATH="$CONDA_PREFIX/lib" LD_LIBRARY_PATH="$CONDA_PREFIX/lib"
           export LDFLAGS="-L$CONDA_PREFIX/lib -Wl,-rpath,$CONDA_PREFIX/lib"
+          # conda exports LD=<triplet>-ld; blaspp's GNUmakefile only overrides LD to
+          # CXX when LD's origin is "default", so an env LD slips through and the raw
+          # linker chokes on -fopenmp / -Wl,-rpath. Link via the compiler driver.
+          export LD="$CXX"
           LOG="$GITHUB_WORKSPACE/04-make-conda-suffix.log"
           {
             echo "config/lapack.py now honors blas_symbol_suffix too: it probes -lopenblas64_"
