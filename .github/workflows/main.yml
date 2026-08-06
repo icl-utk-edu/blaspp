@@ -85,3 +85,22 @@ jobs:
 
       - name: Test
         run: .github/workflows/test.sh
+
+
+  # ─── THE GATEKEEPER JOB ───────────────────────────────────────────
+  # To require all checks to pass before merge, you only need to require this check
+  # in the github branch protections
+  all-checks-passed:
+    runs-on: ubuntu-latest
+    needs: [icl_blaspp] # Must include all required jobs
+    if: always() # Ensures this job runs even if others fail
+    steps:
+      - name: Check overall status
+        run: |
+          # If any dependency failed, force this gatekeeper job to fail
+          if [[ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
+            echo "One or more required jobs failed."
+            exit 1
+          else
+            echo "All automated checks passed successfully!"
+          fi
