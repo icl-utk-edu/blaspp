@@ -4,19 +4,26 @@
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
 #include <stdio.h>
+#include <type_traits>
 
 #include "config.h"
 
 //------------------------------------------------------------------------------
 #define BLAS_sdot FORTRAN_NAME( sdot, SDOT )
 
-// returns *float*
-#ifdef __cplusplus
-extern "C"
+#ifdef ACCELERATE_NEW_LAPACK
+    #pragma message "include Accelerate.h"
+    #include <stdlib.h>  // workaround
+    #include <Accelerate/Accelerate.h>
+#else
+    // returns `float` as usual.
+    #ifdef __cplusplus
+    extern "C"
+    #endif
+    float  BLAS_sdot( const blas_int* n,
+                      const float* x, const blas_int* incx,
+                      const float* y, const blas_int* incy );
 #endif
-float  BLAS_sdot( const blas_int* n,
-                  const float* x, const blas_int* incx,
-                  const float* y, const blas_int* incy );
 
 //------------------------------------------------------------------------------
 int main()
@@ -28,6 +35,11 @@ int main()
         printf( "x[ %d ] = %.1f; y[ %d ] = %.1f\n",
                 i, x[ i ],
                 i, y[ i ] );
+    }
+
+    auto r = BLAS_sdot( &n, x, &ione, y, &ione );
+    if (! std::is_same<float, decltype(r)>::value) {
+        printf( "is_same failed\n" );
     }
 
     float result = BLAS_sdot( &n, x, &ione, y, &ione );
