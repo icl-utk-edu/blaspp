@@ -332,6 +332,7 @@ def blas():
     # end blis
 
     #-------------------- Apple Accelerate
+    if (test_accelerate):
         # macOS puts cblas.h in weird places.
         paths = [
             '/System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/Headers',
@@ -368,26 +369,6 @@ def blas():
             ['macOS Accelerate (old, pre 13.3, -flax-vector-conversions)',
              {'LIBS': '-framework Accelerate',
               'CXXFLAGS': flags + extra}])
-
-        choices.append(
-            ['macOS Accelerate (new)',
-             {'LIBS': libs,
-              'CXXFLAGS': flags + new_lapack }])
-
-        choices.append(
-            ['macOS Accelerate (new, -flax-vector-conversions)',
-             {'LIBS': libs + macos,
-              'CXXFLAGS': flags + new_lapack + macos + extra }])
-
-        choices.append(
-            ['macOS Accelerate (old, pre 13.3)',
-             {'LIBS': libs,
-              'CXXFLAGS': flags }])
-
-        choices.append(
-            ['macOS Accelerate (old, pre 13.3, -flax-vector-conversions)',
-             {'LIBS': libs,
-              'CXXFLAGS': flags + extra }])
     # end
 
     #-------------------- generic -lblas
