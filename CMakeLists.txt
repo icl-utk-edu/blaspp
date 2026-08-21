@@ -122,6 +122,9 @@ set_property(
     CACHE blas_int PROPERTY STRINGS
     "auto" "int (LP64)" "int64_t (ILP64)" )
 
+set( blas_symbol_suffix "" CACHE STRING
+     "Suffix appended to BLAS symbol names after Fortran mangling, e.g. '64_' for OpenBLAS built with INTERFACE64=1 SYMBOLSUFFIX=64_. Empty (default) preserves existing behavior." )
+
 set( blas_threaded "auto" CACHE STRING
      "Multi-threaded BLAS?" )
 set_property(
@@ -146,6 +149,7 @@ BLA_VENDOR             = ${BLA_VENDOR}
 blas                   = ${blas}
 blas_fortran           = ${blas_fortran}
 blas_int               = ${blas_int}
+blas_symbol_suffix     = ${blas_symbol_suffix}
 blas_threaded          = ${blas_threaded}
 lapack                 = ${lapack}
 build_tests            = ${build_tests}

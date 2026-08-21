@@ -382,6 +382,17 @@ if (test_openblas)
     # todo: OPENBLAS_?(ROOT|DIR)
     list( APPEND blas_name_list "OpenBLAS" )
     list( APPEND blas_libs_list "-lopenblas" )
+    # Debian/Ubuntu ship the ILP64 build as libopenblas64, with standard
+    # (unsuffixed) dgemm_ symbols, so it needs only the -lopenblas64 name.
+    list( APPEND blas_name_list "OpenBLAS (ILP64, -lopenblas64)" )
+    list( APPEND blas_libs_list "-lopenblas64" )
+    # OpenBLAS built with SYMBOLSUFFIX (e.g. conda-forge's libopenblas64_,
+    # exporting dgemm_64_) follows the same naming; blas_symbol_suffix adds
+    # both the suffixed link name and the BLAS_FORTRAN_SUFFIX define (below).
+    if (blas_symbol_suffix)
+        list( APPEND blas_name_list "OpenBLAS (symbol suffix '${blas_symbol_suffix}')" )
+        list( APPEND blas_libs_list "-lopenblas${blas_symbol_suffix}" )
+    endif()
     debug_print_list( "openblas" )
 endif()
 
@@ -420,6 +431,14 @@ endif()
 set( BLAS_FOUND false )
 unset( blaspp_defs_ CACHE )
 
+# Extra define to forward to the link/run probes when the user has
+# requested a BLAS symbol suffix. Kept separate from the mangling
+# loop because it is orthogonal to UPPER/LOWER/ADD_.
+set( blas_symbol_suffix_def "" )
+if (blas_symbol_suffix)
+    set( blas_symbol_suffix_def "-DBLAS_FORTRAN_SUFFIX=${blas_symbol_suffix}" )
+endif()
+
 set( i 0 )
 foreach (blas_name IN LISTS blas_name_list)
     message( TRACE "i: ${i}" )
@@ -454,7 +473,7 @@ foreach (blas_name IN LISTS blas_name_list)
                 LINK_LIBRARIES
                     ${blas_libs} ${openmp_lib} # not "..." quoted; screws up OpenMP
                 COMPILE_DEFINITIONS
-                    "${mangling} ${int_size}"
+                    "${mangling} ${int_size} ${blas_symbol_suffix_def}"
                 OUTPUT_VARIABLE
                     link_output
             )
@@ -475,7 +494,7 @@ foreach (blas_name IN LISTS blas_name_list)
                 LINK_LIBRARIES
                     ${blas_libs} ${openmp_lib} # not "..." quoted; screws up OpenMP
                 COMPILE_DEFINITIONS
-                    "${mangling} ${int_size}"
+                    "${mangling} ${int_size} ${blas_symbol_suffix_def}"
                 COMPILE_OUTPUT_VARIABLE
                     compile_output
                 RUN_OUTPUT_VARIABLE
@@ -517,6 +536,9 @@ foreach (blas_name IN LISTS blas_name_list)
                 endif()
                 if (int_size MATCHES "[^ ]")  # non-empty
                     list( APPEND blaspp_defs_ "${int_size}" )
+                endif()
+                if (blas_symbol_suffix_def MATCHES "[^ ]")  # non-empty
+                    list( APPEND blaspp_defs_ "${blas_symbol_suffix_def}" )
                 endif()
                 if (int_size MATCHES "ILP64")
                     set( blaspp_int "int64" )
