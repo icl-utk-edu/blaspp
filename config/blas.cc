@@ -13,8 +13,7 @@
 #define BLAS_ddot FORTRAN_NAME( ddot, DDOT )
 
 #ifdef ACCELERATE_NEW_LAPACK
-    #pragma message "include Accelerate.h"
-    #include <stdlib.h>  // workaround
+    #include <stdlib.h>  // workaround (see fortran.h)
     #include <Accelerate/Accelerate.h>
 #else
     // result returned directly

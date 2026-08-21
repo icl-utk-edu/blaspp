@@ -7,14 +7,12 @@
 
 //------------------------------------------------------------------------------
 #if defined(BLAS_HAVE_MKL)
-    #pragma message "include mkl_cblas.h"
     #if defined(BLAS_ILP64) && ! defined(MKL_ILP64)
         #define MKL_ILP64
     #endif
     #include <mkl_cblas.h>
 
 #elif defined(BLAS_HAVE_ESSL)
-    #pragma message "include essl.h"
     #if defined(BLAS_ILP64) && ! defined(_ESV6464)
         #define _ESV6464
     #endif
@@ -25,11 +23,9 @@
     // Unfortunately with Xcode 10.3 and GNU g++ 9.3, that doesn't compile.
     // If we can find cblas.h, use it, otherwise use Accelerate.h.
     #ifdef BLAS_HAVE_ACCELERATE_CBLAS_H
-        #pragma message "include cblas.h for Accelerate"
         #include <cblas.h>
     #else
-        #pragma message "include Accelerate.h"
-        #include <stdlib.h>  // workaround
+        #include <stdlib.h>  // workaround (see fortran.h)
         #include <Accelerate/Accelerate.h>
     #endif
 #else

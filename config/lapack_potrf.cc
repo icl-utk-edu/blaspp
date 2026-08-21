@@ -18,8 +18,7 @@
 #endif
 
 #ifdef ACCELERATE_NEW_LAPACK
-    #pragma message "include Accelerate.h"
-    #include <stdlib.h>  // workaround
+    #include <stdlib.h>  // workaround (see fortran.h)
     #include <Accelerate/Accelerate.h>
 #else
     #ifdef __cplusplus

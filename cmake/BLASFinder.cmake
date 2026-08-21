@@ -53,7 +53,7 @@ endif()
 if (run_)
 
 #-------------------------------------------------------------------------------
-# Prints the BLAS_{name,libs}_lists.
+# Prints the blas_{name,libs,defs}_lists and checks them for consistency.
 # This uses CMAKE_MESSAGE_LOG_LEVEL rather than message( DEBUG, ... )
 # because the extra "-- " cmake prints were quite distracting.
 # Usage: cmake -DCMAKE_MESSAGE_LOG_LEVEL=DEBUG ..
@@ -74,6 +74,12 @@ function( debug_print_list msg )
             math( EXPR i "${i} + 1" )
         endforeach()
         message( "" )
+    endif()
+    list( LENGTH blas_name_list name_len_ )
+    list( LENGTH blas_libs_list libs_len_ )
+    list( LENGTH blas_defs_list defs_len_ )
+    if (NOT ((name_len_ EQUAL libs_len_) AND (name_len_ EQUAL defs_len_)))
+        message( FATAL_ERROR "name (${name_len_}), libs (${libs_len_}), and defs (${defs_len_}) list lengths must be equal -- bug in CMake script. Use `cmake -Dlog=DEBUG` to debug." )
     endif()
 endfunction()
 
@@ -366,7 +372,7 @@ if (test_essl)
         #    if (test_int)
         #        list( APPEND blas_name_list "IBM ESSL int (lp64), multi-threaded"  )
         #        list( APPEND blas_libs_list "-lesslsmp -lxlsmp"  )
-        list( APPEND blas_defs_list " " )
+        #        list( APPEND blas_defs_list " " )
         #        # ESSL manual says '-lxlf90_r -lxlfmath' also,
         #        # but this doesn't work on Summit
         #    endif()
@@ -374,7 +380,7 @@ if (test_essl)
         #    if (test_int64)
         #        list( APPEND blas_name_list "IBM ESSL int64 (ilp64), multi-threaded"  )
         #        list( APPEND blas_libs_list "-lesslsmp6464 -lxlsmp"  )
-        list( APPEND blas_defs_list " " )
+        #        list( APPEND blas_defs_list " " )
         #    endif()
         #else
         if (OpenMP_CXX_FOUND)
@@ -473,8 +479,8 @@ foreach (blas_name IN LISTS blas_name_list)
     endif()
     message( "${blas_name}" )
     message( "   libs:  ${blas_libs}" )
-    if (defs MATCHES "[^ ]") # non-empty
-        message( "   defs: ${blas_defs}" )
+    if (blas_defs MATCHES "[^ ]") # non-empty
+        message( "   defs:  ${blas_defs}" )
     endif()
 
     # Split space-separated libs into CMake list.
