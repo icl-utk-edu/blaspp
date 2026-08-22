@@ -73,10 +73,10 @@ set( lapack_libs_list "" )
 
 #---------------------------------------- LAPACK_LIBRARIES
 if (test_lapack_libraries)
-    # Escape ; semi-colons so we can append it as one item to a list.
-    string( REPLACE ";" "\\;" LAPACK_LIBRARIES_ESC "${LAPACK_LIBRARIES}" )
+    # Replace ; semi-colons with : colons so we can append it as one item to a list.
+    string( REPLACE ";" ":" LAPACK_LIBRARIES_ESC "${LAPACK_LIBRARIES}" )
     message( DEBUG "LAPACK_LIBRARIES ${LAPACK_LIBRARIES}" )
-    message( DEBUG "   =>          ${LAPACK_LIBRARIES_ESC}" )
+    message( DEBUG "   =>            ${LAPACK_LIBRARIES_ESC}" )
     list( APPEND lapack_libs_list "${LAPACK_LIBRARIES_ESC}" )
 endif()
 
@@ -103,6 +103,13 @@ unset( LAPACK_FOUND CACHE )
 unset( lapackpp_defs_ CACHE )
 
 foreach (lapack_libs IN LISTS lapack_libs_list)
+    # Strip to deal with default lib being space, " ".
+    # Split on colon to make list.
+    message( DEBUG "   lapack_libs: '${lapack_libs}'" )
+    string( STRIP "${lapack_libs}" lapack_libs )
+    string( REGEX REPLACE ":" ";" lapack_libs "${lapack_libs}" )
+    message( DEBUG "   lapack_libs: '${lapack_libs}' (split)" )
+
     if ("${lapack_libs}" MATCHES "^ *$")
         set( label "   In BLAS library" )
     else()
@@ -143,7 +150,6 @@ foreach (lapack_libs IN LISTS lapack_libs_list)
         message( "${label} ${blue} yes${plain}" )
 
         set( LAPACK_FOUND true CACHE INTERNAL "" )
-        string( STRIP "${lapack_libs}" lapack_libs )
         set( LAPACK_LIBRARIES "${lapack_libs}" CACHE STRING "" FORCE )
         list( APPEND lapackpp_defs_ "-DLAPACK_HAVE_LAPACK" )
         break()
