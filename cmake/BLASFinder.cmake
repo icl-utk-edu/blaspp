@@ -233,16 +233,23 @@ test_threaded_omp   = '${test_threaded_omp}'")
 # Build list of libraries to check.
 # todo: BLAS_?(ROOT|DIR)
 
+# Each entry in blas_libs_list is one BLAS candidate to try. An entry with
+# multiple libraries separates them with escaped semi-colons "\;", so the
+# entry stays a single item in blas_libs_list, yet expands to a real CMake
+# list when retrieved. Spaces are NOT separators; they may occur inside an
+# absolute path ("C:/Program Files (x86)/...") or inside a single linker
+# argument ("-framework Accelerate").
 set( blas_name_list "" )
 set( blas_libs_list "" )
 set( blas_defs_list "" )
 
 #---------------------------------------- BLAS_LIBRARIES
 if (BLAS_LIBRARIES)
-    # Escape ; semi-colons so we can append it as one item to a list.
-    # Replacing them with spaces (as this once did) is lossy: it makes a
-    # space inside a library path indistinguishable from a separator, so
-    # any absolute path containing one is later split apart. That breaks
+    # Escape ; semi-colons so we can append it as one item to the list,
+    # matching the convention above. Replacing them with spaces (as this
+    # once did) is lossy: it makes a space inside a library path
+    # indistinguishable from a separator, so any absolute path containing
+    # one is later split apart. That breaks
     # e.g. -DBLAS_LIBRARIES="C:/Program Files (x86)/Intel/oneAPI/mkl/.../mkl_core_dll.lib",
     # which is the default oneMKL location on Windows. LAPACKFinder.cmake
     # in lapackpp already escapes rather than replaces; this matches it.
@@ -276,13 +283,13 @@ if (test_mkl)
             # GNU compiler + OpenMP: require gnu_thread library.
             if (test_int)
                 list( APPEND blas_name_list "Intel MKL lp64,  GNU threads (gomp), gfortran")
-                list( APPEND blas_libs_list "-lmkl_gf_lp64  -lmkl_gnu_thread -lmkl_core" )
+                list( APPEND blas_libs_list "-lmkl_gf_lp64\;-lmkl_gnu_thread\;-lmkl_core" )
                 list( APPEND blas_defs_list " " )
             endif()
 
             if (test_int64)
                 list( APPEND blas_name_list "Intel MKL ilp64, GNU threads (gomp), gfortran")
-                list( APPEND blas_libs_list "-lmkl_gf_ilp64 -lmkl_gnu_thread -lmkl_core" )
+                list( APPEND blas_libs_list "-lmkl_gf_ilp64\;-lmkl_gnu_thread\;-lmkl_core" )
                 list( APPEND blas_defs_list " " )
             endif()
 
@@ -290,11 +297,11 @@ if (test_mkl)
             # IntelLLVM compiler + OpenMP: require intel_thread library.
             if (test_int)
                 list( APPEND blas_name_list "Intel MKL lp64,  Intel threads (iomp5), ifort")
-                list( APPEND blas_libs_list "-lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core" )
+                list( APPEND blas_libs_list "-lmkl_intel_lp64\;-lmkl_intel_thread\;-lmkl_core" )
                 list( APPEND blas_defs_list " " )
             elseif (test_int64)
                 list( APPEND blas_name_list "Intel MKL ilp64, Intel threads (iomp5), ifort")
-                list( APPEND blas_libs_list "-lmkl_intel_ilp64 -lmkl_intel_thread -lmkl_core" )
+                list( APPEND blas_libs_list "-lmkl_intel_ilp64\;-lmkl_intel_thread\;-lmkl_core" )
                 list( APPEND blas_defs_list " " )
             endif()
 
@@ -302,13 +309,13 @@ if (test_mkl)
             # Intel compiler + OpenMP: require intel_thread library.
             if (test_int)
                 list( APPEND blas_name_list "Intel MKL lp64,  Intel threads (iomp5), ifort")
-                list( APPEND blas_libs_list "-lmkl_intel_lp64  -lmkl_intel_thread -lmkl_core" )
+                list( APPEND blas_libs_list "-lmkl_intel_lp64\;-lmkl_intel_thread\;-lmkl_core" )
                 list( APPEND blas_defs_list " " )
             endif()
 
             if (test_int64)
                 list( APPEND blas_name_list "Intel MKL ilp64, Intel threads (iomp5), ifort")
-                list( APPEND blas_libs_list "-lmkl_intel_ilp64 -lmkl_intel_thread -lmkl_core" )
+                list( APPEND blas_libs_list "-lmkl_intel_ilp64\;-lmkl_intel_thread\;-lmkl_core" )
                 list( APPEND blas_defs_list " " )
             endif()
 
@@ -324,13 +331,13 @@ if (test_mkl)
         if (test_ifort AND intel_compiler)
             if (test_int)
                 list( APPEND blas_name_list "Intel MKL lp64,  sequential, ifort" )
-                list( APPEND blas_libs_list "-lmkl_intel_lp64  -lmkl_sequential -lmkl_core" )
+                list( APPEND blas_libs_list "-lmkl_intel_lp64\;-lmkl_sequential\;-lmkl_core" )
                 list( APPEND blas_defs_list " " )
             endif()
 
             if (test_int64)
                 list( APPEND blas_name_list "Intel MKL ilp64, sequential, ifort" )
-                list( APPEND blas_libs_list "-lmkl_intel_ilp64 -lmkl_sequential -lmkl_core" )
+                list( APPEND blas_libs_list "-lmkl_intel_ilp64\;-lmkl_sequential\;-lmkl_core" )
                 list( APPEND blas_defs_list " " )
             endif()
         endif()  # ifort
@@ -339,13 +346,13 @@ if (test_mkl)
         if (test_gfortran)
             if (test_int)
                 list( APPEND blas_name_list "Intel MKL lp64,  sequential, gfortran" )
-                list( APPEND blas_libs_list "-lmkl_gf_lp64  -lmkl_sequential -lmkl_core" )
+                list( APPEND blas_libs_list "-lmkl_gf_lp64\;-lmkl_sequential\;-lmkl_core" )
                 list( APPEND blas_defs_list " " )
             endif()
 
             if (test_int64)
                 list( APPEND blas_name_list "Intel MKL ilp64, sequential, gfortran" )
-                list( APPEND blas_libs_list "-lmkl_gf_ilp64 -lmkl_sequential -lmkl_core" )
+                list( APPEND blas_libs_list "-lmkl_gf_ilp64\;-lmkl_sequential\;-lmkl_core" )
                 list( APPEND blas_defs_list " " )
             endif()
         endif()  # gfortran
@@ -355,13 +362,13 @@ if (test_mkl)
         if (test_ifort AND NOT intel_compiler)
             if (test_int)
                 list( APPEND blas_name_list "Intel MKL lp64,  sequential, ifort" )
-                list( APPEND blas_libs_list "-lmkl_intel_lp64  -lmkl_sequential -lmkl_core" )
+                list( APPEND blas_libs_list "-lmkl_intel_lp64\;-lmkl_sequential\;-lmkl_core" )
                 list( APPEND blas_defs_list " " )
             endif()
 
             if (test_int64)
                 list( APPEND blas_name_list "Intel MKL ilp64, sequential, ifort" )
-                list( APPEND blas_libs_list "-lmkl_intel_ilp64 -lmkl_sequential -lmkl_core" )
+                list( APPEND blas_libs_list "-lmkl_intel_ilp64\;-lmkl_sequential\;-lmkl_core" )
                 list( APPEND blas_defs_list " " )
             endif()
         endif()  # ifort && not intel
@@ -377,7 +384,7 @@ if (test_essl)
         #if (ibm_compiler)
         #    if (test_int)
         #        list( APPEND blas_name_list "IBM ESSL int (lp64), multi-threaded"  )
-        #        list( APPEND blas_libs_list "-lesslsmp -lxlsmp"  )
+        #        list( APPEND blas_libs_list "-lesslsmp\;-lxlsmp"  )
         #        list( APPEND blas_defs_list " " )
         #        # ESSL manual says '-lxlf90_r -lxlfmath' also,
         #        # but this doesn't work on Summit
@@ -385,7 +392,7 @@ if (test_essl)
         #
         #    if (test_int64)
         #        list( APPEND blas_name_list "IBM ESSL int64 (ilp64), multi-threaded"  )
-        #        list( APPEND blas_libs_list "-lesslsmp6464 -lxlsmp"  )
+        #        list( APPEND blas_libs_list "-lesslsmp6464\;-lxlsmp"  )
         #        list( APPEND blas_defs_list " " )
         #    endif()
         #else
@@ -433,12 +440,12 @@ endif()
 if (test_blis)
     if (test_threaded)
         list( APPEND blas_name_list "BLIS and FLAME, multi-threaded" )
-        list( APPEND blas_libs_list "-lflame -lblis-mt" )
+        list( APPEND blas_libs_list "-lflame\;-lblis-mt" )
         list( APPEND blas_defs_list " " )
     endif()
     if (test_sequential)
         list( APPEND blas_name_list "BLIS and FLAME" )
-        list( APPEND blas_libs_list "-lflame -lblis" )
+        list( APPEND blas_libs_list "-lflame\;-lblis" )
         list( APPEND blas_defs_list " " )
     endif()
     debug_print_list( "blis" )
@@ -484,32 +491,26 @@ foreach (blas_name IN LISTS blas_name_list)
         message( "" )
     endif()
     message( "${blas_name}" )
-    message( "   libs:  ${blas_libs}" )
+    string( REPLACE ";" " " blas_libs_print_ "${blas_libs}" )
+    message( "   libs:  ${blas_libs_print_}" )
     if (blas_defs MATCHES "[^ ]") # non-empty
         message( "   defs:  ${blas_defs}" )
     endif()
 
-    # Split space-separated libs into CMake list.
     # Strip to deal with default lib being space, " ".
-    # Split on spaces to make list,
-    # but keep '-framework Accelerate' together as one item.
+    # Multiple libraries within one entry are separated by escaped
+    # semi-colons "\;" (see where blas_libs_list is built above), so each
+    # entry is a single list item that already expands to a real CMake list
+    # here. Entries are never split on spaces: a space may be part of the
+    # entry itself, either inside an absolute path (e.g. the default oneMKL
+    # location on Windows,
+    # "C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib/mkl_core_dll.lib")
+    # or inside a single linker argument ("-framework Accelerate").
+    # Splitting on spaces (as this once did) tore such entries apart and
+    # produced a link failure reported only as "BLAS library not found",
+    # which points at the library rather than at the path handling that broke.
     message( DEBUG "   blas_libs: '${blas_libs}'" )
     string( STRIP "${blas_libs}" blas_libs )
-    # Entries built here are space-separated link flags (e.g. "-lmkl_core
-    # -lpthread"), so they are split on spaces into a CMake list. Entries that
-    # already contain semicolons came in as a real list -- currently only
-    # BLAS_LIBRARIES, supplied by the user or by CMake's FindBLAS -- and must
-    # NOT be split, because their elements are absolute paths that may legally
-    # contain spaces (e.g. the default oneMKL location on Windows,
-    # "C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib/mkl_core_dll.lib").
-    # Splitting those produced a link failure reported only as
-    # "BLAS library not found", which points at the library rather than at the
-    # path handling that broke.
-    if (NOT blas_libs MATCHES ";")
-        string( REGEX REPLACE " +" ";" blas_libs "${blas_libs}" )
-        string( REGEX REPLACE "-framework;" "-framework " blas_libs "${blas_libs}" )
-    endif()
-    message( DEBUG "   blas_libs: '${blas_libs}' (split)" )
 
     foreach (mangling IN LISTS fortran_mangling_list)
         foreach (int_size IN LISTS int_size_list)
@@ -578,8 +579,8 @@ foreach (blas_name IN LISTS blas_name_list)
                 set( BLAS_FOUND true )
                 if (BLAS_LIBRARIES)
                     # BLAS_LIBRARIES from CMake FindBLAS or user input
-                    # shouldn't get changed, except being split into list.
-                    string( REPLACE " " ";" blas_libraries_ "${BLAS_LIBRARIES}" )
+                    # is passed through unaltered (modulo strip).
+                    string( STRIP "${BLAS_LIBRARIES}" blas_libraries_ )
                     if (NOT blas_libraries_ STREQUAL blas_libs)
                         message( WARNING "Expected BLAS_LIBRARIES = '${BLAS_LIBRARIES}'\n"
                                          "to match blas_libs      = '${blas_libs}'" )
