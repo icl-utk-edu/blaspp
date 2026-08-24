@@ -246,13 +246,7 @@ set( blas_defs_list "" )
 #---------------------------------------- BLAS_LIBRARIES
 if (BLAS_LIBRARIES)
     # Escape ; semi-colons so we can append it as one item to the list,
-    # matching the convention above. Replacing them with spaces (as this
-    # once did) is lossy: it makes a space inside a library path
-    # indistinguishable from a separator, so any absolute path containing
-    # one is later split apart. That breaks
-    # e.g. -DBLAS_LIBRARIES="C:/Program Files (x86)/Intel/oneAPI/mkl/.../mkl_core_dll.lib",
-    # which is the default oneMKL location on Windows. LAPACKFinder.cmake
-    # in lapackpp already escapes rather than replaces; this matches it.
+    # matching the convention above.
     string( REPLACE ";" "\\;" BLAS_LIBRARIES_ESC "${BLAS_LIBRARIES}" )
     message( DEBUG "BLAS_LIBRARIES ${BLAS_LIBRARIES}" )
     message( DEBUG "   =>          ${BLAS_LIBRARIES_ESC}" )
@@ -499,16 +493,8 @@ foreach (blas_name IN LISTS blas_name_list)
 
     # Strip to deal with default lib being space, " ".
     # Multiple libraries within one entry are separated by escaped
-    # semi-colons "\;" (see where blas_libs_list is built above), so each
-    # entry is a single list item that already expands to a real CMake list
-    # here. Entries are never split on spaces: a space may be part of the
-    # entry itself, either inside an absolute path (e.g. the default oneMKL
-    # location on Windows,
-    # "C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib/mkl_core_dll.lib")
-    # or inside a single linker argument ("-framework Accelerate").
-    # Splitting on spaces (as this once did) tore such entries apart and
-    # produced a link failure reported only as "BLAS library not found",
-    # which points at the library rather than at the path handling that broke.
+    # semi-colons "\;" (see where blas_libs_list is built above), so each entry
+    # is a single list item that already expands to a real CMake list here.
     message( DEBUG "   blas_libs: '${blas_libs}'" )
     string( STRIP "${blas_libs}" blas_libs )
 
