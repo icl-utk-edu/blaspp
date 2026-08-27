@@ -20,20 +20,35 @@
 
 //------------------------------------------------------------------------------
 #if defined(BLAS_ILP64) || defined(LAPACK_ILP64)
-    typedef int64_t blas_int;
-    typedef int64_t lapack_int;
+    // long is >= 32 bits, long long is >= 64 bits
+    // macOS Accelerate uses long, Intel MKL uses long long,
+    // prefer int64_t (which can be long or long long).
+    #ifdef BLAS_HAVE_ACCELERATE
+        #define ACCELERATE_LAPACK_ILP64
+        typedef long blas_int;
+        typedef long lapack_int;
+    #else
+        typedef int64_t blas_int;
+        typedef int64_t lapack_int;
+    #endif
 #else
     typedef int blas_int;
     typedef int lapack_int;
 #endif
 
 //------------------------------------------------------------------------------
-#ifndef BLAS_FORTRAN_STRLEN_END
-#define BLAS_FORTRAN_STRLEN_END
-#endif
+#ifdef BLAS_HAVE_ACCELERATE
+    // Neither old nor new macOS Accelerate API passes strlen.
+    #undef BLAS_FORTRAN_STRLEN_END
+    #undef LAPACK_FORTRAN_STRLEN_END
+#else
+    #ifndef BLAS_FORTRAN_STRLEN_END
+    #define BLAS_FORTRAN_STRLEN_END
+    #endif
 
-#ifndef LAPACK_FORTRAN_STRLEN_END
-#define LAPACK_FORTRAN_STRLEN_END
+    #ifndef LAPACK_FORTRAN_STRLEN_END
+    #define LAPACK_FORTRAN_STRLEN_END
+    #endif
 #endif
 
 #endif // CONFIG_H
