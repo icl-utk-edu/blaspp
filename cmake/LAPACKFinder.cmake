@@ -3,9 +3,14 @@
 # This program is free software: you can redistribute it and/or modify it under
 # the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
-# Convert to list, as lapack_libs is later, to match cached value.
-string( REGEX REPLACE "([^ ])( +|\\\;)" "\\1;"    LAPACK_LIBRARIES "${LAPACK_LIBRARIES}" )
-string( REGEX REPLACE "-framework;" "-framework " LAPACK_LIBRARIES "${LAPACK_LIBRARIES}" )
+# LAPACK_LIBRARIES is a standard CMake list and passes through unaltered.
+# It is never split on spaces: a space may be part of an entry itself, either
+# inside an absolute path (e.g. the default oneMKL location on Windows,
+# "C:/Program Files (x86)/Intel/oneAPI/mkl/latest/lib/mkl_core_dll.lib")
+# or inside a single linker argument ("-framework Accelerate"). Splitting on
+# spaces (as this once did) tore such entries apart and produced a link
+# failure reported only as "LAPACK library not found". Same convention as
+# BLASFinder.cmake.
 
 message( DEBUG "LAPACK_LIBRARIES '${LAPACK_LIBRARIES}'"        )
 message( DEBUG "  cached         '${blaspp_lapack_libraries_cached}'" )
