@@ -75,11 +75,18 @@ const int MaxBatchChunk = 50000;
 #endif
 
 //==============================================================================
-/// Queue for executing GPU device routines.
-/// This wraps CUDA stream and cuBLAS handle,
-/// HIP stream and rocBLAS handle,
-/// or SYCL queue.
+/// @brief Queue for executing GPU device routines.
 ///
+/// This class provides a unified interface for GPU operations across different
+/// backends:
+/// - CUDA: Wraps cudaStream_t and cublasHandle_t
+/// - HIP/ROCm: Wraps hipStream_t and rocblas_handle
+/// - SYCL: Wraps sycl::queue
+///
+/// The Queue manages device memory workspace, stream/handle lifecycle,
+/// and supports fork/join parallelism for batch operations.
+///
+/// @ingroup device
 class Queue
 {
 public:
@@ -102,12 +109,22 @@ public:
         using stream_t = void*;  // unused
     #endif
 
+    /// @brief Default constructor. Uses device 0.
     Queue();
+    
+    /// @brief Construct queue for specified device.
+    /// @param[in] device Device ID to use
     Queue( int device );
 
+    /// @brief Construct queue with specified device and stream.
+    /// @param[in] device Device ID to use
+    /// @param[in] stream Pre-existing stream to use
     Queue( int device, stream_t& stream );
 
     #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
+        /// @brief Construct queue with specified device and BLAS handle.
+        /// @param[in] device Device ID to use
+        /// @param[in] handle Pre-existing cuBLAS or rocBLAS handle
         Queue( int device, handle_t handle );
     #endif
 
@@ -115,39 +132,63 @@ public:
     Queue( Queue const& ) = delete;
     Queue& operator=( Queue const& ) = delete;
 
+    /// @brief Destructor. Synchronizes and frees resources.
     ~Queue();
 
+    /// @brief Get device ID associated with this queue.
+    /// @return Device ID
     int  device() const { return device_; }
+    
+    /// @brief Synchronize all operations on this queue.
+    /// Blocks until all queued operations complete.
     void sync();
 
-    /// @return device workspace.
+    /// @brief Get pointer to device workspace.
+    /// @return Pointer to device workspace memory
     void* work() { return (void*) work_; }
 
-    /// @return size of device workspace, in scalar_t elements.
+    /// @brief Get size of device workspace.
+    /// @return Size of workspace in number of scalar_t elements
+    /// @tparam scalar_t Element type for size calculation
     template <typename scalar_t>
     size_t work_size() const { return lwork_ / sizeof(scalar_t); }
 
+    /// @brief Ensure device workspace is at least specified size.
+    /// Reallocates if necessary, synchronizing first.
+    /// @param[in] lwork Minimum workspace size in scalar_t elements
+    /// @tparam scalar_t Element type for size calculation
     template <typename scalar_t>
     void work_ensure_size( size_t lwork );
 
-    // switch from default stream to parallel streams
+    /// @brief Switch from default stream to parallel streams.
+    /// Enables concurrent kernel execution across multiple streams.
+    /// @param[in] num_streams Number of parallel streams (default: MaxForkSize)
     void fork( int num_streams=MaxForkSize );
 
-    // switch back to the default stream
+    /// @brief Switch back to the default stream.
+    /// Synchronizes all parallel streams and returns to single-stream mode.
     void join();
 
-    // return the next-in-line stream (for both default and fork modes)
+    /// @brief Rotate to the next stream in the queue.
+    /// Used with fork() to distribute work across parallel streams.
     void revolve();
 
     #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
-        // Common for CUDA, ROCm.
+        /// @brief Set the BLAS handle for this queue.
+        /// @param[in] in_handle cuBLAS or rocBLAS handle to use
         void set_handle( handle_t& in_handle );
+        
+        /// @brief Get the BLAS handle for this queue.
+        /// @return Current BLAS handle
         handle_t handle() const { return handle_; }
     #endif
 
-    // Common for all: CUDA, ROCm, SYCL, no GPU.
+    /// @brief Set the stream for this queue.
+    /// @param[in] in_stream Stream to use
     void set_stream( stream_t& in_stream );
 
+    /// @brief Get the current stream.
+    /// @return Reference to current stream (may be parallel stream in fork mode)
     stream_t& stream()
     {
         #if defined( BLAS_HAVE_CUBLAS ) || defined( BLAS_HAVE_ROCBLAS )
@@ -316,18 +357,36 @@ inline const char* device_error_string( rocblas_status error )
 // -----------------------------------------------------------------------------
 // set/get device functions
 
-// private, internal routine; sets device for CUDA, ROCm; nothing for SYCL
+/// @brief Internal function to set current device (CUDA/ROCm only).
+/// @param[in] device Device ID to set as current
+/// @ingroup device
 void internal_set_device( int device );
 
+/// @brief Get number of available GPU devices.
+/// @return Number of devices, or 0 if no GPU support
+/// @ingroup device
 int get_device_count();
 
 // -----------------------------------------------------------------------------
 // memory functions
 
+/// @brief Free device memory.
+/// @param[in] ptr Pointer to device memory to free
+/// @param[in] queue Queue that allocated the memory
+/// @ingroup device
 void device_free( void* ptr, blas::Queue &queue );
 
+/// @brief Free pinned host memory.
+/// @param[in] ptr Pointer to pinned host memory to free
+/// @param[in] queue Queue that allocated the memory
+/// @ingroup device
 void host_free_pinned( void* ptr, blas::Queue &queue );
 
+/// @brief Check if pointer is to device memory.
+/// @param[in] A Pointer to check
+/// @param[in] queue Queue for device context
+/// @return True if A points to device memory, false otherwise
+/// @ingroup device
 bool is_devptr( const void* A, blas::Queue &queue );
 
 // -----------------------------------------------------------------------------

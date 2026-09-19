@@ -3,6 +3,22 @@
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
+/// @file
+/// Function declarations for explicitly instantiated BLAS++ wrappers.
+///
+/// This file contains declarations for the standard BLAS operations with
+/// explicit type instantiations (float, double, complex<float>, complex<double>).
+/// These are used when BLAS_USE_TEMPLATE is not defined, allowing pre-compiled
+/// library implementations rather than header-only templates.
+///
+/// For each BLAS operation, four overloads are provided:
+/// - Single precision real (float)
+/// - Double precision real (double)
+/// - Single precision complex (std::complex<float>)
+/// - Double precision complex (std::complex<double>)
+///
+/// @see The template implementations in individual operation headers (e.g., gemm.hh)
+
 #include <vector>
 
 #include "blas/util.hh"
