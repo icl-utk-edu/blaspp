@@ -29,6 +29,15 @@
         #include <Accelerate/Accelerate.h>
     #endif
 #else
+    // OpenBLAS built with SYMBOLSUFFIX (e.g., 64_) also suffixes CBLAS
+    // functions, exporting cblas_ddot64_. Defined before including cblas.h,
+    // this works whether or not the header's declarations are suffixed.
+    #ifdef BLAS_FORTRAN_SUFFIX
+        #define CBLAS_CONCAT_( a, b ) a##b
+        #define CBLAS_CONCAT(  a, b ) CBLAS_CONCAT_( a, b )
+        #define cblas_ddot CBLAS_CONCAT( cblas_ddot, BLAS_FORTRAN_SUFFIX )
+    #endif
+
     #ifdef __cplusplus
         // Some ancient cblas.h don't include extern C. It's okay to nest.
         extern "C" {
