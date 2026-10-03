@@ -6,7 +6,7 @@ Unreleased
     set, the OpenBLAS search probe links `-lopenblas${blas_symbol_suffix}`.
     Supported by both the CMake and Make (`configure.py`) builds.
   - The OpenBLAS search now also probes `-lopenblas64`, so the ILP64 build
-    Debian/Ubuntu ship as `libopenblas64` is found automatically.
+    on Debian/Ubuntu shipped as `libopenblas64` is found automatically.
 
 2025.05.28 (ABI 2.0.0)
   - Added Level 1 BLAS GPU wrappers
