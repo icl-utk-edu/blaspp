@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 
+//------------------------------------------------------------------------------
 #if defined(BLAS_HAVE_MKL)
     #if defined(BLAS_ILP64) && ! defined(MKL_ILP64)
         #define MKL_ILP64
@@ -24,6 +25,7 @@
     #ifdef BLAS_HAVE_ACCELERATE_CBLAS_H
         #include <cblas.h>
     #else
+        #include <stdlib.h>  // workaround (see fortran.h)
         #include <Accelerate/Accelerate.h>
     #endif
 #else
