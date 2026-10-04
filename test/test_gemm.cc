@@ -10,6 +10,8 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
+#include "blas/gemm.hh"
+
 // -----------------------------------------------------------------------------
 template <typename TA, typename TB, typename TC>
 void test_gemm_work( Params& params, bool run )

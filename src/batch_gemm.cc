@@ -5,6 +5,7 @@
 
 #include "blas/batch_common.hh"
 #include "blas.hh"
+#include "blas/gemm.hh"
 
 #include <limits>
 
