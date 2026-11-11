@@ -98,6 +98,7 @@ group_opt.add_argument( '--align',  action='store', help='default=%(default)s', 
 group_opt.add_argument( '--check',  action='store', help='default=y', default='' )  # default in test.cc
 group_opt.add_argument( '--ref',    action='store', help='default=y', default='' )  # default in test.cc
 group_opt.add_argument( '--pointer-mode', action='store', help='default=%(default)s', default='h,d' )
+group_opt.add_argument( '--tpl',    action='store', help='default=%(default)s', default='' )
 
 parser.add_argument( 'tests', nargs=argparse.REMAINDER )
 opts = parser.parse_args()
@@ -242,6 +243,7 @@ align  = ' --align '  + opts.align  if (opts.align)  else ''
 check  = ' --check '  + opts.check  if (opts.check)  else ''
 ref    = ' --ref '    + opts.ref    if (opts.ref)    else ''
 ptr_mode = ' --pointer-mode ' + opts.pointer_mode if (opts.pointer_mode) else ''
+tpl    = ' --tpl '    + opts.tpl    if (opts.tpl)    else ''
 
 # ------------------------------------------------------------------------------
 # filters a comma separated list csv based on items in list values.
@@ -343,14 +345,14 @@ if (opts.blas3):
     [ 'symm',  dtype         + layout + align + side + uplo + mn ],
     [ 'trmm',  dtype         + layout + align + side + uplo + trans + diag + mn ],
     [ 'trsm',  dtype         + layout + align + side + uplo + trans + diag + mn ],
-    [ 'herk',  dtype_real    + layout + align + uplo + trans    + mn ],
-    [ 'herk',  dtype_complex + layout + align + uplo + trans_nc + mn ],
-    [ 'syrk',  dtype_real    + layout + align + uplo + trans    + mn ],
-    [ 'syrk',  dtype_complex + layout + align + uplo + trans_nt + mn ],
-    [ 'her2k', dtype_real    + layout + align + uplo + trans    + mn ],
-    [ 'her2k', dtype_complex + layout + align + uplo + trans_nc + mn ],
-    [ 'syr2k', dtype_real    + layout + align + uplo + trans    + mn ],
-    [ 'syr2k', dtype_complex + layout + align + uplo + trans_nt + mn ],
+    [ 'herk',  dtype_real    + layout + align + uplo + trans    + mn + ab + tpl ],
+    [ 'herk',  dtype_complex + layout + align + uplo + trans_nc + mn + ab + tpl ],
+    [ 'syrk',  dtype_real    + layout + align + uplo + trans    + mn + ab + tpl ],
+    [ 'syrk',  dtype_complex + layout + align + uplo + trans_nt + mn + ab + tpl ],
+    [ 'her2k', dtype_real    + layout + align + uplo + trans    + mn + ab + tpl ],
+    [ 'her2k', dtype_complex + layout + align + uplo + trans_nc + mn + ab + tpl ],
+    [ 'syr2k', dtype_real    + layout + align + uplo + trans    + mn + ab + tpl ],
+    [ 'syr2k', dtype_complex + layout + align + uplo + trans_nt + mn + ab + tpl ],
     ]
 
 # Batch Level 3

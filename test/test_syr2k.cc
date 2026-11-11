@@ -10,7 +10,29 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+// Dispatches to blas::sy2rk wrapper or template implementation.
+//
+template <typename TA, typename TB, typename TC>
+void meta_syr2k(
+    blas::Layout layout, blas::Uplo uplo, blas::Op trans,
+    int64_t n, int64_t k,
+    TA alpha,
+    TA const* A, int64_t lda,
+    TB const* B, int64_t ldb,
+    TC beta,
+    TC* C, int64_t ldc,
+    bool tpl )
+{
+    if (tpl) {
+        blas::syr2k<TA, TC>( layout, uplo, trans, n, k, alpha, A, lda, B, ldb, beta, C, ldc );
+    }
+    else {
+        blas::syr2k( layout, uplo, trans, n, k, alpha, A, lda, B, ldb, beta, C, ldc );
+    }
+}
+
+//------------------------------------------------------------------------------
 template <typename TA, typename TB, typename TC>
 void test_syr2k_work( Params& params, bool run )
 {
@@ -31,6 +53,7 @@ void test_syr2k_work( Params& params, bool run )
     int64_t k       = params.dim.k();
     int64_t align   = params.align();
     int64_t verbose = params.verbose();
+    bool tpl        = params.tpl() == 'y';
 
     // mark non-standard output values
     params.gflops();
@@ -70,33 +93,33 @@ void test_syr2k_work( Params& params, bool run )
     real_t Cnorm = lapack_lansy( "f", to_c_string( uplo ), n, C, ldc, work );
 
     // test error exits
-    assert_throw( blas::syr2k( Layout(0), uplo,    trans,  n,  k, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
-    assert_throw( blas::syr2k( layout,    Uplo(0), trans,  n,  k, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
-    assert_throw( blas::syr2k( layout,    uplo,    Op(0),  n,  k, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
-    assert_throw( blas::syr2k( layout,    uplo,    trans, -1,  k, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
-    assert_throw( blas::syr2k( layout,    uplo,    trans,  n, -1, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( meta_syr2k( Layout(0), uplo,    trans,  n,  k, alpha, A, lda, B, ldb, beta, C, ldc, tpl ), blas::Error );
+    assert_throw( meta_syr2k( layout,    Uplo(0), trans,  n,  k, alpha, A, lda, B, ldb, beta, C, ldc, tpl ), blas::Error );
+    assert_throw( meta_syr2k( layout,    uplo,    Op(0),  n,  k, alpha, A, lda, B, ldb, beta, C, ldc, tpl ), blas::Error );
+    assert_throw( meta_syr2k( layout,    uplo,    trans, -1,  k, alpha, A, lda, B, ldb, beta, C, ldc, tpl ), blas::Error );
+    assert_throw( meta_syr2k( layout,    uplo,    trans,  n, -1, alpha, A, lda, B, ldb, beta, C, ldc, tpl ), blas::Error );
 
-    assert_throw( blas::syr2k( Layout::ColMajor, uplo, Op::NoTrans,   n, k, alpha, A, n-1, B, ldb, beta, C, ldc ), blas::Error );
-    assert_throw( blas::syr2k( Layout::ColMajor, uplo, Op::Trans,     n, k, alpha, A, k-1, B, ldb, beta, C, ldc ), blas::Error );
-    assert_throw( blas::syr2k( Layout::ColMajor, uplo, Op::ConjTrans, n, k, alpha, A, k-1, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( meta_syr2k( Layout::ColMajor, uplo, Op::NoTrans,   n, k, alpha, A, n-1, B, ldb, beta, C, ldc, tpl ), blas::Error );
+    assert_throw( meta_syr2k( Layout::ColMajor, uplo, Op::Trans,     n, k, alpha, A, k-1, B, ldb, beta, C, ldc, tpl ), blas::Error );
+    assert_throw( meta_syr2k( Layout::ColMajor, uplo, Op::ConjTrans, n, k, alpha, A, k-1, B, ldb, beta, C, ldc, tpl ), blas::Error );
 
-    assert_throw( blas::syr2k( Layout::RowMajor, uplo, Op::NoTrans,   n, k, alpha, A, k-1, B, ldb, beta, C, ldc ), blas::Error );
-    assert_throw( blas::syr2k( Layout::RowMajor, uplo, Op::Trans,     n, k, alpha, A, n-1, B, ldb, beta, C, ldc ), blas::Error );
-    assert_throw( blas::syr2k( Layout::RowMajor, uplo, Op::ConjTrans, n, k, alpha, A, n-1, B, ldb, beta, C, ldc ), blas::Error );
+    assert_throw( meta_syr2k( Layout::RowMajor, uplo, Op::NoTrans,   n, k, alpha, A, k-1, B, ldb, beta, C, ldc, tpl ), blas::Error );
+    assert_throw( meta_syr2k( Layout::RowMajor, uplo, Op::Trans,     n, k, alpha, A, n-1, B, ldb, beta, C, ldc, tpl ), blas::Error );
+    assert_throw( meta_syr2k( Layout::RowMajor, uplo, Op::ConjTrans, n, k, alpha, A, n-1, B, ldb, beta, C, ldc, tpl ), blas::Error );
 
-    assert_throw( blas::syr2k( Layout::ColMajor, uplo, Op::NoTrans,   n, k, alpha, A, lda, B, n-1, beta, C, ldc ), blas::Error );
-    assert_throw( blas::syr2k( Layout::ColMajor, uplo, Op::Trans,     n, k, alpha, A, lda, B, k-1, beta, C, ldc ), blas::Error );
-    assert_throw( blas::syr2k( Layout::ColMajor, uplo, Op::ConjTrans, n, k, alpha, A, lda, B, k-1, beta, C, ldc ), blas::Error );
+    assert_throw( meta_syr2k( Layout::ColMajor, uplo, Op::NoTrans,   n, k, alpha, A, lda, B, n-1, beta, C, ldc, tpl ), blas::Error );
+    assert_throw( meta_syr2k( Layout::ColMajor, uplo, Op::Trans,     n, k, alpha, A, lda, B, k-1, beta, C, ldc, tpl ), blas::Error );
+    assert_throw( meta_syr2k( Layout::ColMajor, uplo, Op::ConjTrans, n, k, alpha, A, lda, B, k-1, beta, C, ldc, tpl ), blas::Error );
 
-    assert_throw( blas::syr2k( Layout::RowMajor, uplo, Op::NoTrans,   n, k, alpha, A, lda, B, k-1, beta, C, ldc ), blas::Error );
-    assert_throw( blas::syr2k( Layout::RowMajor, uplo, Op::Trans,     n, k, alpha, A, lda, B, n-1, beta, C, ldc ), blas::Error );
-    assert_throw( blas::syr2k( Layout::RowMajor, uplo, Op::ConjTrans, n, k, alpha, A, lda, B, n-1, beta, C, ldc ), blas::Error );
+    assert_throw( meta_syr2k( Layout::RowMajor, uplo, Op::NoTrans,   n, k, alpha, A, lda, B, k-1, beta, C, ldc, tpl ), blas::Error );
+    assert_throw( meta_syr2k( Layout::RowMajor, uplo, Op::Trans,     n, k, alpha, A, lda, B, n-1, beta, C, ldc, tpl ), blas::Error );
+    assert_throw( meta_syr2k( Layout::RowMajor, uplo, Op::ConjTrans, n, k, alpha, A, lda, B, n-1, beta, C, ldc, tpl ), blas::Error );
 
-    assert_throw( blas::syr2k( layout,    uplo,    trans,  n,  k, alpha, A, lda, B, ldb, beta, C, n-1 ), blas::Error );
+    assert_throw( meta_syr2k( layout,    uplo,    trans,  n,  k, alpha, A, lda, B, ldb, beta, C, n-1, tpl ), blas::Error );
 
     if (blas::is_complex_v<scalar_t>) {
         // complex syr2k doesn't allow ConjTrans, only Trans
-        assert_throw( blas::syr2k( layout, uplo, Op::ConjTrans, n, k, alpha, A, lda, B, ldb, beta, C, ldc ), blas::Error );
+        assert_throw( meta_syr2k( layout, uplo, Op::ConjTrans, n, k, alpha, A, lda, B, ldb, beta, C, ldc, tpl ), blas::Error );
     }
 
     if (verbose >= 1) {
@@ -122,8 +145,8 @@ void test_syr2k_work( Params& params, bool run )
     // run test
     testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
-    blas::syr2k( layout, uplo, trans, n, k,
-                 alpha, A, lda, B, ldb, beta, C, ldc );
+    meta_syr2k( layout, uplo, trans, n, k,
+                alpha, A, lda, B, ldb, beta, C, ldc, tpl );
     time = get_wtime() - time;
 
     double gflop = blas::Gflop< scalar_t >::syr2k( n, k );

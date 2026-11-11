@@ -281,6 +281,7 @@ Params::Params():
     //----- routine parameters, enums
     //          name,         w, type,    default, help
     datatype  ( "type",       4, PT_List, DataType::Double, DataType_help ),
+    tpl       ( "tpl",        3, PT_List, 'n', "ny", "test template implementation" ),
 
     // BLAS & LAPACK options
     layout    ( "layout",     6, PT_List, Layout::ColMajor, Layout_help ),
