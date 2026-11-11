@@ -3,6 +3,28 @@
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
+/// @file
+/// Function declarations for device (GPU) BLAS operations.
+///
+/// This file contains declarations for BLAS operations that execute on GPU devices
+/// (CUDA, ROCm/HIP, or SYCL). Each function takes a blas::Queue parameter that
+/// specifies the device queue/stream for asynchronous execution.
+///
+/// Device BLAS functions operate on device memory pointers and are asynchronous
+/// with respect to the host. Synchronization is managed through the Queue object.
+///
+/// For each BLAS operation, four type overloads are provided:
+/// - Single precision real (float)
+/// - Double precision real (double)
+/// - Single precision complex (std::complex<float>)
+/// - Double precision complex (std::complex<double>)
+///
+/// @note Device pointers must point to GPU-accessible memory.
+/// @note Operations are asynchronous; use queue.sync() for synchronization.
+///
+/// @see blas::Queue for device queue management
+/// @see The host BLAS operations in wrappers.hh
+
 #include "blas/device.hh"
 
 #include <vector>

@@ -3,6 +3,24 @@
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
+/// @file
+/// Build configuration macros for BLAS++ (CMake template file).
+///
+/// This file is a CMake template that gets configured during the build process
+/// to generate blas/defines.h with platform and build-specific definitions.
+///
+/// Generated macros may include:
+/// - BLAS_HAVE_MKL: Intel MKL is available
+/// - BLAS_HAVE_CUBLAS: CUDA cuBLAS is available
+/// - BLAS_HAVE_ROCBLAS: ROCm rocBLAS is available
+/// - BLAS_HAVE_SYCL: SYCL support is enabled
+/// - BLAS_HAVE_PAPI: PAPI performance counters available
+/// - BLAS_FORTRAN_UPPER/LOWER: Fortran name mangling convention
+/// - BLAS_COMPLEX_RETURN_ARGUMENT: Complex return value convention
+///
+/// @note This is an input template file (.in). The actual header is generated at build time.
+/// @see config.h for additional configuration after this file is processed
+
 #ifndef BLAS_DEFINES_H
 #define BLAS_DEFINES_H
 

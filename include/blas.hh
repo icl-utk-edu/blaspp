@@ -3,6 +3,61 @@
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
 
+/// @file
+/// @mainpage BLAS++: C++ API for BLAS (Basic Linear Algebra Subroutines)
+///
+/// BLAS++ provides a modern C++ interface to the Basic Linear Algebra Subroutines,
+/// supporting both CPU and GPU execution. This main header includes all BLAS operations.
+///
+/// # Features
+///
+/// - **Type-generic templates**: Single API for float, double, complex<float>, complex<double>
+/// - **Multiple backends**: Reference C++, vendor BLAS (MKL, OpenBLAS), GPU (cuBLAS, rocBLAS, SYCL)
+/// - **Modern C++**: Uses C++11/14 features, std::complex, strong typing
+/// - **Performance counters**: Optional PAPI integration via counter.hh
+/// - **Device support**: Asynchronous GPU operations via device_blas.hh
+///
+/// # Organization
+///
+/// Operations are organized by BLAS level:
+///
+/// - **Level 1**: Vector-vector operations (axpy, dot, nrm2, scal, etc.)
+/// - **Level 2**: Matrix-vector operations (gemv, ger, trmv, etc.)
+/// - **Level 3**: Matrix-matrix operations (gemm, trmm, herk, etc.)
+///
+/// # Basic Usage
+///
+/// @code
+/// #include <blas.hh>
+/// 
+/// // Matrix-matrix multiply: C = alpha*A*B + beta*C
+/// blas::gemm(blas::Layout::ColMajor,
+///            blas::Op::NoTrans, blas::Op::NoTrans,
+///            m, n, k,
+///            alpha, A, lda,
+///                   B, ldb,
+///            beta,  C, ldc);
+/// @endcode
+///
+/// # Device (GPU) Usage
+///
+/// @code
+/// blas::Queue queue(device_id);
+/// blas::gemm(blas::Layout::ColMajor,
+///            blas::Op::NoTrans, blas::Op::NoTrans,
+///            m, n, k,
+///            alpha, d_A, lda,
+///                   d_B, ldb,
+///            beta,  d_C, ldc,
+///            queue);
+/// queue.sync();  // Wait for completion
+/// @endcode
+///
+/// @see util.hh for enumerations (Layout, Op, Uplo, Diag, Side)
+/// @see device.hh for Queue and device management
+/// @see counter.hh for performance counting with PAPI
+/// @see flops.hh for FLOP and bandwidth calculations
+
 #ifndef BLAS_HH
 #define BLAS_HH
 
