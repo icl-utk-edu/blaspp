@@ -565,6 +565,8 @@ endif()
 #-------------------------------------------------------------------------------
 # Cache blaspp_defs_ that was built in BLASFinder, BLASConfig, CBLASConfig,
 # and blaspp_int that was set in BLASFinder.
+# When re-configured with the same settings, they skip their checks and
+# do not set these again, so they must persist in the cache.
 set( blaspp_defs_ "${blaspp_defs_}"
      CACHE INTERNAL "Constants defined for BLAS" )
 set( blaspp_int "${blaspp_int}" CACHE INTERNAL "" )
