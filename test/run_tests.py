@@ -321,7 +321,7 @@ if (opts.blas2):
     [ 'trmv',  dtype      + layout + align + uplo + trans + diag + n + incx ],
     [ 'trsv',  dtype      + layout + align + uplo + trans + diag + n + incx ],
     ]
-    
+
 if (opts.blas2_device):
     cmds += [
     [ 'dev-gemv',  dtype      + layout + align + trans + mn + incx + incy ],
@@ -410,7 +410,6 @@ if (opts.batch_blas3_device):
 
 if (opts.aux):
     cmds += [
-    [ 'rankk',       ' --dim 2 --layout c,r --uplo u,l,g --beta 0,1,2,-2' ],
     [ 'util',        '' ],
 
     [ 'memcpy',      dtype + n ],

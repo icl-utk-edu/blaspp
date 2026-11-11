@@ -291,7 +291,6 @@ void test_batch_trsm_device  ( Params& params, bool run );
 // auxiliary
 void test_error ( Params& params, bool run );
 void test_max   ( Params& params, bool run );
-void test_rankk ( Params& params, bool run );
 void test_util  ( Params& params, bool run );
 void test_memcpy( Params& params, bool run );
 void test_memcpy_2d( Params& params, bool run );
