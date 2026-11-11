@@ -12,6 +12,15 @@
 
 namespace blas {
 
+//------------------------------------------------------------------------------
+/// @return ceil( x / y ), for integer types T1, T2.
+template <typename T1, typename T2>
+inline constexpr std::common_type_t<T1, T2> ceildiv( T1 x, T2 y )
+{
+    using T = std::common_type_t<T1, T2>;
+    return T((x + y - 1) / y);
+}
+
 // =============================================================================
 /// General matrix-matrix multiply:
 /// \[
@@ -143,164 +152,205 @@ void gemm(
     blas_error_if( ldc < m );
 
     // quick return
-    if (m == 0 || n == 0 || k == 0)
+    if (m == 0 || n == 0 || ((alpha == zero || k == 0) && beta == one))
         return;
 
-    if (alpha == zero) {
-        // alpha == zero, C = beta C
-        if (beta == zero) {
-            for (int64_t j = 0; j < n; ++j) {
-                for (int64_t i = 0; i < m; ++i)
-                    C(i, j) = zero;
+    // Handle rare alpha == zero case as degenerate k.
+    if (alpha == zero)
+        k = 0;
+
+    // Simple, single-threaded, blocked gemm algorithm.
+    // Block sizes can be tuned for specific datatypes and architectures.
+    const int mb = 32, nb = 16, kb = 8;
+
+    // Macros to transpose indices to C row-major ordering.
+    #define sA( i_, j_ ) sA[ j_ ][ i_ ]
+    #define sB( i_, j_ ) sB[ j_ ][ i_ ]
+    #define sC( i_, j_ ) sC[ j_ ][ i_ ]
+
+    scalar_t sA[ kb ][ mb ];
+    scalar_t sB[ nb ][ kb ];
+
+    for (int64_t i = 0; i < m; i += mb) {
+        int mb_ = min( mb, m - i );
+        for (int64_t j = 0; j < n; j += nb) {
+            int nb_ = min( nb, n - j );
+
+            // Zero tile of C.
+            scalar_t sC[ nb ][ mb ] = { 0 };
+
+            for (int h = 0; h < k; h += kb) {
+                int kb_ = min( kb, k - h );
+
+                // Load tile of A, applying trans/conj as needed.
+                // If inner loop bound is known, use that to enable loop
+                // unrolling and vectorizing.
+                //printf( "load A( %d, %d )\n", i, h );
+                if (transA == Op::NoTrans) {
+                    int64_t ih_offset = i + h*lda;
+                    if (mb == mb_) {
+                        for (int hh = 0; hh < kb_; ++hh) {
+                            for (int ii = 0; ii < mb; ++ii) {  // fixed
+                                sA( ii, hh ) = A( ih_offset + ii, hh );
+                            }
+                        }
+                    }
+                    else {
+                    //printf( "A: lim mb %d, %d\n", mb, mb_ );
+                        for (int hh = 0; hh < kb_; ++hh) {
+                            for (int ii = 0; ii < mb_; ++ii) {
+                                sA( ii, hh ) = A( ih_offset + ii, hh );
+                            }
+                        }
+                    }
+                    // Clear k-edge entries.
+                    for (int hh = kb_; hh < kb; ++hh) {
+                        for (int ii = 0; ii < mb; ++ii) {  // fixed
+                            sA( ii, hh ) = 0;
+                        }
+                    }
+                }
+                else if (transA == Op::Trans) {
+                    int64_t ih_offset = i*lda + h;
+                    if (kb == kb_) {
+                        for (int ii = 0; ii < mb_; ++ii) {
+                            for (int hh = 0; hh < kb; ++hh) {  // fixed
+                                sA( ii, hh ) = A( ih_offset + hh, ii );
+                            }
+                        }
+                    }
+                    else {
+                    // printf( "A: lim kb %d, %d\n", kb, kb_ );
+                        for (int ii = 0; ii < mb_; ++ii) {
+                            for (int hh = 0; hh < kb_; ++hh) {
+                                sA( ii, hh ) = A( ih_offset + hh, ii );
+                            }
+                            // Clear k-edge entries.
+                            for (int hh = kb_; hh < kb; ++hh) {
+                                sA( ii, hh ) = 0;
+                            }
+                        }
+                    }
+                }
+                else if (transA == Op::ConjTrans) {
+                    int64_t ih_offset = i*lda + h;
+                    if (kb == kb_) {
+                        for (int ii = 0; ii < mb_; ++ii) {
+                            for (int hh = 0; hh < kb; ++hh) {  // fixed
+                                sA( ii, hh ) = conj( A( ih_offset + hh, ii ) );
+                            }
+                        }
+                    }
+                    else {
+                        for (int ii = 0; ii < mb_; ++ii) {
+                            for (int hh = 0; hh < kb_; ++hh) {
+                                sA( ii, hh ) = conj( A( ih_offset + hh, ii ) );
+                            }
+                            // Clear k-edge entries.
+                            for (int hh = kb_; hh < kb; ++hh) {
+                                sA( ii, hh ) = 0;
+                            }
+                        }
+                    }
+                }
+
+                // Load tile of B, applying trans/conj as needed.
+                //printf( "load B( %d, %d )\n", h, j );
+                if (transB == Op::NoTrans) {
+                    int64_t hj_offset = h + j*ldb;
+                    if (kb == kb_) {
+                        for (int jj = 0; jj < nb_; ++jj) {
+                            for (int hh = 0; hh < kb; ++hh) {  // fixed
+                                sB( hh, jj ) = B( hj_offset + hh, jj );
+                            }
+                        }
+                    }
+                    else {
+                    // printf( "B: lim kb %d, %d\n", kb, kb_ );
+                        for (int jj = 0; jj < nb_; ++jj) {
+                            for (int hh = 0; hh < kb_; ++hh) {
+                                sB( hh, jj ) = B( hj_offset + hh, jj );
+                            }
+                            // Clear k-edge entries.
+                            for (int hh = kb_; hh < kb; ++hh) {
+                                sB( hh, jj ) = 0;
+                            }
+                        }
+                    }
+                }
+                else {
+                    int64_t hj_offset = h*ldb + j;
+                    if (transB == Op::Trans) {
+                        if (nb == nb_) {
+                            for (int hh = 0; hh < kb_; ++hh) {
+                                for (int jj = 0; jj < nb; ++jj) {  // fixed
+                                    sB( hh, jj ) = B( hj_offset + jj, hh );
+                                }
+                            }
+                        }
+                        else {
+                        // printf( "B: lim nb %d, %d\n", nb, nb_ );
+                            for (int hh = 0; hh < kb_; ++hh) {
+                                for (int jj = 0; jj < nb_; ++jj) {
+                                    sB( hh, jj ) = B( hj_offset + jj, hh );
+                                }
+                            }
+                        }
+                    }
+                    else {  // transB == Op::ConjTrans
+                        if (nb == nb_) {
+                            for (int hh = 0; hh < kb_; ++hh) {
+                                for (int jj = 0; jj < nb; ++jj) {  // fixed
+                                    sB( hh, jj ) = conj( B( hj_offset + jj, hh ) );
+                                }
+                            }
+                        }
+                        else {
+                            for (int hh = 0; hh < kb_; ++hh) {
+                                for (int jj = 0; jj < nb_; ++jj) {
+                                    sB( hh, jj ) = conj( B( hj_offset + jj, hh ) );
+                                }
+                            }
+                        }
+                    }
+                    // Clear k-edge entries.
+                    for (int hh = kb_; hh < kb; ++hh) {
+                        for (int jj = 0; jj < nb; ++jj) {  // fixed
+                            sB( hh, jj ) = 0;
+                        }
+                    }
+                }
+
+                // Multiply tiles: sC = sA * sB.
+                //printf( "multiply A*B\n" );
+                for (int jj = 0; jj < nb; ++jj) {
+                    for (int ii = 0; ii < mb; ++ii) {
+                        scalar_t sum = 0;
+                        for (int hh = 0; hh < kb; ++hh) {
+                            sum += sA( ii, hh ) * sB( hh, jj );
+                            //sum += A( ih_offset + ii, hh ) * B( hj_offset + hh, jj );
+                        }
+                        sC( ii, jj ) += sum;
+                    }
+                }
             }
-        }
-        else if (beta != one) {
-            for (int64_t j = 0; j < n; ++j) {
-                for (int64_t i = 0; i < m; ++i)
-                    C(i, j) *= beta;
-            }
-        }
-    }
-    else if (transA == Op::NoTrans) {
-        if (transB == Op::NoTrans) {
-            // C = alpha A B + beta C
-            for (int64_t j = 0; j < n; ++j) {
-                if (beta == zero) {
-                    for (int64_t i = 0; i < m; ++i)
-                        C(i, j) = zero;
-                }
-                else if (beta != one) {
-                    for (int64_t i = 0; i < m; ++i)
-                        C(i, j) *= beta;
-                }
-                for (int64_t l = 0; l < k; ++l) {
-                    scalar_t alpha_Blj = alpha*B(l, j);
-                    for (int64_t i = 0; i < m; ++i)
-                        C(i, j) += A(i, l)*alpha_Blj;
+
+            // Apply alpha and beta, then store tile of C.
+            //printf( "save C( %d, %d )\n", i, j  );
+            int64_t ij_offset = i + j*ldc;
+            if (beta == zero) {
+                for (int jj = 0; jj < nb_; ++jj) {
+                    for (int ii = 0; ii < mb_; ++ii) {
+                        C( ij_offset + ii, jj ) = alpha*sC( ii, jj );
+                    }
                 }
             }
-        }
-        else if (transB == Op::Trans) {
-            // C = alpha A B^T + beta C
-            for (int64_t j = 0; j < n; ++j) {
-                if (beta == zero) {
-                    for (int64_t i = 0; i < m; ++i)
-                        C(i, j) = zero;
-                }
-                else if (beta != one) {
-                    for (int64_t i = 0; i < m; ++i)
-                        C(i, j) *= beta;
-                }
-                for (int64_t l = 0; l < k; ++l) {
-                    scalar_t alpha_Bjl = alpha*B(j, l);
-                    for (int64_t i = 0; i < m; ++i)
-                        C(i, j) += A(i, l)*alpha_Bjl;
-                }
-            }
-        }
-        else { // transB == Op::ConjTrans
-            // C = alpha A B^H + beta C
-            for (int64_t j = 0; j < n; ++j) {
-                if (beta == zero) {
-                    for (int64_t i = 0; i < m; ++i)
-                        C(i, j) = zero;
-                }
-                else if (beta != one) {
-                    for (int64_t i = 0; i < m; ++i)
-                        C(i, j) *= beta;
-                }
-                for (int64_t l = 0; l < k; ++l) {
-                    scalar_t alpha_Bjl = alpha*conj(B(j, l));
-                    for (int64_t i = 0; i < m; ++i)
-                        C(i, j) += A(i, l)*alpha_Bjl;
-                }
-            }
-        }
-    }
-    else if (transA == Op::Trans) {
-        // C = alpha A^T B + beta C
-        if (transB == Op::NoTrans) {
-            for (int64_t j = 0; j < n; ++j) {
-                for (int64_t i = 0; i < m; ++i) {
-                    scalar_t sum = zero;
-                    for (int64_t l = 0; l < k; ++l)
-                        sum += A(l, i)*B(l, j);
-                    if (beta == zero)
-                        C(i, j) = alpha*sum;
-                    else
-                        C(i, j) = alpha*sum + beta*C(i, j);
-                }
-            }
-        }
-        else if (transB == Op::Trans) {
-            // C = alpha A^T B^T + beta C
-            for (int64_t j = 0; j < n; ++j) {
-                for (int64_t i = 0; i < m; ++i) {
-                    scalar_t sum = zero;
-                    for (int64_t l = 0; l < k; ++l)
-                        sum += A(l, i)*B(j, l);
-                    if (beta == zero)
-                        C(i, j) = alpha*sum;
-                    else
-                        C(i, j) = alpha*sum + beta*C(i, j);
-                }
-            }
-        }
-        else { // transB == Op::ConjTrans
-            // C = alpha A^T B^H + beta C
-            for (int64_t j = 0; j < n; ++j) {
-                for (int64_t i = 0; i < m; ++i) {
-                    scalar_t sum = zero;
-                    for (int64_t l = 0; l < k; ++l)
-                        sum += A(l, i)*conj(B(j, l));
-                    if (beta == zero)
-                        C(i, j) = alpha*sum;
-                    else
-                        C(i, j) = alpha*sum + beta*C(i, j);
-                }
-            }
-        }
-    }
-    else { // transA == Op::ConjTrans
-        if (transB == Op::NoTrans) {
-            // C = alpha A^H B + beta C
-            for (int64_t j = 0; j < n; ++j) {
-                for (int64_t i = 0; i < m; ++i) {
-                    scalar_t sum = zero;
-                    for (int64_t l = 0; l < k; ++l)
-                        sum += conj(A(l, i))*B(l, j);
-                    if (beta == zero)
-                        C(i, j) = alpha*sum;
-                    else
-                        C(i, j) = alpha*sum + beta*C(i, j);
-                }
-            }
-        }
-        else if (transB == Op::Trans) {
-            // C = alpha A^H B + beta C
-            for (int64_t j = 0; j < n; ++j) {
-                for (int64_t i = 0; i < m; ++i) {
-                    scalar_t sum = zero;
-                    for (int64_t l = 0; l < k; ++l)
-                        sum += conj(A(l, i))*B(j, l);
-                    if (beta == zero)
-                        C(i, j) = alpha*sum;
-                    else
-                        C(i, j) = alpha*sum + beta*C(i, j);
-                }
-            }
-        }
-        else { // transB == Op::ConjTrans
-            // C = alpha A^H B^H + beta C
-            for (int64_t j = 0; j < n; ++j) {
-                for (int64_t i = 0; i < m; ++i) {
-                    scalar_t sum = zero;
-                    for (int64_t l = 0; l < k; ++l)
-                        sum += A(l, i)*B(j, l); // little improvement here
-                    if (beta == zero)
-                        C(i, j) = alpha*conj(sum);
-                    else
-                        C(i, j) = alpha*conj(sum) + beta*C(i, j);
+            else {
+                for (int jj = 0; jj < nb_; ++jj) {
+                    for (int ii = 0; ii < mb_; ++ii) {
+                        C( ij_offset + ii, jj ) = alpha*sC( ii, jj )
+                                                + beta*C( ij_offset + ii, jj );
+                    }
                 }
             }
         }
