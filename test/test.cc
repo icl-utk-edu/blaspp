@@ -236,6 +236,7 @@ std::vector< testsweeper::routines_t > routines = {
     // auxiliary
     { "error",            test_error,               Section::aux            },
     { "max",              test_max,                 Section::aux            },
+    { "rankk",            test_rankk,               Section::aux            },
     { "util",             test_util,                Section::aux            },
     { "",                 nullptr,                  Section::newline        },
 
