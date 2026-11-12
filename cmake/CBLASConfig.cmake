@@ -5,18 +5,35 @@
 
 include( "cmake/util.cmake" )
 
+# blaspp_cblas_include given by the user or a parent project, if any.
+set( cblas_include_given_ "${blaspp_cblas_include}" )
+
 # Check if this file has already been run with these settings (see bottom).
 set( run_ true )
 if (DEFINED cblas_config_cache
-    AND "${cblas_config_cache}" STREQUAL "${BLAS_LIBRARIES}")
+    AND DEFINED cblas_config_defs_cache
+    AND DEFINED cblas_config_include_cache
+    AND "${cblas_config_cache}" STREQUAL "${BLAS_LIBRARIES}"
+    AND "${cblas_config_include_cache}" STREQUAL "${cblas_include_given_}")
 
     message( DEBUG "CBLAS config already done for '${BLAS_LIBRARIES}'" )
+    # Restore defines found in the previous run (see bottom).
+    list( APPEND blaspp_defs_ ${cblas_config_defs_cache} )
     set( run_ false )
 endif()
 
 #===============================================================================
 # Matching endif at bottom.
 if (run_)
+
+# Clear results of a previous run. A blaspp_cblas_include given by the user
+# is kept; the directory found below is cached separately.
+unset( blaspp_cblas_found         CACHE )
+unset( blaspp_cblas_libraries     CACHE )
+unset( blaspp_cblas_include_found CACHE )
+
+# Defines found here are appended to blaspp_defs_ after this index.
+list( LENGTH blaspp_defs_ defs_begin_ )
 
 #----------------------------------------
 # Apple puts cblas.h in weird places. If we can't find it,
@@ -29,6 +46,7 @@ if ("${blaspp_defs_}" MATCHES "HAVE_ACCELERATE")
     foreach (dir IN LISTS dir_list)
         if (EXISTS "${dir}/cblas.h")
             set( blaspp_cblas_include "${dir}" )
+            set( blaspp_cblas_include_found "${dir}" CACHE INTERNAL "" )
             list( APPEND blaspp_defs_ "-DBLAS_HAVE_ACCELERATE_CBLAS_H" )
             break()
         endif()
@@ -74,11 +92,26 @@ foreach (lib IN LISTS lib_list)
     endif()
 endforeach()
 
+# Save defines found here, to restore when skipped (see top).
+set( defs_ "" )
+list( LENGTH blaspp_defs_ defs_end_ )
+if (defs_end_ GREATER defs_begin_)
+    list( SUBLIST blaspp_defs_ ${defs_begin_} -1 defs_ )
+endif()
+set( cblas_config_defs_cache "${defs_}" CACHE INTERNAL "" )
+
 endif() # run_
 #===============================================================================
 
 # Mark as already run (see top).
 set( cblas_config_cache "${BLAS_LIBRARIES}" CACHE INTERNAL "" )
+set( cblas_config_include_cache "${cblas_include_given_}" CACHE INTERNAL "" )
+
+# The directory found above takes precedence over one given by the user;
+# restore it when skipped.
+if (blaspp_cblas_include_found)
+    set( blaspp_cblas_include "${blaspp_cblas_include_found}" )
+endif()
 
 #-------------------------------------------------------------------------------
 if (blaspp_cblas_found)

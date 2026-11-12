@@ -8,15 +8,21 @@ include( "cmake/util.cmake" )
 # Check if this file has already been run with these settings (see bottom).
 set( run_ true )
 if (DEFINED blas_config_cache
+    AND DEFINED blas_config_defs_cache
     AND "${blas_config_cache}" STREQUAL "${BLAS_LIBRARIES}")
 
     message( DEBUG "BLAS config already done for '${BLAS_LIBRARIES}'" )
+    # Restore defines found in the previous run (see bottom).
+    list( APPEND blaspp_defs_ ${blas_config_defs_cache} )
     set( run_ false )
 endif()
 
 #===============================================================================
 # Matching endif at bottom.
 if (run_)
+
+# Defines found here are appended to blaspp_defs_ after this index.
+list( LENGTH blaspp_defs_ defs_begin_ )
 
 #-------------------------------------------------------------------------------
 # Search to identify library and get version. Besides providing the
@@ -297,6 +303,14 @@ else()
         list( APPEND blaspp_defs_ "-DBLAS_HAVE_F2C" )
     endif()
 endif()
+
+# Save defines found here, to restore when skipped (see top).
+set( defs_ "" )
+list( LENGTH blaspp_defs_ defs_end_ )
+if (defs_end_ GREATER defs_begin_)
+    list( SUBLIST blaspp_defs_ ${defs_begin_} -1 defs_ )
+endif()
+set( blas_config_defs_cache "${defs_}" CACHE INTERNAL "" )
 
 endif() # run_
 #===============================================================================

@@ -49,7 +49,8 @@ elseif (NOT ("${blaspp_lapack_cached}" STREQUAL "${lapack}"))
     # Ignore LAPACK_LIBRARIES if lapack* changed.
     message( DEBUG "unset LAPACK_LIBRARIES" )
     set( LAPACK_LIBRARIES "" CACHE INTERNAL "" )
-else()
+elseif (LAPACK_FOUND)
+    # LAPACK_FOUND is unset if the previous search failed or BLAS changed.
     message( DEBUG "LAPACK search already done for
     lapack           = ${lapack}
     LAPACK_LIBRARIES = ${LAPACK_LIBRARIES}" )

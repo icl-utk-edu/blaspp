@@ -19,13 +19,32 @@ include( "cmake/util.cmake" )
 
 #-----------------------------------
 # Check if this file has already been run with these settings (see bottom).
+# Search again if the previous search failed, or if an older version did
+# it (blas_defs_cached undefined). blas_int, blas_symbol_suffix, and
+# OpenMP affect the search even when BLAS_LIBRARIES is given.
+if (    blas_found_cached
+    AND DEFINED blas_defs_cached
+    AND "${blas_int}"           STREQUAL "${blas_int_cached}"
+    AND "${blas_symbol_suffix}" STREQUAL "${blas_symbol_suffix_cached}"
+    AND "${openmp_lib}"         STREQUAL "${blas_openmp_cached}")
+    set( same_settings_ true )
+else()
+    set( same_settings_ false )
+endif()
+
 if (BLAS_LIBRARIES)
     # At this point, BLAS_LIBRARIES comes from CMake FindBLAS or
     # user input (`cmake -DBLAS_LIBRARIES=...`).
-    if (BLAS_LIBRARIES STREQUAL blas_libraries_cached)
-        # Already checked this BLAS_LIBRARIES; load cached results.
+    if (    same_settings_
+        AND BLAS_LIBRARIES STREQUAL blas_libraries_cached
+        AND "${blas_cached}" STREQUAL "")
+        # Already checked this BLAS_LIBRARIES (blas is cleared when
+        # BLAS_LIBRARIES is checked, so a search for blas that found the
+        # same libraries does not count); load cached results.
         message( STATUS "Using cached BLAS_LIBRARIES settings" )
-        set( BLAS_FOUND "${blas_found_cached}" )
+        set( BLAS_FOUND   "${blas_found_cached}" )
+        set( blaspp_defs_ "${blas_defs_cached}" )
+        set( blaspp_int   "${blaspp_int_cached}" )
         set( run_ false )
     else()
         # Need to check BLAS_LIBRARIES.
@@ -34,14 +53,16 @@ if (BLAS_LIBRARIES)
         set( blas "" )
     endif()
 
-elseif (    "${blas}"          STREQUAL "${blas_cached}"
+elseif (    same_settings_
+        AND "${blas}"          STREQUAL "${blas_cached}"
         AND "${blas_fortran}"  STREQUAL "${blas_fortran_cached}"
-        AND "${blas_int}"      STREQUAL "${blas_int_cached}"
         AND "${blas_threaded}" STREQUAL "${blas_threaded_cached}")
     # Already checked this blas; load cached results.
     message( STATUS "Using cached blas settings" )
     set( BLAS_LIBRARIES "${blas_libraries_cached}" )
     set( BLAS_FOUND     "${blas_found_cached}" )
+    set( blaspp_defs_   "${blas_defs_cached}" )
+    set( blaspp_int     "${blaspp_int_cached}" )
     set( run_ false )
 else()
     # Search blas, blas_int, etc.
@@ -490,6 +511,12 @@ endif()
 set( BLAS_FOUND false )
 unset( blaspp_defs_ CACHE )
 
+# BLASConfig, CBLASConfig, and LAPACKFinder depend on this search,
+# so re-run them.
+unset( blas_config_cache  CACHE )
+unset( cblas_config_cache CACHE )
+unset( LAPACK_FOUND       CACHE )
+
 # Extra define to forward to the link/run probes when the user has
 # requested a BLAS symbol suffix. Kept separate from the mangling
 # loop because it is orthogonal to UPPER/LOWER/ADD_.
@@ -645,6 +672,10 @@ set( blas_cached           "${blas}"           CACHE INTERNAL "" )
 set( blas_fortran_cached   "${blas_fortran}"   CACHE INTERNAL "" )
 set( blas_int_cached       "${blas_int}"       CACHE INTERNAL "" )
 set( blas_threaded_cached  "${blas_threaded}"  CACHE INTERNAL "" )
+set( blas_symbol_suffix_cached "${blas_symbol_suffix}" CACHE INTERNAL "" )
+set( blas_openmp_cached    "${openmp_lib}"     CACHE INTERNAL "" )
+set( blas_defs_cached      "${blaspp_defs_}"   CACHE INTERNAL "" )
+set( blaspp_int_cached     "${blaspp_int}"     CACHE INTERNAL "" )
 
 endif() # run_
 #===============================================================================
