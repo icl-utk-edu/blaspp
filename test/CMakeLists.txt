@@ -153,6 +153,10 @@ target_include_directories(
         "${blaspp_cblas_include}"
 )
 
+# Sometimes include paths are in cflags (e.g., with pkg-config).
+target_compile_options(
+    ${tester} PRIVATE ${blaspp_cflags} )
+
 # Copy run_tests script to build directory.
 add_custom_command(
     TARGET ${tester} POST_BUILD
