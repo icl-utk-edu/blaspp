@@ -52,6 +52,7 @@ void test_her2_work( Params& params, bool run )
     size_t size_y = max( (n - 1) * abs( incy ) + 1, 0 );
     TA* A    = new TA[ size_A ];
     TA* Aref = new TA[ size_A ];
+    TA* Agen = new TA[ size_A ];
     TX* x    = new TX[ size_x ];
     TY* y    = new TY[ size_y ];
 
@@ -61,6 +62,7 @@ void test_her2_work( Params& params, bool run )
     lapack_larnv( idist, iseed, size_x, x );
     lapack_larnv( idist, iseed, size_y, y );
     lapack_lacpy( "g", n, n, A, lda, Aref, lda );
+    lapack_lacpy( "g", n, n, A, lda, Agen, lda );
 
     // norms for error check
     real_t work[1];
@@ -127,16 +129,29 @@ void test_her2_work( Params& params, bool run )
 
         // check error compared to reference
         // beta = 1
+        // check_herk is ColMajor; RowMajor stores the opposite triangle.
+        Uplo uplo_check = uplo;
+        if (layout == Layout::RowMajor)
+            uplo_check = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
         real_t error;
         bool okay;
-        check_herk( uplo, n, 2, alpha, real_t(1), Xnorm, Ynorm, Anorm,
+        check_herk( uplo_check, n, 2, alpha, real_t(1), Xnorm, Ynorm, Anorm,
                     Aref, lda, A, lda, verbose, &error, &okay );
-        params.error() = error;
-        params.okay() = okay;
+
+        // also check the generic template
+        blas::her2< TA, TX, TY >( layout, uplo, n, alpha, x, incx, y, incy,
+                                  Agen, lda );
+        real_t error_gen;
+        bool okay_gen;
+        check_herk( uplo_check, n, 2, alpha, real_t(1), Xnorm, Ynorm, Anorm,
+                    Aref, lda, Agen, lda, verbose, &error_gen, &okay_gen );
+        params.error() = max( error, error_gen );
+        params.okay() = okay && okay_gen;
     }
 
     delete[] A;
     delete[] Aref;
+    delete[] Agen;
     delete[] x;
     delete[] y;
 }

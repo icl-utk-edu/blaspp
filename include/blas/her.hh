@@ -85,9 +85,12 @@ void her(
     if (n == 0 || alpha == zero)
         return;
 
-    // for row major, swap lower <=> upper
+    // for row major, swap lower <=> upper and conjugate the update,
+    // since A^T = conj( A ) for Hermitian A
+    bool doconj = false;
     if (layout == Layout::RowMajor) {
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
+        doconj = true;
     }
 
     int64_t kx = (incx > 0 ? 0 : (-n + 1)*incx);
@@ -98,7 +101,8 @@ void her(
                 // note: NOT skipping if x[j] is zero, for consistent NAN handling
                 scalar_t tmp = alpha * conj( x[j] );
                 for (int64_t i = 0; i <= j-1; ++i) {
-                    A(i, j) += x[i] * tmp;
+                    scalar_t tmp2 = x[i] * tmp;
+                    A(i, j) += (doconj ? conj( tmp2 ) : tmp2);
                 }
                 A(j, j) = real( A(j, j) ) + real( x[j] * tmp );
             }
@@ -110,7 +114,8 @@ void her(
                 scalar_t tmp = alpha * conj( x[jx] );
                 int64_t ix = kx;
                 for (int64_t i = 0; i <= j-1; ++i) {
-                    A(i, j) += x[ix] * tmp;
+                    scalar_t tmp2 = x[ix] * tmp;
+                    A(i, j) += (doconj ? conj( tmp2 ) : tmp2);
                     ix += incx;
                 }
                 A(j, j) = real( A(j, j) ) + real( x[jx] * tmp );
@@ -126,7 +131,8 @@ void her(
                 scalar_t tmp = alpha * conj( x[j] );
                 A(j, j) = real( A(j, j) ) + real( tmp * x[j] );
                 for (int64_t i = j+1; i < n; ++i) {
-                    A(i, j) += x[i] * tmp;
+                    scalar_t tmp2 = x[i] * tmp;
+                    A(i, j) += (doconj ? conj( tmp2 ) : tmp2);
                 }
             }
         }
@@ -139,7 +145,8 @@ void her(
                 int64_t ix = jx;
                 for (int64_t i = j+1; i < n; ++i) {
                     ix += incx;
-                    A(i, j) += x[ix] * tmp;
+                    scalar_t tmp2 = x[ix] * tmp;
+                    A(i, j) += (doconj ? conj( tmp2 ) : tmp2);
                 }
                 jx += incx;
             }
