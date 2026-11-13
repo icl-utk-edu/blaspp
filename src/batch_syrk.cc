@@ -45,7 +45,7 @@ void syrk(
             batch_size, info );
     }
 
-    #pragma omp parallel for schedule( dynamic )
+    BLASPP_PRAGMA_OMP( parallel for schedule( dynamic ) )
     for (size_t i = 0; i < batch_size; ++i) {
         blas::Uplo uplo_   = blas::batch::extract( uplo,   i );
         blas::Op   trans_  = blas::batch::extract( trans,  i );

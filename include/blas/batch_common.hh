@@ -7,6 +7,7 @@
 #define BLAS_BATCH_COMMON_HH
 
 #include "blas/util.hh"
+
 #include <algorithm>  // std::min/max
 #include <vector>
 
@@ -78,7 +79,7 @@ void gemm_check(
         internal_info = &info[0];
     }
 
-    #pragma omp parallel for schedule(dynamic)
+    BLASPP_PRAGMA_OMP( parallel for schedule( dynamic ) )
     for (size_t i = 0; i < batchCount; ++i) {
         Op transA_ = extract<Op>(transA, i);
         Op transB_ = extract<Op>(transB, i);
@@ -117,7 +118,7 @@ void gemm_check(
     if (info.size() == 1) {
         // do a reduction that finds the first argument to encounter an error
         int64_t lerror = INTERNAL_INFO_DEFAULT;
-        #pragma omp parallel for reduction(max:lerror)
+        BLASPP_PRAGMA_OMP( parallel for reduction( max:lerror ) )
         for (size_t i = 0; i < batchCount; ++i) {
             if (internal_info[i] == 0)
                 continue;    // skip problems that passed error checks
@@ -133,7 +134,7 @@ void gemm_check(
     }
     else {
         int64_t info_ = 0;
-        #pragma omp parallel for reduction(+:info_)
+        BLASPP_PRAGMA_OMP( parallel for reduction( +:info_ ) )
         for (size_t i = 0; i < batchCount; ++i) {
             info_ += info[i];
         }
@@ -194,7 +195,7 @@ void trsm_check(
         internal_info = &info[0];
     }
 
-    #pragma omp parallel for schedule(dynamic)
+    BLASPP_PRAGMA_OMP( parallel for schedule( dynamic ) )
     for (size_t i = 0; i < batchCount; ++i) {
         Side  side_ = extract<Side>( side,  i );
         Uplo  uplo_ = extract<Uplo>( uplo,  i );
@@ -232,7 +233,7 @@ void trsm_check(
     if (info.size() == 1) {
         // do a reduction that finds the first argument to encounter an error
         int64_t lerror = INTERNAL_INFO_DEFAULT;
-        #pragma omp parallel for reduction(max:lerror)
+        BLASPP_PRAGMA_OMP( parallel for reduction( max:lerror ) )
         for (size_t i = 0; i < batchCount; ++i) {
             if (internal_info[i] == 0)
                 continue;    // skip problems that passed error checks
@@ -248,7 +249,7 @@ void trsm_check(
     }
     else {
         int64_t info_ = 0;
-        #pragma omp parallel for reduction(+:info_)
+        BLASPP_PRAGMA_OMP( parallel for reduction( +:info_ ) )
         for (size_t i = 0; i < batchCount; ++i) {
             info_ += info[i];
         }
@@ -309,7 +310,7 @@ void trmm_check(
         internal_info = &info[0];
     }
 
-    #pragma omp parallel for schedule(dynamic)
+    BLASPP_PRAGMA_OMP( parallel for schedule( dynamic ) )
     for (size_t i = 0; i < batchCount; ++i) {
         Side  side_ = extract<Side>( side,  i );
         Uplo  uplo_ = extract<Uplo>( uplo,  i );
@@ -347,7 +348,7 @@ void trmm_check(
     if (info.size() == 1) {
         // do a reduction that finds the first argument to encounter an error
         int64_t lerror = INTERNAL_INFO_DEFAULT;
-        #pragma omp parallel for reduction(max:lerror)
+        BLASPP_PRAGMA_OMP( parallel for reduction( max:lerror ) )
         for (size_t i = 0; i < batchCount; ++i) {
             if (internal_info[i] == 0)
                 continue;    // skip problems that passed error checks
@@ -363,7 +364,7 @@ void trmm_check(
     }
     else {
         int64_t info_ = 0;
-        #pragma omp parallel for reduction(+:info_)
+        BLASPP_PRAGMA_OMP( parallel for reduction( +:info_ ) )
         for (size_t i = 0; i < batchCount; ++i) {
             info_ += info[i];
         }
@@ -439,7 +440,7 @@ void hemm_check(
         internal_info = &info[0];
     }
 
-    #pragma omp parallel for schedule(dynamic)
+    BLASPP_PRAGMA_OMP( parallel for schedule( dynamic ) )
     for (size_t i = 0; i < batchCount; ++i) {
         Side  side_ = extract<Side>( side, i );
         Uplo  uplo_ = extract<Uplo>( uplo, i );
@@ -472,7 +473,7 @@ void hemm_check(
     if (info.size() == 1) {
         // do a reduction that finds the first argument to encounter an error
         int64_t lerror = INTERNAL_INFO_DEFAULT;
-        #pragma omp parallel for reduction(max:lerror)
+        BLASPP_PRAGMA_OMP( parallel for reduction( max:lerror ) )
         for (size_t i = 0; i < batchCount; ++i) {
             if (internal_info[i] == 0)
                 continue;    // skip problems that passed error checks
@@ -488,7 +489,7 @@ void hemm_check(
     }
     else {
         int64_t info_ = 0;
-        #pragma omp parallel for reduction(+:info_)
+        BLASPP_PRAGMA_OMP( parallel for reduction( +:info_ ) )
         for (size_t i = 0; i < batchCount; ++i) {
             info_ += info[i];
         }
@@ -554,7 +555,7 @@ void herk_check(
         internal_info = &info[0];
     }
 
-    #pragma omp parallel for schedule(dynamic)
+    BLASPP_PRAGMA_OMP( parallel for schedule( dynamic ) )
     for (size_t i = 0; i < batchCount; ++i) {
         Uplo  uplo_ = extract<Uplo>( uplo,  i );
         Op   trans_ = extract<Op>  ( trans, i );
@@ -583,7 +584,7 @@ void herk_check(
     if (info.size() == 1) {
         // do a reduction that finds the first argument to encounter an error
         int64_t lerror = INTERNAL_INFO_DEFAULT;
-        #pragma omp parallel for reduction(max:lerror)
+        BLASPP_PRAGMA_OMP( parallel for reduction( max:lerror ) )
         for (size_t i = 0; i < batchCount; ++i) {
             if (internal_info[i] == 0)
                 continue;    // skip problems that passed error checks
@@ -599,7 +600,7 @@ void herk_check(
     }
     else {
         int64_t info_ = 0;
-        #pragma omp parallel for reduction(+:info_)
+        BLASPP_PRAGMA_OMP( parallel for reduction( +:info_ ) )
         for (size_t i = 0; i < batchCount; ++i) {
             info_ += info[i];
         }
@@ -684,7 +685,7 @@ void syrk_check(
         internal_info = &info[0];
     }
 
-    #pragma omp parallel for schedule(dynamic)
+    BLASPP_PRAGMA_OMP( parallel for schedule( dynamic ) )
     for (size_t i = 0; i < batchCount; ++i) {
         Uplo  uplo_ = extract<Uplo>( uplo,  i );
         Op   trans_ = extract<Op>  ( trans, i );
@@ -713,7 +714,7 @@ void syrk_check(
     if (info.size() == 1) {
         // do a reduction that finds the first argument to encounter an error
         int64_t lerror = INTERNAL_INFO_DEFAULT;
-        #pragma omp parallel for reduction(max:lerror)
+        BLASPP_PRAGMA_OMP( parallel for reduction( max:lerror ) )
         for (size_t i = 0; i < batchCount; ++i) {
             if (internal_info[i] == 0)
                 continue;    // skip problems that passed error checks
@@ -729,7 +730,7 @@ void syrk_check(
     }
     else {
         int64_t info_ = 0;
-        #pragma omp parallel for reduction(+:info_)
+        BLASPP_PRAGMA_OMP( parallel for reduction( +:info_ ) )
         for (size_t i = 0; i < batchCount; ++i) {
             info_ += info[i];
         }
@@ -806,7 +807,7 @@ void her2k_check(
         internal_info = &info[0];
     }
 
-    #pragma omp parallel for schedule(dynamic)
+    BLASPP_PRAGMA_OMP( parallel for schedule( dynamic ) )
     for (size_t i = 0; i < batchCount; ++i) {
         Uplo  uplo_ = extract<Uplo>( uplo,  i );
         Op   trans_ = extract<Op>  ( trans, i );
@@ -838,7 +839,7 @@ void her2k_check(
     if (info.size() == 1) {
         // do a reduction that finds the first argument to encounter an error
         int64_t lerror = INTERNAL_INFO_DEFAULT;
-        #pragma omp parallel for reduction(max:lerror)
+        BLASPP_PRAGMA_OMP( parallel for reduction( max:lerror ) )
         for (size_t i = 0; i < batchCount; ++i) {
             if (internal_info[i] == 0)
                 continue;    // skip problems that passed error checks
@@ -854,7 +855,7 @@ void her2k_check(
     }
     else {
         int64_t info_ = 0;
-        #pragma omp parallel for reduction(+:info_)
+        BLASPP_PRAGMA_OMP( parallel for reduction( +:info_ ) )
         for (size_t i = 0; i < batchCount; ++i) {
             info_ += info[i];
         }
@@ -931,7 +932,7 @@ void syr2k_check(
         internal_info = &info[0];
     }
 
-    #pragma omp parallel for schedule(dynamic)
+    BLASPP_PRAGMA_OMP( parallel for schedule( dynamic ) )
     for (size_t i = 0; i < batchCount; ++i) {
         Uplo  uplo_ = extract<Uplo>( uplo,  i );
         Op   trans_ = extract<Op>  ( trans, i );
@@ -963,7 +964,7 @@ void syr2k_check(
     if (info.size() == 1) {
         // do a reduction that finds the first argument to encounter an error
         int64_t lerror = INTERNAL_INFO_DEFAULT;
-        #pragma omp parallel for reduction(max:lerror)
+        BLASPP_PRAGMA_OMP( parallel for reduction( max:lerror ) )
         for (size_t i = 0; i < batchCount; ++i) {
             if (internal_info[i] == 0)
                 continue;    // skip problems that passed error checks
@@ -979,7 +980,7 @@ void syr2k_check(
     }
     else {
         int64_t info_ = 0;
-        #pragma omp parallel for reduction(+:info_)
+        BLASPP_PRAGMA_OMP( parallel for reduction( +:info_ ) )
         for (size_t i = 0; i < batchCount; ++i) {
             info_ += info[i];
         }
