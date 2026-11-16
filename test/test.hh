@@ -82,6 +82,7 @@ public:
 
     //----- routine parameters, enums
     testsweeper::ParamEnum< testsweeper::DataType > datatype;
+    testsweeper::ParamChar                          tpl;
 
     // BLAS & LAPACK options
     testsweeper::ParamEnum< blas::Layout >          layout;
