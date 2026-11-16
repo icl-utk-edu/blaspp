@@ -281,7 +281,7 @@ if (gpu_backend MATCHES "^(auto|sycl)$")
     # Check if compiler supports the SYCL flag and headers.
     # todo: could try_compile config/onemkl.cc as configure.py does.
     check_cxx_compiler_flag( "-fsycl" FSYCL_SUPPORT )
-    check_include_file_cxx( "sycl/sycl.hpp" SYCL_HEADER )
+    check_include_file_cxx( "sycl/sycl.hpp" SYCL_HEADER "-fsycl" )
     if (MKL_FOUND AND FSYCL_SUPPORT AND SYCL_HEADER)
         set( gpu_backend "sycl" )
         set( blaspp_defs_sycl_ "-DBLAS_HAVE_SYCL;-DBLAS_FORTRAN_ADD_" )
