@@ -27,6 +27,7 @@ string( REPLACE "." ";" abi_list "${abi_version}" )
 list( GET abi_list 0 soversion )
 
 include( CheckCXXCompilerFlag )
+include( CheckIncludeFileCXX )
 
 # When built as a sub-project, add a namespace to make targets unique,
 # e.g., `make tester` becomes `make blaspp_tester`.
@@ -277,21 +278,14 @@ if (gpu_backend MATCHES "^(auto|sycl)$")
     endif()
     # message(STATUS "Available targets: ${MKL_IMPORTED_TARGETS}")
 
-    # Check if compiler supports the SYCL flag
+    # Check if compiler supports the SYCL flag and headers.
+    # todo: could try_compile config/onemkl.cc as configure.py does.
     check_cxx_compiler_flag( "-fsycl" FSYCL_SUPPORT )
-
-    # If oneMKL is found and the compiler supports SYCL then
-    # enable oneMKL-SYCL-device support
-    if (MKL_FOUND AND FSYCL_SUPPORT)
+    check_include_file_cxx( "sycl/sycl.hpp" SYCL_HEADER "-fsycl" )
+    if (MKL_FOUND AND FSYCL_SUPPORT AND SYCL_HEADER)
         set( gpu_backend "sycl" )
         set( blaspp_defs_sycl_ "-DBLAS_HAVE_SYCL;-DBLAS_FORTRAN_ADD_" )
         set( blaspp_use_sycl true )
-
-        # Uncomment to use CMake FindBLAS using BLA_VENDOR
-        # if (NOT BLA_VENDOR)
-        #    set( BLA_VENDOR Intel10_64lp )
-        # endif()
-
         message( STATUS "${blue}Building oneMKL-SYCL device support${plain}" )
     elseif (gpu_backend STREQUAL "sycl")
         message( FATAL_ERROR "${red}SYCL compiler not found${plain}" )
