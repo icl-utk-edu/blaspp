@@ -10,7 +10,7 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // TX is data [x, y]
 // TS is for sine, which can be real (zdrot) or complex (zrot)
 // cosine is always real
@@ -76,18 +76,11 @@ void test_rot_work( Params& params, bool run )
     assert_throw( blas::rot(  n, x,    0, y, incy, c, s ), blas::Error );
     assert_throw( blas::rot(  n, x, incx, y,    0, c, s ), blas::Error );
 
-    if (verbose >= 1) {
-        printf( "\n"
-                "s = %.4f + %.4fi, c = %.4f, s^2 + c^2 = %.4f\n"
-                "x n=%5lld, inc=%5lld, size=%10lld\n"
-                "y n=%5lld, inc=%5lld, size=%10lld\n",
-                real( s ), imag( s ), c, real( s*conj(s) ) + c*c,
-                llong( n ), llong( incx ), llong( size_x ),
-                llong( n ), llong( incy ), llong( size_y ) );
-    }
-    if (verbose >= 2) {
-        printf( "x    = " ); print_vector( n, x, incx );
-        printf( "y    = " ); print_vector( n, y, incy );
+    if (verbose) {
+        printf( "s = %.4f + %.4fi; c = %.4f; s^2 + c^2 = %.4f\n",
+                real( s ), imag( s ), c, real( s*conj(s) ) + c*c );
+        print_vector( "x", n, x, incx, verbose );
+        print_vector( "y", n, y, incy, verbose );
     }
 
     // run test
@@ -102,10 +95,8 @@ void test_rot_work( Params& params, bool run )
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
 
-    if (verbose >= 1) {
-        printf( "x2   = " ); print_vector( n, x, incx );
-        printf( "y2   = " ); print_vector( n, y, incy );
-    }
+    print_vector( "xout", n, x, incx, verbose );
+    print_vector( "yout", n, y, incy, verbose );
 
     if (params.ref() == 'y' || params.check() == 'y') {
         // run reference
@@ -118,10 +109,8 @@ void test_rot_work( Params& params, bool run )
         params.ref_gflops() = gflop / time;
         params.ref_gbytes() = gbyte / time;
 
-        if (verbose >= 1) {
-            printf( "xref = " ); print_vector( n, xref, incx );
-            printf( "yref = " ); print_vector( n, yref, incy );
-        }
+        print_vector( "xref", n, xref, incx, verbose );
+        print_vector( "yref", n, yref, incy, verbose );
 
         // check error compared to reference
         // C = [x y] * R for n x 2 matrix C and 2 x 2 rotation R
@@ -150,7 +139,7 @@ void test_rot_work( Params& params, bool run )
     delete[] yref;
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_rot( Params& params, bool run )
 {
     switch (params.datatype()) {

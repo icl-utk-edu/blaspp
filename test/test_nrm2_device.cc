@@ -9,7 +9,7 @@
 #include "blas/flops.hh"
 #include "print_matrix.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename T>
 void test_nrm2_device_work( Params& params, bool run )
 {
@@ -79,14 +79,7 @@ void test_nrm2_device_work( Params& params, bool run )
     blas::device_copy_vector( n, x, abs( incx ), dx, abs( incx ), queue );
     queue.sync();
 
-    if (verbose >= 1) {
-        printf( "\n"
-                "x n=%5lld, inc=%5lld, size=%10lld\n",
-                llong( n ), llong( incx ), llong( size_x ) );
-    }
-    if (verbose >= 2) {
-        printf( "x = " ); print_vector( n, x, incx );
-    }
+    print_vector( "x", n, x, incx, verbose );
 
     // run test
     testsweeper::flush_cache( params.cache() );
@@ -108,7 +101,7 @@ void test_nrm2_device_work( Params& params, bool run )
     blas::device_copy_vector( n, dx, abs( incx ), x, abs( incx ), queue );
     queue.sync();
 
-    if (verbose >= 2) {
+    if (verbose) {
         printf( "result = %.4e\n", result_host );
     }
 
@@ -123,7 +116,7 @@ void test_nrm2_device_work( Params& params, bool run )
         params.ref_gflops() = gflop / time;
         params.ref_gbytes() = gbyte / time;
 
-        if (verbose >= 2) {
+        if (verbose) {
             printf( "ref    = %.4e\n", ref );
         }
 
@@ -150,7 +143,7 @@ void test_nrm2_device_work( Params& params, bool run )
         blas::device_free( result_ptr, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_nrm2_device( Params& params, bool run )
 {
     switch (params.datatype()) {

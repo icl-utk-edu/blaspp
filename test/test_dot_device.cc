@@ -10,7 +10,7 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename TX, typename TY>
 void test_dot_device_work( Params& params, bool run )
 {
@@ -100,17 +100,8 @@ void test_dot_device_work( Params& params, bool run )
         assert_throw( blas::dotu(  n, dx, incx, dy,    0, result_ptr, queue ), blas::Error );
     }
 
-    if (verbose >= 1) {
-        printf( "\n"
-                "x n=%5lld, inc=%5lld, size=%10lld, norm %.2e\n"
-                "y n=%5lld, inc=%5lld, size=%10lld, norm %.2e\n",
-                llong( n ), llong( incx ), llong( size_x ), Xnorm,
-                llong( n ), llong( incy ), llong( size_y ), Ynorm );
-    }
-    if (verbose >= 2) {
-        printf( "x = " ); print_vector( n, x, incx );
-        printf( "y = " ); print_vector( n, y, incy );
-    }
+    print_vector( "x", n, x, incx, verbose );
+    print_vector( "y", n, y, incy, verbose );
 
     // run test
     testsweeper::flush_cache( params.cache() );
@@ -134,7 +125,7 @@ void test_dot_device_work( Params& params, bool run )
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
 
-    if (verbose >= 1) {
+    if (verbose) {
         printf( "dot = %.4e + %.4ei\n", real(result_host), imag(result_host) );
     }
 
@@ -155,7 +146,7 @@ void test_dot_device_work( Params& params, bool run )
         params.ref_gflops() = gflop / time;
         params.ref_gbytes() = gbyte / time;
 
-        if (verbose >= 1) {
+        if (verbose) {
             printf( "ref = %.4e + %.4ei\n", real(ref), imag(ref) );
         }
 
@@ -179,7 +170,7 @@ void test_dot_device_work( Params& params, bool run )
         blas::device_free( result_ptr, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_dot_device( Params& params, bool run )
 {
     switch (params.datatype()) {

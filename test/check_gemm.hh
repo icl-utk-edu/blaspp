@@ -13,7 +13,7 @@
 
 #include <limits>
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Computes error for multiplication with general matrix result.
 // Covers dot, gemv, ger, geru, gemm, symv, hemv, symm, trmv, trsv?, trmm, trsm?.
 // Cnorm is norm of original C, before multiplication operation.
@@ -85,7 +85,7 @@ void check_gemm(
     #undef Cref
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Computes error for multiplication with symmetric or Hermitian matrix result.
 // Covers syr, syr2, syrk, syr2k, her, her2, herk, her2k.
 // Cnorm is norm of original C, before multiplication operation.

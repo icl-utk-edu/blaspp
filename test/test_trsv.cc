@@ -10,7 +10,7 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename TA, typename TX>
 void test_trsv_work( Params& params, bool run )
 {
@@ -107,16 +107,11 @@ void test_trsv_work( Params& params, bool run )
     assert_throw( blas::trsv( layout,    uplo,    trans, diag,     n, A, n-1, x, incx ), blas::Error );
     assert_throw( blas::trsv( layout,    uplo,    trans, diag,     n, A, lda, x,    0 ), blas::Error );
 
-    if (verbose >= 1) {
-        printf( "\n"
-                "A n=%5lld, lda=%5lld, size=%10lld, norm=%.2e\n"
-                "x n=%5lld, inc=%5lld, size=%10lld, norm=%.2e\n",
-                llong( n ), llong( lda ),  llong( size_A ), Anorm,
-                llong( n ), llong( incx ), llong( size_x ), Xnorm );
-    }
-    if (verbose >= 2) {
-        printf( "A = "    ); print_matrix( n, n, A, lda );
-        printf( "x    = " ); print_vector( n, x, incx );
+    if (verbose) {
+        printf( "Anorm %.2e; Xnorm %.2e\n",
+                Anorm, Xnorm );
+        print_matrix( "A", n, n, A, lda, verbose );
+        print_vector( "x", n, x, incx, verbose );
     }
 
     // run test
@@ -131,9 +126,7 @@ void test_trsv_work( Params& params, bool run )
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
 
-    if (verbose >= 2) {
-        printf( "x2   = " ); print_vector( n, x, incx );
-    }
+    print_vector( "xout", n, x, incx, verbose );
 
     if (params.check() == 'y') {
         // run reference
@@ -150,9 +143,7 @@ void test_trsv_work( Params& params, bool run )
         params.ref_gflops() = gflop / time;
         params.ref_gbytes() = gbyte / time;
 
-        if (verbose >= 2) {
-            printf( "xref = " ); print_vector( n, xref, incx );
-        }
+        print_vector( "xref", n, xref, incx, verbose );
 
         // check error compared to reference
         // treat x as 1 x n matrix with ld = incx; k = n is reduction dimension
@@ -172,7 +163,7 @@ void test_trsv_work( Params& params, bool run )
     #undef A
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_trsv( Params& params, bool run )
 {
     switch (params.datatype()) {

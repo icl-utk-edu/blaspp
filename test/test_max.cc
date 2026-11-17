@@ -5,7 +5,7 @@
 
 #include "test.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_max( Params& params, bool run )
 {
     int64_t m = params.dim.m();
@@ -23,7 +23,7 @@ void test_max( Params& params, bool run )
     float f = 3.1415;
     double d = 1.2345;
 
-    // -----
+    //------
     auto max_xi   = max( 1, 2     );
     auto max_xi2  = max( 1, i     );
     auto max_xi3  = max( 1, i, 2  );
@@ -44,7 +44,7 @@ void test_max( Params& params, bool run )
     auto max_yd   = max( 0.245, 1 );
     auto max_yd2  = max( d,     1 );
 
-    // -----
+    //------
     auto min_xi   = min( 1, 2     );
     auto min_xi2  = min( 1, i     );
     auto min_xi3  = min( 1, i, 2  );
@@ -65,7 +65,7 @@ void test_max( Params& params, bool run )
     auto min_yd   = min( 0.245, 1 );
     auto min_yd2  = min( d,     1 );
 
-    // -----
+    //------
     // check results
     // use assert, to tell which one failed, vs. single okay flag
     require( max_xi   == 2 );
@@ -106,7 +106,7 @@ void test_max( Params& params, bool run )
     require( min_yd   == 0.245 );
     require( min_yd2  == 1 );
 
-    // -----
+    //------
     // check types of results
     // oddly, this can't be done with asserts:
     // error: macro "assert" passed 2 arguments, but takes just 1

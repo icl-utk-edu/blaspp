@@ -10,7 +10,7 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename TA, typename TX>
 void test_her_work( Params& params, bool run )
 {
@@ -70,17 +70,12 @@ void test_her_work( Params& params, bool run )
     assert_throw( blas::her( layout,    uplo,     n, alpha, x,    0, A, lda ), blas::Error );
     assert_throw( blas::her( layout,    uplo,     n, alpha, x, incx, A, n-1 ), blas::Error );
 
-    if (verbose >= 1) {
-        printf( "\n"
-                "A n=%5lld, lda=%5lld, size=%10lld, norm=%.2e\n"
-                "x n=%5lld, inc=%5lld, size=%10lld, norm=%.2e\n",
-                llong( n ), llong( lda ),  llong( size_A ), Anorm,
-                llong( n ), llong( incx ), llong( size_x ), Xnorm );
-    }
-    if (verbose >= 2) {
+    if (verbose) {
         printf( "alpha = %.4e;\n", alpha );
-        printf( "A = " ); print_matrix( n, n, A, lda );
-        printf( "x = " ); print_vector( n, x, incx );
+        printf( "Anorm %.2e; Xnorm %.2e;\n",
+                Anorm, Xnorm );
+        print_matrix( "A", n, n, A, lda, verbose );
+        print_vector( "x", n, x, incx, verbose );
     }
 
     // run test
@@ -95,9 +90,7 @@ void test_her_work( Params& params, bool run )
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
 
-    if (verbose >= 2) {
-        printf( "A2 = " ); print_matrix( n, n, A, lda );
-    }
+    print_matrix( "Aout", n, n, A, lda, verbose );
 
     if (params.check() == 'y') {
         // run reference
@@ -111,9 +104,7 @@ void test_her_work( Params& params, bool run )
         params.ref_gflops() = gflop / time;
         params.ref_gbytes() = gbyte / time;
 
-        if (verbose >= 2) {
-            printf( "Aref = " ); print_matrix( n, n, Aref, lda );
-        }
+        print_matrix( "Aref", n, n, Aref, lda, verbose );
 
         // check error compared to reference
         // beta = 1
@@ -130,7 +121,7 @@ void test_her_work( Params& params, bool run )
     delete[] x;
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_her( Params& params, bool run )
 {
     switch (params.datatype()) {

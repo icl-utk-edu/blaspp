@@ -10,7 +10,7 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename TA, typename TX, typename TY>
 void test_her2_work( Params& params, bool run )
 {
@@ -76,21 +76,14 @@ void test_her2_work( Params& params, bool run )
     assert_throw( blas::her2( layout,    uplo,     n, alpha, x, incx, y,    0, A, lda ), blas::Error );
     assert_throw( blas::her2( layout,    uplo,     n, alpha, x, incx, y, incy, A, n-1 ), blas::Error );
 
-    if (verbose >= 1) {
-        printf( "\n"
-                "A n=%5lld, lda=%5lld, size=%10lld, norm=%.2e\n"
-                "x n=%5lld, inc=%5lld, size=%10lld, norm=%.2e\n"
-                "y n=%5lld, inc=%5lld, size=%10lld, norm=%.2e\n",
-                llong( n ), llong( lda ),  llong( size_A ), Anorm,
-                llong( n ), llong( incx ), llong( size_x ), Xnorm,
-                llong( n ), llong( incy ), llong( size_y ), Ynorm );
-    }
-    if (verbose >= 2) {
+    if (verbose) {
         printf( "alpha = %.4e + %.4ei;\n",
                 real(alpha), imag(alpha) );
-        printf( "A = " ); print_matrix( n, n, A, lda );
-        printf( "x = " ); print_vector( n, x, incx );
-        printf( "y = " ); print_vector( n, y, incy );
+        printf( "Anorm %.2e; Xnorm %.2e; Ynorm %.2e;\n",
+                Anorm, Xnorm, Ynorm );
+        print_matrix( "A", n, n, A, lda, verbose );
+        print_vector( "x", n, x, incx, verbose );
+        print_vector( "y", n, y, incy, verbose );
     }
 
     // run test
@@ -105,9 +98,7 @@ void test_her2_work( Params& params, bool run )
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
 
-    if (verbose >= 2) {
-        printf( "A2 = " ); print_matrix( n, n, A, lda );
-    }
+    print_matrix( "Aout", n, n, A, lda, verbose );
 
     if (params.check() == 'y') {
         // run reference
@@ -121,9 +112,7 @@ void test_her2_work( Params& params, bool run )
         params.ref_gflops() = gflop / time;
         params.ref_gbytes() = gbyte / time;
 
-        if (verbose >= 2) {
-            printf( "Aref = " ); print_matrix( n, n, Aref, lda );
-        }
+        print_matrix( "Aref", n, n, Aref, lda, verbose );
 
         // check error compared to reference
         // beta = 1
@@ -141,7 +130,7 @@ void test_her2_work( Params& params, bool run )
     delete[] y;
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_her2( Params& params, bool run )
 {
     switch (params.datatype()) {

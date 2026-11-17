@@ -9,7 +9,7 @@
 #include "blas/flops.hh"
 #include "print_matrix.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename TX, typename TY>
 void test_copy_work( Params& params, bool run )
 {
@@ -58,17 +58,8 @@ void test_copy_work( Params& params, bool run )
     assert_throw( blas::copy(  n, x,    0, y, incy ), blas::Error );
     assert_throw( blas::copy(  n, x, incx, y,    0 ), blas::Error );
 
-    if (verbose >= 1) {
-        printf( "\n"
-                "x n=%5lld, inc=%5lld, size=%10lld\n"
-                "y n=%5lld, inc=%5lld, size=%10lld\n",
-                llong( n ), llong( incx ), llong( size_x ),
-                llong( n ), llong( incy ), llong( size_y ) );
-    }
-    if (verbose >= 2) {
-        printf( "x    = " ); print_vector( n, x, incx );
-        printf( "y    = " ); print_vector( n, y, incy );
-    }
+    print_vector( "x", n, x, incx, verbose );
+    print_vector( "y", n, y, incy, verbose );
 
     // run test
     testsweeper::flush_cache( params.cache() );
@@ -82,10 +73,8 @@ void test_copy_work( Params& params, bool run )
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
 
-    if (verbose >= 2) {
-        printf( "x2   = " ); print_vector( n, x, incx );
-        printf( "y2   = " ); print_vector( n, y, incy );
-    }
+    print_vector( "xout", n, x, incx, verbose );
+    print_vector( "yout", n, y, incy, verbose );
 
     if (params.check() == 'y') {
         // run reference
@@ -98,9 +87,7 @@ void test_copy_work( Params& params, bool run )
         params.ref_gflops() = gflop / time;
         params.ref_gbytes() = gbyte / time;
 
-        if (verbose >= 2) {
-            printf( "yref = " ); print_vector( n, yref, incy );
-        }
+        print_vector( "yref", n, yref, incy, verbose );
 
         // error = ||yref - y||
         cblas_axpy( n, -1.0, y, incy, yref, incy );
@@ -116,7 +103,7 @@ void test_copy_work( Params& params, bool run )
     delete[] yref;
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_copy( Params& params, bool run )
 {
     switch (params.datatype()) {

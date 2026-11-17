@@ -10,7 +10,7 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename TA, typename TC>
 void test_herk_device_work( Params& params, bool run )
 {
@@ -102,19 +102,11 @@ void test_herk_device_work( Params& params, bool run )
         assert_throw( blas::herk( layout, uplo, Op::Trans, n, k, alpha, dA, lda, beta, dC, ldc, queue ), blas::Error );
     }
 
-    if (verbose >= 1) {
-        printf( "\n"
-                "uplo %c, trans %c\n"
-                "A An=%5lld, An=%5lld, lda=%5lld, size=%10lld, norm %.2e\n"
-                "C  n=%5lld,  n=%5lld, ldc=%5lld, size=%10lld, norm %.2e\n",
-                to_char( uplo ), to_char( trans ),
-                llong( Am ), llong( An ), llong( lda ), llong( size_A ), Anorm,
-                llong( n ), llong( n ), llong( ldc ), llong( size_C ), Cnorm );
-    }
-    if (verbose >= 2) {
-        printf( "alpha = %.4e; beta = %.4e;  %% real\n", alpha, beta );
-        printf( "A = "    ); print_matrix( Am, An, A, lda );
-        printf( "C = "    ); print_matrix(  n,  n, C, ldc );
+    if (verbose) {
+        printf( "Anorm %.2e; Cnorm %.2e;\n",
+                Anorm, Cnorm );
+        print_matrix( "A", Am, An, A, lda, verbose );
+        print_matrix( "C", n,  n, C, ldc, verbose );
     }
 
     // run test
@@ -131,9 +123,7 @@ void test_herk_device_work( Params& params, bool run )
     blas::device_copy_matrix(n, n, dC, ldc, C, ldc, queue);
     queue.sync();
 
-    if (verbose >= 2) {
-        printf( "C2 = " ); print_matrix( n, n, C, ldc );
-    }
+    print_matrix( "Cout", n, n, C, ldc, verbose );
 
     if (params.ref() == 'y' || params.check() == 'y') {
         // run reference
@@ -148,9 +138,7 @@ void test_herk_device_work( Params& params, bool run )
         params.ref_time()   = time;
         params.ref_gflops() = gflop / time;
 
-        if (verbose >= 2) {
-            printf( "Cref = " ); print_matrix( n, n, Cref, ldc );
-        }
+        print_matrix( "Cref", n, n, Cref, ldc, verbose );
 
         // check error compared to reference
         real_t error;
@@ -169,7 +157,7 @@ void test_herk_device_work( Params& params, bool run )
     blas::device_free( dC, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_herk_device( Params& params, bool run )
 {
     switch (params.datatype()) {

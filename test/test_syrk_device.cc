@@ -10,7 +10,7 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename TA, typename TC>
 void test_syrk_device_work( Params& params, bool run )
 {
@@ -117,8 +117,10 @@ void test_syrk_device_work( Params& params, bool run )
         printf( "alpha = %.4e + %.4ei; beta = %.4e + %.4ei;\n",
                 real(alpha), imag(alpha),
                 real(beta),  imag(beta) );
-        printf( "A = "    ); print_matrix( Am, An, A, lda );
-        printf( "C = "    ); print_matrix(  n,  n, C, ldc );
+        printf( "Anorm %.2e; Cnorm %.2e\n",
+                Anorm, Cnorm );
+        print_matrix( "A", Am, An, A, lda, verbose );
+        print_matrix( "C", n,  n, C, ldc, verbose );
     }
 
     // run test
@@ -135,9 +137,7 @@ void test_syrk_device_work( Params& params, bool run )
     blas::device_copy_matrix(n, n, dC, ldc, C, ldc, queue);
     queue.sync();
 
-    if (verbose >= 2) {
-        printf( "C2 = " ); print_matrix( n, n, C, ldc );
-    }
+    print_matrix( "Cout", n, n, C, ldc, verbose );
 
     if (params.ref() == 'y' || params.check() == 'y') {
         // run reference
@@ -152,9 +152,7 @@ void test_syrk_device_work( Params& params, bool run )
         params.ref_time()   = time;
         params.ref_gflops() = gflop / time;
 
-        if (verbose >= 2) {
-            printf( "Cref = " ); print_matrix( n, n, Cref, ldc );
-        }
+        print_matrix( "Cref", n, n, Cref, ldc, verbose );
 
         // check error compared to reference
         real_t error;
@@ -173,7 +171,7 @@ void test_syrk_device_work( Params& params, bool run )
     blas::device_free( dC, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_syrk_device( Params& params, bool run )
 {
     switch (params.datatype()) {

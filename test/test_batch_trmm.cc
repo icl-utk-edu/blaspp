@@ -10,7 +10,7 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename TA, typename TB>
 void test_batch_trmm_work( Params& params, bool run )
 {
@@ -39,7 +39,7 @@ void test_batch_trmm_work( Params& params, bool run )
     if (! run)
         return;
 
-    // ----------
+    //-----------
     // setup
     int64_t Am = (side_ == Side::Left ? m_ : n_);
     int64_t Bm = m_;
@@ -148,7 +148,7 @@ void test_batch_trmm_work( Params& params, bool run )
     delete[] Bnorm;
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_batch_trmm( Params& params, bool run )
 {
     switch (params.datatype()) {

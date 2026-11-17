@@ -10,7 +10,7 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename TA, typename TX, typename TY>
 void test_hemv_work( Params& params, bool run )
 {
@@ -77,22 +77,15 @@ void test_hemv_work( Params& params, bool run )
     assert_throw( blas::hemv( layout,    uplo,     n, alpha, A, lda, x,    0, beta, y, incy ), blas::Error );
     assert_throw( blas::hemv( layout,    uplo,     n, alpha, A, lda, x, incx, beta, y,    0 ), blas::Error );
 
-    if (verbose >= 1) {
-        printf( "\n"
-                "A n=%5lld, lda=%5lld, size=%10lld, norm=%.2e\n"
-                "x n=%5lld, inc=%5lld, size=%10lld, norm=%.2e\n"
-                "y n=%5lld, inc=%5lld, size=%10lld, norm=%.2e\n",
-                llong( n ), llong( lda ),  llong( size_A ), Anorm,
-                llong( n ), llong( incx ), llong( size_x ), Xnorm,
-                llong( n ), llong( incy ), llong( size_y ), Ynorm );
-    }
-    if (verbose >= 2) {
+    if (verbose) {
         printf( "alpha = %.4e + %.4ei; beta = %.4e + %.4ei;\n",
                 real(alpha), imag(alpha),
                 real(beta),  imag(beta) );
-        printf( "A = "    ); print_matrix( n, n, A, lda );
-        printf( "x    = " ); print_vector( n, x, incx );
-        printf( "y    = " ); print_vector( n, y, incy );
+        printf( "Anorm %.2e; Xnorm %.2e; Ynorm %.2e;\n",
+                Anorm, Xnorm, Ynorm );
+        print_matrix( "A", n, n, A, lda, verbose );
+        print_vector( "x", n, x, incx, verbose );
+        print_vector( "y", n, y, incy, verbose );
     }
 
     // run test
@@ -107,9 +100,7 @@ void test_hemv_work( Params& params, bool run )
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
 
-    if (verbose >= 2) {
-        printf( "y2   = " ); print_vector( n, y, incy );
-    }
+    print_vector( "yout", n, y, incy, verbose );
 
     if (params.check() == 'y') {
         // run reference
@@ -123,9 +114,7 @@ void test_hemv_work( Params& params, bool run )
         params.ref_gflops() = gflop / time;
         params.ref_gbytes() = gbyte / time;
 
-        if (verbose >= 2) {
-            printf( "yref = " ); print_vector( n, yref, incy );
-        }
+        print_vector( "yref", n, yref, incy, verbose );
 
         // check error compared to reference
         // treat y as 1 x leny matrix with ld = incy; k = lenx is reduction dimension
@@ -143,7 +132,7 @@ void test_hemv_work( Params& params, bool run )
     delete[] yref;
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_hemv( Params& params, bool run )
 {
     switch (params.datatype()) {

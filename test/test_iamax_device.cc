@@ -9,7 +9,7 @@
 #include "blas/flops.hh"
 #include "print_matrix.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename T>
 void test_iamax_device_work( Params& params, bool run )
 {
@@ -80,14 +80,7 @@ void test_iamax_device_work( Params& params, bool run )
     assert_throw( blas::iamax( -1, x, incx, result_ptr, queue ), blas::Error );
     assert_throw( blas::iamax(  n, x,    0, result_ptr, queue ), blas::Error );
 
-    if (verbose >= 1) {
-        printf( "\n"
-                "x n=%5lld, inc=%5lld, size=%10lld\n",
-                llong( n ), llong( incx ), llong( size_x ) );
-    }
-    if (verbose >= 2) {
-        printf( "x    = " ); print_vector( n, x, incx );
-    }
+    print_vector( "x", n, x, incx, verbose );
 
     // run test
     testsweeper::flush_cache( params.cache() );
@@ -109,7 +102,7 @@ void test_iamax_device_work( Params& params, bool run )
     blas::device_copy_vector( n, dx, std::abs(incx), x, std::abs(incx), queue );
     queue.sync();
 
-    if (verbose >= 1) {
+    if (verbose) {
         printf( "result = %5lld\n", llong( result_host ) );
     }
 
@@ -126,7 +119,7 @@ void test_iamax_device_work( Params& params, bool run )
         params.ref_gflops() = gflop / time;
         params.ref_gbytes() = gbyte / time;
 
-        if (verbose >= 1) {
+        if (verbose) {
             printf( "ref    = %5lld\n", llong( ref ) );
         }
 
@@ -145,7 +138,7 @@ void test_iamax_device_work( Params& params, bool run )
         blas::device_free( result_ptr, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_iamax_device( Params& params, bool run )
 {
     switch (params.datatype()) {

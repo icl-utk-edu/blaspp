@@ -10,7 +10,7 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename TA, typename TB>
 void test_trsm_device_work( Params& params, bool run )
 {
@@ -46,7 +46,7 @@ void test_trsm_device_work( Params& params, bool run )
         return;
     }
 
-    // ----------
+    //-----------
     // setup
     int64_t Am = (side == Side::Left ? m : n);
     int64_t Bm = m;
@@ -131,16 +131,11 @@ void test_trsm_device_work( Params& params, bool run )
     assert_throw( blas::trsm( Layout::ColMajor, side, uplo, trans, diag,    m,  n, alpha, dA, lda, dB, m-1, queue ), blas::Error );
     assert_throw( blas::trsm( Layout::RowMajor, side, uplo, trans, diag,    m,  n, alpha, dA, lda, dB, n-1, queue ), blas::Error );
 
-    if (verbose >= 1) {
-        printf( "\n"
-                "A Am=%5lld, Am=%5lld, lda=%5lld, size=%10lld, norm=%.2e\n"
-                "B Bm=%5lld, Bn=%5lld, ldb=%5lld, size=%10lld, norm=%.2e\n",
-                llong( Am ), llong( Am ), llong( lda ), llong( size_A ), Anorm,
-                llong( Bm ), llong( Bn ), llong( ldb ), llong( size_B ), Bnorm );
-    }
-    if (verbose >= 2) {
-        printf( "A = " ); print_matrix( Am, Am, A, lda );
-        printf( "B = " ); print_matrix( Bm, Bn, B, ldb );
+    if (verbose) {
+        printf( "Anorm %.2e; Bnorm %.2e\n",
+                Anorm, Bnorm );
+        print_matrix( "A", Am, Am, A, lda, verbose );
+        print_matrix( "B", Bm, Bn, B, ldb, verbose );
     }
 
     // run test
@@ -156,9 +151,7 @@ void test_trsm_device_work( Params& params, bool run )
     blas::device_copy_matrix(Bm, Bn, dB, ldb, B, ldb, queue);
     queue.sync();
 
-    if (verbose >= 2) {
-        printf( "X = " ); print_matrix( Bm, Bn, B, ldb );
-    }
+    print_matrix( "Xout", Bm, Bn, B, ldb, verbose );
 
     if (params.check() == 'y') {
         // run reference
@@ -175,9 +168,7 @@ void test_trsm_device_work( Params& params, bool run )
         params.ref_time()   = time;
         params.ref_gflops() = gflop / time;
 
-        if (verbose >= 2) {
-            printf( "Xref = " ); print_matrix( Bm, Bn, Bref, ldb );
-        }
+        print_matrix( "Xref", Bm, Bn, Bref, ldb, verbose );
 
         // check error compared to reference
         // Am is reduction dimension
@@ -198,7 +189,7 @@ void test_trsm_device_work( Params& params, bool run )
     blas::device_free( dB, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_trsm_device( Params& params, bool run )
 {
     switch (params.datatype()) {
