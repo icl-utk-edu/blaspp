@@ -56,7 +56,8 @@ if (BLAS_LIBRARIES)
 elseif (    same_settings_
         AND "${blas}"          STREQUAL "${blas_cached}"
         AND "${blas_fortran}"  STREQUAL "${blas_fortran_cached}"
-        AND "${blas_threaded}" STREQUAL "${blas_threaded_cached}")
+        AND "${blas_threaded}" STREQUAL "${blas_threaded_cached}"
+        AND "${blas_pkg_config}" STREQUAL "${blas_pkg_config_cached}")
     # Already checked this blas; load cached results.
     message( STATUS "Using cached blas settings" )
     set( BLAS_LIBRARIES "${blas_libraries_cached}" )
@@ -151,6 +152,7 @@ message( DEBUG "
 BLAS_LIBRARIES      = '${BLAS_LIBRARIES}'
 blas                = '${blas}'
 blas_               = '${blas_}'
+blas_pkg_config     = '${blas_pkg_config}'
 test_accelerate     = '${test_accelerate}'
 test_blis           = '${test_blis}'
 test_default        = '${test_default}'
@@ -276,6 +278,24 @@ if (BLAS_LIBRARIES)
     list( APPEND blas_name_list "BLAS_LIBRARIES" )
     list( APPEND blas_libs_list "${BLAS_LIBRARIES_ESC}" )
     list( APPEND blas_defs_list " " )
+    debug_print_list( "BLAS_LIBRARIES" )
+endif()
+
+#---------------------------------------- pkg-config
+if (blas_pkg_config)
+    message( STATUS "Using pkg-config ${blas_pkg_config}" )
+    find_package( PkgConfig REQUIRED ) # QUIET
+    pkg_check_modules( BLAS_PKG "${blas_pkg_config}" )
+    if (BLAS_PKG_FOUND)
+        # Get libs and cflags from pkg-config, escape them, and add to lists.
+        # "defs" is a misnomer; general compiler flags are accepted.
+        string( REPLACE ";" "\\;" BLAS_PKG_LDFLAGS_ESC "${BLAS_PKG_LDFLAGS}" )
+        string( REPLACE ";" "\\;" BLAS_PKG_CFLAGS_ESC  "${BLAS_PKG_CFLAGS}" )
+        list( APPEND blas_name_list "pkg-config ${blas_pkg_config}" )
+        # Space at end so appending empty values works.
+        list( APPEND blas_libs_list "${BLAS_PKG_LDFLAGS_ESC} " )
+        list( APPEND blas_defs_list "${BLAS_PKG_CFLAGS_ESC} " )
+    endif()
     debug_print_list( "BLAS_LIBRARIES" )
 endif()
 
@@ -676,6 +696,7 @@ set( blas_symbol_suffix_cached "${blas_symbol_suffix}" CACHE INTERNAL "" )
 set( blas_openmp_cached    "${openmp_lib}"     CACHE INTERNAL "" )
 set( blas_defs_cached      "${blaspp_defs_}"   CACHE INTERNAL "" )
 set( blaspp_int_cached     "${blaspp_int}"     CACHE INTERNAL "" )
+set( blas_pkg_config_cached "${blas_pkg_config}" CACHE INTERNAL "" )
 
 endif() # run_
 #===============================================================================
