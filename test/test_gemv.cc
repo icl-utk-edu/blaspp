@@ -111,7 +111,7 @@ void test_gemv_work( Params& params, bool run )
     time = get_wtime() - time;
 
     double gflop = blas::Gflop< scalar_t >::gemv( m, n );
-    double gbyte = blas::Gbyte< scalar_t >::gemv( m, n );
+    double gbyte = blas::Gbyte< scalar_t >::gemv( trans, m, n );
     params.time()   = time * 1000;  // msec
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
