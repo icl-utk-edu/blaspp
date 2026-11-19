@@ -87,8 +87,7 @@ void test_hemm_work( Params& params, bool run )
     assert_throw( blas::hemm( Layout::RowMajor, side, uplo,  m,  n, alpha, A, lda, B, ldb, beta, C, n-1 ), blas::Error );
 
     if (verbose) {
-        printf( "side %c; uplo %c; alpha = %.4e + %.4ei; beta = %.4e + %.4ei;\n",
-                to_char( side ), to_char( uplo ),
+        printf( "alpha = %.4e + %.4ei; beta = %.4e + %.4ei;\n",
                 real(alpha), imag(alpha),
                 real(beta),  imag(beta) );
         printf( "Anorm %.2e; Bnorm %.2e; Cnorm %.2e;\n",
