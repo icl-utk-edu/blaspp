@@ -103,6 +103,7 @@ void test_herk_device_work( Params& params, bool run )
     }
 
     if (verbose) {
+        printf( "alpha = %.4e; beta = %.4e;  %% real\n", alpha, beta );
         printf( "Anorm = %.2e; Cnorm = %.2e;\n",
                 Anorm, Cnorm );
         print_matrix( "A", Am, An, A, lda, verbose );

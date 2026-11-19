@@ -104,16 +104,7 @@ void test_syrk_device_work( Params& params, bool run )
         assert_throw( blas::syrk( layout, uplo, Op::ConjTrans, n, k, alpha, dA, lda, beta, dC, ldc, queue ), blas::Error );
     }
 
-    if (verbose >= 1) {
-        printf( "\n"
-                "layout %c, uplo %c, trans %c\n"
-                "A An=%5lld, An=%5lld, lda=%5lld, size=%10lld, norm %.2e\n"
-                "C  n=%5lld,  n=%5lld, ldc=%5lld, size=%10lld, norm %.2e\n",
-                to_char( layout ), to_char( uplo ), to_char( trans ),
-                llong( Am ), llong( An ), llong( lda ), llong( size_A ), Anorm,
-                llong( n ), llong( n ), llong( ldc ), llong( size_C ), Cnorm );
-    }
-    if (verbose >= 2) {
+    if (verbose) {
         printf( "alpha = %.4e + %.4ei; beta = %.4e + %.4ei;\n",
                 real(alpha), imag(alpha),
                 real(beta),  imag(beta) );
