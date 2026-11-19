@@ -9,6 +9,7 @@
 #include "blas/counter.hh"
 
 #include <limits>
+#include <memory>
 #include <string.h>
 
 namespace blas {
@@ -99,15 +100,38 @@ void her2(
     blas_int incx_ = to_blas_int( incx );
     blas_int incy_ = to_blas_int( incy );
 
+    // Deal with layout. RowMajor needs copies of x in x2 and y in y2;
+    // in other cases, x2 == x and y2 == y.
+    std::unique_ptr< scalar_t[] > x2_owner;
+    std::unique_ptr< scalar_t[] > y2_owner;
+    scalar_t* x2 = const_cast< scalar_t* >( x );
+    scalar_t* y2 = const_cast< scalar_t* >( y );
     if (layout == Layout::RowMajor) {
         // swap lower <=> upper
         uplo = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
+
+        // conjugate alpha, x (in x2), and y (in y2)
+        alpha = conj( alpha );
+        x2_owner.reset( new scalar_t[ n ] );
+        y2_owner.reset( new scalar_t[ n ] );
+        x2 = x2_owner.get();
+        y2 = y2_owner.get();
+        int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
+        int64_t iy = (incy > 0 ? 0 : (-n + 1)*incy);
+        for (int64_t i = 0; i < n; ++i) {
+            x2[ i ] = conj( x[ ix ] );
+            y2[ i ] = conj( y[ iy ] );
+            ix += incx;
+            iy += incy;
+        }
+        incx_ = 1;
+        incy_ = 1;
     }
     char uplo_ = to_char( uplo );
 
     // call low-level wrapper
     internal::her2( uplo_, n_,
-                    alpha, x, incx_, y, incy_, A, lda_ );
+                    alpha, x2, incx_, y2, incy_, A, lda_ );
 }
 
 }  // namespace impl

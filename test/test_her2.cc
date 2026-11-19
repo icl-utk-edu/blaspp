@@ -10,14 +10,35 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-// -----------------------------------------------------------------------------
-template <typename TA, typename TX, typename TY>
+//------------------------------------------------------------------------------
+// Dispatches to blas::her2 wrapper or template implementation.
+//
+template <typename Tx, typename Ty, typename TA>
+void meta_her2(
+    blas::Layout layout, blas::Uplo uplo,
+    int64_t n,
+    Tx alpha,
+    Tx const* x, int64_t incx,
+    Ty const* y, int64_t incy,
+    TA* A, int64_t lda,
+    bool tpl )
+{
+    if (tpl) {
+        blas::her2<Tx, Ty, TA>( layout, uplo, n, alpha, x, incx, y, incy, A, lda );
+    }
+    else {
+        blas::her2( layout, uplo, n, alpha, x, incx, y, incy, A, lda );
+    }
+}
+
+//------------------------------------------------------------------------------
+template <typename Tx, typename Ty, typename TA>
 void test_her2_work( Params& params, bool run )
 {
     using namespace testsweeper;
     using std::abs, std::real, std::imag;
     using blas::Uplo, blas::Layout, blas::max;
-    using scalar_t = blas::scalar_type< TA, TX, TY >;
+    using scalar_t = blas::scalar_type< Tx, Ty, TA >;
     using real_t   = blas::real_type< scalar_t >;
 
     // get & mark input values
@@ -29,6 +50,7 @@ void test_her2_work( Params& params, bool run )
     int64_t incy    = params.incy();
     int64_t align   = params.align();
     int64_t verbose = params.verbose();
+    bool tpl        = params.tpl() == 'y';
 
     // mark non-standard output values
     params.gflops();
@@ -52,8 +74,8 @@ void test_her2_work( Params& params, bool run )
     size_t size_y = max( (n - 1) * abs( incy ) + 1, 0 );
     TA* A    = new TA[ size_A ];
     TA* Aref = new TA[ size_A ];
-    TX* x    = new TX[ size_x ];
-    TY* y    = new TY[ size_y ];
+    Tx* x    = new Tx[ size_x ];
+    Ty* y    = new Ty[ size_y ];
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
@@ -69,12 +91,12 @@ void test_her2_work( Params& params, bool run )
     real_t Ynorm = cblas_nrm2( n, y, std::abs(incy) );
 
     // test error exits
-    assert_throw( blas::her2( Layout(0), uplo,     n, alpha, x, incx, y, incy, A, lda ), blas::Error );
-    assert_throw( blas::her2( layout,    Uplo(0),  n, alpha, x, incx, y, incy, A, lda ), blas::Error );
-    assert_throw( blas::her2( layout,    uplo,    -1, alpha, x, incx, y, incy, A, lda ), blas::Error );
-    assert_throw( blas::her2( layout,    uplo,     n, alpha, x,    0, y, incy, A, lda ), blas::Error );
-    assert_throw( blas::her2( layout,    uplo,     n, alpha, x, incx, y,    0, A, lda ), blas::Error );
-    assert_throw( blas::her2( layout,    uplo,     n, alpha, x, incx, y, incy, A, n-1 ), blas::Error );
+    assert_throw( meta_her2( Layout(0), uplo,     n, alpha, x, incx, y, incy, A, lda, tpl ), blas::Error );
+    assert_throw( meta_her2( layout,    Uplo(0),  n, alpha, x, incx, y, incy, A, lda, tpl ), blas::Error );
+    assert_throw( meta_her2( layout,    uplo,    -1, alpha, x, incx, y, incy, A, lda, tpl ), blas::Error );
+    assert_throw( meta_her2( layout,    uplo,     n, alpha, x,    0, y, incy, A, lda, tpl ), blas::Error );
+    assert_throw( meta_her2( layout,    uplo,     n, alpha, x, incx, y,    0, A, lda, tpl ), blas::Error );
+    assert_throw( meta_her2( layout,    uplo,     n, alpha, x, incx, y, incy, A, n-1, tpl ), blas::Error );
 
     if (verbose >= 1) {
         printf( "\n"
@@ -96,7 +118,7 @@ void test_her2_work( Params& params, bool run )
     // run test
     testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
-    blas::her2( layout, uplo, n, alpha, x, incx, y, incy, A, lda );
+    meta_her2( layout, uplo, n, alpha, x, incx, y, incy, A, lda, tpl );
     time = get_wtime() - time;
 
     double gflop = blas::Gflop< scalar_t >::her2( n );
@@ -127,9 +149,13 @@ void test_her2_work( Params& params, bool run )
 
         // check error compared to reference
         // beta = 1
+        // check_herk is ColMajor; RowMajor stores the opposite triangle.
+        Uplo uplo_check = uplo;
+        if (layout == Layout::RowMajor)
+            uplo_check = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
         real_t error;
         bool okay;
-        check_herk( uplo, n, 2, alpha, real_t(1), Xnorm, Ynorm, Anorm,
+        check_herk( uplo_check, n, 2, alpha, real_t(1), Xnorm, Ynorm, Anorm,
                     Aref, lda, A, lda, verbose, &error, &okay );
         params.error() = error;
         params.okay() = okay;

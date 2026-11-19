@@ -10,14 +10,34 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-// -----------------------------------------------------------------------------
-template <typename TA, typename TX>
+//------------------------------------------------------------------------------
+// Dispatches to blas::her wrapper or template implementation.
+//
+template <typename Tx, typename TA>
+void meta_her(
+    blas::Layout layout, blas::Uplo uplo,
+    int64_t n,
+    blas::real_type<Tx> alpha,
+    Tx const* x, int64_t incx,
+    TA* A, int64_t lda,
+    bool tpl )
+{
+    if (tpl) {
+        blas::her<Tx, TA>( layout, uplo, n, alpha, x, incx, A, lda );
+    }
+    else {
+        blas::her( layout, uplo, n, alpha, x, incx, A, lda );
+    }
+}
+
+//------------------------------------------------------------------------------
+template <typename Tx, typename TA>
 void test_her_work( Params& params, bool run )
 {
     using namespace testsweeper;
     using std::abs;
     using blas::Uplo, blas::Layout, blas::max;
-    using scalar_t = blas::scalar_type< TA, TX >;
+    using scalar_t = blas::scalar_type< Tx, TA >;
     using real_t   = blas::real_type< scalar_t >;
 
     // get & mark input values
@@ -28,6 +48,7 @@ void test_her_work( Params& params, bool run )
     int64_t incx    = params.incx();
     int64_t align   = params.align();
     int64_t verbose = params.verbose();
+    bool tpl        = params.tpl() == 'y';
 
     // mark non-standard output values
     params.gflops();
@@ -50,7 +71,7 @@ void test_her_work( Params& params, bool run )
     size_t size_x = max( (n - 1) * abs( incx ) + 1, 0 );
     TA* A    = new TA[ size_A ];
     TA* Aref = new TA[ size_A ];
-    TX* x    = new TX[ size_x ];
+    Tx* x    = new Tx[ size_x ];
 
     int64_t idist = 1;
     int iseed[4] = { 0, 0, 0, 1 };
@@ -64,11 +85,11 @@ void test_her_work( Params& params, bool run )
     real_t Xnorm = cblas_nrm2( n, x, std::abs(incx) );
 
     // test error exits
-    assert_throw( blas::her( Layout(0), uplo,     n, alpha, x, incx, A, lda ), blas::Error );
-    assert_throw( blas::her( layout,    Uplo(0),  n, alpha, x, incx, A, lda ), blas::Error );
-    assert_throw( blas::her( layout,    uplo,    -1, alpha, x, incx, A, lda ), blas::Error );
-    assert_throw( blas::her( layout,    uplo,     n, alpha, x,    0, A, lda ), blas::Error );
-    assert_throw( blas::her( layout,    uplo,     n, alpha, x, incx, A, n-1 ), blas::Error );
+    assert_throw( meta_her( Layout(0), uplo,     n, alpha, x, incx, A, lda, tpl ), blas::Error );
+    assert_throw( meta_her( layout,    Uplo(0),  n, alpha, x, incx, A, lda, tpl ), blas::Error );
+    assert_throw( meta_her( layout,    uplo,    -1, alpha, x, incx, A, lda, tpl ), blas::Error );
+    assert_throw( meta_her( layout,    uplo,     n, alpha, x,    0, A, lda, tpl ), blas::Error );
+    assert_throw( meta_her( layout,    uplo,     n, alpha, x, incx, A, n-1, tpl ), blas::Error );
 
     if (verbose >= 1) {
         printf( "\n"
@@ -86,7 +107,7 @@ void test_her_work( Params& params, bool run )
     // run test
     testsweeper::flush_cache( params.cache() );
     double time = get_wtime();
-    blas::her( layout, uplo, n, alpha, x, incx, A, lda );
+    meta_her( layout, uplo, n, alpha, x, incx, A, lda, tpl );
     time = get_wtime() - time;
 
     double gflop = blas::Gflop< scalar_t >::her( n );
@@ -117,9 +138,13 @@ void test_her_work( Params& params, bool run )
 
         // check error compared to reference
         // beta = 1
+        // check_herk is ColMajor; RowMajor stores the opposite triangle.
+        Uplo uplo_check = uplo;
+        if (layout == Layout::RowMajor)
+            uplo_check = (uplo == Uplo::Lower ? Uplo::Upper : Uplo::Lower);
         real_t error;
         bool okay;
-        check_herk( uplo, n, 1, alpha, real_t(1), Xnorm, Xnorm, Anorm,
+        check_herk( uplo_check, n, 1, alpha, real_t(1), Xnorm, Xnorm, Anorm,
                     Aref, lda, A, lda, verbose, &error, &okay );
         params.error() = error;
         params.okay() = okay;
