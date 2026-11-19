@@ -143,13 +143,13 @@ void herk(
     // alpha == zero
     if (alpha == zero) {
         if (beta == zero) {
-            if (uplo != Uplo::Upper) {
+            if (uplo == Uplo::Upper) {
                 for (int64_t j = 0; j < n; ++j) {
                     for (int64_t i = 0; i <= j; ++i)
                         C(i, j) = szero;
                 }
             }
-            else if (uplo != Uplo::Lower) {
+            else if (uplo == Uplo::Lower) {
                 for (int64_t j = 0; j < n; ++j) {
                     for (int64_t i = j; i < n; ++i)
                         C(i, j) = szero;
@@ -163,14 +163,14 @@ void herk(
             }
         }
         else if (beta != one) {
-            if (uplo != Uplo::Upper) {
+            if (uplo == Uplo::Upper) {
                 for (int64_t j = 0; j < n; ++j) {
                     for (int64_t i = 0; i < j; ++i)
                         C(i, j) *= beta;
                     C(j, j) = beta * real( C(j, j) );
                 }
             }
-            else if (uplo != Uplo::Lower) {
+            else if (uplo == Uplo::Lower) {
                 for (int64_t j = 0; j < n; ++j) {
                     C(j, j) = beta * real( C(j, j) );
                     for (int64_t i = j+1; i < n; ++i)
