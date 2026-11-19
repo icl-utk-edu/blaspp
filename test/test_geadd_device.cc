@@ -133,7 +133,10 @@ void test_geadd_device_work( Params& params, bool run )
     assert_throw( blas::geadd( Layout::RowMajor, Op::NoTrans,   m, n, alpha, dA, lda, beta, B, n-1, queue ), blas::Error );
 
     if (verbose) {
-        printf( "Anorm %.2e; Bnorm %.2e\n", Anorm, Bnorm );
+        printf( "alpha = %.4e + %.4ei; beta = %.4e + %.4ei;\n",
+                real(alpha), imag(alpha),
+                real(beta),  imag(beta) );
+        printf( "Anorm = %.2e; Bnorm = %.2e\n", Anorm, Bnorm );
         print_matrix( "A", Am, An, A, lda, verbose );
         print_matrix( "B", Bm, Bn, B, ldb, verbose );
     }

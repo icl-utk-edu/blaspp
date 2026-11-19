@@ -121,7 +121,10 @@ void test_her2k_device_work( Params& params, bool run )
     }
 
     if (verbose) {
-        printf( "Anorm %.2e; Bnorm %.2e; Cnorm %.2e;\n",
+        printf( "alpha = %.4e + %.4ei; beta = %.4e;  %% beta real\n",
+                real(alpha), imag(alpha),
+                beta );
+        printf( "Anorm = %.2e; Bnorm = %.2e; Cnorm = %.2e;\n",
                 Anorm, Bnorm, Cnorm );
         print_matrix( "A", Am, An, A, lda, verbose );
         print_matrix( "B", Am, An, B, ldb, verbose );

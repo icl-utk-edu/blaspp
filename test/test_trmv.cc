@@ -76,7 +76,7 @@ void test_trmv_work( Params& params, bool run )
     assert_throw( blas::trmv( layout,    uplo,    trans, diag,     n, A, lda, x,    0 ), blas::Error );
 
     if (verbose) {
-        printf( "Anorm %.2e; Xnorm %.2e\n",
+        printf( "Anorm = %.2e; Xnorm = %.2e\n",
                 Anorm, Xnorm );
         print_matrix( "A", n, n, A, lda, verbose );
         print_vector( "x", n, x, incx, verbose );

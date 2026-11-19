@@ -72,7 +72,7 @@ void test_her_work( Params& params, bool run )
 
     if (verbose) {
         printf( "alpha = %.4e;\n", alpha );
-        printf( "Anorm %.2e; Xnorm %.2e;\n",
+        printf( "Anorm = %.2e; Xnorm = %.2e;\n",
                 Anorm, Xnorm );
         print_matrix( "A", n, n, A, lda, verbose );
         print_vector( "x", n, x, incx, verbose );

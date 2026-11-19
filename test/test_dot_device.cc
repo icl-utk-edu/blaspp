@@ -101,7 +101,7 @@ void test_dot_device_work( Params& params, bool run )
     }
 
     if (verbose) {
-        printf( "Xnorm %.2e; Ynorm %.2e;\n",
+        printf( "Xnorm = %.2e; Ynorm = %.2e;\n",
                 Xnorm, Ynorm );
         print_vector( "x", n, x, incx, verbose );
         print_vector( "y", n, y, incy, verbose );

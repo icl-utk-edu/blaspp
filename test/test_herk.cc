@@ -85,7 +85,7 @@ void test_herk_work( Params& params, bool run )
     }
 
     if (verbose) {
-        printf( "Anorm %.2e; Cnorm %.2e;\n",
+        printf( "Anorm = %.2e; Cnorm = %.2e;\n",
                 Anorm, Cnorm );
         print_matrix( "A", Am, An, A, lda, verbose );
         print_matrix( "C", n,  n, C, ldc, verbose );

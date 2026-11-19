@@ -98,7 +98,7 @@ void test_ger_work( Params& params, bool run )
     if (verbose) {
         printf( "alpha = %.4e + %.4ei;\n",
                 real(alpha), imag(alpha) );
-        printf( "Anorm %.2e; Xnorm %.2e; Ynorm %.2e;\n",
+        printf( "Anorm = %.2e; Xnorm = %.2e; Ynorm = %.2e;\n",
                 Anorm, Xnorm, Ynorm );
         print_matrix( "A", Am, An, A, lda, verbose );
         print_vector( "x", m, x, incx, verbose );

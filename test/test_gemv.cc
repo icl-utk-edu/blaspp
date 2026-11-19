@@ -90,7 +90,7 @@ void test_gemv_work( Params& params, bool run )
         printf( "alpha = %.4e + %.4ei; beta = %.4e + %.4ei;\n",
                 real(alpha), imag(alpha),
                 real(beta),  imag(beta) );
-        printf( "Anorm %.2e; Xnorm %.2e; Ynorm %.2e;\n",
+        printf( "Anorm = %.2e; Xnorm = %.2e; Ynorm = %.2e;\n",
                 Anorm, Xnorm, Ynorm );
         print_matrix( "A", m, n, A, lda, verbose );
         print_vector( "x", Xm, x, incx, verbose );

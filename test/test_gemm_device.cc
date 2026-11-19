@@ -129,7 +129,7 @@ void test_gemm_device_work( Params& params, bool run )
         printf( "alpha = %.4e + %.4ei; beta = %.4e + %.4ei;\n",
                 real(alpha), imag(alpha),
                 real(beta),  imag(beta) );
-        printf( "Anorm %.2e; Bnorm %.2e; Cnorm %.2e;\n",
+        printf( "Anorm = %.2e; Bnorm = %.2e; Cnorm = %.2e;\n",
                 Anorm, Bnorm, Cnorm );
         print_matrix( "A", Am, An, A, lda, verbose );
         print_matrix( "B", Bm, Bn, B, ldb, verbose );

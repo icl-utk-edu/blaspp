@@ -82,7 +82,7 @@ void test_trmm_work( Params& params, bool run )
     assert_throw( blas::trmm( Layout::RowMajor, side, uplo, trans, diag,    m,  n, alpha, A, lda, B, n-1 ), blas::Error );
 
     if (verbose) {
-        printf( "Anorm %.2e; Bnorm %.2e\n",
+        printf( "Anorm = %.2e; Bnorm = %.2e\n",
                 Anorm, Bnorm );
         print_matrix( "A", Am, Am, A, lda, verbose );
         print_matrix( "B", Bm, Bn, B, ldb, verbose );
