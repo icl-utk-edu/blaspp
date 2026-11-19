@@ -98,8 +98,12 @@ void test_rotm_device_work( Params& params, bool run )
     assert_throw( blas::rotm(  n, x,    0, y, incy, p ), blas::Error );
     assert_throw( blas::rotm(  n, x, incx, y,    0, p ), blas::Error );
 
-    print_vector( "x", n, x, incx, verbose );
-    print_vector( "y", n, y, incy, verbose );
+    if (verbose) {
+        printf( "Anorm = %.2e; Xnorm = %.2e; Ynorm = %.2e;\n",
+                Anorm, Xnorm, Ynorm );
+        print_vector( "x", n, x, incx, verbose );
+        print_vector( "y", n, y, incy, verbose );
+    }
 
     // run test
     testsweeper::flush_cache( params.cache() );

@@ -97,9 +97,11 @@ void test_rot_device_work( Params& params, bool run )
     if (verbose) {
         printf( "s = %.4f + %.4fi; c = %.4f; s^2 + c^2 = %.4f\n",
                 real( s ), imag( s ), c, real( s*conj(s) ) + c*c );
+        printf( "Anorm = %.2e; Xnorm = %.2e; Ynorm = %.2e;\n",
+                Anorm, Xnorm, Ynorm );
+        print_vector( "x", n, x, incx, verbose );
+        print_vector( "y", n, y, incy, verbose );
     }
-    print_vector( "x", n, x, incx, verbose );
-    print_vector( "y", n, y, incy, verbose );
 
     // run test
     testsweeper::flush_cache( params.cache() );
