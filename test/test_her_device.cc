@@ -88,8 +88,13 @@ void test_her_device_work( Params& params, bool run )
     assert_throw( blas::her( layout,    uplo,     n, alpha, dx,    0, dA, lda, queue ), blas::Error );
     assert_throw( blas::her( layout,    uplo,     n, alpha, dx, incx, dA, n-1, queue ), blas::Error );
 
-    print_matrix( "A", n, n, A, lda, verbose );
-    print_vector( "x", n, x, incx, verbose );
+    if (verbose) {
+        printf( "alpha = %.4e;\n", alpha );
+        printf( "Anorm %.2e; Xnorm %.2e;\n",
+                Anorm, Xnorm );
+        print_matrix( "A", n, n, A, lda, verbose );
+        print_vector( "x", n, x, incx, verbose );
+    }
 
     // run test
     testsweeper::flush_cache( params.cache() );

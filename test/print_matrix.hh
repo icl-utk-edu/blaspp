@@ -11,7 +11,7 @@
 #include <type_traits>
 
 //========================================
-// Copied from slate/src/print.cc
+// Copied from slate/src/print.cc, with minor modifications.
 
 //------------------------------------------------------------------------------
 /// @return 10^y for 0 <= y <= 20.
@@ -148,14 +148,6 @@ void print_matrix( const char* label, int64_t m, int64_t n, T* A, int64_t lda,
     #undef A
 }
 
-// Overload without label.
-template <typename T>
-void print_matrix( int64_t m, int64_t n, T* A, int64_t lda,
-                   int verbose=2, int precision=4 )
-{
-    print_matrix( "", m, n, A, lda, verbose, precision );
-}
-
 //------------------------------------------------------------------------------
 template <typename T>
 void print_vector( const char* label, int64_t n, T *x, int64_t incx,
@@ -182,14 +174,6 @@ void print_vector( const char* label, int64_t n, T *x, int64_t incx,
         }
         printf( "%s ]';\n", msg.c_str() );
     }
-}
-
-// Overload without label.
-template <typename T>
-void print_vector( int64_t n, T *x, int64_t incx,
-                   int verbose=2, int precision=4 )
-{
-    print_vector( "", n, x, incx, verbose, precision );
 }
 
 #endif  // PRINT_HH

@@ -69,8 +69,12 @@ void test_dot_work( Params& params, bool run )
         assert_throw( blas::dotu(  n, x, incx, y,    0 ), blas::Error );
     }
 
-    print_vector( "x", n, x, incx, verbose );
-    print_vector( "y", n, y, incy, verbose );
+    if (verbose) {
+        printf( "Xnorm %.2e; Ynorm %.2e;\n",
+                Xnorm, Ynorm );
+        print_vector( "x", n, x, incx, verbose );
+        print_vector( "y", n, y, incy, verbose );
+    }
 
     // run test
     testsweeper::flush_cache( params.cache() );
