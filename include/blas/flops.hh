@@ -217,7 +217,7 @@ public:
     // Level 2 BLAS
     // read A, x, y; write y (assumes no-transpose)
     static double gemv( double m, double n )
-        { return 1e-9 * ((m*n + m + 2*n) * sizeof(T)); }
+        { return 1e-9 * ((m*n + 2*m + n) * sizeof(T)); }
 
     // read A, x, y; write y
     static double gemv( blas::Op op, double m, double n )
