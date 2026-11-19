@@ -173,6 +173,7 @@ inline double fadds_trmm( blas::Side side, double m, double n )
 // template class. Example:
 // gflop< float >::gemm( m, n, k ) yields flops for sgemm.
 // gflop< std::complex<float> >::gemm( m, n, k ) yields flops for cgemm.
+// Where it applies, assume alpha, beta != 0.
 //==============================================================================
 template <typename T>
 class Gbyte
@@ -214,13 +215,17 @@ public:
 
     // ----------------------------------------
     // Level 2 BLAS
-    // read A, x; write y
+    // read A, x, y; write y (assumes no-transpose)
     static double gemv( double m, double n )
-        { return 1e-9 * ((m*n + m + n) * sizeof(T)); }
+        { return 1e-9 * ((m*n + m + 2*n) * sizeof(T)); }
 
-    // read A triangle, x; write y
+    // read A, x, y; write y
+    static double gemv( blas::Op op, double m, double n )
+        { return (op == blas::Op::NoTrans ? gemv( m, n ) : gemv( n, m )); }
+
+    // read A triangle, x, y; write y
     static double hemv( double n )
-        { return 1e-9 * ((0.5*(n+1)*n + 2*n) * sizeof(T)); }
+        { return 1e-9 * ((0.5*(n+1)*n + 3*n) * sizeof(T)); }
 
     static double symv( double n )
         { return hemv( n ); }
