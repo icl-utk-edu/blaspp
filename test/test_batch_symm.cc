@@ -10,7 +10,7 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename TA, typename TB, typename TC>
 void test_batch_symm_work( Params& params, bool run )
 {
@@ -153,7 +153,7 @@ void test_batch_symm_work( Params& params, bool run )
     delete[] Cnorm;
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_batch_symm( Params& params, bool run )
 {
     switch (params.datatype()) {

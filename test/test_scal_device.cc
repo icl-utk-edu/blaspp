@@ -9,7 +9,7 @@
 #include "blas/flops.hh"
 #include "print_matrix.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename scalar_t>
 void test_scal_device_work( Params& params, bool run )
 {
@@ -69,15 +69,10 @@ void test_scal_device_work( Params& params, bool run )
     assert_throw( blas::scal(  n, alpha, dx,    0, queue ), blas::Error );
     assert_throw( blas::scal(  n, alpha, dx,   -1, queue ), blas::Error );
 
-    if (verbose >= 1) {
-        printf( "\n"
-                "x n=%5lld, inc=%5lld, size=%10lld\n",
-                llong( n ), llong( incx ), llong( size_x ) );
-    }
-    if (verbose >= 2) {
+    if (verbose) {
         printf( "alpha = %.4e + %.4ei;\n",
                 real(alpha), imag(alpha) );
-        printf( "x    = " ); print_vector( n, x, incx );
+        print_vector( "x", n, x, incx, verbose );
     }
 
     // run test
@@ -96,9 +91,7 @@ void test_scal_device_work( Params& params, bool run )
     blas::device_copy_vector( n, dx, abs( incx ), x, abs( incx ), queue );
     queue.sync();
 
-    if (verbose >= 2) {
-        printf( "x2   = " ); print_vector( n, x, incx );
-    }
+    print_vector( "xout", n, x, incx, verbose );
 
     if (params.check() == 'y') {
         // run reference
@@ -111,9 +104,7 @@ void test_scal_device_work( Params& params, bool run )
         params.ref_gflops() = gflop / time;
         params.ref_gbytes() = gbyte / time;
 
-        if (verbose >= 2) {
-            printf( "xref = " ); print_vector( n, xref, incx );
-        }
+        print_vector( "xref", n, xref, incx, verbose );
 
         // maximum component-wise forward error:
         // | fl(xi) - xi | / | xi |
@@ -140,7 +131,7 @@ void test_scal_device_work( Params& params, bool run )
     blas::device_free( dx, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_scal_device( Params& params, bool run )
 {
     switch (params.datatype()) {

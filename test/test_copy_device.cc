@@ -9,7 +9,7 @@
 #include "blas/flops.hh"
 #include "print_matrix.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename TX, typename TY>
 void test_copy_device_work( Params& params, bool run )
 {
@@ -78,17 +78,8 @@ void test_copy_device_work( Params& params, bool run )
     assert_throw( blas::copy(  n, dx,    0, dy, incy, queue ), blas::Error );
     assert_throw( blas::copy(  n, dx, incx, dy,    0, queue ), blas::Error );
 
-    if (verbose >= 1) {
-        printf( "\n"
-                "x n=%5lld, inc=%5lld, size=%10lld\n"
-                "y n=%5lld, inc=%5lld, size=%10lld\n",
-                llong( n ), llong( incx ), llong( size_x ),
-                llong( n ), llong( incy ), llong( size_y ) );
-    }
-    if (verbose >= 2) {
-        printf( "x    = " ); print_vector( n, x, incx );
-        printf( "y    = " ); print_vector( n, y, incy );
-    }
+    print_vector( "x", n, x, incx, verbose );
+    print_vector( "y", n, y, incy, verbose );
 
     // run test
     testsweeper::flush_cache( params.cache() );
@@ -107,10 +98,8 @@ void test_copy_device_work( Params& params, bool run )
     blas::device_copy_vector( n, dy, abs( incy ), y, abs( incy ), queue );
     queue.sync();
 
-    if (verbose >= 2) {
-        printf( "x2   = " ); print_vector( n, x, incx );
-        printf( "y2   = " ); print_vector( n, y, incy );
-    }
+    print_vector( "xout", n, x, incx, verbose );
+    print_vector( "yout", n, y, incy, verbose );
 
     if (params.check() == 'y') {
         // run reference
@@ -123,9 +112,7 @@ void test_copy_device_work( Params& params, bool run )
         params.ref_gflops() = gflop / time;
         params.ref_gbytes() = gbyte / time;
 
-        if (verbose >= 2) {
-            printf( "yref = " ); print_vector( n, yref, incy );
-        }
+        print_vector( "yref", n, yref, incy, verbose );
 
         // error = ||yref - y||
         cblas_axpy( n, -1.0, y, incy, yref, incy );
@@ -144,7 +131,7 @@ void test_copy_device_work( Params& params, bool run )
     blas::device_free( dy, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_copy_device( Params& params, bool run )
 {
     switch (params.datatype()) {

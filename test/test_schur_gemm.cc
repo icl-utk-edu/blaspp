@@ -316,7 +316,7 @@ void test_schur_gemm_work( Params& params, bool run )
     blas::device_free( dC, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_schur_gemm( Params& params, bool run )
 {
     switch (params.datatype()) {

@@ -10,7 +10,7 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename TA, typename TX, typename TY>
 void test_ger_device_work( Params& params, bool run )
 {
@@ -116,21 +116,14 @@ void test_ger_device_work( Params& params, bool run )
         assert_throw( blas::geru( layout,     m,  n, alpha, dx, incx, dy, 0,    dA, lda, queue ), blas::Error );
     }
 
-    if (verbose >= 1) {
-        printf( "\n"
-                "A Am=%5lld, An=%5lld, lda=%5lld, size=%10lld, norm=%.2e\n"
-                "x Xm=%5lld, inc=%5lld,           size=%10lld, norm=%.2e\n"
-                "y Ym=%5lld, inc=%5lld,           size=%10lld, norm=%.2e\n",
-                llong( Am ), llong( An ), llong( lda ), llong( size_A ), Anorm,
-                llong( m ), llong( incx ), llong( size_x ), Xnorm,
-                llong( n ), llong( incy ), llong( size_y ), Ynorm );
-    }
-    if (verbose >= 2) {
+    if (verbose) {
         printf( "alpha = %.4e + %.4ei;\n",
                 real(alpha), imag(alpha) );
-        printf( "A = " ); print_matrix( Am, An, A, lda );
-        printf( "x = " ); print_vector( m, x, incx );
-        printf( "y = " ); print_vector( n, y, incy );
+        printf( "Anorm = %.2e; Xnorm = %.2e; Ynorm = %.2e;\n",
+                Anorm, Xnorm, Ynorm );
+        print_matrix( "A", Am, An, A, lda, verbose );
+        print_vector( "x", m, x, incx, verbose );
+        print_vector( "y", n, y, incy, verbose );
     }
 
     // run test
@@ -153,9 +146,7 @@ void test_ger_device_work( Params& params, bool run )
     blas::device_copy_matrix( Am, An, dA, lda, A, lda, queue );
     queue.sync();
 
-    if (verbose >= 2) {
-        printf( "A2 = " ); print_matrix( Am, An, A, lda );
-    }
+    print_matrix( "Aout", Am, An, A, lda, verbose );
 
     if (params.check() == 'y') {
         // run reference
@@ -173,9 +164,7 @@ void test_ger_device_work( Params& params, bool run )
         params.ref_gflops() = gflop / time;
         params.ref_gbytes() = gbyte / time;
 
-        if (verbose >= 2) {
-            printf( "Aref = " ); print_matrix( Am, An, Aref, lda );
-        }
+        print_matrix( "Aref", Am, An, Aref, lda, verbose );
 
         // check error compared to reference
         // beta = 1
@@ -197,7 +186,7 @@ void test_ger_device_work( Params& params, bool run )
     blas::device_free( dy, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_ger_device( Params& params, bool run )
 {
     switch (params.datatype()) {

@@ -9,15 +9,15 @@
 #include "blas/flops.hh"
 #include "print_matrix.hh"
 
-// -----------------------------------------------------------------------------
-template <typename TX>
+//------------------------------------------------------------------------------
+template <typename T>
 void test_rotg_device_work( Params& params, bool run )
 {
     using namespace testsweeper;
     using std::abs;
     using std::real;
     using std::imag;
-    using real_t = blas::real_type< TX >;
+    using real_t = blas::real_type< T >;
 
     // Constants
     const real_t epsilon = std::numeric_limits< real_t >::epsilon();
@@ -47,9 +47,9 @@ void test_rotg_device_work( Params& params, bool run )
     }
 
     // setup
-    std::vector<TX> a( n ), aref( n ), a_in( n );
-    std::vector<TX> b( n ), bref( n ), b_in( n );
-    std::vector<TX> s( n ), sref( n );
+    std::vector<T> a( n ), aref( n ), a_in( n );
+    std::vector<T> b( n ), bref( n ), b_in( n );
+    std::vector<T> s( n ), sref( n );
     std::vector<real_t> c( n ), cref( n );
 
     int64_t idist = 3;
@@ -62,10 +62,8 @@ void test_rotg_device_work( Params& params, bool run )
     // device specifics
     blas::Queue queue( device );
 
-    if (verbose >= 2) {
-        printf( "a_in  = " );  print_vector( n, &a[0], 1 );
-        printf( "b_in  = " );  print_vector( n, &b[0], 1 );
-    }
+    print_vector( "a_in", n, &a[0], 1, verbose );
+    print_vector( "b_in", n, &b[0], 1, verbose );
 
     // Save some data to check later
     if (params.check() == 'y') {
@@ -84,12 +82,10 @@ void test_rotg_device_work( Params& params, bool run )
 
     queue.sync();
 
-    if (verbose >= 2) {
-        printf( "a_out = " );  print_vector( n, &a[0], 1 );
-        printf( "b_out = " );  print_vector( n, &b[0], 1 );
-        printf( "c     = " );  print_vector( n, &c[0], 1 );
-        printf( "s     = " );  print_vector( n, &s[0], 1 );
-    }
+    print_vector( "a_out", n, &a[0], 1, verbose );
+    print_vector( "b_out", n, &b[0], 1, verbose );
+    print_vector( "c",     n, &c[0], 1, verbose );
+    print_vector( "s",     n, &s[0], 1, verbose );
 
     if (params.check() == 'y') {
         // run reference
@@ -101,12 +97,10 @@ void test_rotg_device_work( Params& params, bool run )
         time = get_wtime() - time;
         params.ref_time() = time * 1000;  // msec
 
-        if (verbose >= 2) {
-            printf( "a_ref = " );  print_vector( n, &aref[0], 1 );
-            printf( "b_ref = " );  print_vector( n, &bref[0], 1 );
-            printf( "c_ref = " );  print_vector( n, &cref[0], 1 );
-            printf( "s_ref = " );  print_vector( n, &sref[0], 1 );
-        }
+        print_vector( "a_ref", n, &aref[0], 1, verbose );
+        print_vector( "b_ref", n, &bref[0], 1, verbose );
+        print_vector( "c_ref", n, &cref[0], 1, verbose );
+        print_vector( "s_ref", n, &sref[0], 1, verbose );
 
         // get max error of all outputs
         cblas_axpy( n, -1.0, &a[0], 1, &aref[0], 1 );
@@ -130,7 +124,9 @@ void test_rotg_device_work( Params& params, bool run )
         params.error() = error;
         params.okay() = (error < tol);
 
-        // Applying the rotations $\begin{bmatrix} c & s \\ -s & c \end{bmatrix}$
+        // Applying the rotations
+        //      [  c  s ]
+        //      [ -s  c ]
         // to the vectors $[ a_i, b_i ]^T$
         // Expected output: $[ \sqrt{ a_i^2 + b_i^2 } & 0 ]$
 
@@ -146,18 +142,14 @@ void test_rotg_device_work( Params& params, bool run )
         #undef ABSSQ
 
         params.error2() = cblas_nrm2( n, &b_in[0], 1 );
-        if (verbose >= 2) {
-            printf( "null vector = " );  print_vector( n, &b_in[0], 1 );
-        }
+        print_vector( "b_2", n, &b_in[0], 1 );
 
         params.error3() = cblas_nrm2( n, &diffNorm2[0], 1 );
-        if (verbose >= 2) {
-            printf( "null vector = " );  print_vector( n, &diffNorm2[0], 1 );
-        }
+        print_vector( "diff", n, &diffNorm2[0], 1 );
     }
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_rotg_device( Params& params, bool run )
 {
     switch (params.datatype()) {

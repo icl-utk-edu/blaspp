@@ -31,7 +31,7 @@
     #include <rocm-core/rocm_version.h>
 #endif
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 using testsweeper::ParamType;
 using testsweeper::DataType;
 using testsweeper::DataType_help;
@@ -59,7 +59,7 @@ const char*  e_rt3i  = "2.718281828459045 + 1.732050807568877i";
 const double pi      = 3.141592653589793;
 const double e       = 2.718281828459045;
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // each section must have a corresponding entry in section_names
 enum Section {
     newline = 0,  // zero flag forces newline
@@ -256,7 +256,7 @@ std::vector< testsweeper::routines_t > routines = {
     { "",                 nullptr,                  Section::newline        },
 };
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Params class
 // List of parameters
 
@@ -357,7 +357,7 @@ Params::Params():
     // routine's parameters are marked by the test routine; see main
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void setup_PAPI( int *event_set )
 {
     blas::counter::get();
@@ -371,7 +371,7 @@ void setup_PAPI( int *event_set )
     #endif
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 int main( int argc, char** argv )
 {
     using testsweeper::QuitException;

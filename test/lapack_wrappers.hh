@@ -13,7 +13,7 @@
 // This is a temporary file giving simple LAPACK wrappers,
 // until the real lapackpp wrappers are available.
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename TX>
 void lapack_larnv( int64_t idist, int iseed[4], int64_t size, TX *x )
 {
@@ -30,7 +30,7 @@ void lapack_larnv( int64_t idist, int iseed[4], int64_t size, std::complex <TX> 
     }
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 float  lapack_lange( char const *norm,
                      int64_t m, int64_t n,
                      float const *A, int64_t lda,
@@ -51,7 +51,7 @@ double lapack_lange( char const *norm,
                      std::complex<double> const *A, int64_t lda,
                      double *work );
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 float  lapack_lansy( char const *norm, char const *uplo,
                      int64_t n,
                      float const *A, int64_t lda,
@@ -72,7 +72,7 @@ double lapack_lansy( char const *norm, char const *uplo,
                      std::complex<double> const *A, int64_t lda,
                      double *work );
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 float  lapack_lanhe( char const *norm, char const *uplo,
                      int64_t n,
                      float const *A, int64_t lda,
@@ -93,7 +93,7 @@ double lapack_lanhe( char const *norm, char const *uplo,
                      std::complex<double> const *A, int64_t lda,
                      double *work );
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 float  lapack_lantr( char const *norm, char const *uplo, char const *diag,
                      int64_t m, int64_t n,
                      float const *A, int64_t lda,
@@ -114,7 +114,7 @@ double lapack_lantr( char const *norm, char const *uplo, char const *diag,
                      std::complex<double> const *A, int64_t lda,
                      double *work );
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename TA, typename TB>
 void lapack_lacpy( char const* uplo,
                      int64_t m, int64_t n,
@@ -129,7 +129,7 @@ void lapack_lacpy( char const* uplo,
     }
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void lapack_potrf(  char const *uplo, int64_t n,
                     float *A, int64_t lda,
                     int64_t *info );

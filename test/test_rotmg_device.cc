@@ -8,7 +8,7 @@
 #include "lapack_wrappers.hh"
 #include "print_matrix.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename T>
 void test_rotmg_device_work( Params& params, bool run )
 {
@@ -161,7 +161,7 @@ void test_rotmg_device_work( Params& params, bool run )
     blas::device_free( d_ps, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_rotmg_device( Params& params, bool run )
 {
     switch (params.datatype()) {

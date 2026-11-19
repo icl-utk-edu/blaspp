@@ -9,7 +9,7 @@
 #include "blas/flops.hh"
 #include "print_matrix.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename T>
 void test_iamax_work( Params& params, bool run )
 {
@@ -51,14 +51,7 @@ void test_iamax_work( Params& params, bool run )
     assert_throw( blas::iamax(  n, x,    0 ), blas::Error );
     assert_throw( blas::iamax(  n, x,   -1 ), blas::Error );
 
-    if (verbose >= 1) {
-        printf( "\n"
-                "x n=%5lld, inc=%5lld, size=%10lld\n",
-                llong( n ), llong( incx ), llong( size_x ) );
-    }
-    if (verbose >= 2) {
-        printf( "x = " ); print_vector( n, x, incx );
-    }
+    print_vector( "x", n, x, incx, verbose );
 
     // run test
     testsweeper::flush_cache( params.cache() );
@@ -72,7 +65,7 @@ void test_iamax_work( Params& params, bool run )
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
 
-    if (verbose >= 1) {
+    if (verbose) {
         printf( "result = %5lld\n", llong( result ) );
     }
 
@@ -89,7 +82,7 @@ void test_iamax_work( Params& params, bool run )
         params.ref_gflops() = gflop / time;
         params.ref_gbytes() = gbyte / time;
 
-        if (verbose >= 1) {
+        if (verbose) {
             printf( "ref    = %5lld\n", llong( ref ) );
         }
 
@@ -104,7 +97,7 @@ void test_iamax_work( Params& params, bool run )
     delete[] x;
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_iamax( Params& params, bool run )
 {
     switch (params.datatype()) {

@@ -10,7 +10,7 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename TX>
 void test_rotm_work( Params& params, bool run )
 {
@@ -71,16 +71,11 @@ void test_rotm_work( Params& params, bool run )
     assert_throw( blas::rotm(  n, x,    0, y, incy, p ), blas::Error );
     assert_throw( blas::rotm(  n, x, incx, y,    0, p ), blas::Error );
 
-    if (verbose >= 1) {
-        printf( "\n"
-                "x n=%5lld, inc=%5lld, size=%10lld\n"
-                "y n=%5lld, inc=%5lld, size=%10lld\n",
-                llong( n ), llong( incx ), llong( size_x ),
-                llong( n ), llong( incy ), llong( size_y ) );
-    }
-    if (verbose >= 2) {
-        printf( "x    = " ); print_vector( n, x, incx );
-        printf( "y    = " ); print_vector( n, y, incy );
+    if (verbose) {
+        printf( "Anorm = %.2e; Xnorm = %.2e; Ynorm = %.2e;\n",
+                Anorm, Xnorm, Ynorm );
+        print_vector( "x", n, x, incx, verbose );
+        print_vector( "y", n, y, incy, verbose );
     }
 
     // run test
@@ -95,10 +90,8 @@ void test_rotm_work( Params& params, bool run )
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
 
-    if (verbose >= 1) {
-        printf( "x2   = " ); print_vector( n, x, incx );
-        printf( "y2   = " ); print_vector( n, y, incy );
-    }
+    print_vector( "xout", n, x, incx, verbose );
+    print_vector( "yout", n, y, incy, verbose );
 
     if (params.ref() == 'y' || params.check() == 'y') {
         // run reference
@@ -111,10 +104,8 @@ void test_rotm_work( Params& params, bool run )
         params.ref_gflops() = gflop / time;
         params.ref_gbytes() = gbyte / time;
 
-        if (verbose >= 1) {
-            printf( "xref = " ); print_vector( n, xref, incx );
-            printf( "yref = " ); print_vector( n, yref, incy );
-        }
+        print_vector( "xref", n, xref, incx, verbose );
+        print_vector( "yref", n, yref, incy, verbose );
 
         // check error compared to reference
         // C = [x y] * R + C0, for n x 2 matrix C and 2 x 2 rotation R
@@ -143,7 +134,7 @@ void test_rotm_work( Params& params, bool run )
     delete[] yref;
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_rotm( Params& params, bool run )
 {
     switch (params.datatype()) {

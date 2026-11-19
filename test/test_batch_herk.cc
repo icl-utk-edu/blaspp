@@ -10,7 +10,7 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename TA, typename TC>
 void test_batch_herk_work( Params& params, bool run )
 {
@@ -142,7 +142,7 @@ void test_batch_herk_work( Params& params, bool run )
     delete[] Cnorm;
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_batch_herk( Params& params, bool run )
 {
     switch (params.datatype()) {

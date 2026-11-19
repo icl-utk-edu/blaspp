@@ -8,7 +8,7 @@
 #include "lapack_wrappers.hh"
 #include "blas/flops.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename T>
 void test_memcpy_work( Params& params, bool run )
 {
@@ -76,7 +76,7 @@ void test_memcpy_work( Params& params, bool run )
     }
 
     // setup
-    if (verbose >= 1)
+    if (verbose)
         printf( "setup\n" );
 
     blas::Queue queue( device );
@@ -105,7 +105,7 @@ void test_memcpy_work( Params& params, bool run )
     lapack_larnv( idist, iseed, size, d_host );
 
     // test error exits
-    if (verbose >= 1)
+    if (verbose)
         printf( "error exits\n" );
 
     assert_throw( blas::device_memcpy( c_dev, b_dev, -1, queue ), blas::Error );
@@ -122,21 +122,14 @@ void test_memcpy_work( Params& params, bool run )
     assert_throw( blas::device_copy_vector(  n, b_dev, 0, c_dev, 1, queue ), blas::Error );
     assert_throw( blas::device_copy_vector(  n, b_dev, 1, c_dev, 0, queue ), blas::Error );
 
-    if (verbose >= 1) {
-        printf( "\n"
-                "n=%5lld, inc_ac=%2lld, inc_bd=%2lld\n",
-                llong( n ), llong( inc_ac ), llong( inc_bd ) );
-    }
-    if (verbose >= 2) {
-        printf( "a = " ); print_matrix( inc_ac, n + extra, a_host, inc_ac );
-    }
+    print_matrix( "a", inc_ac, n + extra, a_host, inc_ac, verbose );
 
     // run test
     testsweeper::flush_cache( params.cache() );
 
     //----------
     // a_host -> b_dev
-    if (verbose >= 1)
+    if (verbose)
         printf( "a_host -> b_dev,  method %d\n", int( method ) );
 
     double time = sync_get_wtime( queue );
@@ -153,7 +146,7 @@ void test_memcpy_work( Params& params, bool run )
 
     //----------
     // b_dev -> c_dev
-    if (verbose >= 1)
+    if (verbose)
         printf( "b_dev  -> c_dev,  method %d\n", int( method ) );
 
     double time2 = sync_get_wtime( queue );
@@ -168,7 +161,7 @@ void test_memcpy_work( Params& params, bool run )
 
     //----------
     // c_dev -> d_host
-    if (verbose >= 1)
+    if (verbose)
         printf( "c_dev  -> d_host, method %d\n", int( method ) );
 
     double time3 = sync_get_wtime( queue );
@@ -185,7 +178,7 @@ void test_memcpy_work( Params& params, bool run )
 
     //----------
     // a_host -> b_host
-    if (verbose >= 1)
+    if (verbose)
         printf( "a_host -> b_host, method %d\n", int( method ) );
 
     double time4 = sync_get_wtime( queue );
@@ -200,7 +193,7 @@ void test_memcpy_work( Params& params, bool run )
 
     //----------
     // b_host -> c_host
-    if (verbose >= 1)
+    if (verbose)
         printf( "b_host -> c_host, method %d\n", int( method ) );
 
     double ref_time = sync_get_wtime( queue );
@@ -222,10 +215,10 @@ void test_memcpy_work( Params& params, bool run )
     params.gbytes4()    = gbyte / time4;
     params.ref_gbytes() = gbyte / ref_time;
 
-    if (verbose >= 2) {
-        printf( "b = " ); print_matrix( inc_bd, n + extra, b_host, inc_bd );
-        printf( "c = " ); print_matrix( inc_ac, n + extra, c_host, inc_ac );
-        printf( "d = " ); print_matrix( inc_bd, n + extra, d_host, inc_bd );
+    if (verbose) {
+        print_matrix( "b", inc_bd, n + extra, b_host, inc_bd, verbose );
+        print_matrix( "c", inc_ac, n + extra, c_host, inc_ac, verbose );
+        print_matrix( "d", inc_bd, n + extra, d_host, inc_bd, verbose );
         printf( "Note rows after first and last %lld cols should NOT be copied!\n",
                 llong( extra ) );
     }
@@ -256,7 +249,7 @@ void test_memcpy_work( Params& params, bool run )
     params.error() = error;
     params.okay() = (error == 0);  // copy must be exact
 
-    if (verbose >= 1)
+    if (verbose)
         printf( "cleanup\n" );
 
     blas::host_free_pinned( a_host, queue );
@@ -267,7 +260,7 @@ void test_memcpy_work( Params& params, bool run )
     blas::device_free( c_dev, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_memcpy( Params& params, bool run )
 {
     switch (params.datatype()) {

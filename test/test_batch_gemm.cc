@@ -11,7 +11,7 @@
 #include "check_gemm.hh"
 
 #include "blas.hh"
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename TA, typename TB, typename TC>
 void test_batch_gemm_work( Params& params, bool run )
 {
@@ -165,7 +165,7 @@ void test_batch_gemm_work( Params& params, bool run )
     delete[] Cnorm;
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_batch_gemm( Params& params, bool run )
 {
     switch (params.datatype()) {

@@ -10,7 +10,7 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename TA, typename TB>
 void test_batch_trmm_work_device( Params& params, bool run )
 {
@@ -46,7 +46,7 @@ void test_batch_trmm_work_device( Params& params, bool run )
         return;
     }
 
-    // ----------
+    //-----------
     // setup
     int64_t Am = (side_ == Side::Left ? m_ : n_);
     int64_t Bm = m_;
@@ -175,7 +175,7 @@ void test_batch_trmm_work_device( Params& params, bool run )
     blas::device_free( dB, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_batch_trmm_device( Params& params, bool run )
 {
     switch (params.datatype()) {

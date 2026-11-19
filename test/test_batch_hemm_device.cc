@@ -10,7 +10,7 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename TA, typename TB, typename TC>
 void test_batch_hemm_device_work( Params& params, bool run )
 {
@@ -183,7 +183,7 @@ void test_batch_hemm_device_work( Params& params, bool run )
     blas::device_free( dC, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_batch_hemm_device( Params& params, bool run )
 {
     switch (params.datatype()) {

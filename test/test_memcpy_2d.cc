@@ -8,7 +8,7 @@
 #include "lapack_wrappers.hh"
 #include "blas/flops.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename T>
 void test_memcpy_2d_work( Params& params, bool run )
 {
@@ -117,14 +117,7 @@ void test_memcpy_2d_work( Params& params, bool run )
     assert_throw( blas::device_copy_matrix(  m,  n, b_dev, m-1, c_dev, m,   queue ), blas::Error );
     assert_throw( blas::device_copy_matrix(  m,  n, b_dev, m,   c_dev, m-1, queue ), blas::Error );
 
-    if (verbose >= 1) {
-        printf( "\n"
-                "m=%5lld, n=%5lld, ld=%2lld\n",
-                llong( m ), llong( n ), llong( ld ) );
-    }
-    if (verbose >= 2) {
-        printf( "a = " ); print_matrix( ld, n + extra, a_host, ld );
-    }
+    print_matrix( "A", ld, n + extra, a_host, ld, verbose );
 
     // run test
     testsweeper::flush_cache( params.cache() );
@@ -202,10 +195,10 @@ void test_memcpy_2d_work( Params& params, bool run )
     params.gbytes4()    = gbyte / time4;
     params.ref_gbytes() = gbyte / ref_time;
 
-    if (verbose >= 2) {
-        printf( "b = " ); print_matrix( ld, n + extra, b_host, ld );
-        printf( "c = " ); print_matrix( ld, n + extra, c_host, ld );
-        printf( "d = " ); print_matrix( ld, n + extra, d_host, ld );
+    if (verbose) {
+        print_matrix( "b", ld, n + extra, b_host, ld, verbose );
+        print_matrix( "c", ld, n + extra, c_host, ld, verbose );
+        print_matrix( "d", ld, n + extra, d_host, ld, verbose );
         printf( "Note last %lld rows and last %lld cols should NOT be copied!\n",
                 llong( ld - m ), llong( extra ) );
     }
@@ -242,7 +235,7 @@ void test_memcpy_2d_work( Params& params, bool run )
     blas::device_free( c_dev, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_memcpy_2d( Params& params, bool run )
 {
     switch (params.datatype()) {

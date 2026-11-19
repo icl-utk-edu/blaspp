@@ -80,16 +80,7 @@ void test_conj_device_work( Params& params, bool run )
     assert_throw( blas::conj(  n, x,    0, y, incy, queue ), blas::Error );
     assert_throw( blas::conj(  n, x, incx, y,    0, queue ), blas::Error );
 
-    if (verbose >= 1) {
-        printf( "\n"
-                "x n=%5lld, inc=%5lld, size=%10lld\n"
-                "y n=%5lld, inc=%5lld, size=%10lld\n",
-                llong( n ), llong( incx ), llong( size_x ),
-                llong( n ), llong( incy ), llong( size_y ) );
-    }
-    if (verbose >= 2) {
-        printf( "x    = " ); print_vector( n, x, incx );
-    }
+    print_vector( "x", n, x, incx, verbose );
 
     // run test
     testsweeper::flush_cache( params.cache() );
@@ -100,18 +91,14 @@ void test_conj_device_work( Params& params, bool run )
     blas::device_copy_vector( n, dy, abs( incy ), y, abs( incy ), queue );
     queue.sync();
 
-    if (verbose >= 2) {
-        printf( "y    = " ); print_vector( n, y, incy );
-    }
+    print_vector( "y", n, y, incy, verbose );
 
     if (params.check() == 'y') {
         // run reference
         testsweeper::flush_cache( params.cache() );
         cpu_conj( n, x, incx, yref, incy );
 
-        if (verbose >= 2) {
-            printf( "yref = " ); print_vector( n, yref, incy );
-        }
+        print_vector( "yref", n, yref, incy, verbose );
 
         // error = ||yref - y||
         cblas_axpy( n, -1.0, y, incy, yref, incy );

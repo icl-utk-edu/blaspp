@@ -133,19 +133,13 @@ void test_tzadd_device_work( Params& params, bool run )
     assert_throw( blas::tzadd( Layout::ColMajor, uplo, Op::NoTrans,   m, n, alpha, dA, lda, beta, B, m-1, queue ), blas::Error );
     assert_throw( blas::tzadd( Layout::RowMajor, uplo, Op::NoTrans,   m, n, alpha, dA, lda, beta, B, n-1, queue ), blas::Error );
 
-    if (verbose >= 1) {
-        printf( "\n"
-                "A Am=%5lld, An=%5lld, lda=%5lld, size=%10lld, norm %.2e\n"
-                "B Bm=%5lld, Bn=%5lld, ldb=%5lld, size=%10lld, norm %.2e\n",
-                llong( Am ), llong( An ), llong( lda ), llong( size_A ), Anorm,
-                llong( Bm ), llong( Bn ), llong( ldb ), llong( size_B ), Bnorm );
-    }
-    if (verbose >= 2) {
+    if (verbose) {
         printf( "alpha = %.4e + %.4ei; beta = %.4e + %.4ei;\n",
                 real(alpha), imag(alpha),
                 real(beta),  imag(beta) );
-        printf( "A = "    ); print_matrix( Am, An, A, lda );
-        printf( "B = "    ); print_matrix( Bm, Bn, B, ldb );
+        printf( "Anorm = %.2e; Bnorm = %.2e;\n", Anorm, Bnorm );
+        print_matrix( "A", Am, An, A, lda, verbose );
+        print_matrix( "B", Bm, Bn, B, ldb, verbose );
     }
 
     // run test
@@ -156,18 +150,14 @@ void test_tzadd_device_work( Params& params, bool run )
     blas::device_copy_matrix( Bm, Bn, dB, ldb, B, ldb, queue );
     queue.sync();
 
-    if (verbose >= 2) {
-        printf( "B2 = " ); print_matrix( Bm, Bn, B, ldb );
-    }
+    print_matrix( "Bout", Bm, Bn, B, ldb, verbose );
 
     if (params.ref() == 'y' || params.check() == 'y') {
         // run reference
         testsweeper::flush_cache( params.cache() );
         cpu_tzadd( layout, uplo, trans, m, n, alpha, A, lda, beta, Bref, ldb );
 
-        if (verbose >= 2) {
-            printf( "Bref = " ); print_matrix( Bm, Bn, Bref, ldb );
-        }
+        print_matrix( "Bref", Bm, Bn, Bref, ldb, verbose );
 
         // check error compared to reference
         real_t error = 0;
@@ -183,7 +173,7 @@ void test_tzadd_device_work( Params& params, bool run )
             error /= 2*sqrt(2);
         }
 
-        if (verbose >= 2) {
+        if (verbose) {
             printf( "error = %.2e\n", error );
         }
 

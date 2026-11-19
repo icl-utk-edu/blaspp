@@ -9,7 +9,7 @@
 #include "blas/flops.hh"
 #include "print_matrix.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename Tx>
 void test_asum_device_work( Params& params, bool run )
 {
@@ -78,14 +78,7 @@ void test_asum_device_work( Params& params, bool run )
     blas::device_copy_vector(n, x, std::abs(incx), dx, std::abs(incx), queue);
     queue.sync();
 
-    if (verbose >= 1) {
-        printf( "\n"
-                "n=%5lld, incx=%5lld, sizex=%10lld\n",
-                llong( n ), llong( incx ), llong( size_x ) );
-    }
-    if (verbose >= 2) {
-        printf( "x = " ); print_vector( n, x, incx );
-    }
+    print_vector( "x", n, x, incx, verbose );
 
     // run test
     testsweeper::flush_cache( params.cache() );
@@ -107,7 +100,7 @@ void test_asum_device_work( Params& params, bool run )
     blas::device_copy_vector( n, dx, std::abs(incx), x, std::abs(incx), queue );
     queue.sync();
 
-    if (verbose >= 1) {
+    if (verbose) {
         printf( "result = %.4e\n", result_host );
     }
 
@@ -122,7 +115,7 @@ void test_asum_device_work( Params& params, bool run )
         params.ref_gflops() = gflop / time;
         params.ref_gbytes() = gbyte / time;
 
-        if (verbose >= 1) {
+        if (verbose) {
             printf( "ref    = %.4e\n", ref );
         }
 
@@ -150,7 +143,7 @@ void test_asum_device_work( Params& params, bool run )
         blas::device_free( result_ptr, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_asum_device( Params& params, bool run )
 {
     switch (params.datatype()) {

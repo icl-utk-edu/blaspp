@@ -9,7 +9,7 @@
 #include "blas/flops.hh"
 #include "print_matrix.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename TX, typename TY>
 void test_axpy_work( Params& params, bool run )
 {
@@ -61,18 +61,11 @@ void test_axpy_work( Params& params, bool run )
     assert_throw( blas::axpy(  n, alpha, x,    0, y, incy ), blas::Error );
     assert_throw( blas::axpy(  n, alpha, x, incx, y,    0 ), blas::Error );
 
-    if (verbose >= 1) {
-        printf( "\n"
-                "x n=%5lld, inc=%5lld, size=%10lld\n"
-                "y n=%5lld, inc=%5lld, size=%10lld\n",
-                llong( n ), llong( incx ), llong( size_x ),
-                llong( n ), llong( incy ), llong( size_y ) );
-    }
-    if (verbose >= 2) {
+    if (verbose) {
         printf( "alpha = %.4e + %.4ei;\n",
                 real(alpha), imag(alpha) );
-        printf( "x    = " ); print_vector( n, x, incx );
-        printf( "y    = " ); print_vector( n, y, incy );
+        print_vector( "x", n, x, incx, verbose );
+        print_vector( "y", n, y, incy, verbose );
     }
 
     // run test
@@ -87,9 +80,7 @@ void test_axpy_work( Params& params, bool run )
     params.gflops() = gflop / time;
     params.gbytes() = gbyte / time;
 
-    if (verbose >= 2) {
-        printf( "y2   = " ); print_vector( n, y, incy );
-    }
+    print_vector( "yout", n, y, incy, verbose );
 
     if (params.check() == 'y') {
         // run reference
@@ -102,9 +93,7 @@ void test_axpy_work( Params& params, bool run )
         params.ref_gflops() = gflop / time;
         params.ref_gbytes() = gbyte / time;
 
-        if (verbose >= 2) {
-            printf( "yref = " ); print_vector( n, yref, incy );
-        }
+        print_vector( "yref", n, yref, incy, verbose );
 
         // maximum component-wise forward error:
         // | fl(yi) - yi | / (2 |alpha xi| + |y0_i|)
@@ -119,9 +108,7 @@ void test_axpy_work( Params& params, bool run )
             iy += incy;
         }
 
-        if (verbose >= 2) {
-            printf( "err  = " ); print_vector( n, y, incy, "%9.2e" );
-        }
+        print_vector( "err", n, y, incy, verbose );
 
         // complex needs extra factor; see Higham, 2002, sec. 3.6.
         if (blas::is_complex_v<scalar_t>) {
@@ -138,7 +125,7 @@ void test_axpy_work( Params& params, bool run )
     delete[] yref;
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_axpy( Params& params, bool run )
 {
     switch (params.datatype()) {

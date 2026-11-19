@@ -8,7 +8,7 @@
 #include "lapack_wrappers.hh"
 #include "print_matrix.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename T>
 void test_rotmg_work( Params& params, bool run )
 {
@@ -100,7 +100,7 @@ void test_rotmg_work( Params& params, bool run )
     }
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_rotmg( Params& params, bool run )
 {
     switch (params.datatype()) {

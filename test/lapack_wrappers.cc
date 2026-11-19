@@ -15,13 +15,13 @@
 // This is a temporary file giving simple LAPACK wrappers,
 // until the real lapackpp wrappers are available.
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #define lapack_slange BLAS_FORTRAN_NAME( slange, SLANGE )
 #define lapack_dlange BLAS_FORTRAN_NAME( dlange, DLANGE )
 #define lapack_clange BLAS_FORTRAN_NAME( clange, CLANGE )
 #define lapack_zlange BLAS_FORTRAN_NAME( zlange, ZLANGE )
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 extern "C"
 blas_float_return
 lapack_slange( char const *norm,
@@ -48,7 +48,7 @@ double lapack_zlange( char const *norm,
                       std::complex<double> const *A, blas_int const *lda,
                       double *work );
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 float  lapack_lange( char const *norm,
                      int64_t m, int64_t n,
                      float const *A, int64_t lda,
@@ -93,13 +93,13 @@ double lapack_lange( char const *norm,
     return lapack_zlange( norm, &m_, &n_, A, &lda_, work );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #define lapack_slansy BLAS_FORTRAN_NAME( slansy, SLANSY )
 #define lapack_dlansy BLAS_FORTRAN_NAME( dlansy, DLANSY )
 #define lapack_clansy BLAS_FORTRAN_NAME( clansy, CLANSY )
 #define lapack_zlansy BLAS_FORTRAN_NAME( zlansy, ZLANSY )
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 extern "C"
 blas_float_return
 lapack_slansy( char const *norm, char const *uplo,
@@ -126,7 +126,7 @@ double lapack_zlansy( char const *norm, char const *uplo,
                       std::complex<double> const *A, blas_int const *lda,
                       double *work );
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 float  lapack_lansy( char const *norm, char const *uplo,
                      int64_t n,
                      float const *A, int64_t lda,
@@ -167,11 +167,11 @@ double lapack_lansy( char const *norm, char const *uplo,
     return lapack_zlansy( norm, uplo, &n_, A, &lda_, work );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #define lapack_clanhe BLAS_FORTRAN_NAME( clanhe, CLANHE )
 #define lapack_zlanhe BLAS_FORTRAN_NAME( zlanhe, ZLANHE )
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 extern "C"
 blas_float_return
 lapack_clanhe( char const *norm, char const *uplo,
@@ -185,7 +185,7 @@ double lapack_zlanhe( char const *norm, char const *uplo,
                       std::complex<double> const *A, blas_int const *lda,
                       double *work );
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 float  lapack_lanhe( char const *norm, char const *uplo,
                      int64_t n,
                      float const *A, int64_t lda,
@@ -226,13 +226,13 @@ double lapack_lanhe( char const *norm, char const *uplo,
     return lapack_zlanhe( norm, uplo, &n_, A, &lda_, work );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #define lapack_slantr BLAS_FORTRAN_NAME( slantr, SLANTR )
 #define lapack_dlantr BLAS_FORTRAN_NAME( dlantr, DLANTR )
 #define lapack_clantr BLAS_FORTRAN_NAME( clantr, CLANTR )
 #define lapack_zlantr BLAS_FORTRAN_NAME( zlantr, ZLANTR )
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 extern "C"
 blas_float_return
 lapack_slantr( char const *norm, char const *uplo, char const *diag,
@@ -259,7 +259,7 @@ double lapack_zlantr( char const *norm, char const *uplo, char const *diag,
                       std::complex<double> const *A, blas_int const *lda,
                       double *work );
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 float  lapack_lantr( char const *norm, char const *uplo, char const *diag,
                      int64_t m, int64_t n,
                      float const *A, int64_t lda,
@@ -304,13 +304,13 @@ double lapack_lantr( char const *norm, char const *uplo, char const *diag,
     return lapack_zlantr( norm, uplo, diag, &m_, &n_, A, &lda_, work );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 #define lapack_spotrf BLAS_FORTRAN_NAME( spotrf, SPOTRF )
 #define lapack_dpotrf BLAS_FORTRAN_NAME( dpotrf, DPOTRF )
 #define lapack_cpotrf BLAS_FORTRAN_NAME( cpotrf, CPOTRF )
 #define lapack_zpotrf BLAS_FORTRAN_NAME( zpotrf, ZPOTRF )
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 extern "C"
 void lapack_spotrf( char const *uplo, blas_int const *n,
                     float *A, blas_int const *lda,
@@ -331,7 +331,7 @@ void lapack_zpotrf( char const *uplo, blas_int const *n,
                     std::complex<double> *A, blas_int const *lda,
                     blas_int *info );
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void lapack_potrf(  char const *uplo, int64_t n,
                     float *A, int64_t lda,
                     int64_t *info )

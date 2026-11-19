@@ -10,7 +10,7 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // TX is data [x, y]
 // TS is for sine, which can be real (zdrot) or complex (zrot)
 // cosine is always real
@@ -94,18 +94,13 @@ void test_rot_device_work( Params& params, bool run )
     assert_throw( blas::rot(  n, x,    0, y, incy, c, s ), blas::Error );
     assert_throw( blas::rot(  n, x, incx, y,    0, c, s ), blas::Error );
 
-    if (verbose >= 1) {
-        printf( "\n"
-                "s = %.4f + %.4fi, c = %.4f, s^2 + c^2 = %.4f\n"
-                "x n=%5lld, inc=%5lld, size=%10lld\n"
-                "y n=%5lld, inc=%5lld, size=%10lld\n",
-                real( s ), imag( s ), c, real( s*conj(s) ) + c*c,
-                llong( n ), llong( incx ), llong( size_x ),
-                llong( n ), llong( incy ), llong( size_y ) );
-    }
-    if (verbose >= 2) {
-        printf( "x    = " ); print_vector( n, x, incx );
-        printf( "y    = " ); print_vector( n, y, incy );
+    if (verbose) {
+        printf( "s = %.4f + %.4fi; c = %.4f; s^2 + c^2 = %.4f\n",
+                real( s ), imag( s ), c, real( s*conj(s) ) + c*c );
+        printf( "Anorm = %.2e; Xnorm = %.2e; Ynorm = %.2e;\n",
+                Anorm, Xnorm, Ynorm );
+        print_vector( "x", n, x, incx, verbose );
+        print_vector( "y", n, y, incy, verbose );
     }
 
     // run test
@@ -125,10 +120,8 @@ void test_rot_device_work( Params& params, bool run )
     blas::device_copy_vector(n, dy, std::abs(incy), y, std::abs(incy), queue);
     queue.sync();
 
-    if (verbose >= 1) {
-        printf( "x2   = " ); print_vector( n, x, incx );
-        printf( "y2   = " ); print_vector( n, y, incy );
-    }
+    print_vector( "xout", n, x, incx, verbose );
+    print_vector( "yout", n, y, incy, verbose );
 
     if (params.ref() == 'y' || params.check() == 'y') {
         // run reference
@@ -141,10 +134,8 @@ void test_rot_device_work( Params& params, bool run )
         params.ref_gflops() = gflop / time;
         params.ref_gbytes() = gbyte / time;
 
-        if (verbose >= 1) {
-            printf( "xref = " ); print_vector( n, xref, incx );
-            printf( "yref = " ); print_vector( n, yref, incy );
-        }
+        print_vector( "xref", n, xref, incx, verbose );
+        print_vector( "yref", n, yref, incy, verbose );
 
         params.ref_time()   = time * 1000;  // msec
         params.ref_gflops() = gflop / time;
@@ -180,7 +171,7 @@ void test_rot_device_work( Params& params, bool run )
     blas::device_free( dy, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_rot_device( Params& params, bool run )
 {
     switch (params.datatype()) {

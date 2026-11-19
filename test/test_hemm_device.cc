@@ -10,7 +10,7 @@
 #include "print_matrix.hh"
 #include "check_gemm.hh"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename TA, typename TB, typename TC>
 void test_hemm_device_work( Params& params, bool run )
 {
@@ -107,24 +107,15 @@ void test_hemm_device_work( Params& params, bool run )
     assert_throw( blas::hemm( Layout::ColMajor, side, uplo,  m,  n, alpha, dA, lda, dB, ldb, beta, dC, m-1, queue ), blas::Error );
     assert_throw( blas::hemm( Layout::RowMajor, side, uplo,  m,  n, alpha, dA, lda, dB, ldb, beta, dC, n-1, queue ), blas::Error );
 
-    if (verbose >= 1) {
-        printf( "\n"
-                "side %c, uplo %c\n"
-                "A An=%5lld, An=%5lld, lda=%5lld, size=%10lld, norm %.2e\n"
-                "B  m=%5lld,  n=%5lld, ldb=%5lld, size=%10lld, norm %.2e\n"
-                "C  m=%5lld,  n=%5lld, ldc=%5lld, size=%10lld, norm %.2e\n",
-                to_char( side ), to_char( uplo ),
-                llong( An ), llong( An ), llong( lda ), llong( size_A ), Anorm,
-                llong( m ), llong( n ), llong( ldb ), llong( size_B ), Bnorm,
-                llong( m ), llong( n ), llong( ldc ), llong( size_C ), Cnorm );
-    }
-    if (verbose >= 2) {
+    if (verbose) {
         printf( "alpha = %.4e + %.4ei; beta = %.4e + %.4ei;\n",
                 real(alpha), imag(alpha),
                 real(beta),  imag(beta) );
-        printf( "A = "    ); print_matrix( An, An, A, lda );
-        printf( "B = "    ); print_matrix( Cm, Cn, B, ldb );
-        printf( "C = "    ); print_matrix( Cm, Cn, C, ldc );
+        printf( "Anorm = %.2e; Bnorm = %.2e; Cnorm = %.2e;\n",
+                Anorm, Bnorm, Cnorm );
+        print_matrix( "A", An, An, A, lda, verbose );
+        print_matrix( "B", Cm, Cn, B, ldb, verbose );
+        print_matrix( "C", Cm, Cn, C, ldc, verbose );
     }
 
     // run test
@@ -141,9 +132,7 @@ void test_hemm_device_work( Params& params, bool run )
     blas::device_copy_matrix(Cm, Cn, dC, ldc, C, ldc, queue);
     queue.sync();
 
-    if (verbose >= 2) {
-        printf( "C2 = " ); print_matrix( Cm, Cn, C, ldc );
-    }
+    print_matrix( "Cout", Cm, Cn, C, ldc, verbose );
 
     if (params.ref() == 'y' || params.check() == 'y') {
         // run reference
@@ -158,9 +147,7 @@ void test_hemm_device_work( Params& params, bool run )
         params.ref_time()   = time;
         params.ref_gflops() = gflop / time;
 
-        if (verbose >= 2) {
-            printf( "Cref = " ); print_matrix( Cm, Cn, Cref, ldc );
-        }
+        print_matrix( "Cref", Cm, Cn, Cref, ldc, verbose );
 
         // check error compared to reference
         real_t error;
@@ -181,7 +168,7 @@ void test_hemm_device_work( Params& params, bool run )
     blas::device_free( dC, queue );
 }
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 void test_hemm_device( Params& params, bool run )
 {
     switch (params.datatype()) {
