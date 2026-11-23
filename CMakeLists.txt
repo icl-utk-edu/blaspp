@@ -570,28 +570,33 @@ set( blaspp_defines ${blaspp_defs_} ${blaspp_defs_cuda_}
      ${blaspp_defs_hip_} ${blaspp_defs_sycl_}
      CACHE INTERNAL "" )
 
-if (true)
-    # Extract definitions as #define VAR or #define VAR VALUE.
-    set( blaspp_header_defines "" )
-    foreach (def IN LISTS blaspp_defines)
+# Extract -DVAR[=VALUE] definitions as #define VAR or #define VAR VALUE.
+# Put other flags into cflags.
+set( blaspp_header_defines "" )
+set( blaspp_cflags "" )
+foreach (def IN LISTS blaspp_defines)
+    if (def MATCHES "^-D")
         string( REGEX REPLACE "^-D" "" def "${def}" )
         string( REGEX REPLACE "=" " "  def "${def}" )
         string( APPEND blaspp_header_defines "#define ${def}\n" )
-    endforeach()
+    else()
+        list( APPEND blaspp_cflags "${def}" )
+    endif()
+endforeach()
+message( DEBUG "blaspp_cflags '${blaspp_cflags}'" )
 
-    # ctime format: Mon Nov 16 15:19:47 2020
-    string( TIMESTAMP datetime "%a %b %d %H:%M:%S %Y" )
+# ctime format: Mon Nov 16 15:19:47 2020
+string( TIMESTAMP datetime "%a %b %d %H:%M:%S %Y" )
 
-    # Pass defines via header.
-    configure_file(
-        include/blas/defines.h.in  # in source dir
-        include/blas/defines.h     # in binary dir
-    )
-else()
-    # Pass defines via compiler flags.
-    target_compile_definitions(
-        blaspp PRIVATE ${blaspp_defines} )
-endif()
+# Pass defines via header.
+configure_file(
+    include/blas/defines.h.in  # in source dir
+    include/blas/defines.h     # in binary dir
+)
+
+# Other flags pass as compiler flags, e.g., include path for cblas.
+target_compile_options(
+    blaspp PRIVATE ${blaspp_cflags} )
 
 if (LAPACK_LIBRARIES)
     # Update BLAS libraries with LAPACK libraries.
