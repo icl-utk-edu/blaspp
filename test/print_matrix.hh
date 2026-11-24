@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2023, University of Tennessee. All rights reserved.
+// Copyright (c) 2017-2026, University of Tennessee. All rights reserved.
 // SPDX-License-Identifier: BSD-3-Clause
 // This program is free software: you can redistribute it and/or modify it under
 // the terms of the BSD 3-Clause license. See the accompanying LICENSE file.
@@ -31,9 +31,13 @@ static inline double pow10( int y )
 /// - small values < 0.01 or large values > threshold are printed with %w.pg
 /// - modest values are printed with %w.pf.
 /// To ensure data fits, set threshold = 10^(w - p - 2) and w >= p + 6.
+///
+/// @return actual bytes written, not including \0 terminator. This
+/// differs from snprintf, which returns number of bytes required.
+///
 template <typename real_t>
 int snprintf_value(
-    char* buf, size_t buf_len,
+    char* buf, int buf_len,
     int width, int precision,
     real_t value,
     std::enable_if_t< std::is_floating_point_v< real_t > >* z=nullptr )
@@ -58,26 +62,29 @@ int snprintf_value(
         len = snprintf( buf, buf_len,
                         " %#*.*f", width, precision, value );
     }
-    return len;
+    // return bytes actually written.
+    return std::min( len, buf_len - 1 );
 }
 
 //------------------------------------------------------------------------------
 /// Overload to print integer values.
 template <typename integer_t>
 int snprintf_value(
-    char* buf, size_t buf_len,
+    char* buf, int buf_len,
     int width, int precision,
     integer_t value,
     std::enable_if_t< std::is_integral_v< integer_t > >* z=nullptr)
 {
-    return snprintf( buf, buf_len, " %*lld", width, llong( value ) );
+    int len = snprintf( buf, buf_len, " %*lld", width, llong( value ) );
+    // return bytes actually written.
+    return std::min( len, buf_len - 1 );
 }
 
 //------------------------------------------------------------------------------
 /// Overload to print complex values as " <real> + <imag>i".
 template <typename real_t>
 int snprintf_value(
-    char* buf, size_t buf_len,
+    char* buf, int buf_len,
     int width, int precision,
     std::complex<real_t> value)
 {
@@ -90,11 +97,14 @@ int snprintf_value(
     real_t im = std::imag( value );
     if (im == 0) {
         // blank padding
-        len += snprintf( buf, buf_len, "   %*s ", width, "" );
+        int l = snprintf( buf, buf_len, "   %*s ", width, "" );
+        l = std::min( l, buf_len - 1 );
+        len += l;
     }
     else {
         // " + imagi"
         int l = snprintf( buf, buf_len, " +" );
+        l = std::min( l, buf_len - 1 );
         len     += l;
         buf     += l;
         buf_len -= l;
@@ -105,6 +115,7 @@ int snprintf_value(
         buf_len -= l;
 
         l = snprintf( buf, buf_len, "i" );
+        l = std::min( l, buf_len - 1 );
         len += l;
     }
     return len;
@@ -114,9 +125,18 @@ int snprintf_value(
 //========================================
 
 //------------------------------------------------------------------------------
+/// Print matrix meta data and values in Matlab format.
+/// For verbose = 0, no output.
+/// For verbose = 1, prints comment with label and dimensions (m, n, lda).
+/// For verbose = 2, prints abbreviated data by printing the first
+/// and last edgeitems rows and columns, with ellipsis between.
+/// For verbose = 3, prints abbreviated data by printing every nb rows
+/// and columns, without ellipsis.
+/// For verbose = 4, prints all data.
+///
 template <typename T>
 void print_matrix( const char* label, int64_t m, int64_t n, T* A, int64_t lda,
-                   int verbose=2, int precision=4 )
+                   int verbose=2, int precision=4, int edgeitems=4, int nb=32 )
 {
     #define A(i_, j_) A[ (i_) + size_t(lda)*(j_) ]
 
@@ -127,20 +147,33 @@ void print_matrix( const char* label, int64_t m, int64_t n, T* A, int64_t lda,
     if (verbose == 0)
         return;
 
-    int width = precision + 6;
+    printf( "%% %s %lld-by-%lld matrix, ld %lld\n",
+            label, llong(m), llong(n), llong(lda) );
 
-    printf( "%% %s %lld-by-%lld matrix, ld %lld\n", label, llong(m), llong(n), llong(lda) );
     if (verbose >= 2) {
+        int width = precision + 6;
+        int step = (verbose == 3 ? nb : 1);
+        if (verbose == 3)
+            printf( "%% printing every %d-th row and col.\n", nb );
+
         std::string msg;
         char buf[ 80 ];
         printf( "%s = [\n", label );
-        for (int64_t i = 0; i < m; ++i) {
+        for (int64_t i = 0; i < m; i += step) {
             msg = "";
-            for (int64_t j = 0; j < n; ++j) {
+            for (int64_t j = 0; j < n; j += step) {
                 snprintf_value( buf, sizeof(buf), width, precision, A(i, j) );
                 msg += buf;
+                if (verbose == 2 && j == edgeitems - 1 && j < n - edgeitems - 1) {
+                    msg += "  ...";
+                    j = n - edgeitems - 1;
+                }
             }
             printf( "%s\n", msg.c_str() );
+            if (verbose == 2 && i == edgeitems - 1 && i < m - edgeitems - 1) {
+                printf( "     %% ...\n" );
+                i = m - edgeitems - 1;
+            }
         }
         printf( "];\n" );
     }
@@ -149,9 +182,12 @@ void print_matrix( const char* label, int64_t m, int64_t n, T* A, int64_t lda,
 }
 
 //------------------------------------------------------------------------------
+/// Prints vector meta data and values in Matlab format.
+/// @see print_matrix for details.
+///
 template <typename T>
 void print_vector( const char* label, int64_t n, T *x, int64_t incx,
-                   int verbose=2, int precision=4 )
+                   int verbose=2, int precision=4, int edgeitems=4, int nb=32 )
 {
     assert( n >= 0 );
     assert( incx != 0 );
@@ -159,18 +195,26 @@ void print_vector( const char* label, int64_t n, T *x, int64_t incx,
     if (verbose == 0)
         return;
 
-    int width = precision + 6;
-
     printf( "%% %s %lld vector\n", label, llong(n) );
+
     if (verbose >= 2) {
+        int width = precision + 6;
+        int step = (verbose == 3 ? nb : 1);
+        if (verbose == 3)
+            printf( "%% printing every %d-th entry.\n", nb );
+
         std::string msg;
         char buf[ 80 ];
         printf( "%s = [", label );
         int64_t ix = (incx > 0 ? 0 : (-n + 1)*incx);
-        for (int64_t i = 0; i < n; ++i) {
+        for (int64_t i = 0; i < n; i += step) {
             snprintf_value( buf, sizeof(buf), width, precision, x[ix] );
             msg += buf;
             ix += incx;
+            if (verbose == 2 && i == edgeitems - 1 && i < n - edgeitems - 1) {
+                msg += "  ...";
+                i = n - edgeitems - 1;
+            }
         }
         printf( "%s ]';\n", msg.c_str() );
     }
