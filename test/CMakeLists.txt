@@ -72,6 +72,7 @@ add_executable(
     test_memcpy.cc
     test_memcpy_2d.cc
     test_nrm2.cc
+    test_rankk.cc
     test_rot.cc
     test_rotg.cc
     test_rotm.cc

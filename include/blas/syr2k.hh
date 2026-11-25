@@ -155,13 +155,13 @@ void syr2k(
     // alpha == zero
     if (alpha == zero) {
         if (beta == zero) {
-            if (uplo != Uplo::Upper) {
+            if (uplo == Uplo::Upper) {
                 for (int64_t j = 0; j < n; ++j) {
                     for (int64_t i = 0; i <= j; ++i)
                         C(i, j) = zero;
                 }
             }
-            else if (uplo != Uplo::Lower) {
+            else if (uplo == Uplo::Lower) {
                 for (int64_t j = 0; j < n; ++j) {
                     for (int64_t i = j; i < n; ++i)
                         C(i, j) = zero;
@@ -175,13 +175,13 @@ void syr2k(
             }
         }
         else if (beta != one) {
-            if (uplo != Uplo::Upper) {
+            if (uplo == Uplo::Upper) {
                 for (int64_t j = 0; j < n; ++j) {
                     for (int64_t i = 0; i <= j; ++i)
                         C(i, j) *= beta;
                 }
             }
-            else if (uplo != Uplo::Lower) {
+            else if (uplo == Uplo::Lower) {
                 for (int64_t j = 0; j < n; ++j) {
                     for (int64_t i = j; i < n; ++i)
                         C(i, j) *= beta;
