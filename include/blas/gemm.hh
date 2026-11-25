@@ -78,7 +78,7 @@ namespace blas {
 /// @param[in] beta
 ///     Scalar beta. If beta is zero, C need not be set on input.
 ///
-/// @param[in] C
+/// @param[in,out] C
 ///     The m-by-n matrix C, stored in an ldc-by-n array [RowMajor: m-by-ldc].
 ///
 /// @param[in] ldc
