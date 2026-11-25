@@ -66,7 +66,7 @@ namespace blas {
 /// @param[in] beta
 ///     Scalar beta. If beta is zero, C need not be set on input.
 ///
-/// @param[in] C
+/// @param[in,out] C
 ///     The n-by-n symmetric matrix C,
 ///     stored in an lda-by-n array [RowMajor: n-by-lda].
 ///
